@@ -12,14 +12,16 @@ logger = logging.getLogger(__name__)
 
 
 # CONSTANTS FOR THERMOPHYSICS
-CP = 1005.0  # Specific heat capacity [J/(kg·K)]
+CV = 718.0  # Specific heat at constant volume [J/(kg·K)]
+CP = 1005.0  # Specific heat at constant pressure [J/(kg·K)]
 HF = 0.0  # Formation enthalpy [J/kg]
-# Note: Using perfectGas equation of state, h = Cp×T (absolute enthalpy)
+# Note: Using perfectGas + eConst: e = Cv×T, h = Cp×T (absolute)
 
 # DIMENSIONS
 DIMENSIONS_DICT = {
     'alphat':   FoamFile.DimensionSet(mass=1, length=-1, time=-1),
     'DR':       FoamFile.DimensionSet(),
+    'e':        FoamFile.DimensionSet(length=2, time=-2),  # J/kg = m²/s²
     'epsilon':  FoamFile.DimensionSet(length=2, time=-3),
     'h':        FoamFile.DimensionSet(length=2, time=-2),  # J/kg = m²/s²
     'k':        FoamFile.DimensionSet(length=2, time=-2),
@@ -36,8 +38,9 @@ DIMENSIONS_DICT = {
 INTERNALFIELD_DICT = {
     'alphat':   0,
     'DR':       0,
+    'e':        210501.7,   # e = Cv×T = 718×293.15 for eConst
     'epsilon':  0.23,
-    'h':        294515.75,  # h = Cp×T = 1005×293.15 for perfectGas
+    'h':        294515.75,  # h = Cp×T = 1005×293.15 (calculated from e)
     'k':        0.08,
     'nut':      0,
     'omega':    0.5,
@@ -45,7 +48,7 @@ INTERNALFIELD_DICT = {
     'p_rgh':    0,          # Hydrostatic-corrected pressure [Pa]
     'PMV':      1.40936,
     'PPD':      46.0115,
-    'T':        293.15,     # Temperature calculated from h by OpenFOAM
+    'T':        293.15,     # Temperature calculated from e: T = e/Cv
     'U':        np.array([0, 0, 0]),
 }
 
@@ -179,6 +182,13 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'DR'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 0
+                    elif(variable == 'e'):
+                        # Internal energy for eConst: e = Cv×T
+                        new_bc_data["type"] = 'fixedValue'
+                        T_celsius = row['T']
+                        T_wall = T_celsius + 273.15
+                        e_value = CV * T_wall
+                        new_bc_data["value"] = e_value
                     elif(variable == 'epsilon'):
                         new_bc_data["type"] = 'epsilonWallFunction'
                         new_bc_data["value"] = '$internalField'
@@ -226,6 +236,13 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'DR'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 16.61
+                    elif(variable == 'e'):
+                        # Internal energy for eConst: e = Cv×T
+                        new_bc_data["type"] = 'fixedValue'
+                        T_celsius = row['T']
+                        T_inlet = T_celsius + 273.15
+                        e_value = CV * T_inlet
+                        new_bc_data["value"] = e_value
                     elif(variable == 'epsilon'):
                         new_bc_data["type"] = 'turbulentMixingLengthDissipationRateInlet'
                         new_bc_data["mixingLength"] = 0.0168
@@ -279,6 +296,13 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'DR'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 16.61
+                    elif(variable == 'e'):
+                        # Internal energy for eConst: e = Cv×T
+                        new_bc_data["type"] = 'fixedValue'
+                        T_celsius = row['T']
+                        T_inlet = T_celsius + 273.15
+                        e_value = CV * T_inlet
+                        new_bc_data["value"] = e_value
                     elif(variable == 'epsilon'):
                         new_bc_data["type"] = 'turbulentMixingLengthDissipationRateInlet'
                         new_bc_data["mixingLength"] = 0.0168
@@ -335,6 +359,12 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'DR'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 0
+                    elif(variable == 'e'):
+                        # Internal energy outlet: allow inflow at 20°C (293.15K)
+                        new_bc_data["type"] = 'inletOutlet'
+                        new_bc_data["inletValue"] = CV * 293.15  # e = Cv×T at T=293.15K
+                        T_outlet = row['T'] + 273.15
+                        new_bc_data["value"] = CV * T_outlet
                     elif(variable == 'epsilon'):
                         new_bc_data["type"] = 'inletOutlet'
                         new_bc_data["inletValue"] = '$internalField'
@@ -393,6 +423,13 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'DR'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 16.61
+                    elif(variable == 'e'):
+                        # Internal energy for eConst: e = Cv×T
+                        new_bc_data["type"] = 'fixedValue'
+                        T_celsius = row['T']
+                        T_inlet = T_celsius + 273.15
+                        e_value = CV * T_inlet
+                        new_bc_data["value"] = e_value
                     elif(variable == 'epsilon'):
                         new_bc_data["type"] = 'turbulentMixingLengthDissipationRateInlet'
                         new_bc_data["mixingLength"] = 0.0168

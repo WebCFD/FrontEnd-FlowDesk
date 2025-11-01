@@ -58,8 +58,12 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 - **Energy Variable**: sensibleInternalEnergy (e = Cv×T internally, h = e + p/ρ for boundary conditions)
 - **Enthalpy Formulation**: h = Cp × T (absolute enthalpy, referenced to T=0K)
 - **Fluid Properties**: Air with Cv = 718 J/(kg·K), Cp = 1005 J/(kg·K), Pr = 0.7, molecular weight = 28.9 g/mol
-- **Initial Conditions**: h = 294515.75 J/kg (corresponding to T = 293.15K at 20°C)
+- **Initial Conditions**: 
+  - e = 210501.7 J/kg (Cv×T = 718×293.15 for eConst)
+  - h = 294515.75 J/kg (Cp×T = 1005×293.15, calculated from e)
+  - T = 293.15K (calculated from e: T = e/Cv)
 - **Critical**: hConst + perfectGas is incompatible; eConst ensures correct temperature calculation
+- **Field 'e' Required**: buoyantSimpleFoam with eConst solves internal energy e, not enthalpy h
 
 **Boundary Conditions for HVAC Applications:**
 - **Walls**: fixedValue for temperature (T in Kelvin) and enthalpy (h = Cp×T), fixedFluxPressure for p_rgh
