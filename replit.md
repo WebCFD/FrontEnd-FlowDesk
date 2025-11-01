@@ -75,6 +75,7 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 - fixedFluxPressure on openings allows natural pressure field development in buoyancy-driven flows
 - Comprehensive debug logging at initialization enables rapid troubleshooting of boundary conditions
 - checkMesh validation prevents mesh quality issues before expensive solver runs
+- Dynamic controlDict patch generation automatically updates VTK sampling surfaces based on actual floor/ceiling patches from mesh (floor_0F, ceil_1F, etc.) preventing patch naming mismatches
 
 ## External Dependencies
 

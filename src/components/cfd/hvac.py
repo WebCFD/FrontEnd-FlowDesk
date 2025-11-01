@@ -71,6 +71,50 @@ def define_system_files(template_path, sim_path):
         shutil.copy(src=source_file, dst=target_file)
 
 
+def update_controldict_patches(sim_path, patch_df):
+    """
+    Update controlDict with actual floor/ceiling patch names from the mesh.
+    
+    Extracts all patches starting with 'floor_' or 'ceil_' (e.g., floor_0F, ceil_1F)
+    and updates the VTK sampling surface definition in controlDict.
+    
+    Args:
+        sim_path: Path to simulation directory
+        patch_df: DataFrame containing boundary condition information
+    """
+    logger.info("    * Updating controlDict with actual floor/ceiling patch names")
+    
+    # Extract all floor and ceiling patches
+    floor_ceiling_patches = []
+    for _, row in patch_df.iterrows():
+        patch_name = row['name']
+        if patch_name.startswith('floor_') or patch_name.startswith('ceil_'):
+            floor_ceiling_patches.append(patch_name)
+    
+    if not floor_ceiling_patches:
+        logger.warning("    * No floor/ceiling patches found for VTK sampling - skipping controlDict update")
+        return
+    
+    logger.info(f"    * Found {len(floor_ceiling_patches)} floor/ceiling patches: {floor_ceiling_patches}")
+    
+    # Update controlDict using foamlib
+    case = FoamCase(sim_path)
+    with case['system']['controlDict'] as ctrl:
+        # Navigate to writeVTK function and update patches list
+        if 'functions' in ctrl and 'writeVTK' in ctrl['functions']:
+            if 'surfaces' in ctrl['functions']['writeVTK']:
+                if 'internalMesh' in ctrl['functions']['writeVTK']['surfaces']:
+                    # Update the patches list with actual floor/ceiling names
+                    ctrl['functions']['writeVTK']['surfaces']['internalMesh']['patches'] = floor_ceiling_patches
+                    logger.info(f"    * Updated controlDict patches successfully")
+                else:
+                    logger.warning("    * 'internalMesh' not found in controlDict surfaces")
+            else:
+                logger.warning("    * 'surfaces' not found in controlDict writeVTK function")
+        else:
+            logger.warning("    * 'writeVTK' function not found in controlDict")
+
+
 def define_initial_files(sim_path, patch_df):
     os.makedirs(sim_path, exist_ok=True)
 
@@ -383,6 +427,9 @@ def setup(case_path: str) -> list:
     
     logger.info("    * Setting up system files (solver settings, discretization schemes)")
     define_system_files(template_path, sim_path)
+    
+    logger.info("    * Updating controlDict with actual floor/ceiling patches from mesh")
+    update_controldict_patches(sim_path, geo_df)
 
     script_commands = [
         # Decompose for parallel execution
