@@ -71,11 +71,11 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 **Boundary Conditions for HVAC Applications (Boussinesq):**
 - **Walls**: fixedValue for temperature (T in Kelvin) and enthalpy (h = Cp×T); fixedFluxPressure for p_rgh
 - **Windows/Doors (pressure boundaries - pressure_inlet and pressure_outlet)**: 
-  - p_rgh: buoyantPressure with value=0 (maintains hydrostatic consistency, prevents h from going negative)
+  - p_rgh: prghPressure with p=0, value=0 (maintains hydrostatic consistency, prevents h from going negative)
   - U: pressureInletOutletVelocity (inlet) or inletOutlet (outlet)
   - h: inletOutlet with inletValue = Cp×293.15 (allows bidirectional flow, backflow at 20°C)
   - T: inletOutlet with inletValue = 293.15K (allows bidirectional flow, backflow at 20°C)
-  - Critical: buoyantPressure (not fixedFluxPressure) prevents negative pressure flux that drives h<0 → T<0 → ρ<0 crash
+  - Critical: prghPressure (not fixedFluxPressure) prevents negative pressure flux that drives h<0 → T<0 → ρ<0 crash
 - **Velocity/Mass Flow Inlets**: fixedValue for h and T (flow direction known, no backflow possible)
 
 **Mesh Generation & Validation Pipeline (Allrun):**
@@ -113,14 +113,14 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 - hConst thermo model with sensibleEnthalpy variable (h = Cp×T) provides linear energy equation
 - Density calculation ρ = pRef/(R×T) uses constant reference pressure, breaking the circular dependency between pressure field and density that caused perfectGas divergence
 - inletOutlet boundary type for h/T fields on pressure boundaries allows bidirectional flow while maintaining thermodynamic consistency
-- **buoyantPressure for p_rgh on openings (Critical Fix - Nov 1, 2025)**: fixedFluxPressure extrapolates large negative pressure flux in early SIMPLE iterations, forcing compensating negative energy flux that drives h<0 → T<0 → ρ<0 crash. buoyantPressure injects correct hydrostatic reference (ρ·g·h) without unstable normal gradient, preventing negative enthalpy
+- **prghPressure for p_rgh on openings (Critical Fix - Nov 1, 2025)**: fixedFluxPressure extrapolates large negative pressure flux in early SIMPLE iterations, forcing compensating negative energy flux that drives h<0 → T<0 → ρ<0 crash. prghPressure maintains hydrostatic consistency without unstable normal gradient, preventing negative enthalpy
 - Higher relaxation factors (rho=0.7, h=0.9) possible with Boussinesq due to linear coupling
 - Comprehensive debug logging at initialization enables rapid troubleshooting of boundary conditions
 - checkMesh validation prevents mesh quality issues before expensive solver runs  
 - Dynamic controlDict patch generation automatically updates VTK sampling surfaces based on actual floor/ceiling patches from mesh (floor_0F, ceil_1F, etc.) preventing patch naming mismatches
 - Configurable iterations via simulationType parameter with fail-safe defaults ensures graceful degradation if type is missing
 - **perfectGas Lessons Learned**: perfectGas with pressure boundaries creates exponential divergence due to p-ρ-T coupling; no amount of conservative discretization (upwind) or relaxation (rho=0.005) can stabilize this fundamental numerical instability
-- **fixedFluxPressure Lessons Learned**: Even with Boussinesq, fixedFluxPressure on pressure boundaries causes h to undershoot below zero in first SIMPLE iteration, leading to negative temperature crash. buoyantPressure is required for stable buoyancy-driven flow with open boundaries
+- **fixedFluxPressure Lessons Learned**: Even with Boussinesq, fixedFluxPressure on pressure boundaries causes h to undershoot below zero in first SIMPLE iteration, leading to negative temperature crash. prghPressure (OpenFOAM v2406) is required for stable buoyancy-driven flow with open boundaries
 
 ## External Dependencies
 

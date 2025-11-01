@@ -306,8 +306,9 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = '$internalField'
                     elif(variable == 'p_rgh'):
-                        # Use buoyantPressure for pressure inlet (stable for buoyancy-driven flows)
-                        new_bc_data["type"] = 'buoyantPressure'
+                        # Use prghPressure for pressure inlet (maintains hydrostatic consistency)
+                        new_bc_data["type"] = 'prghPressure'
+                        new_bc_data["p"] = 0
                         new_bc_data["value"] = 0
                     elif(variable == 'PMV'):
                         new_bc_data["type"] = 'calculated'
@@ -363,8 +364,9 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = '$internalField'
                     elif(variable == 'p_rgh'):
-                        # Use buoyantPressure for pressure outlet (stable for buoyancy-driven flows)
-                        new_bc_data["type"] = 'buoyantPressure'
+                        # Use prghPressure for pressure outlet (maintains hydrostatic consistency)
+                        new_bc_data["type"] = 'prghPressure'
+                        new_bc_data["p"] = 0
                         new_bc_data["value"] = 0
                     elif(variable == 'PMV'):
                         new_bc_data["type"] = 'calculated'
