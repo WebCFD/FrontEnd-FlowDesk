@@ -73,7 +73,7 @@ def define_system_files(template_path, sim_path):
 
 def update_controldict_iterations(case_path, simulation_type):
     """
-    Update controlDict endTime based on simulation type.
+    Update controlDict endTime and writeInterval based on simulation type.
     
     Maps simulation types to iteration counts:
     - comfortTest: 3 iterations (fast test)
@@ -100,7 +100,8 @@ def update_controldict_iterations(case_path, simulation_type):
     case = FoamCase(sim_path)
     with case['system']['controlDict'] as ctrl:
         ctrl['endTime'] = iterations
-        logger.info(f"    * Updated controlDict endTime to {iterations} successfully")
+        ctrl['writeInterval'] = iterations  # Write only at end (when timeStep == endTime)
+        logger.info(f"    * Updated controlDict: endTime={iterations}, writeInterval={iterations}")
 
 
 def update_controldict_patches(sim_path, patch_df):
