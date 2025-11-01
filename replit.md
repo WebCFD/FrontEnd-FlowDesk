@@ -39,7 +39,17 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 - **Containerized Deployment**: Application is containerized for Google Cloud Run.
 - **CFD Simulation Pipeline**: End-to-end pipeline for converting user designs into OpenFOAM CFD simulations executed on Inductiva cloud, with results visualized in the web UI. This involves a dual-worker system (`worker_submit.py` for geometry, mesh, CFD setup, and submission; `worker_monitor.py` for monitoring, result download, and post-processing).
 
-### CFD Configuration & Physics (Updated October 31, 2025)
+### CFD Configuration & Physics (Updated November 1, 2025)
+
+**Simulation Types & Iteration Configuration:**
+- **Thermal Comfort TEST** (comfortTest): 3 iterations, €10 cost - Fast validation runs
+- **Thermal Comfort 30 ITERATIONS** (comfort30Iter): 30 iterations, €12 cost - Full convergence simulations
+- **Implementation**: End-to-end data flow from frontend → backend → worker → CFD setup
+  - Frontend sends `simulationType` via wizard dialog
+  - Backend validates and persists to PostgreSQL
+  - Worker pipeline (`worker_submit.py` → `step03_mesh2cfd.py` → `hvac.setup()`) propagates type
+  - `update_controldict_iterations()` dynamically modifies OpenFOAM controlDict endTime
+- **Default Behavior**: Defaults to comfortTest (3 iterations) if simulationType is missing or invalid
 
 **Thermophysical Model:**
 - **Solver**: buoyantSimpleFoam with Boussinesq approximation
@@ -76,6 +86,7 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 - Comprehensive debug logging at initialization enables rapid troubleshooting of boundary conditions
 - checkMesh validation prevents mesh quality issues before expensive solver runs
 - Dynamic controlDict patch generation automatically updates VTK sampling surfaces based on actual floor/ceiling patches from mesh (floor_0F, ceil_1F, etc.) preventing patch naming mismatches
+- Configurable iterations via simulationType parameter with fail-safe defaults ensures graceful degradation if type is missing
 
 ## External Dependencies
 
