@@ -38,7 +38,7 @@ solvers
         relTol          0;
     }
 
-    "(U|e|h|k|epsilon|omega)"
+    "(U|h|k|epsilon|omega)"
     {
         solver          PBiCGStab;
         preconditioner  DILU;
@@ -46,7 +46,7 @@ solvers
         relTol          0.1;
     }
 
-    "(U|e|h|k|epsilon|omega)Final"
+    "(U|h|k|epsilon|omega)Final"
     {
         $U;
         relTol          0;
@@ -71,26 +71,21 @@ SIMPLE
         p_rgh           1e-4;
         U               1e-4;
         h               1e-4;
-        e               1e-4;
     }
-    
-    // Prevent negative internal energy (e > 0) - critical for eConst thermo
-    eMin                100000;   // ~-110°C safety limit (never reached in HVAC)
 }
 
 relaxationFactors
 {
     fields
     {
-        rho             0.005; // Extreme conservative (halved from 0.01) - Nov 1, 2025
-        p_rgh           0.1;   // Halved from 0.2
+        rho             0.7;   // Boussinesq is stable, can use higher relaxation - Nov 1, 2025
+        p_rgh           0.3;
     }
     equations
     {
-        U               0.15;  // Halved from 0.3
-        e               0.05;  // Extreme conservative (halved from 0.1) - Nov 1, 2025
-        h               0.15;  // Halved from 0.3
-        "(k|epsilon|omega)" 0.25; // Halved from 0.5
+        U               0.7;
+        h               0.9;   // Enthalpy equation is linear with Boussinesq
+        "(k|epsilon|omega)" 0.7;
     }
 }
 

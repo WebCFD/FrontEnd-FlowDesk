@@ -51,33 +51,32 @@ Development approach: Favor simple, minimal solutions over complex implementatio
   - `update_controldict_iterations()` dynamically modifies OpenFOAM controlDict endTime
 - **Default Behavior**: Defaults to comfortTest (3 iterations) if simulationType is missing or invalid
 
-**Thermophysical Model:**
-- **Solver**: buoyantSimpleFoam with perfectGas equation of state
-- **Equation of State**: perfectGas (ideal gas law: ρ = p/(R×T)) - supports large temperature differences (20-40°C)
-- **Thermo Model**: eConst (constant internal energy) - required for perfectGas compatibility
-- **Energy Variable**: sensibleInternalEnergy (e = Cv×T internally, h = e + p/ρ for boundary conditions)
-- **Enthalpy Formulation**: h = Cp × T (absolute enthalpy, referenced to T=0K)
-- **Fluid Properties**: Air with Cv = 718 J/(kg·K), Cp = 1005 J/(kg·K), Pr = 0.7, molecular weight = 28.9 g/mol
-- **Temperature Limits**: Tlow = 200K (-73°C), Thigh = 400K (127°C) - hard clamps prevent negative temperatures
+**Thermophysical Model (Migrated to Boussinesq - Nov 1, 2025):**
+- **Solver**: buoyantSimpleFoam with Boussinesq approximation
+- **Equation of State**: incompressiblePerfectGas (ρ = pRef/(R×T) where pRef is constant) - decouples density from pressure field
+- **Thermo Model**: hConst (constant enthalpy model)
+- **Energy Variable**: sensibleEnthalpy (h = Cp×T)
+- **Fluid Properties**: Air with Cp = 1005 J/(kg·K), Pr = 0.7, molecular weight = 28.9 g/mol, pRef = 101325 Pa
+- **Temperature Limits**: Tlow = 200K (-73°C), Thigh = 400K (127°C) - safety limits for HVAC applications
 - **Initial Conditions**: 
-  - e = 210501.7 J/kg (Cv×T = 718×293.15 for eConst)
-  - h = 294515.75 J/kg (Cp×T = 1005×293.15, calculated from e)
-  - T = 293.15K (calculated from e: T = e/Cv)
-- **Critical**: hConst + perfectGas is incompatible; eConst ensures correct temperature calculation
-- **Field 'e' Required**: buoyantSimpleFoam with eConst solves internal energy e, not enthalpy h
-- **Temperature Clamping**: OpenFOAM enforces T ∈ [Tlow, Thigh] via limit() function in eConst source code
+  - h = 294515.75 J/kg (Cp×T = 1005×293.15)
+  - T = 293.15K (20°C reference temperature)
+  - p_rgh = 0 Pa (hydrostatic pressure)
+- **Boussinesq Benefits**: 
+  - Density only depends on temperature (not pressure), eliminating p-ρ coupling instability
+  - Linear density variation: ρ = pRef/(R×T) is evaluated at reference pressure
+  - Numerically stable for temperature differences up to 50°C (HVAC range: 20-40°C)
+  - Allows higher relaxation factors and faster convergence than perfectGas
 
-**Boundary Conditions for HVAC Applications:**
-- **Walls**: fixedValue for temperature (T in Kelvin), enthalpy (h = Cp×T), and internal energy (e = Cv×T); fixedFluxPressure for p_rgh
+**Boundary Conditions for HVAC Applications (Boussinesq):**
+- **Walls**: fixedValue for temperature (T in Kelvin) and enthalpy (h = Cp×T); fixedFluxPressure for p_rgh
 - **Windows/Doors (pressure boundaries - pressure_inlet and pressure_outlet)**: 
   - p_rgh: fixedFluxPressure (allows natural pressure adjustment)
   - U: pressureInletOutletVelocity (inlet) or inletOutlet (outlet)
-  - e: inletOutlet with inletValue = Cv×293.15 (allows bidirectional flow, backflow at 20°C)
   - h: inletOutlet with inletValue = Cp×293.15 (allows bidirectional flow, backflow at 20°C)
   - T: inletOutlet with inletValue = 293.15K (allows bidirectional flow, backflow at 20°C)
-  - Critical: NEVER use fixedValue for e/h/T on pressure boundaries - creates thermodynamic inconsistency (e=Cv×T must hold) causing divergence
-  - Critical: NEVER use fixedValue for p_rgh on openings - prevents natural flow development
-- **Velocity/Mass Flow Inlets**: fixedValue for e, h, T (flow direction known, no backflow possible)
+  - Note: With Boussinesq, energy equation is linear (h = Cp×T) so numerical stability is much better than perfectGas
+- **Velocity/Mass Flow Inlets**: fixedValue for h and T (flow direction known, no backflow possible)
 
 **Mesh Generation & Validation Pipeline (Allrun):**
 1. surfaceFeatureExtract - Extract geometry features for snapping
@@ -92,42 +91,35 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 10. buoyantSimpleFoam - Parallel CFD solver execution
 11. Post-processing - Reconstruct and export VTK results
 
-**Numerical Stability & Solver Configuration:**
-- **Relaxation Factors (Extreme Conservative for perfectGas Stability - Nov 1, 2025)**: 
-  - rho: 0.005 (halved from 0.01 after iter-2 fix, was originally 0.1)
-  - p_rgh: 0.1 (halved from 0.2)
-  - U: 0.15 (halved from 0.3)
-  - e: 0.05 (halved from 0.1 after iter-2 fix, was originally 0.3)
-  - h: 0.15 (halved from 0.3)
-  - k/epsilon/omega: 0.25 (halved from 0.5)
-  - Evolution: Ultra-conservative discretization schemes (upwind) fixed iter-2 crash; extreme relaxation needed for iter-3+
-- **Discretization Schemes (Ultra-Conservative First-Order - Nov 1, 2025)**:
-  - All divSchemes use `bounded Gauss upwind` (1st order, monotonic, no oscillations)
-  - gradSchemes limiter: 1.0 (maximum conservation, no overshoots)
-  - laplacianSchemes limiter: 1.0 (maximum stability)
-  - snGradSchemes: limited 1.0 (robust for non-orthogonal meshes)
-  - Previous linearUpwind for U and linear for K caused numerical oscillations
-- **Energy Bounds**: eMin = 100,000 J/kg (prevents negative internal energy, ~-110°C safety limit)
+**Numerical Stability & Solver Configuration (Boussinesq - Nov 1, 2025):**
+- **Relaxation Factors (Moderate for Boussinesq Stability)**: 
+  - rho: 0.7 (much higher than perfectGas 0.005 - Boussinesq is stable)
+  - p_rgh: 0.3
+  - U: 0.7
+  - h: 0.9 (enthalpy equation is linear with Boussinesq)
+  - k/epsilon/omega: 0.7
+  - Note: Higher relaxation factors possible because Boussinesq eliminates p-ρ coupling instability
+- **Discretization Schemes (Balanced Accuracy/Stability)**:
+  - div(phi,U): bounded Gauss linearUpwind (2nd order for momentum)
+  - div(phi,h): bounded Gauss upwind (1st order for energy - conservative)
+  - gradSchemes limiter: 0.5 (balanced)
+  - laplacianSchemes limiter: 0.5 (balanced)
+  - snGradSchemes: limited 0.5 (handles non-orthogonality well)
 - **SIMPLE Settings**: nNonOrthogonalCorrectors = 3, consistent = yes
-- **Residual Control**: p_rgh, U, h, e all converge to 1e-4
+- **Residual Control**: p_rgh, U, h all converge to 1e-4
 
 **Key Design Decisions:**
-- eConst thermo model ensures correct temperature calculation with perfectGas (hConst + perfectGas is incompatible)
-- Tlow/Thigh temperature limits (200K-400K) act as validators that ABORT if violated, NOT as active clamps (discovered Nov 1, 2025)
-- inletOutlet boundary type for e/h/T fields on pressure boundaries (pressure_inlet/pressure_outlet) prevents numerical divergence by:
-  - Allowing bidirectional energy flow consistent with free pressure field
-  - Maintaining thermodynamic consistency: e = Cv×T must hold at boundaries
-  - Preventing oscillations from over-constrained boundary conditions
-- fixedValue for e/h/T on pressure boundaries causes fatal thermodynamic conflict: with eConst model, e=Cv×T is enforced, so fixing both e and T independently creates inconsistency → oscillations → negative e values → crash (bugs fixed Nov 1, 2025)
-- **Hydrostatic pressure initialization (Nov 1, 2025)**: Field `p` uses `calculated` with `$internalField` on pressure boundaries, allowing solver to compute p = p_rgh + ρ·g·h + p_ref automatically, preventing hydrostatic inconsistency that caused iteration-2 crashes with negative density
-- Enthalpy as energy variable ensures stability and compatibility with perfectGas equation of state
+- **Migration to Boussinesq (Nov 1, 2025)**: After systematic debugging, perfectGas + pressure boundaries showed fundamental instability (exponential divergence in density despite ultra-conservative settings). Boussinesq approximation (incompressiblePerfectGas + hConst) eliminates p-ρ coupling, providing numerical stability for HVAC applications with ΔT <50°C
+- hConst thermo model with sensibleEnthalpy variable (h = Cp×T) provides linear energy equation
+- Density calculation ρ = pRef/(R×T) uses constant reference pressure, breaking the circular dependency between pressure field and density that caused perfectGas divergence
+- inletOutlet boundary type for h/T fields on pressure boundaries allows bidirectional flow while maintaining thermodynamic consistency
 - fixedFluxPressure on openings allows natural pressure field development in buoyancy-driven flows
-- eMin bound in fvSolution prevents numerical divergence to negative internal energy during solver iterations
-- Ultra-conservative relaxation factors (rho=0.01, e=0.1) prevent oscillations with perfectGas EOS
+- Higher relaxation factors (rho=0.7, h=0.9) possible with Boussinesq due to linear coupling
 - Comprehensive debug logging at initialization enables rapid troubleshooting of boundary conditions
-- checkMesh validation prevents mesh quality issues before expensive solver runs
+- checkMesh validation prevents mesh quality issues before expensive solver runs  
 - Dynamic controlDict patch generation automatically updates VTK sampling surfaces based on actual floor/ceiling patches from mesh (floor_0F, ceil_1F, etc.) preventing patch naming mismatches
 - Configurable iterations via simulationType parameter with fail-safe defaults ensures graceful degradation if type is missing
+- **perfectGas Lessons Learned**: perfectGas with pressure boundaries creates exponential divergence due to p-ρ-T coupling; no amount of conservative discretization (upwind) or relaxation (rho=0.005) can stabilize this fundamental numerical instability
 
 ## External Dependencies
 

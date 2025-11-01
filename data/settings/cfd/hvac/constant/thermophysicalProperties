@@ -11,10 +11,10 @@ thermoType
     type            heRhoThermo;
     mixture         pureMixture;
     transport       const;
-    thermo          eConst;
-    equationOfState perfectGas;
+    thermo          hConst;
+    equationOfState incompressiblePerfectGas;
     specie          specie;
-    energy          sensibleInternalEnergy;
+    energy          sensibleEnthalpy;
 }
 
 mixture
@@ -25,10 +25,14 @@ mixture
     }
     thermodynamics
     {
-        Cv              718;
-        Hf              0;
+        Cp              1005;   // Specific heat at constant pressure [J/(kg·K)]
+        Hf              0;      // Formation enthalpy [J/kg]
         Tlow            200;    // Lower temperature limit [K] ~-73°C (HVAC safety)
         Thigh           400;    // Upper temperature limit [K] ~127°C (above max HVAC)
+    }
+    equationOfState
+    {
+        pRef            101325; // Reference pressure [Pa] for Boussinesq
     }
     transport
     {
