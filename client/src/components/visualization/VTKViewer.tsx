@@ -736,6 +736,14 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     let presetName = 'erdc_blue2red_bw';
     let useVectorMagnitude = false;
     
+    // Debug: Log available arrays
+    const numArrays = pointData.getNumberOfArrays();
+    console.log('[VTKViewer] Selecting field for mode:', mode, '- Available arrays:', numArrays);
+    for (let i = 0; i < numArrays; i++) {
+      const arr = pointData.getArray(i);
+      console.log(`  [${i}]:`, arr.getName(), `(${arr.getNumberOfComponents()} components)`);
+    }
+    
     switch (mode) {
       case 'pressure':
         array = pointData.getArrayByName('p') || pointData.getArrayByName('p_rgh') || pointData.getArray(0);
@@ -767,6 +775,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         presetName = 'Greys';
         break;
     }
+    
+    console.log('[VTKViewer] Selected array for mode', mode, ':', array?.getName() || 'none');
     
     if (array) {
       // Para vectores de velocidad, usar magnitud
@@ -1042,6 +1052,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
       // Cargar datos de punto (presión, velocidad, etc.)
       if (vtkData.pointData?.arrays) {
+        const arrayNames: string[] = [];
         for (const arrayInfo of vtkData.pointData.arrays) {
           if (arrayInfo.data?.values) {
             const dataArray = vtkDataArray.newInstance({
@@ -1050,6 +1061,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
               numberOfComponents: arrayInfo.data.numberOfComponents || 1,
               values: arrayInfo.data.values
             });
+
+            arrayNames.push(`${arrayInfo.data.name} (${arrayInfo.data.numberOfComponents || 1} components)`);
 
             // Si es el primer array o es presión, usarlo como scalars
             if (arrayInfo.data.name === 'p' || arrayInfo.data.name === 'pressure' || 
@@ -1060,6 +1073,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
             }
           }
         }
+        console.log('[VTKViewer] Available point data arrays:', arrayNames);
       }
 
       const dataset = polyData;
