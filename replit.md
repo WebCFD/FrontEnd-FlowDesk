@@ -68,13 +68,16 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 - **Temperature Clamping**: OpenFOAM enforces T ∈ [Tlow, Thigh] via limit() function in eConst source code
 
 **Boundary Conditions for HVAC Applications:**
-- **Walls**: fixedValue for temperature (T in Kelvin) and enthalpy (h = Cp×T), fixedFluxPressure for p_rgh
-- **Windows/Doors (pressure boundaries)**: 
+- **Walls**: fixedValue for temperature (T in Kelvin), enthalpy (h = Cp×T), and internal energy (e = Cv×T); fixedFluxPressure for p_rgh
+- **Windows/Doors (pressure boundaries - pressure_inlet and pressure_outlet)**: 
   - p_rgh: fixedFluxPressure (allows natural pressure adjustment)
   - U: pressureInletOutletVelocity (inlet) or inletOutlet (outlet)
-  - h: fixedValue (inlet) or inletOutlet (outlet) with h = Cp×T
+  - e: inletOutlet with inletValue = Cv×293.15 (allows bidirectional flow, backflow at 20°C)
+  - h: inletOutlet with inletValue = Cp×293.15 (allows bidirectional flow, backflow at 20°C)
+  - T: fixedValue (inlet) or inletOutlet (outlet)
+  - Critical: NEVER use fixedValue for e/h on pressure boundaries - creates numerical conflict with free pressure field causing divergence
   - Critical: NEVER use fixedValue for p_rgh on openings - prevents natural flow development
-- **Mass Flow Inlets**: flowRateInletVelocity for velocity-driven boundaries with h = Cp×T
+- **Velocity/Mass Flow Inlets**: fixedValue for e, h, T (flow direction known, no backflow possible)
 
 **Mesh Generation & Validation Pipeline (Allrun):**
 1. surfaceFeatureExtract - Extract geometry features for snapping
@@ -102,7 +105,9 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 
 **Key Design Decisions:**
 - eConst thermo model ensures correct temperature calculation with perfectGas (hConst + perfectGas is incompatible)
-- Tlow/Thigh temperature limits (200K-400K) in thermophysicalProperties provide hard clamps preventing negative temperatures via OpenFOAM's limit() function
+- Tlow/Thigh temperature limits (200K-400K) act as validators that ABORT if violated, NOT as active clamps (discovered Nov 1, 2025)
+- inletOutlet boundary type for e/h fields on pressure boundaries (pressure_inlet/pressure_outlet) prevents numerical divergence by allowing bidirectional energy flow consistent with free pressure field
+- fixedValue for e/h on pressure boundaries causes fatal numerical conflict: free pressure vs fixed energy → oscillations → negative e values → crash (bug fixed Nov 1, 2025)
 - Enthalpy as energy variable ensures stability and compatibility with perfectGas equation of state
 - fixedFluxPressure on openings allows natural pressure field development in buoyancy-driven flows
 - eMin bound in fvSolution prevents numerical divergence to negative internal energy during solver iterations

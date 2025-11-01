@@ -297,12 +297,11 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 16.61
                     elif(variable == 'e'):
-                        # Internal energy for eConst: e = Cv×T
-                        new_bc_data["type"] = 'fixedValue'
-                        T_celsius = row['T']
-                        T_inlet = T_celsius + 273.15
-                        e_value = CV * T_inlet
-                        new_bc_data["value"] = e_value
+                        # Internal energy inlet: allow backflow at 20°C (293.15K)
+                        new_bc_data["type"] = 'inletOutlet'
+                        new_bc_data["inletValue"] = CV * 293.15  # e = Cv×T at T=293.15K (backflow)
+                        T_inlet = row['T'] + 273.15
+                        new_bc_data["value"] = CV * T_inlet
                     elif(variable == 'epsilon'):
                         new_bc_data["type"] = 'turbulentMixingLengthDissipationRateInlet'
                         new_bc_data["mixingLength"] = 0.0168
@@ -311,12 +310,12 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'fixedValue'
                         new_bc_data["value"] = 0.5
                     elif(variable == 'h'):
-                        # Enthalpy for perfectGas: h = Cp×T
-                        new_bc_data["type"] = 'fixedValue'
-                        T_celsius = row['T']
-                        T_wall = T_celsius + 273.15
-                        h_value = CP * T_wall
-                        logger.info(f"    BC {row['id']} ({row['type']}): T={T_celsius}°C → T_K={T_wall}K → h={h_value} J/kg")
+                        # Enthalpy inlet: allow backflow at 20°C (293.15K)
+                        new_bc_data["type"] = 'inletOutlet'
+                        new_bc_data["inletValue"] = CP * 293.15  # h = Cp×T at T=293.15K (backflow)
+                        T_inlet = row['T'] + 273.15
+                        h_value = CP * T_inlet
+                        logger.info(f"    BC {row['id']} ({row['type']}): T={row['T']}°C → T_K={T_inlet}K → h={h_value} J/kg")
                         new_bc_data["value"] = h_value
                     elif(variable == 'k'):
                         new_bc_data["type"] = 'turbulentIntensityKineticEnergyInlet'
