@@ -112,10 +112,11 @@ Development approach: Favor simple, minimal solutions over complex implementatio
   - Maintaining thermodynamic consistency: e = Cv×T must hold at boundaries
   - Preventing oscillations from over-constrained boundary conditions
 - fixedValue for e/h/T on pressure boundaries causes fatal thermodynamic conflict: with eConst model, e=Cv×T is enforced, so fixing both e and T independently creates inconsistency → oscillations → negative e values → crash (bugs fixed Nov 1, 2025)
+- **Hydrostatic pressure initialization (Nov 1, 2025)**: Field `p` uses `calculated` with `$internalField` on pressure boundaries, allowing solver to compute p = p_rgh + ρ·g·h + p_ref automatically, preventing hydrostatic inconsistency that caused iteration-2 crashes with negative density
 - Enthalpy as energy variable ensures stability and compatibility with perfectGas equation of state
 - fixedFluxPressure on openings allows natural pressure field development in buoyancy-driven flows
 - eMin bound in fvSolution prevents numerical divergence to negative internal energy during solver iterations
-- Conservative relaxation factors (especially rho=0.1, e=0.3) prevent oscillations with perfectGas EOS
+- Ultra-conservative relaxation factors (rho=0.01, e=0.1) prevent oscillations with perfectGas EOS
 - Comprehensive debug logging at initialization enables rapid troubleshooting of boundary conditions
 - checkMesh validation prevents mesh quality issues before expensive solver runs
 - Dynamic controlDict patch generation automatically updates VTK sampling surfaces based on actual floor/ceiling patches from mesh (floor_0F, ceil_1F, etc.) preventing patch naming mismatches

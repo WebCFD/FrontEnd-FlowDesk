@@ -325,9 +325,9 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = '$internalField'
                     elif(variable == 'p'):
-                        # p = p_rgh + p_atm (consistent initialization)
+                        # Let solver calculate p from p_rgh + ρ·g·h + p_ref (hydrostatic consistency)
                         new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = P_ATM + row['pressure']
+                        new_bc_data["value"] = '$internalField'
                     elif(variable == 'p_rgh'):
                         # Use fixedFluxPressure for pressure inlet (allows natural pressure adjustment)
                         new_bc_data["type"] = 'fixedFluxPressure'
@@ -388,9 +388,9 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = '$internalField'
                     elif(variable == 'p'):
-                        # p = p_rgh + p_atm (consistent initialization)
+                        # Let solver calculate p from p_rgh + ρ·g·h + p_ref (hydrostatic consistency)
                         new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = P_ATM + row['pressure']
+                        new_bc_data["value"] = '$internalField'
                     elif(variable == 'p_rgh'):
                         # Use fixedFluxPressure for pressure outlet (allows natural pressure adjustment)
                         new_bc_data["type"] = 'fixedFluxPressure'
