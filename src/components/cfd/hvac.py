@@ -188,8 +188,11 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'h'):
                         # Enthalpy for Boussinesq: h = Cp×(T - T_ref)
                         new_bc_data["type"] = 'fixedValue'
-                        T_wall = row['T'] + 273.15
-                        new_bc_data["value"] = CP * (T_wall - T_REF)
+                        T_celsius = row['T']
+                        T_wall = T_celsius + 273.15
+                        h_value = CP * (T_wall - T_REF)
+                        logger.info(f"    BC {row['name']} ({row['type']}): T={T_celsius}°C → T_K={T_wall}K → h={h_value} J/kg")
+                        new_bc_data["value"] = h_value
                     elif(variable == 'k'):
                         new_bc_data["type"] = 'kqRWallFunction'
                         new_bc_data["value"] = '$internalField'
@@ -233,8 +236,11 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'h'):
                         # Enthalpy for Boussinesq: h = Cp×(T - T_ref)
                         new_bc_data["type"] = 'fixedValue'
-                        T_wall = row['T'] + 273.15
-                        new_bc_data["value"] = CP * (T_wall - T_REF)
+                        T_celsius = row['T']
+                        T_wall = T_celsius + 273.15
+                        h_value = CP * (T_wall - T_REF)
+                        logger.info(f"    BC {row['name']} ({row['type']}): T={T_celsius}°C → T_K={T_wall}K → h={h_value} J/kg")
+                        new_bc_data["value"] = h_value
                     elif(variable == 'k'):
                         new_bc_data["type"] = 'turbulentIntensityKineticEnergyInlet'
                         new_bc_data["intensity"] = 0.14
@@ -283,8 +289,11 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'h'):
                         # Enthalpy for Boussinesq: h = Cp×(T - T_ref)
                         new_bc_data["type"] = 'fixedValue'
-                        T_wall = row['T'] + 273.15
-                        new_bc_data["value"] = CP * (T_wall - T_REF)
+                        T_celsius = row['T']
+                        T_wall = T_celsius + 273.15
+                        h_value = CP * (T_wall - T_REF)
+                        logger.info(f"    BC {row['name']} ({row['type']}): T={T_celsius}°C → T_K={T_wall}K → h={h_value} J/kg")
+                        new_bc_data["value"] = h_value
                     elif(variable == 'k'):
                         new_bc_data["type"] = 'turbulentIntensityKineticEnergyInlet'
                         new_bc_data["intensity"] = 0.14
