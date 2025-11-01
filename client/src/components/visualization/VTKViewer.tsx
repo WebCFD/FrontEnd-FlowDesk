@@ -33,7 +33,7 @@ interface VTKViewerProps {
   className?: string;
 }
 
-type VisualizationMode = 'pressure' | 'velocity' | 'geometry';
+type VisualizationMode = 'pressure' | 'velocity' | 'temperature' | 'pmv' | 'ppd' | 'geometry';
 type FilterType = 'none' | 'isosurface' | 'threshold' | 'clip' | 'vectors';
 
 // Configuración de filtros avanzados
@@ -180,6 +180,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const visualizationControls = [
     { id: 'pressure' as const, label: 'Pressure', icon: Layers },
     { id: 'velocity' as const, label: 'Velocity', icon: Wind },
+    { id: 'temperature' as const, label: 'Temperature', icon: Activity },
+    { id: 'pmv' as const, label: 'PMV', icon: Target },
+    { id: 'ppd' as const, label: 'PPD', icon: Zap },
     { id: 'geometry' as const, label: 'Geometry', icon: Eye }
   ];
 
@@ -735,13 +738,25 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     
     switch (mode) {
       case 'pressure':
-        array = pointData.getArrayByName('p') || pointData.getArray(0);
+        array = pointData.getArrayByName('p') || pointData.getArrayByName('p_rgh') || pointData.getArray(0);
         presetName = 'erdc_blue2red_bw'; // Azul a rojo para presión
         break;
       case 'velocity':
         array = pointData.getArrayByName('U') || pointData.getArray(1);
         presetName = 'erdc_blue2red_bw'; // Default para velocidad
         useVectorMagnitude = true; // Usar magnitud para vectores
+        break;
+      case 'temperature':
+        array = pointData.getArrayByName('T_degC') || pointData.getArrayByName('T');
+        presetName = 'plasma'; // Plasma para temperatura
+        break;
+      case 'pmv':
+        array = pointData.getArrayByName('PMV');
+        presetName = 'coolwarm'; // Coolwarm para PMV (-3 a +3)
+        break;
+      case 'ppd':
+        array = pointData.getArrayByName('PPD');
+        presetName = 'inferno'; // Inferno para PPD (0-100%)
         break;
       case 'geometry':
         // Solo mostrar geometría sin coloring
@@ -1632,7 +1647,11 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                       {activeMode}
                     </div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">
-                      {activeMode === 'pressure' ? 'Pa' : 'm/s'}
+                      {activeMode === 'pressure' ? 'Pa' : 
+                       activeMode === 'velocity' ? 'm/s' :
+                       activeMode === 'temperature' ? '°C' :
+                       activeMode === 'pmv' ? 'PMV' :
+                       activeMode === 'ppd' ? '%' : ''}
                     </div>
                   </div>
                   
@@ -1657,6 +1676,10 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                               return `linear-gradient(${direction}, #0d0887, #7e03a8, #dd513a, #fca636, #f0f921)`;
                             case 'viridis':
                               return `linear-gradient(${direction}, #440154, #482777, #218e8d, #5ec962, #fde725)`;
+                            case 'coolwarm':
+                              return `linear-gradient(${direction}, #3b4cc0, #f7f7f7, #b5032a)`;
+                            case 'inferno':
+                              return `linear-gradient(${direction}, #000004, #420a68, #932667, #dd513a, #fca636, #fcffa4)`;
                             case 'cool_warm':
                             case 'erdc_blue2red_bw':
                               return `linear-gradient(${direction}, #3b4cc0, #dddddd, #b5032a)`;
