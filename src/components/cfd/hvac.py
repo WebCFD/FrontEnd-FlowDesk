@@ -87,7 +87,7 @@ def update_controldict_patches(sim_path, patch_df):
     # Extract all floor and ceiling patches
     floor_ceiling_patches = []
     for _, row in patch_df.iterrows():
-        patch_name = row['name']
+        patch_name = row['id']
         if patch_name.startswith('floor_') or patch_name.startswith('ceil_'):
             floor_ceiling_patches.append(patch_name)
     
