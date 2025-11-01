@@ -65,6 +65,10 @@ SIMPLE
     pRefCell            0;
     pRefValue           0;
     
+    // Density limits to prevent Boussinesq instability
+    rhoMin              0.5;
+    rhoMax              2.0;
+    
     residualControl
     {
         p_rgh           1e-4;
@@ -77,14 +81,14 @@ relaxationFactors
 {
     fields
     {
-        rho             0.5;     // Increased from 0.01 - critical for Boussinesq stability
-        p_rgh           0.3;
+        rho             0.1;     // Very conservative for Boussinesq stability (was 0.5)
+        p_rgh           0.2;     // Reduced from 0.3 for stability
     }
     equations
     {
-        U               0.7;
-        h               0.7;
-        "(k|epsilon|omega)" 0.7;
+        U               0.5;     // Reduced from 0.7 for stability
+        h               0.5;     // Reduced from 0.7 for stability (critical for Boussinesq)
+        "(k|epsilon|omega)" 0.5; // Reduced from 0.7 for consistency
     }
 }
 
