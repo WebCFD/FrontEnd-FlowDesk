@@ -270,7 +270,7 @@ export default function WizardDesign() {
   const { viewportOffset, gridSize, canvasHeightPercentage, menuWidthPercentage, setGridSize } = useSketchStore();
   const [step, setStep] = useState(1);
   const [simulationName, setSimulationName] = useState("MySim");
-  const [simulationType, setSimulationType] = useState("comfort");
+  const [simulationType, setSimulationType] = useState("comfortTest");
   const [currentTool, setCurrentTool] = useState<
     "wall" | "eraser" | "measure" | "stairs" | null
   >("wall");
@@ -316,7 +316,7 @@ export default function WizardDesign() {
 
   // Estados para el diálogo de tipo de simulación
   const [showSimulationTypeDialog, setShowSimulationTypeDialog] = useState(false);
-  const [selectedSimulationType, setSelectedSimulationType] = useState<'comfort' | 'renovation'>('comfort');
+  const [selectedSimulationType, setSelectedSimulationType] = useState<'comfortTest' | 'comfort30Iter'>('comfortTest');
 
   // Funciones auxiliares para manejo de parámetros por planta
   const getCurrentFloorParameters = () => {
@@ -2817,7 +2817,7 @@ export default function WizardDesign() {
         },
         credentials: "include",
         body: JSON.stringify({
-          name: `HVAC ${selectedSimulationType === 'comfort' ? 'Comfort' : 'Renovation'} - ${simulationData.case_name}`,
+          name: `HVAC ${selectedSimulationType === 'comfortTest' ? 'Comfort TEST' : 'Comfort 30 ITERATIONS'} - ${simulationData.case_name}`,
           simulationType: selectedSimulationType,
           status: "pending",
           jsonConfig: simulationData,
@@ -2837,7 +2837,7 @@ export default function WizardDesign() {
 
       toast({
         title: "Simulación HVAC Creada",
-        description: `Tipo: ${selectedSimulationType === 'comfort' ? 'Confort' : 'Renovación'}. El worker procesará esta simulación en breve.`,
+        description: `Type: ${selectedSimulationType === 'comfortTest' ? 'Comfort TEST (3 iter)' : 'Comfort 30 ITERATIONS'}. The worker will process this simulation shortly.`,
       });
 
       // Redirect to dashboard
@@ -2857,9 +2857,9 @@ export default function WizardDesign() {
     }
   };
 
-  // Función para obtener el costo de la simulación
+  // Function to get simulation cost
   const getSimulationCost = (type: string) => {
-    return type === 'comfort' ? 10 : 12; // Steady: €10, Air Renovation: €12
+    return type === 'comfortTest' ? 10 : 12; // Thermal Comfort TEST: €10, 30 ITERATIONS: €12
   };
 
   // Función para calcular las dimensiones del diseño (coordenadas min/max)
@@ -4005,9 +4005,9 @@ export default function WizardDesign() {
               hasClosedContour={hasClosedContour} // NEW: Pass hasClosedContour to show warning
               simulationName={simulationName}
               simulationType={
-                simulationType === "comfort"
-                  ? "Ensure Thermal Comfort (Steady Equilibrium Simulation)"
-                  : "Thermal Comfort + Air Renovation (Transient Simulation)"
+                simulationType === "comfortTest"
+                  ? "Thermal Comfort TEST (3 iterations)"
+                  : "Thermal Comfort 30 ITERATIONS (full simulation)"
               }
               onUpdateAirEntry={handleUpdateAirEntryFrom3D}
               onDeleteAirEntry={handleDeleteAirEntryFrom3D}
@@ -4158,7 +4158,7 @@ export default function WizardDesign() {
                 You are about to create simulation: <strong>"{simulationName}"</strong>
               </p>
               <p className="text-sm text-gray-600">
-                Type: <strong>{simulationType === "comfort" ? "Thermal Comfort" : "Comfort + Renovation"}</strong>
+                Type: <strong>{simulationType === "comfortTest" ? "Thermal Comfort TEST" : "Thermal Comfort 30 ITERATIONS"}</strong>
               </p>
             </div>
             
@@ -4223,36 +4223,36 @@ export default function WizardDesign() {
         </div>
       )}
 
-      {/* Diálogo para seleccionar tipo de simulación HVAC */}
+      {/* Dialog to select HVAC simulation type */}
       <Dialog open={showSimulationTypeDialog} onOpenChange={setShowSimulationTypeDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Tipo de Simulación HVAC</DialogTitle>
+            <DialogTitle>HVAC Simulation Type</DialogTitle>
             <p className="text-sm text-muted-foreground mt-2">
-              Seleccione el tipo de análisis que desea realizar
+              Select the type of analysis you want to perform
             </p>
           </DialogHeader>
           <div className="space-y-3 mt-4">
             <Button
-              variant={selectedSimulationType === 'comfort' ? 'default' : 'outline'}
+              variant={selectedSimulationType === 'comfortTest' ? 'default' : 'outline'}
               className="w-full justify-start"
-              onClick={() => setSelectedSimulationType('comfort')}
+              onClick={() => setSelectedSimulationType('comfortTest')}
               data-testid="button-select-comfort"
             >
               <div className="text-left">
-                <div className="font-semibold">Confort Térmico</div>
-                <div className="text-sm opacity-80">Análisis de temperatura y flujo de aire</div>
+                <div className="font-semibold">Thermal Comfort TEST</div>
+                <div className="text-sm opacity-80">Temperature and airflow analysis (3 iterations)</div>
               </div>
             </Button>
             <Button
-              variant={selectedSimulationType === 'renovation' ? 'default' : 'outline'}
+              variant={selectedSimulationType === 'comfort30Iter' ? 'default' : 'outline'}
               className="w-full justify-start"
-              onClick={() => setSelectedSimulationType('renovation')}
+              onClick={() => setSelectedSimulationType('comfort30Iter')}
               data-testid="button-select-renovation"
             >
               <div className="text-left">
-                <div className="font-semibold">Renovación</div>
-                <div className="text-sm opacity-80">Análisis de ventilación y calidad del aire</div>
+                <div className="font-semibold">Thermal Comfort 30 ITERATIONS</div>
+                <div className="text-sm opacity-80">Temperature and airflow analysis (30 iterations)</div>
               </div>
             </Button>
           </div>
@@ -4262,14 +4262,14 @@ export default function WizardDesign() {
               onClick={() => setShowSimulationTypeDialog(false)}
               data-testid="button-cancel-simulation-type"
             >
-              Cancelar
+              Cancel
             </Button>
             <Button
               onClick={handleCreateHVACSimulation}
               disabled={isCreatingSimulation}
               data-testid="button-create-hvac-simulation"
             >
-              {isCreatingSimulation ? 'Creando...' : 'Crear Simulación'}
+              {isCreatingSimulation ? 'Creating...' : 'Create Simulation'}
             </Button>
           </div>
         </DialogContent>
