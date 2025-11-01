@@ -87,10 +87,23 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 10. buoyantSimpleFoam - Parallel CFD solver execution
 11. Post-processing - Reconstruct and export VTK results
 
+**Numerical Stability & Solver Configuration:**
+- **Relaxation Factors**: 
+  - rho: 0.1 (reduced for perfectGas stability)
+  - p_rgh: 0.3 (moderate for pressure)
+  - U: 0.5 (standard for velocity)
+  - e: 0.3 (conservative for internal energy with eConst)
+  - h: 0.5 (standard for enthalpy)
+- **Energy Bounds**: eMin = 100,000 J/kg (prevents negative internal energy, ~-110°C safety limit)
+- **SIMPLE Settings**: nNonOrthogonalCorrectors = 3, consistent = yes
+- **Residual Control**: p_rgh, U, h, e all converge to 1e-4
+
 **Key Design Decisions:**
 - eConst thermo model ensures correct temperature calculation with perfectGas (hConst + perfectGas is incompatible)
 - Enthalpy as energy variable ensures stability and compatibility with perfectGas equation of state
 - fixedFluxPressure on openings allows natural pressure field development in buoyancy-driven flows
+- eMin bound prevents numerical divergence to negative internal energy during solver iterations
+- Conservative relaxation factors (especially rho=0.1, e=0.3) prevent oscillations with perfectGas EOS
 - Comprehensive debug logging at initialization enables rapid troubleshooting of boundary conditions
 - checkMesh validation prevents mesh quality issues before expensive solver runs
 - Dynamic controlDict patch generation automatically updates VTK sampling surfaces based on actual floor/ceiling patches from mesh (floor_0F, ceil_1F, etc.) preventing patch naming mismatches

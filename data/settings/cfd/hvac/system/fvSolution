@@ -71,19 +71,24 @@ SIMPLE
         p_rgh           1e-4;
         U               1e-4;
         h               1e-4;
+        e               1e-4;
     }
+    
+    // Prevent negative internal energy (e > 0) - critical for eConst thermo
+    eMin                100000;   // ~-110°C safety limit (never reached in HVAC)
 }
 
 relaxationFactors
 {
     fields
     {
-        rho             0.3;
+        rho             0.1;  // Reduced for stability with perfectGas
         p_rgh           0.3;
     }
     equations
     {
         U               0.5;
+        e               0.3;  // Conservative relaxation for internal energy (eConst)
         h               0.5;
         "(k|epsilon|omega)" 0.5;
     }
