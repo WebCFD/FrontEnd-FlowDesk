@@ -123,6 +123,7 @@ class SimulationPipeline:
         self.sim = sim
         self.sim_id = sim['id']
         self.case_name = f"sim_{self.sim_id}"
+        self.simulation_type = sim.get('simulationType', 'comfortTest')  # Default to TEST
         
         # Parse jsonConfig if string
         if isinstance(sim.get('jsonConfig'), str):
@@ -288,7 +289,8 @@ class SimulationPipeline:
             mesh2cfd(
                 self.case_name,
                 type="hvac",
-                mesh_script=mesh_data['mesh_script']
+                mesh_script=mesh_data['mesh_script'],
+                simulation_type=self.simulation_type  # Pass simulation type for iteration config
             )
             return {'cfd_ready': True}
         except Exception as e:
@@ -329,8 +331,8 @@ def main():
         try:
             sims = get_pending_simulations()
             
-            # Filtrar solo sims HVAC (comfort/renovation)
-            sims = [s for s in sims if s.get('simulationType') in ['comfort', 'renovation']]
+            # Filter only HVAC simulations (comfortTest/comfort30Iter)
+            sims = [s for s in sims if s.get('simulationType') in ['comfortTest', 'comfort30Iter']]
             logger.info(f"Found {len(sims)} HVAC simulations to process")
             
             for sim in sims:

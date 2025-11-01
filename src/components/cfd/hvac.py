@@ -71,6 +71,38 @@ def define_system_files(template_path, sim_path):
         shutil.copy(src=source_file, dst=target_file)
 
 
+def update_controldict_iterations(case_path, simulation_type):
+    """
+    Update controlDict endTime based on simulation type.
+    
+    Maps simulation types to iteration counts:
+    - comfortTest: 3 iterations (fast test)
+    - comfort30Iter: 30 iterations (full simulation)
+    - test_calculation: 3 iterations (default)
+    
+    Args:
+        case_path: Path to case directory
+        simulation_type: Type of simulation (comfortTest, comfort30Iter, test_calculation)
+    """
+    logger.info(f"    * Updating controlDict iterations for simulation type: {simulation_type}")
+    
+    # Map simulation types to iterations
+    iterations_map = {
+        'comfortTest': 3,
+        'comfort30Iter': 30,
+        'test_calculation': 3
+    }
+    
+    iterations = iterations_map.get(simulation_type, 3)  # Default to 3 if type unknown
+    logger.info(f"    * Setting endTime to {iterations} iterations")
+    
+    sim_path = os.path.join(case_path, "sim")
+    case = FoamCase(sim_path)
+    with case['system']['controlDict'] as ctrl:
+        ctrl['endTime'] = iterations
+        logger.info(f"    * Updated controlDict endTime to {iterations} successfully")
+
+
 def update_controldict_patches(sim_path, patch_df):
     """
     Update controlDict with actual floor/ceiling patch names from the mesh.
@@ -394,17 +426,19 @@ def define_initial_files(sim_path, patch_df):
                 f.boundary_field[row['id']] = new_bc_data
 
 
-def setup(case_path: str) -> list:
+def setup(case_path: str, simulation_type: str = 'comfortTest') -> list:
     """
     Set up HVAC CFD simulation case with boundary conditions and solver configuration.
     
     Args:
         case_path: Path to the case directory
+        simulation_type: Simulation iteration type (comfortTest=3 iter, comfort30Iter=30 iter)
         
     Returns:
         List of script commands for CFD simulation
     """
     logger.info(f"    * Setting up HVAC CFD simulation case: {case_path}")
+    logger.info(f"    * Simulation type: {simulation_type}")
     
     # Load boundary condition information
     geo_df_file = os.path.join(case_path, "geo", "patch_info.csv")
@@ -432,6 +466,9 @@ def setup(case_path: str) -> list:
     
     logger.info("    * Updating controlDict with actual floor/ceiling patches from mesh")
     update_controldict_patches(sim_path, geo_df)
+    
+    logger.info(f"    * Updating controlDict iterations based on simulation type: {simulation_type}")
+    update_controldict_iterations(case_path, simulation_type)
 
     script_commands = [
         # Decompose for parallel execution
