@@ -339,7 +339,9 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 34.4876
                     elif(variable == 'T'):
-                        new_bc_data["type"] = 'fixedValue'
+                        # Temperature inlet: allow backflow at 20°C (293.15K)
+                        new_bc_data["type"] = 'inletOutlet'
+                        new_bc_data["inletValue"] = 293.15  # Backflow temperature
                         new_bc_data["value"] = row['T'] + 273.15
                     elif(variable == 'U'):
                         if (row['open']):

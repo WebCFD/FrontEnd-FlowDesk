@@ -74,8 +74,8 @@ Development approach: Favor simple, minimal solutions over complex implementatio
   - U: pressureInletOutletVelocity (inlet) or inletOutlet (outlet)
   - e: inletOutlet with inletValue = Cv×293.15 (allows bidirectional flow, backflow at 20°C)
   - h: inletOutlet with inletValue = Cp×293.15 (allows bidirectional flow, backflow at 20°C)
-  - T: fixedValue (inlet) or inletOutlet (outlet)
-  - Critical: NEVER use fixedValue for e/h on pressure boundaries - creates numerical conflict with free pressure field causing divergence
+  - T: inletOutlet with inletValue = 293.15K (allows bidirectional flow, backflow at 20°C)
+  - Critical: NEVER use fixedValue for e/h/T on pressure boundaries - creates thermodynamic inconsistency (e=Cv×T must hold) causing divergence
   - Critical: NEVER use fixedValue for p_rgh on openings - prevents natural flow development
 - **Velocity/Mass Flow Inlets**: fixedValue for e, h, T (flow direction known, no backflow possible)
 
@@ -106,8 +106,11 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 **Key Design Decisions:**
 - eConst thermo model ensures correct temperature calculation with perfectGas (hConst + perfectGas is incompatible)
 - Tlow/Thigh temperature limits (200K-400K) act as validators that ABORT if violated, NOT as active clamps (discovered Nov 1, 2025)
-- inletOutlet boundary type for e/h fields on pressure boundaries (pressure_inlet/pressure_outlet) prevents numerical divergence by allowing bidirectional energy flow consistent with free pressure field
-- fixedValue for e/h on pressure boundaries causes fatal numerical conflict: free pressure vs fixed energy → oscillations → negative e values → crash (bug fixed Nov 1, 2025)
+- inletOutlet boundary type for e/h/T fields on pressure boundaries (pressure_inlet/pressure_outlet) prevents numerical divergence by:
+  - Allowing bidirectional energy flow consistent with free pressure field
+  - Maintaining thermodynamic consistency: e = Cv×T must hold at boundaries
+  - Preventing oscillations from over-constrained boundary conditions
+- fixedValue for e/h/T on pressure boundaries causes fatal thermodynamic conflict: with eConst model, e=Cv×T is enforced, so fixing both e and T independently creates inconsistency → oscillations → negative e values → crash (bugs fixed Nov 1, 2025)
 - Enthalpy as energy variable ensures stability and compatibility with perfectGas equation of state
 - fixedFluxPressure on openings allows natural pressure field development in buoyancy-driven flows
 - eMin bound in fvSolution prevents numerical divergence to negative internal energy during solver iterations
