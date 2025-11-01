@@ -21,23 +21,23 @@ ddtSchemes
 
 gradSchemes
 {
-    default         cellLimited Gauss linear 0.5;
+    default         cellLimited Gauss linear 1.0;
 }
 
 divSchemes
 {
     default         none;
 
-    div(phi,U)      bounded Gauss linearUpwind grad(U);
+    div(phi,U)      bounded Gauss upwind;
     div(phi,e)      bounded Gauss upwind;
     div(phi,h)      bounded Gauss upwind;
 
     div(phi,k)      bounded Gauss upwind;
     div(phi,epsilon) bounded Gauss upwind;
     div(phi,omega)  bounded Gauss upwind;
-    div(phi,K)      bounded Gauss linear;
+    div(phi,K)      bounded Gauss upwind;
 
-    div(phi,Ekp)    bounded Gauss linear;
+    div(phi,Ekp)    bounded Gauss upwind;
 
     div(((rho*nuEff)*dev2(T(grad(U))))) Gauss linear;
 
@@ -46,7 +46,7 @@ divSchemes
 
 laplacianSchemes
 {
-    default         Gauss linear limited 0.5;
+    default         Gauss linear limited 1.0;
 }
 
 interpolationSchemes
@@ -56,7 +56,7 @@ interpolationSchemes
 
 snGradSchemes
 {
-    default         orthogonal;
+    default         limited 1.0;
 }
 
 wallDist

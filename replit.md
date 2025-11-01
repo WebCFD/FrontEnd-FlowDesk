@@ -100,6 +100,12 @@ Development approach: Favor simple, minimal solutions over complex implementatio
   - e: 0.1 (was 0.3 - ultra-conservative to prevent temperature oscillations)
   - h: 0.3 (was 0.5 - reduced)
   - Note: These very low values sacrifice convergence speed for stability to test numerical hypothesis
+- **Discretization Schemes (Ultra-Conservative First-Order - Nov 1, 2025)**:
+  - All divSchemes use `bounded Gauss upwind` (1st order, monotonic, no oscillations)
+  - gradSchemes limiter: 1.0 (maximum conservation, no overshoots)
+  - laplacianSchemes limiter: 1.0 (maximum stability)
+  - snGradSchemes: limited 1.0 (robust for non-orthogonal meshes)
+  - Previous linearUpwind for U and linear for K caused numerical oscillations
 - **Energy Bounds**: eMin = 100,000 J/kg (prevents negative internal energy, ~-110°C safety limit)
 - **SIMPLE Settings**: nNonOrthogonalCorrectors = 3, consistent = yes
 - **Residual Control**: p_rgh, U, h, e all converge to 1e-4
