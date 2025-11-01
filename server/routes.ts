@@ -236,7 +236,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name: sampleName,
         filePath: relativePath,
         status: 'completed', // Sample cases are always completed
-        simulationType: 'comfort',
+        simulationType: 'comfortTest',
         packageType: 'basic',
         cost: 0, // No cost for sample cases
         isPublic: false,
