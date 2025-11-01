@@ -92,16 +92,15 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 11. Post-processing - Reconstruct and export VTK results
 
 **Numerical Stability & Solver Configuration (Boussinesq - Nov 1, 2025):**
-- **Relaxation Factors (Moderate for Boussinesq Stability)**: 
-  - rho: 0.7 (much higher than perfectGas 0.005 - Boussinesq is stable)
+- **Relaxation Factors (Conservative for Startup Stability)**: 
+  - rho: 0.1 (conservative to prevent initial divergence)
   - p_rgh: 0.3
-  - U: 0.7
-  - h: 0.9 (enthalpy equation is linear with Boussinesq)
-  - k/epsilon/omega: 0.7
-  - Note: Higher relaxation factors possible because Boussinesq eliminates p-ρ coupling instability
-- **Discretization Schemes (Balanced Accuracy/Stability)**:
-  - div(phi,U): bounded Gauss linearUpwind (2nd order for momentum)
-  - div(phi,h): bounded Gauss upwind (1st order for energy - conservative)
+  - U: 0.3
+  - h: 0.3 (conservative to prevent h<0 in early iterations)
+  - k/epsilon/omega: 0.3
+  - Note: Even with Boussinesq, conservative relaxation needed for stable startup
+- **Discretization Schemes (Conservative 1st Order)**:
+  - All divSchemes: bounded Gauss upwind (1st order, monotonic)
   - gradSchemes limiter: 0.5 (balanced)
   - laplacianSchemes limiter: 0.5 (balanced)
   - snGradSchemes: limited 0.5 (handles non-orthogonality well)
