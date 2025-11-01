@@ -7,12 +7,12 @@ FoamFile
 }
 
 application       buoyantSimpleFoam;
-startFrom         latestTime;
+startFrom         startTime;
 startTime         0;
 stopAt            endTime;
 endTime           3;
 deltaT            1;
-writeControl      timeStep;
+writeControl      endTime;
 writeInterval     1;
 adjustTimeStep    no;
 purgeWrite        0;
