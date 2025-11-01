@@ -287,9 +287,8 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'fixedValue'
                         new_bc_data["value"] = 0.5
                     elif(variable == 'h'):
-                        # Enthalpy inlet: allow backflow at 20°C (293.15K)
-                        new_bc_data["type"] = 'inletOutlet'
-                        new_bc_data["inletValue"] = CP * 293.15  # h = Cp×T at T=293.15K (backflow)
+                        # Enthalpy inlet: fixedValue for stability (prevents h<0 from inletOutlet interpolation)
+                        new_bc_data["type"] = 'fixedValue'
                         T_inlet = row['T'] + 273.15
                         h_value = CP * T_inlet
                         logger.info(f"    BC {row['id']} ({row['type']}): T={row['T']}°C → T_K={T_inlet}K → h={h_value} J/kg")
@@ -316,9 +315,8 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 34.4876
                     elif(variable == 'T'):
-                        # Temperature inlet: allow backflow at 20°C (293.15K)
-                        new_bc_data["type"] = 'inletOutlet'
-                        new_bc_data["inletValue"] = 293.15  # Backflow temperature
+                        # Temperature inlet: fixedValue for stability
+                        new_bc_data["type"] = 'fixedValue'
                         new_bc_data["value"] = row['T'] + 273.15
                     elif(variable == 'U'):
                         if (row['open']):
@@ -346,9 +344,8 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["inletValue"] = 0.5
                         new_bc_data["value"] = 0.5
                     elif(variable == 'h'):
-                        # Enthalpy outlet: allow inflow at 20°C (293.15K)
-                        new_bc_data["type"] = 'inletOutlet'
-                        new_bc_data["inletValue"] = CP * 293.15  # h = Cp×T at T=293.15K
+                        # Enthalpy outlet: fixedValue for stability (prevents h<0 from inletOutlet interpolation)
+                        new_bc_data["type"] = 'fixedValue'
                         T_outlet = row['T'] + 273.15
                         new_bc_data["value"] = CP * T_outlet
                     elif(variable == 'k'):
@@ -373,8 +370,8 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 46.0115
                     elif(variable == 'T'):
-                        new_bc_data["type"] = 'inletOutlet'
-                        new_bc_data["inletValue"] = 293.15  # 20°C
+                        # Temperature outlet: fixedValue for stability
+                        new_bc_data["type"] = 'fixedValue'
                         new_bc_data["value"] = row['T'] + 273.15
                     elif(variable == 'U'):
                         if (row['open']):

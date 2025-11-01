@@ -71,11 +71,13 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 **Boundary Conditions for HVAC Applications (Boussinesq):**
 - **Walls**: fixedValue for temperature (T in Kelvin) and enthalpy (h = Cp×T); fixedFluxPressure for p_rgh
 - **Windows/Doors (pressure boundaries - pressure_inlet and pressure_outlet)**: 
-  - p_rgh: fixedValue 0 (atmospheric pressure reference), simpler and more stable than fixedFluxPressure
+  - p_rgh: fixedValue 0 (atmospheric pressure reference)
   - U: pressureInletOutletVelocity (inlet) or inletOutlet (outlet)
-  - h: inletOutlet with inletValue = Cp×293.15 (allows bidirectional flow, backflow at 20°C)
-  - T: inletOutlet with inletValue = 293.15K (allows bidirectional flow, backflow at 20°C)
-  - Critical: fixedValue (not fixedFluxPressure) prevents negative pressure flux that drives h<0 → T<0 → ρ<0 crash
+  - h: fixedValue (stable, prevents h<0 from inletOutlet interpolation during startup)
+  - T: fixedValue (stable, consistent with h boundary)
+  - Critical fixes (Nov 1, 2025):
+    * fixedValue p_rgh=0 (not fixedFluxPressure) prevents negative pressure flux
+    * fixedValue h/T (not inletOutlet) prevents negative enthalpy during SIMPLE startup when U field is chaotic
 - **Velocity/Mass Flow Inlets**: fixedValue for h and T (flow direction known, no backflow possible)
 
 **Mesh Generation & Validation Pipeline (Allrun):**
@@ -120,6 +122,7 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 - Configurable iterations via simulationType parameter with fail-safe defaults ensures graceful degradation if type is missing
 - **perfectGas Lessons Learned**: perfectGas with pressure boundaries creates exponential divergence due to p-ρ-T coupling; no amount of conservative discretization (upwind) or relaxation (rho=0.005) can stabilize this fundamental numerical instability
 - **fixedFluxPressure Lessons Learned**: Even with Boussinesq, fixedFluxPressure on pressure boundaries causes h to undershoot below zero in first SIMPLE iteration, leading to negative temperature crash. fixedValue p_rgh=0 is required for stable buoyancy-driven flow with open boundaries
+- **inletOutlet for h/T Lessons Learned (Critical - Nov 1, 2025)**: inletOutlet interpolates field values based on flow direction (U·n). During SIMPLE startup, U field changes drastically (residual=1.0) from uniform zero to chaotic flow. With large h gradients (15K difference) at boundaries, inletOutlet produces h<0 values before relaxation factors can stabilize. Solution: Use fixedValue for h and T on pressure boundaries, eliminating unstable interpolation
 - **0.orig/ vs 0/ Lessons Learned**: decomposePar reads from 0/, not 0.orig/. If 0.orig/ is not copied to 0/ before decomposePar, the solver starts with stale/inconsistent fields, causing immediate crashes. Always copy 0.orig → 0 before decomposePar
 
 ## External Dependencies
