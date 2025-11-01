@@ -84,12 +84,11 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 3. snappyHexMesh - Refined mesh generation (parallel execution in cloud)
 4. Python validation - Verify watertight geometry (no background patches)
 5. checkMesh - Validate mesh quality (skewness, aspect ratio, non-orthogonality)
-6. Initial conditions preparation - Copy 0.orig to 0
-7. Debug logging - Print h, p_rgh, U, and thermophysical properties to log
-8. decomposePar - Decompose for parallel execution
-9. Debug files copy - Copy processor0 files for inspection
-10. buoyantSimpleFoam - Parallel CFD solver execution
-11. Post-processing - Reconstruct and export VTK results
+6. **Initial conditions preparation - Copy 0.orig to 0 (CRITICAL - Nov 1, 2025)**
+7. decomposePar - Decompose for parallel execution
+8. Debug files copy - Copy processor0 files for inspection
+9. buoyantSimpleFoam - Parallel CFD solver execution
+10. Post-processing - Reconstruct and export VTK results
 
 **Numerical Stability & Solver Configuration (Boussinesq - Nov 1, 2025):**
 - **Relaxation Factors (Conservative for Startup Stability)**: 
@@ -112,7 +111,8 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 - hConst thermo model with sensibleEnthalpy variable (h = Cp×T) provides linear energy equation
 - Density calculation ρ = pRef/(R×T) uses constant reference pressure, breaking the circular dependency between pressure field and density that caused perfectGas divergence
 - inletOutlet boundary type for h/T fields on pressure boundaries allows bidirectional flow while maintaining thermodynamic consistency
-- **fixedValue for p_rgh on openings (Critical Fix - Nov 1, 2025)**: fixedFluxPressure extrapolates large negative pressure flux in early SIMPLE iterations, forcing compensating negative energy flux that drives h<0 → T<0 → ρ<0 crash. fixedValue p_rgh=0 maintains atmospheric reference without unstable gradients, preventing negative enthalpy
+- **0.orig → 0 copy before decomposePar (Critical Fix - Nov 1, 2025)**: setup() writes fresh Boussinesq fields (h, T, p_rgh) to 0.orig/, but decomposePar was using stale 0/ directory with old perfectGas fields (e). This caused h<0 → ρ<0 crash from iteration 1. Explicit `rm -rf 0 && cp -r 0.orig 0` before decomposePar ensures fresh fields are used
+- **fixedValue for p_rgh on openings (Nov 1, 2025)**: fixedFluxPressure extrapolates large negative pressure flux in early SIMPLE iterations, forcing compensating negative energy flux that drives h<0 → T<0 → ρ<0 crash. fixedValue p_rgh=0 maintains atmospheric reference without unstable gradients, preventing negative enthalpy
 - Higher relaxation factors (rho=0.7, h=0.9) possible with Boussinesq due to linear coupling
 - Comprehensive debug logging at initialization enables rapid troubleshooting of boundary conditions
 - checkMesh validation prevents mesh quality issues before expensive solver runs  
@@ -120,6 +120,7 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 - Configurable iterations via simulationType parameter with fail-safe defaults ensures graceful degradation if type is missing
 - **perfectGas Lessons Learned**: perfectGas with pressure boundaries creates exponential divergence due to p-ρ-T coupling; no amount of conservative discretization (upwind) or relaxation (rho=0.005) can stabilize this fundamental numerical instability
 - **fixedFluxPressure Lessons Learned**: Even with Boussinesq, fixedFluxPressure on pressure boundaries causes h to undershoot below zero in first SIMPLE iteration, leading to negative temperature crash. fixedValue p_rgh=0 is required for stable buoyancy-driven flow with open boundaries
+- **0.orig/ vs 0/ Lessons Learned**: decomposePar reads from 0/, not 0.orig/. If 0.orig/ is not copied to 0/ before decomposePar, the solver starts with stale/inconsistent fields, causing immediate crashes. Always copy 0.orig → 0 before decomposePar
 
 ## External Dependencies
 

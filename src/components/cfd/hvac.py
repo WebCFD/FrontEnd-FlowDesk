@@ -489,6 +489,12 @@ def setup(case_path: str, simulation_type: str = 'comfortTest') -> list:
     update_controldict_iterations(case_path, simulation_type)
 
     script_commands = [
+        # Copy initial conditions from 0.orig to 0
+        'echo "==================== COPYING INITIAL CONDITIONS FROM 0.orig TO 0 ===================="',
+        'rm -rf 0',
+        'cp -r 0.orig 0',
+        'echo "==================== INITIAL CONDITIONS COPIED ===================="',
+        
         # Decompose for parallel execution
         'rm -rf processor*',
         'runApplication decomposePar',
