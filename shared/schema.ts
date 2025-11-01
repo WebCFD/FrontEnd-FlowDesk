@@ -19,7 +19,7 @@ export const simulations = pgTable("simulations", {
   name: text("name").notNull(),
   filePath: text("file_path").notNull(),
   status: text("status").notNull(), // 'pending', 'processing', 'geometry', 'meshing', 'cfd_setup', 'cloud_execution', 'post_processing', 'completed', 'failed'
-  simulationType: text("simulation_type").notNull(), // 'comfort', 'renovation', 'test_calculation'
+  simulationType: text("simulation_type").notNull(), // 'comfortTest', 'comfort30Iter', 'test_calculation'
   packageType: text("package_type").notNull(), // 'basic', 'professional', 'enterprise'
   cost: decimal("cost", { precision: 10, scale: 2 }).notNull(),
   isPublic: boolean("is_public").default(false).notNull(),
@@ -84,7 +84,7 @@ export const insertSimulationSchema = createInsertSchema(simulations)
       'completed',
       'failed'
     ]),
-    simulationType: z.enum(['comfort', 'renovation', 'test_calculation']),
+    simulationType: z.enum(['comfortTest', 'comfort30Iter', 'test_calculation']),
     packageType: z.enum(['basic', 'professional', 'enterprise']),
     cost: z.string().transform(val => parseFloat(val)),
   });

@@ -104,7 +104,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Validation 2: Check simulation type
-      const validTypes = ['comfort', 'renovation', 'test_calculation'];
+      const validTypes = ['comfortTest', 'comfort30Iter', 'test_calculation'];
       if (!validTypes.includes(simulationType)) {
         return res.status(400).json({ message: "Invalid simulation type" });
       }
@@ -122,7 +122,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         simulationCost = 0; // Free for testing
         console.log('[EXPRESS] Test calculation - no credit debit');
       } else {
-        simulationCost = simulationType === 'comfort' ? 10 : 12; // Steady: €10, Air Renovation: €12
+        simulationCost = simulationType === 'comfortTest' ? 10 : 12; // Thermal Comfort TEST: €10, 30 ITERATIONS: €12
         const hasEnoughCredits = await storage.debitUserCredits(req.user.id, simulationCost);
         
         if (!hasEnoughCredits) {
