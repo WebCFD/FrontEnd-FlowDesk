@@ -77,7 +77,7 @@ relaxationFactors
 {
     fields
     {
-        rho             0.01;
+        rho             0.5;     // Increased from 0.01 - critical for Boussinesq stability
         p_rgh           0.3;
     }
     equations
