@@ -7,8 +7,10 @@ Change DEFAULT_MESHER to switch between meshing strategies globally.
 # =============================================================================
 # MESHER CONFIGURATION - Change this single line to switch meshing strategy
 # =============================================================================
-DEFAULT_MESHER = "cfmesh"  # Options: "cfmesh" or "snappy"
+DEFAULT_MESHER = "snappy"  # Options: "cfmesh" or "snappy"
 # =============================================================================
+# NOTE: cfMesh requires OpenFOAM ESI with cfMesh module compiled
+#       Use "snappy" if cfMesh is not available in your OpenFOAM container
 
 # Mesher descriptions for documentation
 MESHER_INFO = {

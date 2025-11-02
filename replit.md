@@ -38,7 +38,7 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 - **JSON Import/Export**: Robust handling of complex designs, ensuring data preservation and accurate unit conversions for perfect reversibility.
 - **Containerized Deployment**: Application is containerized for Google Cloud Run.
 - **CFD Simulation Pipeline**: End-to-end pipeline for converting user designs into OpenFOAM CFD simulations executed on Inductiva cloud, with results visualized in the web UI. This involves a dual-worker system (`worker_submit.py` for geometry, mesh, CFD setup, and submission; `worker_monitor.py` for monitoring, result download, and post-processing).
-- **Dual Meshing Strategy (Nov 2, 2025)**: Supports both snappyHexMesh and cfMesh for mesh generation. cfMesh is recommended for HVAC applications with pressure boundaries (windows/doors/vents) due to superior automatic boundary layer generation (>90% coverage) and 2-5x faster meshing times. snappyHexMesh remains available for multi-region cases or rotating machinery.
+- **Dual Meshing Strategy (Nov 2, 2025)**: Code supports both snappyHexMesh and cfMesh for mesh generation. Currently using **snappyHexMesh** as cfMesh is not available in Inductiva's OpenFOAM containers. cfMesh implementation is ready to use when available (requires OpenFOAM ESI with cfMesh module). Switch meshers by editing `DEFAULT_MESHER` in `mesher_config.py`.
 
 ### CFD Configuration & Physics (Updated November 1, 2025)
 

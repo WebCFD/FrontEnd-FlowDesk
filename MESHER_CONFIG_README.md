@@ -5,11 +5,20 @@
 To switch between cfMesh and snappyHexMesh globally, edit **ONE line** in `mesher_config.py`:
 
 ```python
-# In mesher_config.py, line 8:
-DEFAULT_MESHER = "cfmesh"  # Change to "snappy" to use snappyHexMesh
+# In mesher_config.py, line 13:
+DEFAULT_MESHER = "snappy"  # Change to "cfmesh" to use cfMesh (if available)
 ```
 
 That's it! All pipeline components will automatically use the selected mesher.
+
+## ⚠️ Important: cfMesh Availability
+
+**cfMesh is NOT currently available in Inductiva's OpenFOAM containers.**
+
+- ✅ **snappyHexMesh** - Available in all OpenFOAM versions (recommended)
+- ❌ **cfMesh** - Requires OpenFOAM ESI with cfMesh module compiled
+
+The code is ready to use cfMesh when it becomes available, but for now use `snappy`.
 
 ## Options
 
