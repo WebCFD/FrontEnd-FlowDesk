@@ -13,7 +13,7 @@ stopAt            endTime;
 endTime           3;
 deltaT            1;
 writeControl      timeStep;
-writeInterval     3;
+writeInterval     1;  // DEBUG: Write every iteration to capture fields before crash
 adjustTimeStep    no;
 purgeWrite        0;
 writeFormat       ascii;
@@ -25,16 +25,16 @@ runTimeModifiable false;
 
 functions
 {
-    // Generate VTK file with all fields at end of simulation
+    // DEBUG: Write VTK every iteration to capture fields before crash
     writeVTK
     {
         type            surfaces;
         libs            ("libsampling.so");
-        writeControl    writeTime;
-        writeInterval   1;
+        writeControl    timeStep;  // Write every timestep
+        writeInterval   1;         // Every iteration
         
         surfaceFormat   vtk;
-        fields          (h U p p_rgh);
+        fields          (h T U p p_rgh);  // Include T for debugging
         
         interpolationScheme cellPoint;
         
