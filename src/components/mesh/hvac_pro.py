@@ -52,24 +52,26 @@ class MeshQualityLevel:
             'name': 'BC-focused 200k (all-in on boundaries)',
             'description': 'Coarse base, aggressive BC refinement, thin layers for stability',
             'base_cell_size': 0.10,  # 10cm base cells (coarse domain)
+            'global_level': 0,       # CRITICAL: (0 0) to keep domain coarse
             'levels': {
-                'pressure_inlet': 4,      # 6.25mm surface refinement (FINE at BC!)
-                'pressure_outlet': 4,     # 6.25mm surface refinement
-                'wall': 1,                # 5cm (minimal - layers will handle it)
-                'floor_ceiling': 1,       # 5cm (minimal)
+                'pressure_inlet': 3,      # 1.25cm surface refinement (was 4 = too fine!)
+                'pressure_outlet': 3,     # 1.25cm surface refinement
+                'wall': 1,                # 0-5cm range (minimal - layers will handle it)
+                'floor_ceiling': 1,       # 0-5cm range (minimal)
                 'default': 0              # Coarse base
             },
             'volumetric_zones': [
                 # Three-zone aggressive refinement around pressure boundaries
-                {'distance': 0.08, 'level': 3, 'name': 'bc_core_0_8cm'},      # 0-8cm: 1.25cm cells (FINE!)
+                {'distance': 0.08, 'level': 3, 'name': 'bc_core_0_8cm'},      # 0-8cm: 1.25cm cells
                 {'distance': 0.25, 'level': 2, 'name': 'bc_near_8_25cm'},     # 8-25cm: 2.5cm cells
-                {'distance': 0.60, 'level': 1, 'name': 'bc_mid_25_60cm'},     # 25-60cm: 5cm cells
+                {'distance': 0.50, 'level': 1, 'name': 'bc_mid_25_50cm'},     # 25-50cm: 5cm cells (reduced from 60cm)
             ],
             'boundary_layers': {
                 # Thin layers for numerical stability (2 layers only - save cells!)
-                'pressure_inlet': {'nLayers': 2, 'firstLayerThickness': 0.001, 'expansionRatio': 1.3},    # 1mm first
-                'pressure_outlet': {'nLayers': 2, 'firstLayerThickness': 0.001, 'expansionRatio': 1.3},   # 1mm first
-                'wall': {'nLayers': 2, 'firstLayerThickness': 0.002, 'expansionRatio': 1.4},              # 2mm first (thicker, less cells)
+                # ABSOLUTE sizing (relativeSizes false)
+                'pressure_inlet': {'nLayers': 2, 'firstLayerThickness': 0.001, 'expansionRatio': 1.3, 'relativeSizes': False},
+                'pressure_outlet': {'nLayers': 2, 'firstLayerThickness': 0.001, 'expansionRatio': 1.3, 'relativeSizes': False},
+                'wall': {'nLayers': 2, 'firstLayerThickness': 0.002, 'expansionRatio': 1.4, 'relativeSizes': False},
             },
             'feature_edge_refinement': {
                 'enabled': True,         # Moderate feature detection
@@ -78,12 +80,25 @@ class MeshQualityLevel:
                 'feature_angle': 45      # Moderate angle
             },
             'mesh_quality': {
-                # Relaxed quality for layer coverage (strategy: get those layers to stick!)
-                'maxNonOrtho': 65,
-                'maxBoundarySkewness': 20,
-                'maxInternalSkewness': 4,
-                'maxConcave': 75,
-                'nCellsBetweenLevels': 3  # Faster transitions (save cells)
+                # Very relaxed quality - priority is getting layers to stick!
+                'maxNonOrtho': 70,
+                'maxBoundarySkewness': 25,
+                'maxInternalSkewness': 5,
+                'maxConcave': 80,
+                'nCellsBetweenLevels': 3,  # Faster transitions (save cells)
+                'minRefinementCells': 10   # Prune small refinement regions
+            },
+            'layer_controls': {
+                # Very aggressive settings for maximum layer success
+                'featureAngle': 80,              # More permissive (was 75)
+                'nRelaxIter': 15,                # More relaxation
+                'nSmoothNormals': 10,            # More smoothing
+                'maxFaceThicknessRatio': 0.8,    # Very permissive
+                'maxThicknessToMedialRatio': 0.8,
+                'minThickness': 0.0005,          # Min 0.5mm absolute
+                'minMedianAxisAngle': 70,        # More permissive
+                'nLayerIter': 200,
+                'nRelaxedIter': 100
             }
         },
         2: {  # MEDIUM - ~500k cells ⭐ DEFAULT
@@ -334,13 +349,20 @@ def generate_hvac_boundary_layers(geo_df: pd.DataFrame, quality_level: int = 2) 
             continue  # No layers for this BC type
         
         # Generate layer block with ONLY 2 thickness params (OpenFOAM v2406 requirement)
-        # With relativeSizes true, use relative firstLayerThickness (0.0-1.0)
-        # 0.25 means first layer is 25% of local cell size
-        relative_first_layer = 0.25  # 25% of local cell size
+        # Check if using relative or absolute sizing
+        use_relative = layer_config.get('relativeSizes', True)
+        
+        if use_relative:
+            # Relative sizing: 0.25 means 25% of local cell size
+            first_layer = 0.25
+        else:
+            # Absolute sizing: use actual thickness in meters
+            first_layer = layer_config['firstLayerThickness']
+        
         block = f"""        "{patch_name}"
         {{
             nSurfaceLayers {layer_config['nLayers']};
-            firstLayerThickness {relative_first_layer};
+            firstLayerThickness {first_layer};
             expansionRatio {layer_config['expansionRatio']};
         }}"""
         blocks.append(block)
@@ -423,13 +445,39 @@ def create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo
     # Enable layers if any boundary layers configured
     add_layers = "true" if len(config.get('boundary_layers', {})) > 0 else "false"
     
+    # Global refinement level
+    global_level = str(config.get('global_level', 1))
+    
     # Mesh quality parameters (from config or defaults)
     mesh_quality = config.get('mesh_quality', {})
     n_cells_between = str(mesh_quality.get('nCellsBetweenLevels', 2))
+    min_refinement_cells = str(mesh_quality.get('minRefinementCells', 0))
     max_non_ortho = str(mesh_quality.get('maxNonOrtho', 55))
     max_boundary_skew = str(mesh_quality.get('maxBoundarySkewness', 12))
     max_internal_skew = str(mesh_quality.get('maxInternalSkewness', 2.5))
     max_concave = str(mesh_quality.get('maxConcave', 70))
+    
+    # Boundary layer parameters (detect if using relative or absolute sizing)
+    # Check first boundary layer config to determine sizing mode
+    boundary_layers_config = config.get('boundary_layers', {})
+    if boundary_layers_config:
+        first_bc_config = next(iter(boundary_layers_config.values()))
+        use_relative = first_bc_config.get('relativeSizes', True)
+    else:
+        use_relative = True
+    relative_sizes = "true" if use_relative else "false"
+    
+    # Layer controls (from config or defaults)
+    layer_controls = config.get('layer_controls', {})
+    layer_feature_angle = str(layer_controls.get('featureAngle', 75))
+    layer_n_relax_iter = str(layer_controls.get('nRelaxIter', 12))
+    layer_n_smooth_normals = str(layer_controls.get('nSmoothNormals', 8))
+    layer_max_face_thickness = str(layer_controls.get('maxFaceThicknessRatio', 0.6))
+    layer_max_thickness_medial = str(layer_controls.get('maxThicknessToMedialRatio', 0.6))
+    layer_min_thickness = str(layer_controls.get('minThickness', 0.1 if use_relative else 0.0005))
+    layer_min_median_angle = str(layer_controls.get('minMedianAxisAngle', 80))
+    layer_n_layer_iter = str(layer_controls.get('nLayerIter', 150))
+    layer_n_relaxed_iter = str(layer_controls.get('nRelaxedIter', 75))
     
     # Replace placeholders
     str_replace_dict = {
@@ -443,11 +491,23 @@ def create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo
         "$BOUNDARY_LAYERS": boundary_layers,
         "$LOCATION_INSIDE_MESH": location_inside_mesh,
         "$ADD_LAYERS": add_layers,
+        "$GLOBAL_LEVEL": global_level,
         "$NCELLS_BETWEEN_LEVELS": n_cells_between,
+        "$MIN_REFINEMENT_CELLS": min_refinement_cells,
         "$MAX_NON_ORTHO": max_non_ortho,
         "$MAX_BOUNDARY_SKEWNESS": max_boundary_skew,
         "$MAX_INTERNAL_SKEWNESS": max_internal_skew,
         "$MAX_CONCAVE": max_concave,
+        "$RELATIVE_SIZES": relative_sizes,
+        "$LAYER_FEATURE_ANGLE": layer_feature_angle,
+        "$LAYER_N_RELAX_ITER": layer_n_relax_iter,
+        "$LAYER_N_SMOOTH_NORMALS": layer_n_smooth_normals,
+        "$LAYER_MAX_FACE_THICKNESS_RATIO": layer_max_face_thickness,
+        "$LAYER_MAX_THICKNESS_TO_MEDIAL_RATIO": layer_max_thickness_medial,
+        "$LAYER_MIN_THICKNESS": layer_min_thickness,
+        "$LAYER_MIN_MEDIAN_AXIS_ANGLE": layer_min_median_angle,
+        "$LAYER_N_LAYER_ITER": layer_n_layer_iter,
+        "$LAYER_N_RELAXED_ITER": layer_n_relaxed_iter,
     }
     
     replace_in_file(input_path, output_path, str_replace_dict)

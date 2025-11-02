@@ -41,7 +41,7 @@ castellatedMeshControls
     // Increased cell limits for high-quality HVAC mesh
     maxLocalCells 200000;
     maxGlobalCells 5000000;
-    minRefinementCells 0;
+    minRefinementCells $MIN_REFINEMENT_CELLS;
     maxLoadUnbalance 0.10;
     nCellsBetweenLevels $NCELLS_BETWEEN_LEVELS;
 
@@ -57,7 +57,7 @@ $FEATURE_REFINEMENT_LEVELS
     {
         geometry
         {
-            level (1 2);  // Global minimum refinement
+            level ($GLOBAL_LEVEL $GLOBAL_LEVEL);  // Global base refinement
             $REFINEMENT_SURFACES
         }
     }
@@ -91,7 +91,7 @@ snapControls
 
 addLayersControls
 {
-    relativeSizes true;
+    relativeSizes $RELATIVE_SIZES;
     
     // BOUNDARY LAYER CONFIGURATION
     // Optimized for HVAC: high coverage, smooth growth
@@ -102,19 +102,19 @@ $BOUNDARY_LAYERS
     
     // Advanced layer generation for maximum coverage
     nGrow 0;
-    featureAngle 75;
+    featureAngle $LAYER_FEATURE_ANGLE;
     slipFeatureAngle 30;
-    nRelaxIter 12;
+    nRelaxIter $LAYER_N_RELAX_ITER;
     nSmoothSurfaceNormals 5;
-    nSmoothNormals 8;
+    nSmoothNormals $LAYER_N_SMOOTH_NORMALS;
     nSmoothThickness 20;
-    maxFaceThicknessRatio 0.6;
-    maxThicknessToMedialRatio 0.6;
-    minThickness 0.1;                // Relative minimum (10% of cell size)
-    minMedianAxisAngle 80;
+    maxFaceThicknessRatio $LAYER_MAX_FACE_THICKNESS_RATIO;
+    maxThicknessToMedialRatio $LAYER_MAX_THICKNESS_TO_MEDIAL_RATIO;
+    minThickness $LAYER_MIN_THICKNESS;
+    minMedianAxisAngle $LAYER_MIN_MEDIAN_AXIS_ANGLE;
     nBufferCellsNoExtrude 0;
-    nLayerIter 150;
-    nRelaxedIter 75;
+    nLayerIter $LAYER_N_LAYER_ITER;
+    nRelaxedIter $LAYER_N_RELAXED_ITER;
     
     // Quality enforcement during layer addition
     additionalReporting true;
