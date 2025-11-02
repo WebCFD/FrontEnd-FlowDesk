@@ -193,9 +193,11 @@ def generate_hvac_refinement_surfaces(geo_df: pd.DataFrame, quality_level: int =
             patch_type = 'patch'
         
         # Generate refinement block
+        # For level 0, use (0 0) to avoid negative min level
+        min_level = max(0, level - 1)
         block = f"""{patch_name}
                 {{
-                    level ({level-1} {level});
+                    level ({min_level} {level});
                     patchInfo {{ type {patch_type}; }}
                 }}"""
         blocks.append(block)
