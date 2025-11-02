@@ -4,6 +4,20 @@
 
 This project is a full-stack web application designed for HVAC (Heating, Ventilation, and Air Conditioning) simulation and design. It offers an interactive 3D environment for creating room layouts, placing furniture, configuring air flow systems, and running thermal simulations for multi-floor buildings. The platform aims to provide HVAC professionals and enthusiasts with a comprehensive tool for visualizing and analyzing thermal dynamics and exporting simulation data for further analysis.
 
+## Active Debugging (November 2, 2025)
+
+### Stability Test Mode
+- **Purpose**: Diagnose whether solver instability (h<0 crash) is caused by boundary conditions or numerical schemes
+- **Location**: `src/components/cfd/hvac.py` line 171 - `STABILITY_TEST_MODE` flag
+- **When Active**: 
+  - All patches forced to wall boundary conditions (noSlip, fixedValue)
+  - Uniform initial conditions: U=(0,0,0), T=293.15K, h=294515.75 J/kg, p_rgh=0
+  - Tests if solver can maintain equilibrium solution without diverging
+- **Test Interpretation**:
+  - If converges → Problem is BC-related (pressure_inlet/outlet configuration)
+  - If diverges → Problem is numerical schemes or relaxation factors
+- **Reversion**: Set `STABILITY_TEST_MODE = False` to restore normal operation
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.

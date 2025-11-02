@@ -162,6 +162,81 @@ def define_initial_files(sim_path, patch_df):
     initial_path = os.path.join(sim_path, "0.orig")
     os.makedirs(initial_path, exist_ok=True)
 
+    # ============ STABILITY TEST MODE ============
+    # Set to True to test solver stability with equilibrium solution (all walls, uniform fields)
+    # Set to False to use normal boundary conditions from JSON
+    STABILITY_TEST_MODE = True
+    # =============================================
+    
+    if STABILITY_TEST_MODE:
+        logger.info("=" * 80)
+        logger.info("*** STABILITY TEST MODE ACTIVE ***")
+        logger.info("*** All patches forced to wall BCs with uniform initial conditions ***")
+        logger.info("*** This tests if solver is stable starting from equilibrium ***")
+        logger.info("=" * 80)
+        
+        case = FoamCase(sim_path)
+        for variable in DIMENSIONS_DICT.keys():
+            with case['0.orig'][variable] as f:
+                f.dimensions = DIMENSIONS_DICT[variable]
+                f.internal_field = INTERNALFIELD_DICT[variable]
+                
+                f.boundary_field = dict()
+                for _, row in patch_df.iterrows():
+                    new_bc_data = dict()
+                    
+                    # Force all patches to wall-type boundary conditions
+                    if(variable == 'alphat'):
+                        new_bc_data["type"] = 'compressible::alphatJayatillekeWallFunction'
+                        new_bc_data["Prt"] = 0.85
+                        new_bc_data["value"] = '$internalField'
+                    elif(variable == 'DR'):
+                        new_bc_data["type"] = 'calculated'
+                        new_bc_data["value"] = 0
+                    elif(variable == 'epsilon'):
+                        new_bc_data["type"] = 'epsilonWallFunction'
+                        new_bc_data["value"] = '$internalField'
+                    elif(variable == 'omega'):
+                        new_bc_data["type"] = 'omegaWallFunction'
+                        new_bc_data["value"] = 0.5
+                    elif(variable == 'h'):
+                        # Uniform enthalpy at 20°C (equilibrium)
+                        new_bc_data["type"] = 'fixedValue'
+                        new_bc_data["value"] = CP * 293.15  # h = Cp×T = 294515.75 J/kg
+                    elif(variable == 'k'):
+                        new_bc_data["type"] = 'kqRWallFunction'
+                        new_bc_data["value"] = '$internalField'
+                    elif(variable == 'nut'):
+                        new_bc_data["type"] = 'nutkWallFunction'
+                        new_bc_data["value"] = '$internalField'
+                    elif(variable == 'p'):
+                        new_bc_data["type"] = 'calculated'
+                        new_bc_data["value"] = P_ATM
+                    elif(variable == 'p_rgh'):
+                        new_bc_data["type"] = 'fixedFluxPressure'
+                        new_bc_data["value"] = '$internalField'
+                    elif(variable == 'PMV'):
+                        new_bc_data["type"] = 'calculated'
+                        new_bc_data["value"] = 0
+                    elif(variable == 'PPD'):
+                        new_bc_data["type"] = 'calculated'
+                        new_bc_data["value"] = 5
+                    elif(variable == 'T'):
+                        # Uniform temperature at 20°C (equilibrium)
+                        new_bc_data["type"] = 'fixedValue'
+                        new_bc_data["value"] = 293.15  # 20°C
+                    elif(variable == 'U'):
+                        # No-slip walls (zero velocity everywhere)
+                        new_bc_data["type"] = 'noSlip'
+                    else:
+                        raise BaseException('Unknown variable')
+                    
+                    f.boundary_field[row['id']] = new_bc_data
+        
+        logger.info("*** Stability test initial conditions created successfully ***")
+        return
+    
+    # ============ NORMAL MODE (ORIGINAL CODE) ============
     case = FoamCase(sim_path)
     for variable in DIMENSIONS_DICT.keys():
         with case['0.orig'][variable] as f:
