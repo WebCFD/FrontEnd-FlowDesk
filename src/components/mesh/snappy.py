@@ -141,7 +141,104 @@ def generate_location_inside_mesh(mesh):
     return f"({point[0]:.6f} {point[1]:.6f} {point[2]:.6f})"
 
 
+def generate_volumetric_refinement_regions(geo_df, geo_mesh):
+    """
+    Generate volumetric refinement regions near pressure boundaries.
+    
+    This creates refinement boxes around windows/doors/vents to ensure
+    high mesh quality in the critical flow regions.
+    """
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    pressure_patches = geo_df[geo_df['type'].isin(['pressure_inlet', 'pressure_outlet'])]
+    
+    if len(pressure_patches) == 0:
+        logger.info("    * No pressure boundaries found, skipping volumetric refinement")
+        return ""
+    
+    logger.info(f"    * Creating volumetric refinement regions for {len(pressure_patches)} pressure boundaries")
+    
+    blocks = []
+    for idx, row in pressure_patches.iterrows():
+        patch_name = row['id']
+        
+        # Create a refined box around each pressure boundary
+        # This ensures good mesh quality in the flow region
+        block = f"""        {patch_name}_volume
+        {{
+            mode    distance;
+            levels  ((0.2 3) (0.5 2) (1.0 1));  // 3 zones of refinement extending 1m from surface
+        }}"""
+        blocks.append(block)
+    
+    if blocks:
+        logger.info(f"    * Volumetric refinement will extend 1.0m from each pressure boundary")
+        logger.info(f"    * Refinement zones: 0-0.2m (level 3), 0.2-0.5m (level 2), 0.5-1.0m (level 1)")
+        return "\n".join(blocks)
+    else:
+        return ""
+
+
+def generate_boundary_layers_config(geo_df):
+    """
+    Generate boundary layer configuration for snappyHexMesh.
+    
+    Strategy for HVAC applications:
+    - Pressure boundaries: 5 layers for accurate velocity/temperature profiles
+    - Walls: 3 layers for thermal boundary layer resolution
+    """
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    logger.info("    * Generating boundary layer configuration")
+    
+    blocks = []
+    layer_counts = {}
+    
+    for idx, row in geo_df.iterrows():
+        patch_name = row['id']
+        patch_type = row['type']
+        
+        if patch_type in ['pressure_inlet', 'pressure_outlet']:
+            # 5 layers on pressure boundaries for accurate flow profiles
+            n_layers = 5
+            block = f"""        "{patch_name}"
+        {{
+            nSurfaceLayers {n_layers};
+            expansionRatio 1.2;
+            finalLayerThickness 0.3;
+            minThickness 0.001;
+        }}"""
+            layer_counts[patch_type] = layer_counts.get(patch_type, 0) + 1
+        elif patch_type == 'wall':
+            # 3 layers on walls for thermal boundary layer
+            n_layers = 3
+            block = f"""        "{patch_name}"
+        {{
+            nSurfaceLayers {n_layers};
+            expansionRatio 1.2;
+            finalLayerThickness 0.3;
+            minThickness 0.001;
+        }}"""
+            layer_counts[patch_type] = layer_counts.get(patch_type, 0) + 1
+        else:
+            continue  # Skip other boundary types
+        
+        blocks.append(block)
+    
+    logger.info(f"    * Boundary layers configured:")
+    for bc_type, count in layer_counts.items():
+        layers = 5 if bc_type in ['pressure_inlet', 'pressure_outlet'] else 3
+        logger.info(f"      - {bc_type}: {count} patches × {layers} layers")
+    
+    return "\n".join(blocks) if blocks else ""
+
+
 def create_snappyHexMeshDict(template_path, sim_path, stl_filename, geo_mesh, geo_df):
+    import logging
+    logger = logging.getLogger(__name__)
+    
     input_path = os.path.join(template_path, "system", "snappyHexMeshDict") 
     output_path = os.path.join(sim_path, "system", "snappyHexMeshDict") 
 
@@ -151,6 +248,15 @@ def create_snappyHexMeshDict(template_path, sim_path, stl_filename, geo_mesh, ge
     emesh_filename = stl_filename.replace(".stl", ".eMesh")
     refinement_surfaces = generate_refinement_block(patch_types)
     location_inside_mesh = generate_location_inside_mesh(geo_mesh)
+    
+    # Generate volumetric refinement regions for pressure boundaries
+    volumetric_refinement = generate_volumetric_refinement_regions(geo_df, geo_mesh)
+    
+    # Generate boundary layer configuration
+    boundary_layers = generate_boundary_layers_config(geo_df)
+    
+    # Check if we should enable boundary layers
+    enable_layers = "true" if boundary_layers else "false"
 
     str_replace_dict = dict()
     str_replace_dict["$STL_FILENAME"] = stl_filename
@@ -158,6 +264,13 @@ def create_snappyHexMeshDict(template_path, sim_path, stl_filename, geo_mesh, ge
     str_replace_dict["$EMESH_FILENAME"] = emesh_filename
     str_replace_dict["$REFINEMENT_SURFACES"] = refinement_surfaces
     str_replace_dict["$LOCATION_INSIDE_MESH"] = location_inside_mesh
+    str_replace_dict["$VOLUMETRIC_REFINEMENT"] = volumetric_refinement if volumetric_refinement else "// No volumetric refinement"
+    str_replace_dict["$BOUNDARY_LAYERS"] = boundary_layers if boundary_layers else "// No boundary layers configured"
+    str_replace_dict["$ENABLE_LAYERS"] = enable_layers
+    
+    logger.info(f"    * Boundary layers enabled: {enable_layers}")
+    if volumetric_refinement:
+        logger.info("    * Volumetric refinement enabled for pressure boundaries")
 
     replace_in_file(input_path, output_path, str_replace_dict)
 

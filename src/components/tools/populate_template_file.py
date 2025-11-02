@@ -21,12 +21,27 @@ def generate_regions_block(name_map):
 
 
 def generate_refinement_block(type_map):
+    """
+    Generate refinement configuration for snappyHexMesh with differentiated levels.
+    
+    Refinement strategy for HVAC applications:
+    - Pressure boundaries (windows/doors/vents): ULTRA-FINE (0 4) - 4 refinement levels for accurate flow
+    - Walls: STANDARD (0 2) - 2 refinement levels sufficient for thermal boundaries
+    
+    This ensures high-quality mesh where it matters most: at flow boundaries.
+    """
     blocks = ["{"]
     for patch in type_map:
-        # Check if patch should be a wall type
-        if patch=="wall":
+        # Differentiated refinement based on boundary condition type
+        if patch in ["pressure_inlet", "pressure_outlet"]:
+            # ULTRA-FINE mesh for pressure boundaries (4 refinement levels)
+            # This resolves velocity/pressure gradients accurately
+            block = f"""    {patch} {{   level (0 4);     patchInfo {{ type patch; }}}}"""
+        elif patch == "wall":
+            # STANDARD mesh for walls (2 refinement levels)
             block = f"""    {patch} {{   level (0 2);     patchInfo {{ type wall; }}}}"""
         else:
+            # DEFAULT mesh for other boundaries (2 refinement levels)
             block = f"""    {patch} {{   level (0 2);     patchInfo {{ type patch; }}}}"""
         blocks.append(block)
     blocks.append("}")

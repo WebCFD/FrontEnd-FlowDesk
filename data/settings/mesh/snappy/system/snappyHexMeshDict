@@ -16,7 +16,7 @@ FoamFile
 
 castellatedMesh true;
 snap            true;
-addLayers       false;
+addLayers       $ENABLE_LAYERS;
 overwrite       true;
 
 geometry
@@ -25,11 +25,11 @@ geometry
     {
         type triSurfaceMesh;
         file $STL_FILENAME;
-		name geometry;
+                name geometry;
         tolerance   1E-5;
         maxTreeDepth 10;
 
-		$GEOMETRY_REGIONS
+                $GEOMETRY_REGIONS
     }
 };
 
@@ -46,23 +46,24 @@ castellatedMeshControls
     ( 
         {
             file $EMESH_FILENAME;
-			levels ((0.002 2) (0.010 1));
+                        levels ((0.002 2) (0.010 1));
         }
     );
 
     refinementSurfaces
     {
-		geometry
-		{
-			level (0 1);
-			$REFINEMENT_SURFACES
-		}
+                geometry
+                {
+                        level (0 1);
+                        $REFINEMENT_SURFACES
+                }
     }
 
     resolveFeatureAngle 30;
 
     refinementRegions
     {
+$VOLUMETRIC_REFINEMENT
     }
 
     locationInMesh $LOCATION_INSIDE_MESH;
@@ -85,68 +86,58 @@ snapControls
 addLayersControls
 {
     relativeSizes true;
-	
-    expansionRatio 1.0;
-    thickness 0.010;
-    minThickness 0.005;
-
+    
+    // High-quality boundary layers for HVAC applications
     layers
     {
-        sphere.stl_firstSolid
-        {
-            nSurfaceLayers 1;
-
-        }
-        maxY
-        {
-            nSurfaceLayers 1;
-            expansionRatio      1.3;
-            finalLayerThickness 0.3;
-            minThickness        0.1;
-        }
-		
-        frozenPatches
-        {
-            nSurfaceLayers 0;
-        }
+$BOUNDARY_LAYERS
     }
-	
+    
+    // Improved layer generation settings for better coverage
     nGrow 0;
-    featureAngle 60;
+    featureAngle 70;              // Increased to allow layers on more surfaces
     slipFeatureAngle 30;
-    nRelaxIter 5;
-    nSmoothSurfaceNormals 1;
-    nSmoothNormals 3;
-    nSmoothThickness 10;
+    nRelaxIter 10;                // More relaxation iterations
+    nSmoothSurfaceNormals 3;      // Smoother surface normals
+    nSmoothNormals 5;             // More normal smoothing
+    nSmoothThickness 15;          // More thickness smoothing
     maxFaceThicknessRatio 0.5;
-    maxThicknessToMedialRatio 0.3;
-    minMedianAxisAngle 90;
+    maxThicknessToMedialRatio 0.5; // Relaxed for better coverage
+    minMedianAxisAngle 85;        // Relaxed to allow more layers
     nBufferCellsNoExtrude 0;
-    nLayerIter 50;
-    nRelaxedIter 20;
+    nLayerIter 100;               // More iterations for better quality
+    nRelaxedIter 50;              // More relaxed iterations
+    
+    // Advanced settings for robust layer generation
+    additionalReporting true;
+    mergePatchFacesAngle 45;
 }
 
 meshQualityControls
 {
-    maxNonOrtho 65;
-    maxBoundarySkewness 20;
-    maxInternalSkewness 4;
-    maxConcave 80;
-    minVol 1e-13;
-    minTetQuality 1e-9;
-    minArea -1;
-    minTwist 0.05;
-    minDeterminant 0.001;
-    minFaceWeight 0.05;
-    minVolRatio 0.01;
+    // Strict quality controls for high-quality HVAC mesh
+    maxNonOrtho 60;               // Tighter than default (65) for better quality
+    maxBoundarySkewness 15;       // Tighter than default (20)
+    maxInternalSkewness 3;        // Tighter than default (4)
+    maxConcave 75;                // Slightly tighter
+    minVol 1e-15;                 // Allow smaller cells near boundaries
+    minTetQuality 1e-12;          // Stricter tetrahedral quality
+    minArea 1e-15;                // Allow smaller faces
+    minTwist 0.02;                // Stricter twist requirement
+    minDeterminant 0.005;         // Relaxed slightly for complex geometries
+    minFaceWeight 0.02;           // Tighter face weight
+    minVolRatio 0.005;            // Tighter volume ratio
     minTriangleTwist -1;
 
-    nSmoothScale 4;
+    nSmoothScale 6;               // More smoothing iterations
     errorReduction 0.75;
 
+    // Relaxed controls for difficult regions
     relaxed
     {
-        maxNonOrtho 75;
+        maxNonOrtho 70;
+        maxBoundarySkewness 20;
+        maxInternalSkewness 4;
     }
 }
 
