@@ -48,9 +48,9 @@ class MeshQualityLevel:
     """
     
     CONFIGS = {
-        1: {  # COARSE - ~60k cells
-            'name': 'Pure uniform 10cm mesh',
-            'description': 'Completely homogeneous 10cm cells everywhere (no refinement)',
+        1: {  # COARSE - ~100k cells
+            'name': 'Uniform 10cm with BC zones',
+            'description': '10cm base, 2.5cm (0-20cm) and 5cm (20-40cm) near BC patches',
             'base_cell_size': 0.10,  # 10cm base cells
             'levels': {
                 'pressure_inlet': 0,      # No surface refinement
@@ -60,7 +60,9 @@ class MeshQualityLevel:
                 'default': 0              # Uniform everywhere
             },
             'volumetric_zones': [
-                # No volumetric refinement - uniform mesh everywhere
+                # Two-zone refinement around pressure boundaries
+                {'distance': 0.2, 'level': 2, 'name': 'zone_0_20cm'},    # 0-20cm: 2.5cm cells
+                {'distance': 0.4, 'level': 1, 'name': 'zone_20_40cm'},   # 20-40cm: 5cm cells
             ],
             'boundary_layers': {
                 # NO boundary layers for Level 1 - fast debug mesh only
