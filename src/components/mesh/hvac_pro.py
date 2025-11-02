@@ -536,6 +536,6 @@ def create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo
     logger.info("✓ HVAC mesh configuration generated successfully")
     logger.info(f"  Quality level: {quality_level} ({config['name']})")
     logger.info(f"  Output: {output_path}")
-    logger.info(f"  Boundary layers: {enable_layers}")
+    logger.info(f"  Boundary layers: {add_layers}")
     logger.info("=" * 80)
     logger.info("")
