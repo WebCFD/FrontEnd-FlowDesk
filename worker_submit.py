@@ -270,7 +270,7 @@ class SimulationPipeline:
                 self.case_name,
                 geo_data['geo_mesh'],
                 geo_data['geo_df'],
-                type="snappy"
+                type="cfmesh"
             )
             return {'mesh_script': mesh_script}
         except Exception as e:

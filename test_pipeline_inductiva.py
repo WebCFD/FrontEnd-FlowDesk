@@ -66,9 +66,9 @@ def test_pipeline_inductiva():
         
         # STEP 2: Geometry → Mesh Configuration
         logger.info("\n" + "="*60)
-        logger.info("STEP 2: Generating Mesh Configuration")
+        logger.info("STEP 2: Generating Mesh Configuration (cfMesh)")
         logger.info("="*60)
-        mesh_script = geo2mesh(case_name, final_geometry_mesh, boundary_conditions_df, type="snappy")
+        mesh_script = geo2mesh(case_name, final_geometry_mesh, boundary_conditions_df, type="cfmesh")
         logger.info(f"✓ Mesh configuration created")
         logger.info(f"✓ Generated {len(mesh_script)} mesh script commands")
         
