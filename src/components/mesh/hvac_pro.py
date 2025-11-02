@@ -63,9 +63,7 @@ class MeshQualityLevel:
                 # No volumetric refinement - uniform mesh everywhere
             ],
             'boundary_layers': {
-                'pressure_inlet': {'nLayers': 2, 'firstLayerThickness': 0.005, 'expansionRatio': 1.3},
-                'pressure_outlet': {'nLayers': 2, 'firstLayerThickness': 0.005, 'expansionRatio': 1.3},
-                'wall': {'nLayers': 2, 'firstLayerThickness': 0.005, 'expansionRatio': 1.3},
+                # NO boundary layers for Level 1 - fast debug mesh only
             },
             'feature_edge_refinement': {
                 'enabled': True,
