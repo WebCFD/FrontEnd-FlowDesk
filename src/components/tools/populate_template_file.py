@@ -55,7 +55,11 @@ def replace_in_file(input_path, output_path, str_replace_dict):
     with open(input_path, 'r', encoding='utf-8') as file:
         content = file.read()
 
-    for old_str, new_str in str_replace_dict.items():
+    # Sort replacements by key length (longest first) to avoid partial replacements
+    # Example: $MAX_NON_ORTHO_RELAXED must be replaced before $MAX_NON_ORTHO
+    sorted_items = sorted(str_replace_dict.items(), key=lambda x: len(x[0]), reverse=True)
+    
+    for old_str, new_str in sorted_items:
         content = content.replace(old_str, new_str)
 
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
