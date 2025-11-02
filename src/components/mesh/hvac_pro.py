@@ -51,17 +51,16 @@ class MeshQualityLevel:
         1: {  # COARSE - ~50k cells
             'name': 'Coarse (fast validation)',
             'description': 'Quick mesh for flow pattern validation',
-            'base_cell_size': 0.30,  # Larger base mesh
+            'base_cell_size': 0.25,  # Same as Level 2
             'levels': {
-                'pressure_inlet': 4,      # 0.019m (~2cm)
-                'pressure_outlet': 3,     # 0.038m (~4cm)
-                'wall': 2,                # 0.075m (~7cm)
-                'floor_ceiling': 1,       # 0.15m
-                'default': 1
+                'pressure_inlet': 3,      # 0.031m (~3cm) - moderado
+                'pressure_outlet': 2,     # 0.062m (~6cm)
+                'wall': 1,                # 0.125m (~12cm)
+                'floor_ceiling': 1,       # 0.125m (~12cm)
+                'default': 1              # Moderate global refinement
             },
             'volumetric_zones': [
-                {'distance': 0.5, 'level': 3, 'name': 'near_inlet'},
-                {'distance': 1.5, 'level': 2, 'name': 'mid_field'},
+                {'distance': 0.2, 'level': 2, 'name': 'near_inlet'},
             ],
             'boundary_layers': {
                 'pressure_inlet': {'nLayers': 3, 'firstLayerThickness': 0.005, 'expansionRatio': 1.3},
