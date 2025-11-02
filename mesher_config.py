@@ -7,33 +7,48 @@ Change DEFAULT_MESHER to switch between meshing strategies globally.
 # =============================================================================
 # MESHER CONFIGURATION - Change this single line to switch meshing strategy
 # =============================================================================
-DEFAULT_MESHER = "snappy"  # Options: "cfmesh" or "snappy"
+DEFAULT_MESHER = "hvac_pro"  # Options: "hvac_pro" (recommended), "snappy", "cfmesh"
 # =============================================================================
-# NOTE: cfMesh requires OpenFOAM ESI with cfMesh module compiled
-#       Use "snappy" if cfMesh is not available in your OpenFOAM container
+# NOTE: 
+#   - "hvac_pro" is the recommended professional configuration for HVAC
+#   - "snappy" is the basic snappyHexMesh configuration
+#   - "cfmesh" requires OpenFOAM ESI with cfMesh module compiled (not available on Inductiva)
 
 # Mesher descriptions for documentation
 MESHER_INFO = {
+    "hvac_pro": {
+        "name": "HVAC Professional (snappyHexMesh optimized)",
+        "description": "⭐ RECOMMENDED - Professional HVAC mesh from scratch with physics-based sizing",
+        "advantages": [
+            "Level 6 (4mm cells) on pressure inlets - finest resolution for jet capture",
+            "Level 5 (8mm cells) on pressure outlets - fine for return flow",
+            "7 boundary layers on pressure boundaries (y+ ≈ 20-30)",
+            "5 boundary layers on walls (thermal boundary layer)",
+            "Multi-zone volumetric refinement (jet core → near-field → far-field)",
+            "Strict quality controls (maxNonOrtho 55, maxSkew 12/2.5)"
+        ],
+        "best_for": "All HVAC applications - designed from scratch for thermal comfort"
+    },
     "cfmesh": {
         "name": "cfMesh",
-        "description": "Recommended for HVAC applications with pressure boundaries",
+        "description": "Fast automatic mesher (NOT available on Inductiva)",
         "advantages": [
             "Automatic boundary layers (>90% coverage)",
             "Differentiated refinement (pressure boundaries 2x finer)",
             "2-5x faster meshing",
             "Single-command workflow (cartesianMesh)"
         ],
-        "best_for": "Single-zone rooms with windows/doors/vents"
+        "best_for": "Single-zone rooms with windows/doors/vents (if available)"
     },
     "snappy": {
-        "name": "snappyHexMesh",
-        "description": "Standard OpenFOAM mesher for complex geometries",
+        "name": "snappyHexMesh (basic)",
+        "description": "Standard OpenFOAM mesher with basic configuration",
         "advantages": [
             "Flexible multi-region meshing",
             "Good for rotating machinery",
             "Mature and well-documented"
         ],
-        "best_for": "Multi-region cases or complex industrial equipment"
+        "best_for": "Multi-region cases or when hvac_pro is too aggressive"
     }
 }
 
@@ -45,6 +60,6 @@ def get_default_mesher():
 
 def validate_mesher(mesher_type):
     """Validate that the mesher type is supported."""
-    if mesher_type not in ["cfmesh", "snappy"]:
-        raise ValueError(f"Unknown mesher type: {mesher_type}. Must be 'cfmesh' or 'snappy'")
+    if mesher_type not in ["hvac_pro", "cfmesh", "snappy"]:
+        raise ValueError(f"Unknown mesher type: {mesher_type}. Must be 'hvac_pro', 'cfmesh', or 'snappy'")
     return mesher_type

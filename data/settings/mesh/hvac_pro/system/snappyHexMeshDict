@@ -1,0 +1,163 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2312                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// HVAC PROFESSIONAL MESH CONFIGURATION
+// Designed for accurate thermal comfort and air flow simulations
+// Target: High-quality mesh with optimal resolution at critical boundaries
+
+castellatedMesh true;
+snap            true;
+addLayers       true;
+overwrite       true;
+
+geometry
+{
+    $STL_FILENAME
+    {
+        type triSurfaceMesh;
+        file $STL_FILENAME;
+        name geometry;
+        tolerance   1E-6;
+        maxTreeDepth 12;
+
+        $GEOMETRY_REGIONS
+    }
+};
+
+castellatedMeshControls
+{
+    // Increased cell limits for high-quality HVAC mesh
+    maxLocalCells 200000;
+    maxGlobalCells 5000000;
+    minRefinementCells 0;
+    maxLoadUnbalance 0.10;
+    nCellsBetweenLevels 2;  // Smoother transitions
+
+    features
+    ( 
+        {
+            file $EMESH_FILENAME;
+            levels ((0.001 6) (0.005 4) (0.020 2));  // Fine feature resolution
+        }
+    );
+
+    refinementSurfaces
+    {
+        geometry
+        {
+            level (1 2);  // Global minimum refinement
+            $REFINEMENT_SURFACES
+        }
+    }
+
+    resolveFeatureAngle 25;  // Stricter feature detection
+
+    // VOLUMETRIC REFINEMENT REGIONS
+    // Multi-zone refinement around pressure boundaries for jet capture
+    refinementRegions
+    {
+$VOLUMETRIC_REFINEMENT
+    }
+
+    locationInMesh $LOCATION_INSIDE_MESH;
+    allowFreeStandingZoneFaces true;
+}
+
+snapControls
+{
+    // High-quality surface snapping
+    nSmoothPatch 5;
+    tolerance 1.5;
+    nSolveIter 50;
+    nRelaxIter 8;
+
+    nFeatureSnapIter 15;
+    implicitFeatureSnap false;
+    explicitFeatureSnap true;
+    multiRegionFeatureSnap true;
+}
+
+addLayersControls
+{
+    relativeSizes true;
+    
+    // BOUNDARY LAYER CONFIGURATION
+    // Optimized for HVAC: high coverage, smooth growth
+    layers
+    {
+$BOUNDARY_LAYERS
+    }
+    
+    // Advanced layer generation for maximum coverage
+    nGrow 0;
+    featureAngle 75;
+    slipFeatureAngle 30;
+    nRelaxIter 12;
+    nSmoothSurfaceNormals 5;
+    nSmoothNormals 8;
+    nSmoothThickness 20;
+    maxFaceThicknessRatio 0.6;
+    maxThicknessToMedialRatio 0.6;
+    minMedianAxisAngle 80;
+    nBufferCellsNoExtrude 0;
+    nLayerIter 150;
+    nRelaxedIter 75;
+    
+    // Quality enforcement during layer addition
+    additionalReporting true;
+    mergePatchFacesAngle 40;
+}
+
+meshQualityControls
+{
+    // STRICT QUALITY CONTROLS FOR CFD
+    // Based on HVAC simulation requirements
+    
+    maxNonOrtho 55;              // Strict orthogonality
+    maxBoundarySkewness 12;      // Very strict at boundaries
+    maxInternalSkewness 2.5;     // Strict internal quality
+    maxConcave 70;
+    minVol 1e-18;                // Allow very small cells in layers
+    minTetQuality 1e-15;
+    minArea 1e-18;
+    minTwist 0.01;
+    minDeterminant 0.01;
+    minFaceWeight 0.01;
+    minVolRatio 0.005;
+    minTriangleTwist -1;
+
+    nSmoothScale 8;
+    errorReduction 0.75;
+
+    // Relaxed controls for difficult layer regions
+    relaxed
+    {
+        maxNonOrtho 65;
+        maxBoundarySkewness 18;
+        maxInternalSkewness 4;
+    }
+}
+
+writeFlags
+(
+    scalarLevels
+    layerSets
+    layerFields
+);
+
+debug 0;
+mergeTolerance 1e-6;
+
+// ************************************************************************* //

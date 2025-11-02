@@ -53,6 +53,9 @@ def run(case_name: str, geo_mesh: pv.PolyData, geo_df: pd.DataFrame, type: str =
         if type == "cfmesh":
             from src.components.mesh.cfmesh import prepare_cfmesh
             script_commands = prepare_cfmesh(geo_mesh, sim_path, geo_df)
+        elif type == "hvac_pro":
+            from src.components.mesh.hvac_pro_prepare import prepare_hvac_pro
+            script_commands = prepare_hvac_pro(geo_mesh, sim_path, geo_df)
         elif type == "snappy":
             from src.components.mesh.snappy import prepare_snappy
             script_commands = prepare_snappy(geo_mesh, sim_path, geo_df)
@@ -62,7 +65,7 @@ def run(case_name: str, geo_mesh: pv.PolyData, geo_df: pd.DataFrame, type: str =
                 {
                     'case_name': case_name,
                     'meshing_type': type,
-                    'suggestion': 'Use "cfmesh" or "snappy"'
+                    'suggestion': 'Use "hvac_pro", "cfmesh", or "snappy"'
                 }
             )
     except MeshingStepError:
