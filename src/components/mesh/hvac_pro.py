@@ -50,14 +50,14 @@ class MeshQualityLevel:
     CONFIGS = {
         1: {  # COARSE - ~50k cells
             'name': 'Uniform ~10cm mesh with edge refinement',
-            'description': 'Homogeneous 10cm cells, refined to 1.25cm at feature edges',
-            'base_cell_size': 0.40,  # 40cm base in blockMesh
+            'description': 'Homogeneous 10cm cells, refined to 1.25cm at feature edges only',
+            'base_cell_size': 0.10,  # 10cm base cells
             'levels': {
-                'pressure_inlet': 2,      # 10cm (40cm / 2^2)
-                'pressure_outlet': 2,     # 10cm
-                'wall': 2,                # 10cm
-                'floor_ceiling': 2,       # 10cm
-                'default': 2              # 10cm everywhere (uniform)
+                'pressure_inlet': 0,      # No surface refinement
+                'pressure_outlet': 0,     # No surface refinement
+                'wall': 0,                # No surface refinement
+                'floor_ceiling': 0,       # No surface refinement
+                'default': 0              # Uniform everywhere
             },
             'volumetric_zones': [
                 # No volumetric refinement - uniform mesh everywhere
@@ -69,8 +69,8 @@ class MeshQualityLevel:
             },
             'feature_edge_refinement': {
                 'enabled': True,
-                'min_level': 2,          # 10cm base
-                'max_level': 5,          # 1.25cm at sharp edges (40cm / 2^5)
+                'min_level': 0,          # 10cm base
+                'max_level': 3,          # 1.25cm at sharp edges (10cm / 2^3)
                 'feature_angle': 30      # Refine edges with angle > 30°
             }
         },
