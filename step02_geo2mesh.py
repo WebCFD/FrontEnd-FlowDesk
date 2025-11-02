@@ -15,7 +15,7 @@ from pipeline_exceptions import MeshingStepError
 logger = logging.getLogger(__name__)
 
 
-def run(case_name: str, geo_mesh: pv.PolyData, geo_df: pd.DataFrame, type: str = "cfmesh") -> List[str]:
+def run(case_name: str, geo_mesh: pv.PolyData, geo_df: pd.DataFrame, type: str = "cfmesh", quality_level: int = 2) -> List[str]:
     """
     Convert 3D geometry to computational mesh with parallel processing and memory management.
     
@@ -29,7 +29,8 @@ def run(case_name: str, geo_mesh: pv.PolyData, geo_df: pd.DataFrame, type: str =
         case_name: Name of the simulation case
         geo_mesh: 3D geometry mesh from previous step
         geo_df: DataFrame containing boundary condition information
-        type: Type of meshing software ("cfmesh" or "snappy")
+        type: Type of meshing software ("hvac_pro", "cfmesh", or "snappy")
+        quality_level: Mesh quality level (1=coarse ~50k, 2=medium ~500k, 3=fine ~5M cells) - only for hvac_pro
         
     Returns:
         List of script commands for mesh generation
@@ -55,7 +56,7 @@ def run(case_name: str, geo_mesh: pv.PolyData, geo_df: pd.DataFrame, type: str =
             script_commands = prepare_cfmesh(geo_mesh, sim_path, geo_df)
         elif type == "hvac_pro":
             from src.components.mesh.hvac_pro_prepare import prepare_hvac_pro
-            script_commands = prepare_hvac_pro(geo_mesh, sim_path, geo_df)
+            script_commands = prepare_hvac_pro(geo_mesh, sim_path, geo_df, quality_level=quality_level)
         elif type == "snappy":
             from src.components.mesh.snappy import prepare_snappy
             script_commands = prepare_snappy(geo_mesh, sim_path, geo_df)
@@ -92,10 +93,13 @@ def run(case_name: str, geo_mesh: pv.PolyData, geo_df: pd.DataFrame, type: str =
 
 
 if __name__ == "__main__":
-    from mesher_config import get_default_mesher
+    from mesher_config import get_default_mesher, get_default_quality_level
     
     case_name = "FDM_iter2"
     geo_mesh, geo_df = load_geo_files(case_name)
     mesher_type = get_default_mesher()
+    quality_level = get_default_quality_level()
     print(f"Using mesher: {mesher_type}")
-    result = run(case_name=case_name, geo_mesh=geo_mesh, geo_df=geo_df, type=mesher_type)
+    if mesher_type == "hvac_pro":
+        print(f"Quality level: {quality_level}")
+    result = run(case_name=case_name, geo_mesh=geo_mesh, geo_df=geo_df, type=mesher_type, quality_level=quality_level)

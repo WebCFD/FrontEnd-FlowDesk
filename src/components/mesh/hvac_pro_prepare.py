@@ -32,7 +32,7 @@ def create_surfaceFeatureExtractDict(template_path, sim_path, stl_filename):
 
 
 def prepare_hvac_pro(geo_mesh: pv.PolyData, sim_path: str, geo_df: pd.DataFrame, 
-                     stl_filename: str = "geometry.stl") -> list:
+                     stl_filename: str = "geometry.stl", quality_level: int = 2) -> list:
     """
     Prepare HVAC Professional mesh configuration and scripts.
     
@@ -44,14 +44,21 @@ def prepare_hvac_pro(geo_mesh: pv.PolyData, sim_path: str, geo_df: pd.DataFrame,
         sim_path: Path to simulation directory
         geo_df: DataFrame containing boundary condition information
         stl_filename: Name of the STL file to export
+        quality_level: 1 (coarse ~50k), 2 (medium ~500k), 3 (fine ~5M cells)
         
     Returns:
         List of script commands for mesh generation
     """
+    from src.components.mesh.hvac_pro import MeshQualityLevel
+    
+    config = MeshQualityLevel.get_config(quality_level)
+    
     logger.info("")
     logger.info("=" * 80)
-    logger.info("HVAC PROFESSIONAL MESH PREPARATION")
+    logger.info(f"HVAC MESH PREPARATION - Quality Level {quality_level}")
     logger.info("=" * 80)
+    logger.info(f"  Quality: {config['name']}")
+    logger.info(f"  Description: {config['description']}")
     logger.info(f"  Geometry: {geo_mesh.n_cells} cells")
     logger.info(f"  Boundary conditions: {len(geo_df)} patches")
     logger.info("=" * 80)
@@ -77,8 +84,8 @@ def prepare_hvac_pro(geo_mesh: pv.PolyData, sim_path: str, geo_df: pd.DataFrame,
     logger.info("  * Creating blockMeshDict")
     create_blockMeshDict(template_path, sim_path, geo_mesh)
     
-    logger.info("  * Creating HVAC Professional snappyHexMeshDict")
-    create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo_mesh, geo_df)
+    logger.info(f"  * Creating HVAC snappyHexMeshDict (quality level {quality_level})")
+    create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo_mesh, geo_df, quality_level)
     
     # Get expected patches for validation
     expected_patches = geo_df["id"].tolist()
@@ -107,7 +114,8 @@ def prepare_hvac_pro(geo_mesh: pv.PolyData, sim_path: str, geo_df: pd.DataFrame,
     
     logger.info("")
     logger.info("=" * 80)
-    logger.info("✓ HVAC Professional mesh preparation completed successfully")
+    logger.info("✓ HVAC mesh preparation completed successfully")
+    logger.info(f"  Quality level: {quality_level} ({config['name']})")
     logger.info(f"  Mesh script: {len(script_commands)} commands")
     logger.info("=" * 80)
     logger.info("")

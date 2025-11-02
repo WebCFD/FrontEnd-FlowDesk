@@ -5,9 +5,16 @@ Change DEFAULT_MESHER to switch between meshing strategies globally.
 """
 
 # =============================================================================
-# MESHER CONFIGURATION - Change this single line to switch meshing strategy
+# MESHER CONFIGURATION
 # =============================================================================
 DEFAULT_MESHER = "hvac_pro"  # Options: "hvac_pro" (recommended), "snappy", "cfmesh"
+
+# MESH QUALITY LEVEL (only for hvac_pro)
+# Level 1: Coarse (~50k cells)   - Fast validation, ~2 min meshing
+# Level 2: Medium (~500k cells)  - Production quality, ~5-10 min meshing ⭐ RECOMMENDED
+# Level 3: Fine (~5M cells)      - Research grade, ~20-30 min meshing
+DEFAULT_QUALITY_LEVEL = 2
+
 # =============================================================================
 # NOTE: 
 #   - "hvac_pro" is the recommended professional configuration for HVAC
@@ -58,8 +65,20 @@ def get_default_mesher():
     return DEFAULT_MESHER
 
 
+def get_default_quality_level():
+    """Get the configured default mesh quality level."""
+    return DEFAULT_QUALITY_LEVEL
+
+
 def validate_mesher(mesher_type):
     """Validate that the mesher type is supported."""
     if mesher_type not in ["hvac_pro", "cfmesh", "snappy"]:
         raise ValueError(f"Unknown mesher type: {mesher_type}. Must be 'hvac_pro', 'cfmesh', or 'snappy'")
     return mesher_type
+
+
+def validate_quality_level(quality_level):
+    """Validate that the quality level is supported."""
+    if quality_level not in [1, 2, 3]:
+        raise ValueError(f"Unknown quality level: {quality_level}. Must be 1 (coarse), 2 (medium), or 3 (fine)")
+    return quality_level

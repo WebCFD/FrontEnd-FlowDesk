@@ -29,7 +29,7 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 
 ### CFD Meshing Strategy (⭐ HVAC Professional - Nov 2, 2025)
 
-**Active Configuration**: `hvac_pro` (snappyHexMesh optimized from scratch)
+**Active Configuration**: `hvac_pro` (snappyHexMesh optimized from scratch with parametric quality levels)
 
 **Design Philosophy**: Physics-based mesh sizing derived from:
 - Jet resolution requirements (10-15 cells across jet diameter)
@@ -37,7 +37,16 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 - Thermal stratification (15-20 cells per floor height)
 - Numerical stability (smooth transitions, strict quality controls)
 
-**Refinement Levels** (cell size = 0.25m / 2^level):
+**Parametric Quality Levels** (configure in `mesher_config.py`):
+```
+Level 1 (Coarse):  ~50k cells    - Fast validation (~2 min mesh, ~5 min CFD)
+Level 2 (Medium):  ~500k cells   - Production quality (~10 min mesh, ~30 min CFD) ⭐ DEFAULT
+Level 3 (Fine):    ~5M cells     - Research grade (~30 min mesh, ~4 hours CFD)
+```
+
+**Example: Level 2 (Medium) Configuration**:
+
+*Refinement Levels* (cell size = 0.25m / 2^level):
 ```
 Level 6 (4mm):  Pressure inlets    → Jet core capture
 Level 5 (8mm):  Pressure outlets   → Return flow patterns
@@ -45,29 +54,33 @@ Level 3 (3cm):  Walls               → Thermal boundary layer
 Level 2 (6cm):  Floor/Ceiling      → Vertical stratification
 ```
 
-**Volumetric Refinement** (Multi-zone around pressure boundaries):
+*Volumetric Refinement* (Multi-zone around pressure boundaries):
 ```
 Zone 1 (0-0.3m):   Level 5 → Jet expansion and mixing
 Zone 2 (0.3-1.0m): Level 4 → Deceleration and entrainment
 Zone 3 (1.0-2.0m): Level 3 → Flow development
 ```
 
-**Boundary Layers**:
+*Boundary Layers*:
 ```
 Pressure boundaries: 7 layers, first cell 1mm (y+ ≈ 20-30), ratio 1.15
 Walls:              5 layers, first cell 2mm (thermal BL), ratio 1.2
 Target coverage:    >95% pressure boundaries, >90% walls
 ```
 
-**Quality Controls**:
+*Quality Controls*:
 ```
 maxNonOrtho: 55 (strict), maxSkewness: 12 (boundary) / 2.5 (internal)
-Typical cell count: 200k-400k (small room), 500k-800k (medium room)
 ```
 
 **Alternative Configurations**:
 - `snappy`: Basic snappyHexMesh (level 0-4 refinement, basic layers)
 - `cfmesh`: Automatic mesher (NOT available on Inductiva platform)
+
+**Files**: 
+- Configuration: `mesher_config.py` (set DEFAULT_QUALITY_LEVEL = 1, 2, or 3)
+- Implementation: `src/components/mesh/hvac_pro.py` (parametric system)
+- Documentation: `data/settings/mesh/hvac_pro/README.md` (detailed guide)
 
 ### Core Features & Design Patterns
 - **3D Design Engine**: Three.js-based, supporting multi-floor designs, 2D to 3D transformations, and wall extrusion.
