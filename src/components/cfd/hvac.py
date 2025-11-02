@@ -165,7 +165,7 @@ def define_initial_files(sim_path, patch_df):
     # ============ STABILITY TEST MODE ============
     # Set to True to test solver stability with equilibrium solution (all walls, uniform fields)
     # Set to False to use normal boundary conditions from JSON
-    STABILITY_TEST_MODE = True
+    STABILITY_TEST_MODE = False
     # =============================================
     
     if STABILITY_TEST_MODE:
@@ -362,12 +362,9 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'fixedValue'
                         new_bc_data["value"] = 0.5
                     elif(variable == 'h'):
-                        # Enthalpy inlet: fixedValue for stability (prevents h<0 from inletOutlet interpolation)
-                        new_bc_data["type"] = 'fixedValue'
-                        T_inlet = row['T'] + 273.15
-                        h_value = CP * T_inlet
-                        logger.info(f"    BC {row['id']} ({row['type']}): T={row['T']}°C → T_K={T_inlet}K → h={h_value} J/kg")
-                        new_bc_data["value"] = h_value
+                        # Enthalpy inlet: zeroGradient to avoid overconstraining with fixedValue p_rgh
+                        new_bc_data["type"] = 'zeroGradient'
+                        logger.info(f"    BC {row['id']} ({row['type']}): h = zeroGradient (temperature adapts to flow)")
                     elif(variable == 'k'):
                         new_bc_data["type"] = 'turbulentIntensityKineticEnergyInlet'
                         new_bc_data["intensity"] = 0.14
@@ -390,9 +387,8 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 34.4876
                     elif(variable == 'T'):
-                        # Temperature inlet: fixedValue for stability
-                        new_bc_data["type"] = 'fixedValue'
-                        new_bc_data["value"] = row['T'] + 273.15
+                        # Temperature inlet: zeroGradient to avoid overconstraining with fixedValue p_rgh
+                        new_bc_data["type"] = 'zeroGradient'
                     elif(variable == 'U'):
                         if (row['open']):
                             # Use pressureInletOutletVelocity for pressure-driven inflow
@@ -419,10 +415,8 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["inletValue"] = 0.5
                         new_bc_data["value"] = 0.5
                     elif(variable == 'h'):
-                        # Enthalpy outlet: fixedValue for stability (prevents h<0 from inletOutlet interpolation)
-                        new_bc_data["type"] = 'fixedValue'
-                        T_outlet = row['T'] + 273.15
-                        new_bc_data["value"] = CP * T_outlet
+                        # Enthalpy outlet: zeroGradient to avoid overconstraining with fixedValue p_rgh
+                        new_bc_data["type"] = 'zeroGradient'
                     elif(variable == 'k'):
                         new_bc_data["type"] = 'inletOutlet'
                         new_bc_data["inletValue"] = '$internalField'
@@ -445,9 +439,8 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = 46.0115
                     elif(variable == 'T'):
-                        # Temperature outlet: fixedValue for stability
-                        new_bc_data["type"] = 'fixedValue'
-                        new_bc_data["value"] = row['T'] + 273.15
+                        # Temperature outlet: zeroGradient to avoid overconstraining with fixedValue p_rgh
+                        new_bc_data["type"] = 'zeroGradient'
                     elif(variable == 'U'):
                         if (row['open']):
                             # Use inletOutlet for adjustable mass flow conservation

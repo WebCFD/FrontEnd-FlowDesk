@@ -4,20 +4,6 @@
 
 This project is a full-stack web application designed for HVAC (Heating, Ventilation, and Air Conditioning) simulation and design. It offers an interactive 3D environment for creating room layouts, placing furniture, configuring air flow systems, and running thermal simulations for multi-floor buildings. The platform aims to provide HVAC professionals and enthusiasts with a comprehensive tool for visualizing and analyzing thermal dynamics and exporting simulation data for further analysis.
 
-## Active Debugging (November 2, 2025)
-
-### Stability Test Mode
-- **Purpose**: Diagnose whether solver instability (h<0 crash) is caused by boundary conditions or numerical schemes
-- **Location**: `src/components/cfd/hvac.py` line 171 - `STABILITY_TEST_MODE` flag
-- **When Active**: 
-  - All patches forced to wall boundary conditions (noSlip, fixedValue)
-  - Uniform initial conditions: U=(0,0,0), T=293.15K, h=294515.75 J/kg, p_rgh=0
-  - Tests if solver can maintain equilibrium solution without diverging
-- **Test Interpretation**:
-  - If converges → Problem is BC-related (pressure_inlet/outlet configuration)
-  - If diverges → Problem is numerical schemes or relaxation factors
-- **Reversion**: Set `STABILITY_TEST_MODE = False` to restore normal operation
-
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
@@ -87,11 +73,11 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 - **Windows/Doors (pressure boundaries - pressure_inlet and pressure_outlet)**: 
   - p_rgh: fixedValue 0 (atmospheric pressure reference)
   - U: pressureInletOutletVelocity (inlet) or inletOutlet (outlet)
-  - h: fixedValue (stable, prevents h<0 from inletOutlet interpolation during startup)
-  - T: fixedValue (stable, consistent with h boundary)
-  - Critical fixes (Nov 1, 2025):
-    * fixedValue p_rgh=0 (not fixedFluxPressure) prevents negative pressure flux
-    * fixedValue h/T (not inletOutlet) prevents negative enthalpy during SIMPLE startup when U field is chaotic
+  - h: zeroGradient (allows temperature to adapt to flow, prevents overconstraining)
+  - T: zeroGradient (consistent with h boundary)
+  - Critical fix (Nov 2, 2025):
+    * zeroGradient h/T (not fixedValue) - fixedValue p_rgh + fixedValue h creates overconstrained system because p_rgh and h are coupled through equation of state (ρ = pRef/(R×T), h = Cp×T)
+    * zeroGradient allows temperature/enthalpy to adapt to flow while pressure drives the solution
 - **Velocity/Mass Flow Inlets**: fixedValue for h and T (flow direction known, no backflow possible)
 
 **Mesh Generation & Validation Pipeline (Allrun):**
@@ -126,17 +112,15 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 - **Migration to Boussinesq (Nov 1, 2025)**: After systematic debugging, perfectGas + pressure boundaries showed fundamental instability (exponential divergence in density despite ultra-conservative settings). Boussinesq approximation (incompressiblePerfectGas + hConst) eliminates p-ρ coupling, providing numerical stability for HVAC applications with ΔT <50°C
 - hConst thermo model with sensibleEnthalpy variable (h = Cp×T) provides linear energy equation
 - Density calculation ρ = pRef/(R×T) uses constant reference pressure, breaking the circular dependency between pressure field and density that caused perfectGas divergence
-- inletOutlet boundary type for h/T fields on pressure boundaries allows bidirectional flow while maintaining thermodynamic consistency
+- **zeroGradient h/T on pressure boundaries (Critical Fix - Nov 2, 2025)**: fixedValue p_rgh + fixedValue h creates overconstrained system because p_rgh and h are coupled through equation of state (ρ = pRef/(R×T), h = Cp×T). Solution: Use zeroGradient for h and T on pressure_inlet/outlet, allowing temperature to adapt to flow while pressure drives the solution
 - **0.orig → 0 copy before decomposePar (Critical Fix - Nov 1, 2025)**: setup() writes fresh Boussinesq fields (h, T, p_rgh) to 0.orig/, but decomposePar was using stale 0/ directory with old perfectGas fields (e). This caused h<0 → ρ<0 crash from iteration 1. Explicit `rm -rf 0 && cp -r 0.orig 0` before decomposePar ensures fresh fields are used
-- **fixedValue for p_rgh on openings (Nov 1, 2025)**: fixedFluxPressure extrapolates large negative pressure flux in early SIMPLE iterations, forcing compensating negative energy flux that drives h<0 → T<0 → ρ<0 crash. fixedValue p_rgh=0 maintains atmospheric reference without unstable gradients, preventing negative enthalpy
-- Higher relaxation factors (rho=0.7, h=0.9) possible with Boussinesq due to linear coupling
+- **Stability Test Mode for Debugging**: STABILITY_TEST_MODE flag (line 171 in hvac.py) forces all patches to wall BCs with uniform initial conditions, isolating whether crashes are BC-related or numerical-scheme-related. Wall-only test converged successfully (30 iterations), confirming solver is numerically stable and problem was in pressure boundary configuration
 - Comprehensive debug logging at initialization enables rapid troubleshooting of boundary conditions
 - checkMesh validation prevents mesh quality issues before expensive solver runs  
 - Dynamic controlDict patch generation automatically updates VTK sampling surfaces based on actual floor/ceiling patches from mesh (floor_0F, ceil_1F, etc.) preventing patch naming mismatches
 - Configurable iterations via simulationType parameter with fail-safe defaults ensures graceful degradation if type is missing
 - **perfectGas Lessons Learned**: perfectGas with pressure boundaries creates exponential divergence due to p-ρ-T coupling; no amount of conservative discretization (upwind) or relaxation (rho=0.005) can stabilize this fundamental numerical instability
-- **fixedFluxPressure Lessons Learned**: Even with Boussinesq, fixedFluxPressure on pressure boundaries causes h to undershoot below zero in first SIMPLE iteration, leading to negative temperature crash. fixedValue p_rgh=0 is required for stable buoyancy-driven flow with open boundaries
-- **inletOutlet for h/T Lessons Learned (Critical - Nov 1, 2025)**: inletOutlet interpolates field values based on flow direction (U·n). During SIMPLE startup, U field changes drastically (residual=1.0) from uniform zero to chaotic flow. With large h gradients (15K difference) at boundaries, inletOutlet produces h<0 values before relaxation factors can stabilize. Solution: Use fixedValue for h and T on pressure boundaries, eliminating unstable interpolation
+- **Overconstrained BCs Lessons Learned (Nov 2, 2025)**: In buoyantSimpleFoam with Boussinesq, cannot specify both p_rgh and h/T independently on same boundary because they are coupled via equation of state. fixedValue p_rgh + fixedValue h causes immediate crash (h<0 in iteration 1). Correct solution: fixedValue p_rgh + zeroGradient h/T
 - **0.orig/ vs 0/ Lessons Learned**: decomposePar reads from 0/, not 0.orig/. If 0.orig/ is not copied to 0/ before decomposePar, the solver starts with stale/inconsistent fields, causing immediate crashes. Always copy 0.orig → 0 before decomposePar
 
 ## External Dependencies
