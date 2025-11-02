@@ -49,7 +49,7 @@ castellatedMeshControls
     ( 
         {
             file $EMESH_FILENAME;
-            levels ((0.001 6) (0.005 4) (0.020 2));  // Fine feature resolution
+$FEATURE_REFINEMENT_LEVELS
         }
     );
 
@@ -62,7 +62,7 @@ castellatedMeshControls
         }
     }
 
-    resolveFeatureAngle 25;  // Stricter feature detection
+    resolveFeatureAngle $FEATURE_ANGLE;  // Feature detection angle
 
     // VOLUMETRIC REFINEMENT REGIONS
     // Multi-zone refinement around pressure boundaries for jet capture

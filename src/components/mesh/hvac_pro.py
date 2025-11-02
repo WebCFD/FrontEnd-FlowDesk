@@ -49,23 +49,29 @@ class MeshQualityLevel:
     
     CONFIGS = {
         1: {  # COARSE - ~50k cells
-            'name': 'Coarse (fast validation)',
-            'description': 'Quick mesh for flow pattern validation',
-            'base_cell_size': 0.25,  # Same as Level 2
+            'name': 'Uniform ~10cm mesh with edge refinement',
+            'description': 'Homogeneous 10cm cells, refined to 1.25cm at feature edges',
+            'base_cell_size': 0.40,  # 40cm base in blockMesh
             'levels': {
-                'pressure_inlet': 3,      # 0.031m (~3cm) - moderado
-                'pressure_outlet': 2,     # 0.062m (~6cm)
-                'wall': 1,                # 0.125m (~12cm)
-                'floor_ceiling': 1,       # 0.125m (~12cm)
-                'default': 1              # Moderate global refinement
+                'pressure_inlet': 2,      # 10cm (40cm / 2^2)
+                'pressure_outlet': 2,     # 10cm
+                'wall': 2,                # 10cm
+                'floor_ceiling': 2,       # 10cm
+                'default': 2              # 10cm everywhere (uniform)
             },
             'volumetric_zones': [
-                {'distance': 0.2, 'level': 2, 'name': 'near_inlet'},
+                # No volumetric refinement - uniform mesh everywhere
             ],
             'boundary_layers': {
-                'pressure_inlet': {'nLayers': 3, 'firstLayerThickness': 0.005, 'expansionRatio': 1.3},
-                'pressure_outlet': {'nLayers': 3, 'firstLayerThickness': 0.005, 'expansionRatio': 1.3},
-                'wall': {'nLayers': 2, 'firstLayerThickness': 0.010, 'expansionRatio': 1.3},
+                'pressure_inlet': {'nLayers': 2, 'firstLayerThickness': 0.005, 'expansionRatio': 1.3},
+                'pressure_outlet': {'nLayers': 2, 'firstLayerThickness': 0.005, 'expansionRatio': 1.3},
+                'wall': {'nLayers': 2, 'firstLayerThickness': 0.005, 'expansionRatio': 1.3},
+            },
+            'feature_edge_refinement': {
+                'enabled': True,
+                'min_level': 2,          # 10cm base
+                'max_level': 5,          # 1.25cm at sharp edges (40cm / 2^5)
+                'feature_angle': 30      # Refine edges with angle > 30°
             }
         },
         2: {  # MEDIUM - ~500k cells ⭐ DEFAULT
@@ -353,7 +359,7 @@ def create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo
         stl_filename: STL geometry filename
         geo_mesh: PyVista mesh for locationInMesh
         geo_df: DataFrame with boundary condition information
-        quality_level: 1 (coarse ~50k), 2 (medium ~500k), 3 (fine ~5M cells)
+        quality_level: 1 (uniform 10mm), 2 (medium ~500k), 3 (fine ~5M cells)
     """
     from src.components.mesh.snappy import generate_location_inside_mesh
     
@@ -377,6 +383,26 @@ def create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo
     boundary_layers = generate_hvac_boundary_layers(geo_df, quality_level)
     location_inside_mesh = generate_location_inside_mesh(geo_mesh)
     
+    # Feature edge refinement configuration
+    if quality_level == 1 and 'feature_edge_refinement' in config:
+        # Level 1: Uniform mesh with feature edge refinement only
+        feature_config = config['feature_edge_refinement']
+        base_size = config['base_cell_size']
+        
+        # Calculate distances for feature refinement
+        # level 3: 10mm / 2^3 = 1.25mm
+        min_distance = base_size * 0.001  # Very close to edge
+        max_distance = base_size * 0.02   # Further from edge
+        
+        feature_refinement_levels = f"            levels (({min_distance} {feature_config['max_level']}) ({max_distance} {feature_config['min_level']}));"
+        feature_angle = str(feature_config['feature_angle'])
+        
+        logger.info(f"  Feature edge refinement: {base_size*1000}mm → {base_size*1000 / (2**feature_config['max_level']):.2f}mm at edges")
+    else:
+        # Level 2/3: Standard feature refinement
+        feature_refinement_levels = "            levels ((0.001 6) (0.005 4) (0.020 2));  // Fine feature resolution"
+        feature_angle = "25"
+    
     # Enable layers if any boundary layers configured
     enable_layers = "true" if "No boundary layers" not in boundary_layers else "false"
     
@@ -385,6 +411,8 @@ def create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo
         "$STL_FILENAME": stl_filename,
         "$GEOMETRY_REGIONS": geometry_regions,
         "$EMESH_FILENAME": emesh_filename,
+        "$FEATURE_REFINEMENT_LEVELS": feature_refinement_levels,
+        "$FEATURE_ANGLE": feature_angle,
         "$REFINEMENT_SURFACES": refinement_surfaces,
         "$VOLUMETRIC_REFINEMENT": volumetric_refinement,
         "$BOUNDARY_LAYERS": boundary_layers,
