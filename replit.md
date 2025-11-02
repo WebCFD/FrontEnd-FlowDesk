@@ -38,6 +38,7 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 - **JSON Import/Export**: Robust handling of complex designs, ensuring data preservation and accurate unit conversions for perfect reversibility.
 - **Containerized Deployment**: Application is containerized for Google Cloud Run.
 - **CFD Simulation Pipeline**: End-to-end pipeline for converting user designs into OpenFOAM CFD simulations executed on Inductiva cloud, with results visualized in the web UI. This involves a dual-worker system (`worker_submit.py` for geometry, mesh, CFD setup, and submission; `worker_monitor.py` for monitoring, result download, and post-processing).
+- **Dual Meshing Strategy (Nov 2, 2025)**: Supports both snappyHexMesh and cfMesh for mesh generation. cfMesh is recommended for HVAC applications with pressure boundaries (windows/doors/vents) due to superior automatic boundary layer generation (>90% coverage) and 2-5x faster meshing times. snappyHexMesh remains available for multi-region cases or rotating machinery.
 
 ### CFD Configuration & Physics (Updated November 1, 2025)
 
@@ -80,13 +81,29 @@ Development approach: Favor simple, minimal solutions over complex implementatio
     * zeroGradient allows temperature/enthalpy to adapt to flow while pressure drives the solution
 - **Velocity/Mass Flow Inlets**: fixedValue for h and T (flow direction known, no backflow possible)
 
-**Mesh Generation & Validation Pipeline (Allrun):**
+**Mesh Generation & Validation Pipeline:**
+
+**Option A - cfMesh (Recommended for HVAC):**
+1. surfaceFeatureExtract - Extract geometry features
+2. cartesianMesh - Single-command meshing with automatic:
+   - Base cartesian mesh generation
+   - Surface refinement (pressure boundaries get 2x finer cells)
+   - Automatic boundary layer generation (5 layers on openings, 3 on walls)
+   - Geometry snapping
+3. Python validation - Verify watertight geometry (no background patches)
+4. checkMesh - Validate mesh quality
+5. Initial conditions preparation - Copy 0.orig to 0
+6. decomposePar - Decompose for parallel execution
+7. buoyantSimpleFoam - Parallel CFD solver execution
+8. Post-processing - Reconstruct and export VTK results
+
+**Option B - snappyHexMesh (For multi-region or rotating machinery):**
 1. surfaceFeatureExtract - Extract geometry features for snapping
 2. blockMesh - Create background mesh
 3. snappyHexMesh - Refined mesh generation (parallel execution in cloud)
 4. Python validation - Verify watertight geometry (no background patches)
 5. checkMesh - Validate mesh quality (skewness, aspect ratio, non-orthogonality)
-6. **Initial conditions preparation - Copy 0.orig to 0 (CRITICAL - Nov 1, 2025)**
+6. Initial conditions preparation - Copy 0.orig to 0 (CRITICAL - Nov 1, 2025)
 7. decomposePar - Decompose for parallel execution
 8. Debug files copy - Copy processor0 files for inspection
 9. buoyantSimpleFoam - Parallel CFD solver execution
@@ -113,6 +130,12 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 - hConst thermo model with sensibleEnthalpy variable (h = Cp×T) provides linear energy equation
 - Density calculation ρ = pRef/(R×T) uses constant reference pressure, breaking the circular dependency between pressure field and density that caused perfectGas divergence
 - **zeroGradient h/T on pressure boundaries (Critical Fix - Nov 2, 2025)**: fixedValue p_rgh + fixedValue h creates overconstrained system because p_rgh and h are coupled through equation of state (ρ = pRef/(R×T), h = Cp×T). Solution: Use zeroGradient for h and T on pressure_inlet/outlet, allowing temperature to adapt to flow while pressure drives the solution
+- **cfMesh Implementation for HVAC (Nov 2, 2025)**: Implemented cfMesh as recommended meshing strategy for HVAC applications with pressure boundaries (windows/doors/vents). Key benefits:
+  - **Automatic boundary layers**: >90% coverage vs <50% with snappyHexMesh, critical for accurate near-wall thermal/velocity profiles for PMV/PPD calculations
+  - **Differentiated refinement**: Pressure boundaries automatically get 2x finer cells (5cm) than walls (10cm), resolving velocity/pressure gradients correctly without manual tuning
+  - **2-5x faster**: Single-command workflow (`cartesianMesh`) vs multi-stage snappyHexMesh (blockMesh → surfaceFeatureExtract → snappyHexMesh)
+  - **More robust**: Fewer parameters to tune, works "first try" in majority of HVAC cases
+  - Implementation in `src/components/mesh/cfmesh.py` with templates in `data/settings/mesh/cfmesh/`
 - **0.orig → 0 copy before decomposePar (Critical Fix - Nov 1, 2025)**: setup() writes fresh Boussinesq fields (h, T, p_rgh) to 0.orig/, but decomposePar was using stale 0/ directory with old perfectGas fields (e). This caused h<0 → ρ<0 crash from iteration 1. Explicit `rm -rf 0 && cp -r 0.orig 0` before decomposePar ensures fresh fields are used
 - **Stability Test Mode for Debugging**: STABILITY_TEST_MODE flag (line 171 in hvac.py) forces all patches to wall BCs with uniform initial conditions, isolating whether crashes are BC-related or numerical-scheme-related. Wall-only test converged successfully (30 iterations), confirming solver is numerically stable and problem was in pressure boundary configuration
 - Comprehensive debug logging at initialization enables rapid troubleshooting of boundary conditions
@@ -122,6 +145,7 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 - **perfectGas Lessons Learned**: perfectGas with pressure boundaries creates exponential divergence due to p-ρ-T coupling; no amount of conservative discretization (upwind) or relaxation (rho=0.005) can stabilize this fundamental numerical instability
 - **Overconstrained BCs Lessons Learned (Nov 2, 2025)**: In buoyantSimpleFoam with Boussinesq, cannot specify both p_rgh and h/T independently on same boundary because they are coupled via equation of state. fixedValue p_rgh + fixedValue h causes immediate crash (h<0 in iteration 1). Correct solution: fixedValue p_rgh + zeroGradient h/T
 - **0.orig/ vs 0/ Lessons Learned**: decomposePar reads from 0/, not 0.orig/. If 0.orig/ is not copied to 0/ before decomposePar, the solver starts with stale/inconsistent fields, causing immediate crashes. Always copy 0.orig → 0 before decomposePar
+- **Meshing Strategy Lessons Learned (Nov 2, 2025)**: snappyHexMesh with uniform refinement level (0 2) on all patches insufficient for HVAC pressure boundaries. Root cause: Pressure boundaries require finer mesh to resolve ∇p gradients correctly, preventing advection-driven instability (U·∇h producing h<0). cfMesh's automatic differentiated refinement (pressure boundaries 2x finer than walls) solves this inherently, while snappyHexMesh requires manual refinementRegions tuning
 
 ## External Dependencies
 

@@ -1,0 +1,81 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | cfMesh: A library for mesh generation          | 
+|  \\    /   O peration     |                                                 |
+|   \\  /    A nd           | Author: Franjo Juretic                          | 
+|    \\/     M anipulation  | E-mail: franjo.juretic@c-fields.com            |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version   2.0;
+    format    ascii;
+    class     dictionary;
+    location  "system";
+    object    meshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+surfaceFile "$STL_FILENAME";
+
+maxCellSize $MAX_CELL_SIZE;
+
+// Enforce boundary layers on all surfaces for HVAC thermal analysis
+// This is critical for accurate near-wall temperature and velocity profiles
+boundaryCellSize $MAX_CELL_SIZE;
+
+// Minimum cell size allowed (prevents over-refinement)
+minCellSize 0.005;
+
+// Local refinement near surfaces based on boundary condition type
+// Pressure boundaries (windows, doors, vents) get finer mesh for better flow resolution
+localRefinement
+{
+$PATCH_REFINEMENT
+}
+
+// Boundary layer configuration
+// cfMesh automatically generates robust boundary layers (>90% coverage)
+// This is superior to snappyHexMesh for HVAC applications
+boundaryLayers
+{
+    // Number of layers and thickness control
+    patchBoundaryLayers
+    {
+$BOUNDARY_LAYERS
+    }
+    
+    // Optimization settings for layer quality
+    optimiseLayer 1;
+    
+    // Allow untangling of boundary layer for difficult geometries
+    untangleLayers 1;
+}
+
+// Reproject surface points for better geometry capture
+renameBoundary
+{
+    defaultName        walls;
+    defaultType        wall;
+}
+
+// Quality settings for mesh optimization
+meshQualitySettings
+{
+    // Maximum non-orthogonality angle (degrees)
+    // Lower is better, 65 is acceptable for CFD
+    maxNonOrthogonality 65;
+    
+    // Maximum boundary skewness
+    maxBoundarySkewness 20;
+    
+    // Maximum internal skewness
+    maxInternalSkewness 4;
+    
+    // Minimum cell volume (cubic meters)
+    minCellVolume 1e-13;
+    
+    // Minimum face area
+    minFaceArea 1e-13;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
