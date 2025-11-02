@@ -110,6 +110,7 @@ $BOUNDARY_LAYERS
     nSmoothThickness 20;
     maxFaceThicknessRatio 0.6;
     maxThicknessToMedialRatio 0.6;
+    minThickness 0.1;                // Relative minimum (10% of cell size)
     minMedianAxisAngle 80;
     nBufferCellsNoExtrude 0;
     nLayerIter 150;

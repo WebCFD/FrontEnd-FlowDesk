@@ -103,6 +103,7 @@ $BOUNDARY_LAYERS
     nSmoothThickness 15;          // More thickness smoothing
     maxFaceThicknessRatio 0.5;
     maxThicknessToMedialRatio 0.5; // Relaxed for better coverage
+    minThickness 0.1;             // Relative minimum (10% of cell size)
     minMedianAxisAngle 85;        // Relaxed to allow more layers
     nBufferCellsNoExtrude 0;
     nLayerIter 100;               // More iterations for better quality
