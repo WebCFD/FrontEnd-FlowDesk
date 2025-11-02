@@ -10,10 +10,10 @@ Change DEFAULT_MESHER to switch between meshing strategies globally.
 DEFAULT_MESHER = "hvac_pro"  # Options: "hvac_pro" (recommended), "snappy", "cfmesh"
 
 # MESH QUALITY LEVEL (only for hvac_pro)
-# Level 1: Coarse (~50k cells)   - Fast validation, ~2 min meshing
-# Level 2: Medium (~500k cells)  - Production quality, ~5-10 min meshing ⭐ RECOMMENDED
+# Level 1: Coarse (~50k cells)   - Fast validation, ~2 min meshing ⭐ DEBUG MODE
+# Level 2: Medium (~500k cells)  - Production quality, ~5-10 min meshing
 # Level 3: Fine (~5M cells)      - Research grade, ~20-30 min meshing
-DEFAULT_QUALITY_LEVEL = 2
+DEFAULT_QUALITY_LEVEL = 1
 
 # =============================================================================
 # NOTE: 

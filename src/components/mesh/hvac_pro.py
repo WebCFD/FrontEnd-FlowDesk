@@ -314,14 +314,12 @@ def generate_hvac_boundary_layers(geo_df: pd.DataFrame, quality_level: int = 2) 
         else:
             continue  # No layers for this BC type
         
-        # Generate layer block
+        # Generate layer block (using firstLayerThickness + expansionRatio)
         block = f"""        "{patch_name}"
         {{
             nSurfaceLayers {layer_config['nLayers']};
             firstLayerThickness {layer_config['firstLayerThickness']};
             expansionRatio {layer_config['expansionRatio']};
-            finalLayerThickness 0.3;
-            minThickness {layer_config['firstLayerThickness'] * 0.5};
         }}"""
         blocks.append(block)
         
