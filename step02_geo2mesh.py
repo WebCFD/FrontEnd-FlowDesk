@@ -4,7 +4,7 @@ Geometry to mesh conversion with parallel processing and memory management.
 
 import os
 import logging
-from typing import List
+from typing import List, Optional
 import pyvista as pv
 import pandas as pd
 
@@ -15,7 +15,7 @@ from pipeline_exceptions import MeshingStepError
 logger = logging.getLogger(__name__)
 
 
-def run(case_name: str, geo_mesh: pv.PolyData, geo_df: pd.DataFrame, type: str = "cfmesh", quality_level: int = None) -> List[str]:
+def run(case_name: str, geo_mesh: pv.PolyData, geo_df: pd.DataFrame, type: str = "cfmesh", quality_level: Optional[int] = None) -> List[str]:
     """
     Convert 3D geometry to computational mesh with parallel processing and memory management.
     
