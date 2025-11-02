@@ -7,7 +7,10 @@ from datetime import datetime
 from typing import Callable, Dict, Any, List
 import requests
 
-sys.path.append('.')
+# Add project root to Python path for module imports
+project_root = os.path.dirname(os.path.abspath(__file__))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 
 from step01_json2geo import run as json2geo
 from step02_geo2mesh import run as geo2mesh
