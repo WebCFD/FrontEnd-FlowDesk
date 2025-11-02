@@ -368,7 +368,6 @@ def generate_hvac_boundary_layers(geo_df: pd.DataFrame, quality_level: int = 2) 
         
         block = f"""        "{patch_name}"
         {{
-            nSurfaceLayers {layer_config['nLayers']};
             firstLayerThickness {first_layer};
             expansionRatio {layer_config['expansionRatio']};
         }}"""
