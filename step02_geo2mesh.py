@@ -15,7 +15,7 @@ from pipeline_exceptions import MeshingStepError
 logger = logging.getLogger(__name__)
 
 
-def run(case_name: str, geo_mesh: pv.PolyData, geo_df: pd.DataFrame, type: str = "cfmesh", quality_level: int = 2) -> List[str]:
+def run(case_name: str, geo_mesh: pv.PolyData, geo_df: pd.DataFrame, type: str = "cfmesh", quality_level: int = None) -> List[str]:
     """
     Convert 3D geometry to computational mesh with parallel processing and memory management.
     
@@ -35,6 +35,11 @@ def run(case_name: str, geo_mesh: pv.PolyData, geo_df: pd.DataFrame, type: str =
     Returns:
         List of script commands for mesh generation
     """
+    # Use configured default if not specified
+    if quality_level is None:
+        from mesher_config import get_default_quality_level
+        quality_level = get_default_quality_level()
+    
     performance_monitor = PerformanceMonitor()
     performance_monitor.start()
     
