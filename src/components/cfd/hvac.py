@@ -162,11 +162,13 @@ def define_initial_files(sim_path, patch_df):
     initial_path = os.path.join(sim_path, "0.orig")
     os.makedirs(initial_path, exist_ok=True)
 
-    # ============ STABILITY TEST MODE ============
-    # Set to True to test solver stability with equilibrium solution (all walls, uniform fields)
-    # Set to False to use normal boundary conditions from JSON
-    STABILITY_TEST_MODE = True
-    # =============================================
+    # ============ TEST MODES ============
+    # STABILITY_TEST_MODE: All patches as walls with uniform fields (tests numerical stability)
+    # PRESSURE_BC_TEST_MODE: Tests zeroGradient h/T on pressure boundaries (Opción A)
+    # Set both to False to use normal boundary conditions from JSON
+    STABILITY_TEST_MODE = False
+    PRESSURE_BC_TEST_MODE = False  # TODO: Reimplementar correctamente
+    # ====================================
     
     if STABILITY_TEST_MODE:
         logger.info("=" * 80)
@@ -236,17 +238,98 @@ def define_initial_files(sim_path, patch_df):
         logger.info("*** Stability test initial conditions created successfully ***")
         return
     
-    # ============ NORMAL MODE (ORIGINAL CODE) ============
-    case = FoamCase(sim_path)
-    for variable in DIMENSIONS_DICT.keys():
-        with case['0.orig'][variable] as f:
-            f.dimensions = DIMENSIONS_DICT[variable]
-            f.internal_field = INTERNALFIELD_DICT[variable]
-
-            f.boundary_field = dict()
-            for _, row in patch_df.iterrows():
-                new_bc_data = dict()
-                if(row['type'] == 'wall'):
+    if PRESSURE_BC_TEST_MODE:
+        logger.info("=" * 80)
+        logger.info("*** PRESSURE BC TEST MODE ACTIVE (Opción A) ***")
+        logger.info("*** Testing zeroGradient h/T on pressure_inlet/outlet boundaries ***")
+        logger.info("*** p_rgh: fixedValue 0, h/T: zeroGradient (not overconstrained) ***")
+        logger.info("=" * 80)
+        
+        # Use normal JSON-based BCs but modify pressure boundaries
+        case = FoamCase(sim_path)
+        for variable in DIMENSIONS_DICT.keys():
+            with case['0.orig'][variable] as f:
+                f.dimensions = DIMENSIONS_DICT[variable]
+                f.internal_field = INTERNALFIELD_DICT[variable]
+                
+                f.boundary_field = dict()
+                for _, row in patch_df.iterrows():
+                    new_bc_data = dict()
+                    
+                    # Override h and T for pressure boundaries with zeroGradient
+                    if row['type'] in ['pressure_inlet', 'pressure_outlet']:
+                        if variable == 'h':
+                            new_bc_data["type"] = 'zeroGradient'
+                            logger.info(f"    BC {row['id']} ({row['type']}): h → zeroGradient (Opción A)")
+                        elif variable == 'T':
+                            new_bc_data["type"] = 'zeroGradient'
+                            logger.info(f"    BC {row['id']} ({row['type']}): T → zeroGradient (Opción A)")
+                        elif variable == 'p_rgh':
+                            # Keep fixedValue for pressure
+                            new_bc_data["type"] = 'fixedValue'
+                            new_bc_data["value"] = 0
+                        elif variable == 'U':
+                            if row['type'] == 'pressure_inlet':
+                                if row['open']:
+                                    new_bc_data["type"] = 'pressureInletOutletVelocity'
+                                    new_bc_data["value"] = '$internalField'
+                                else:
+                                    new_bc_data["type"] = 'fixedValue'
+                                    new_bc_data["value"] = np.array([0, 0, 0])
+                            else:  # pressure_outlet
+                                if row['open']:
+                                    new_bc_data["type"] = 'inletOutlet'
+                                    new_bc_data["inletValue"] = '$internalField'
+                                    new_bc_data["value"] = '$internalField'
+                                    new_bc_data["phi"] = 'phi'
+                                else:
+                                    new_bc_data["type"] = 'fixedValue'
+                                    new_bc_data["value"] = np.array([0, 0, 0])
+                        elif variable == 'p':
+                            new_bc_data["type"] = 'calculated'
+                            new_bc_data["value"] = '$internalField'
+                        elif variable == 'alphat':
+                            new_bc_data["type"] = 'calculated'
+                            new_bc_data["value"] = '$internalField'
+                        elif variable in ['epsilon', 'k', 'omega', 'nut', 'DR', 'PMV', 'PPD']:
+                            # Use same BCs as pressure_inlet in normal mode
+                            if variable == 'epsilon':
+                                new_bc_data["type"] = 'turbulentMixingLengthDissipationRateInlet' if row['type'] == 'pressure_inlet' else 'inletOutlet'
+                                new_bc_data["mixingLength"] = 0.0168 if row['type'] == 'pressure_inlet' else None
+                                new_bc_data["value"] = '$internalField'
+                                if row['type'] == 'pressure_outlet':
+                                    new_bc_data["inletValue"] = '$internalField'
+                            elif variable == 'omega':
+                                new_bc_data["type"] = 'fixedValue' if row['type'] == 'pressure_inlet' else 'inletOutlet'
+                                new_bc_data["value"] = 0.5
+                                if row['type'] == 'pressure_outlet':
+                                    new_bc_data["inletValue"] = 0.5
+                            elif variable == 'k':
+                                new_bc_data["type"] = 'turbulentIntensityKineticEnergyInlet' if row['type'] == 'pressure_inlet' else 'inletOutlet'
+                                new_bc_data["intensity"] = 0.14 if row['type'] == 'pressure_inlet' else None
+                                new_bc_data["value"] = '$internalField'
+                                if row['type'] == 'pressure_outlet':
+                                    new_bc_data["inletValue"] = '$internalField'
+                            elif variable == 'nut':
+                                new_bc_data["type"] = 'calculated'
+                                new_bc_data["value"] = '$internalField'
+                            elif variable == 'DR':
+                                new_bc_data["type"] = 'calculated'
+                                new_bc_data["value"] = 16.61 if row['type'] == 'pressure_inlet' else 0
+                            elif variable == 'PMV':
+                                new_bc_data["type"] = 'calculated'
+                                new_bc_data["value"] = -1.18438 if row['type'] == 'pressure_inlet' else 1.40936
+                            elif variable == 'PPD':
+                                new_bc_data["type"] = 'calculated'
+                                new_bc_data["value"] = 34.4876 if row['type'] == 'pressure_inlet' else 46.0115
+                        else:
+                            raise BaseException(f'Unknown variable {variable} for pressure boundary test')
+                        
+                        f.boundary_field[row['id']] = new_bc_data
+                        continue  # Skip normal processing for pressure boundaries
+                    
+                    # For non-pressure boundaries (walls, velocity_inlet, etc.), use normal code
+                    if(row['type'] == 'wall'):
                     if(variable == 'alphat'):
                         new_bc_data["type"] = 'compressible::alphatJayatillekeWallFunction'
                         new_bc_data["Prt"] = 0.85
