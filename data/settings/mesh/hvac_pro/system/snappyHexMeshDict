@@ -19,7 +19,7 @@ FoamFile
 
 castellatedMesh true;
 snap            true;
-addLayers       true;
+addLayers       $ADD_LAYERS;
 overwrite       true;
 
 geometry
@@ -43,7 +43,7 @@ castellatedMeshControls
     maxGlobalCells 5000000;
     minRefinementCells 0;
     maxLoadUnbalance 0.10;
-    nCellsBetweenLevels 2;  // Smoother transitions
+    nCellsBetweenLevels $NCELLS_BETWEEN_LEVELS;
 
     features
     ( 
@@ -123,13 +123,12 @@ $BOUNDARY_LAYERS
 
 meshQualityControls
 {
-    // STRICT QUALITY CONTROLS FOR CFD
-    // Based on HVAC simulation requirements
+    // QUALITY CONTROLS FOR CFD (parametric per quality level)
     
-    maxNonOrtho 55;              // Strict orthogonality
-    maxBoundarySkewness 12;      // Very strict at boundaries
-    maxInternalSkewness 2.5;     // Strict internal quality
-    maxConcave 70;
+    maxNonOrtho $MAX_NON_ORTHO;
+    maxBoundarySkewness $MAX_BOUNDARY_SKEWNESS;
+    maxInternalSkewness $MAX_INTERNAL_SKEWNESS;
+    maxConcave $MAX_CONCAVE;
     minVol 1e-18;                // Allow very small cells in layers
     minTetQuality 1e-15;
     minArea 1e-18;

@@ -48,30 +48,42 @@ class MeshQualityLevel:
     """
     
     CONFIGS = {
-        1: {  # COARSE - ~100k cells
-            'name': 'Uniform 10cm with BC zones',
-            'description': '10cm base, 2.5cm (0-20cm) and 5cm (20-40cm) near BC patches',
-            'base_cell_size': 0.10,  # 10cm base cells
+        1: {  # COARSE - ~200k cells (optimized for BC stability)
+            'name': 'BC-focused 200k (all-in on boundaries)',
+            'description': 'Coarse base, aggressive BC refinement, thin layers for stability',
+            'base_cell_size': 0.10,  # 10cm base cells (coarse domain)
             'levels': {
-                'pressure_inlet': 0,      # No surface refinement
-                'pressure_outlet': 0,     # No surface refinement
-                'wall': 0,                # No surface refinement
-                'floor_ceiling': 0,       # No surface refinement
-                'default': 0              # Uniform everywhere
+                'pressure_inlet': 4,      # 6.25mm surface refinement (FINE at BC!)
+                'pressure_outlet': 4,     # 6.25mm surface refinement
+                'wall': 1,                # 5cm (minimal - layers will handle it)
+                'floor_ceiling': 1,       # 5cm (minimal)
+                'default': 0              # Coarse base
             },
             'volumetric_zones': [
-                # Two-zone refinement around pressure boundaries
-                {'distance': 0.2, 'level': 2, 'name': 'zone_0_20cm'},    # 0-20cm: 2.5cm cells
-                {'distance': 0.4, 'level': 1, 'name': 'zone_20_40cm'},   # 20-40cm: 5cm cells
+                # Three-zone aggressive refinement around pressure boundaries
+                {'distance': 0.08, 'level': 3, 'name': 'bc_core_0_8cm'},      # 0-8cm: 1.25cm cells (FINE!)
+                {'distance': 0.25, 'level': 2, 'name': 'bc_near_8_25cm'},     # 8-25cm: 2.5cm cells
+                {'distance': 0.60, 'level': 1, 'name': 'bc_mid_25_60cm'},     # 25-60cm: 5cm cells
             ],
             'boundary_layers': {
-                # NO boundary layers for Level 1 - fast debug mesh only
+                # Thin layers for numerical stability (2 layers only - save cells!)
+                'pressure_inlet': {'nLayers': 2, 'firstLayerThickness': 0.001, 'expansionRatio': 1.3},    # 1mm first
+                'pressure_outlet': {'nLayers': 2, 'firstLayerThickness': 0.001, 'expansionRatio': 1.3},   # 1mm first
+                'wall': {'nLayers': 2, 'firstLayerThickness': 0.002, 'expansionRatio': 1.4},              # 2mm first (thicker, less cells)
             },
             'feature_edge_refinement': {
-                'enabled': False,        # NO feature edge refinement - pure uniform mesh
-                'min_level': 0,          
-                'max_level': 0,          # No refinement
-                'feature_angle': 180     # Disable (no angle triggers refinement)
+                'enabled': True,         # Moderate feature detection
+                'min_level': 1,          
+                'max_level': 2,          # Moderate refinement
+                'feature_angle': 45      # Moderate angle
+            },
+            'mesh_quality': {
+                # Relaxed quality for layer coverage (strategy: get those layers to stick!)
+                'maxNonOrtho': 65,
+                'maxBoundarySkewness': 20,
+                'maxInternalSkewness': 4,
+                'maxConcave': 75,
+                'nCellsBetweenLevels': 3  # Faster transitions (save cells)
             }
         },
         2: {  # MEDIUM - ~500k cells ⭐ DEFAULT
@@ -409,7 +421,15 @@ def create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo
         feature_angle = "25"
     
     # Enable layers if any boundary layers configured
-    enable_layers = "true" if "No boundary layers" not in boundary_layers else "false"
+    add_layers = "true" if len(config.get('boundary_layers', {})) > 0 else "false"
+    
+    # Mesh quality parameters (from config or defaults)
+    mesh_quality = config.get('mesh_quality', {})
+    n_cells_between = str(mesh_quality.get('nCellsBetweenLevels', 2))
+    max_non_ortho = str(mesh_quality.get('maxNonOrtho', 55))
+    max_boundary_skew = str(mesh_quality.get('maxBoundarySkewness', 12))
+    max_internal_skew = str(mesh_quality.get('maxInternalSkewness', 2.5))
+    max_concave = str(mesh_quality.get('maxConcave', 70))
     
     # Replace placeholders
     str_replace_dict = {
@@ -422,6 +442,12 @@ def create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo
         "$VOLUMETRIC_REFINEMENT": volumetric_refinement,
         "$BOUNDARY_LAYERS": boundary_layers,
         "$LOCATION_INSIDE_MESH": location_inside_mesh,
+        "$ADD_LAYERS": add_layers,
+        "$NCELLS_BETWEEN_LEVELS": n_cells_between,
+        "$MAX_NON_ORTHO": max_non_ortho,
+        "$MAX_BOUNDARY_SKEWNESS": max_boundary_skew,
+        "$MAX_INTERNAL_SKEWNESS": max_internal_skew,
+        "$MAX_CONCAVE": max_concave,
     }
     
     replace_in_file(input_path, output_path, str_replace_dict)
