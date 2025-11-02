@@ -575,6 +575,7 @@ def process_cfd_simulation_with_pipeline(simulation):
         from step02_geo2mesh import run as geo2mesh
         from step03_mesh2cfd import run as mesh2cfd
         from step04_cfd2result import run as cfd2result
+        from mesher_config import get_default_mesher
         
         log(f"Pipeline modules imported successfully")
         
@@ -584,8 +585,9 @@ def process_cfd_simulation_with_pipeline(simulation):
         log(f"Step 1/4: Converting JSON to geometry...")
         final_geometry_mesh, boundary_conditions_df = json2geo(json_payload, case_name)
         
-        log(f"Step 2/4: Generating mesh (cfMesh)...")
-        mesh_script = geo2mesh(case_name, final_geometry_mesh, boundary_conditions_df, type="cfmesh")
+        mesher_type = get_default_mesher()
+        log(f"Step 2/4: Generating mesh ({mesher_type})...")
+        mesh_script = geo2mesh(case_name, final_geometry_mesh, boundary_conditions_df, type=mesher_type)
         
         log(f"Step 3/4: Setting up CFD case...")
         mesh2cfd(case_name, type="hvac", mesh_script=mesh_script)

@@ -12,6 +12,7 @@ sys.path.append('.')
 from step01_json2geo import run as json2geo
 from step02_geo2mesh import run as geo2mesh
 from step03_mesh2cfd import run as mesh2cfd
+from mesher_config import get_default_mesher
 from pipeline_exceptions import (
     PipelineStepError,
     GeometryStepError,
@@ -266,11 +267,13 @@ class SimulationPipeline:
         """Step 2: Geometry → Mesh"""
         try:
             geo_data = self.state['geometry']
+            mesher_type = get_default_mesher()
+            logger.info(f"Using mesher: {mesher_type}")
             mesh_script = geo2mesh(
                 self.case_name,
                 geo_data['geo_mesh'],
                 geo_data['geo_df'],
-                type="cfmesh"
+                type=mesher_type
             )
             return {'mesh_script': mesh_script}
         except Exception as e:

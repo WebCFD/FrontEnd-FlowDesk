@@ -25,6 +25,7 @@ sys.path.append('.')
 from step01_json2geo import run as json2geo
 from step02_geo2mesh import run as geo2mesh
 from step03_mesh2cfd import run as mesh2cfd
+from mesher_config import get_default_mesher
 
 def test_pipeline_local():
     """Test complete pipeline locally without executing on Inductiva"""
@@ -56,10 +57,11 @@ def test_pipeline_local():
         logger.info(f"✓ Boundary conditions: {len(boundary_conditions_df)} patches")
         
         # STEP 2: Geometry → Mesh Configuration
+        mesher_type = get_default_mesher()
         logger.info("\n" + "="*60)
-        logger.info("STEP 2: Generating Mesh Configuration (cfMesh)")
+        logger.info(f"STEP 2: Generating Mesh Configuration ({mesher_type})")
         logger.info("="*60)
-        mesh_script = geo2mesh(case_name, final_geometry_mesh, boundary_conditions_df, type="cfmesh")
+        mesh_script = geo2mesh(case_name, final_geometry_mesh, boundary_conditions_df, type=mesher_type)
         logger.info(f"✓ Mesh configuration created")
         logger.info(f"✓ Generated {len(mesh_script)} mesh script commands")
         

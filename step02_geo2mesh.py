@@ -89,6 +89,10 @@ def run(case_name: str, geo_mesh: pv.PolyData, geo_df: pd.DataFrame, type: str =
 
 
 if __name__ == "__main__":
+    from mesher_config import get_default_mesher
+    
     case_name = "FDM_iter2"
     geo_mesh, geo_df = load_geo_files(case_name)
-    result = run(case_name=case_name, geo_mesh=geo_mesh, geo_df=geo_df, type="cfmesh")
+    mesher_type = get_default_mesher()
+    print(f"Using mesher: {mesher_type}")
+    result = run(case_name=case_name, geo_mesh=geo_mesh, geo_df=geo_df, type=mesher_type)
