@@ -262,7 +262,9 @@ def generate_hvac_volumetric_refinement(geo_df: pd.DataFrame, quality_level: int
         # Build distance-based refinement levels
         level_spec = " ".join([f"({z['distance']} {z['level']})" for z in volumetric_zones])
         
-        block = f"""        {patch_name}_volume
+        # Use the patch name from geometry (not _volume suffix)
+        # Reference the actual surface in the STL file
+        block = f"""        {patch_name}
         {{
             mode    distance;
             levels  ({level_spec});
