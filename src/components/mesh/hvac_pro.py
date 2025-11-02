@@ -53,6 +53,7 @@ class MeshQualityLevel:
             'description': 'Coarse base, aggressive BC refinement, thin layers for stability',
             'base_cell_size': 0.10,  # 10cm base cells (coarse domain)
             'global_level': 0,       # CRITICAL: (0 0) to keep domain coarse
+            'maxGlobalCells': 400000,  # CRITICAL: Force limit to prevent over-refinement
             'levels': {
                 'pressure_inlet': 3,      # 1.25cm surface refinement (was 4 = too fine!)
                 'pressure_outlet': 3,     # 1.25cm surface refinement
@@ -86,7 +87,13 @@ class MeshQualityLevel:
                 'maxInternalSkewness': 5,
                 'maxConcave': 80,
                 'nCellsBetweenLevels': 3,  # Faster transitions (save cells)
-                'minRefinementCells': 10   # Prune small refinement regions
+                'minRefinementCells': 10,  # Prune small refinement regions
+                # Relaxed fallback (MORE permissive than main)
+                'relaxed': {
+                    'maxNonOrtho': 75,
+                    'maxBoundarySkewness': 35,
+                    'maxInternalSkewness': 6
+                }
             },
             'layer_controls': {
                 # Very aggressive settings for maximum layer success
@@ -448,6 +455,9 @@ def create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo
     # Global refinement level
     global_level = str(config.get('global_level', 1))
     
+    # Cell count limits
+    max_global_cells = str(config.get('maxGlobalCells', 5000000))
+    
     # Mesh quality parameters (from config or defaults)
     mesh_quality = config.get('mesh_quality', {})
     n_cells_between = str(mesh_quality.get('nCellsBetweenLevels', 2))
@@ -456,6 +466,12 @@ def create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo
     max_boundary_skew = str(mesh_quality.get('maxBoundarySkewness', 12))
     max_internal_skew = str(mesh_quality.get('maxInternalSkewness', 2.5))
     max_concave = str(mesh_quality.get('maxConcave', 70))
+    
+    # Relaxed quality controls (fallback - MORE permissive than main)
+    relaxed_quality = mesh_quality.get('relaxed', {})
+    max_non_ortho_relaxed = str(relaxed_quality.get('maxNonOrtho', int(max_non_ortho) + 10))
+    max_boundary_skew_relaxed = str(relaxed_quality.get('maxBoundarySkewness', int(max_boundary_skew) + 10))
+    max_internal_skew_relaxed = str(relaxed_quality.get('maxInternalSkewness', float(max_internal_skew) + 1.5))
     
     # Boundary layer parameters (detect if using relative or absolute sizing)
     # Check first boundary layer config to determine sizing mode
@@ -492,12 +508,16 @@ def create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo
         "$LOCATION_INSIDE_MESH": location_inside_mesh,
         "$ADD_LAYERS": add_layers,
         "$GLOBAL_LEVEL": global_level,
+        "$MAX_GLOBAL_CELLS": max_global_cells,
         "$NCELLS_BETWEEN_LEVELS": n_cells_between,
         "$MIN_REFINEMENT_CELLS": min_refinement_cells,
         "$MAX_NON_ORTHO": max_non_ortho,
         "$MAX_BOUNDARY_SKEWNESS": max_boundary_skew,
         "$MAX_INTERNAL_SKEWNESS": max_internal_skew,
         "$MAX_CONCAVE": max_concave,
+        "$MAX_NON_ORTHO_RELAXED": max_non_ortho_relaxed,
+        "$MAX_BOUNDARY_SKEWNESS_RELAXED": max_boundary_skew_relaxed,
+        "$MAX_INTERNAL_SKEWNESS_RELAXED": max_internal_skew_relaxed,
         "$RELATIVE_SIZES": relative_sizes,
         "$LAYER_FEATURE_ANGLE": layer_feature_angle,
         "$LAYER_N_RELAX_ITER": layer_n_relax_iter,
