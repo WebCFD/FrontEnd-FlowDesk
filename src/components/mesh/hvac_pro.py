@@ -319,11 +319,14 @@ def generate_hvac_boundary_layers(geo_df: pd.DataFrame, quality_level: int = 2) 
         else:
             continue  # No layers for this BC type
         
-        # Generate layer block (using firstLayerThickness + expansionRatio)
+        # Generate layer block (2 params: thickness + expansionRatio for OpenFOAM v2406)
+        # With relativeSizes true, thickness is relative to local cell size (0.0-1.0)
+        # thickness=0.3 means layers extend 30% of local cell size
+        relative_thickness = 0.3  # 30% of local cell size
         block = f"""        "{patch_name}"
         {{
             nSurfaceLayers {layer_config['nLayers']};
-            firstLayerThickness {layer_config['firstLayerThickness']};
+            thickness {relative_thickness};
             expansionRatio {layer_config['expansionRatio']};
         }}"""
         blocks.append(block)
