@@ -569,7 +569,11 @@ def process_cfd_simulation_with_pipeline(simulation):
         
         # Step 3: Import pipeline steps
         import sys
-        sys.path.append('.')  # Add current directory to path
+        import os
+        # Add project root to Python path
+        project_root = os.path.dirname(os.path.abspath(__file__))
+        if project_root not in sys.path:
+            sys.path.insert(0, project_root)
         
         from step01_json2geo import run as json2geo
         from step02_geo2mesh import run as geo2mesh
