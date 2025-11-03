@@ -54,7 +54,7 @@ castellatedMeshControls
     {
                 geometry
                 {
-                        level (0 1);
+                        level (0 0);  // Global base refinement - no extra refinement
                         $REFINEMENT_SURFACES
                 }
     }

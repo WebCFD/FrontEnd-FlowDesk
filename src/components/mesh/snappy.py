@@ -169,20 +169,41 @@ def generate_location_inside_mesh(mesh):
         if not np.any(is_inside):
             raise Exception("No valid interior points found")
         
-        # Select point farthest from boundary
+        # Select point farthest from boundary AND close to geometric center
         valid_points = filtered_points[is_inside]
-        distances = []
+        
+        # Calculate geometric center as reference
+        center_x = (bounds[0] + bounds[1]) / 2.0
+        center_y = (bounds[2] + bounds[3]) / 2.0
+        center_z = (bounds[4] + bounds[5]) / 2.0
+        geometric_center = np.array([center_x, center_y, center_z])
+        
+        # Score each point: distance from boundary (good) - distance from center (bad)
+        scores = []
         for pt in valid_points:
             closest_point = surface_mesh.find_closest_point(pt)
-            dist = np.linalg.norm(pt - surface_mesh.points[closest_point])
-            distances.append(dist)
+            dist_to_boundary = np.linalg.norm(pt - surface_mesh.points[closest_point])
+            dist_to_center = np.linalg.norm(pt - geometric_center)
+            
+            # Score: prefer points far from boundary but close to center
+            # Weight boundary distance more heavily (factor of 3)
+            score = 3.0 * dist_to_boundary - dist_to_center
+            scores.append(score)
         
-        best_idx = np.argmax(distances)
+        best_idx = np.argmax(scores)
         point = valid_points[best_idx]
-        max_dist = distances[best_idx]
+        
+        # Validate point is reasonably centered
+        dist_from_center = np.linalg.norm(point - geometric_center)
+        max_expected_offset = 0.5 * max(bounds[1]-bounds[0], bounds[3]-bounds[2], bounds[5]-bounds[4])
+        
+        if dist_from_center > max_expected_offset:
+            logger.warning(f"    * Selected point far from center ({dist_from_center:.2f}m), using geometric center instead")
+            point = geometric_center
         
         logger.info(f"    * Selected interior point: ({point[0]:.6f}, {point[1]:.6f}, {point[2]:.6f})")
-        logger.info(f"    * Distance to nearest boundary: {max_dist:.6f} m")
+        logger.info(f"    * Geometric center: ({center_x:.6f}, {center_y:.6f}, {center_z:.6f})")
+        logger.info(f"    * Offset from center: {np.linalg.norm(point - geometric_center):.6f} m")
         
         return f"({point[0]:.6f} {point[1]:.6f} {point[2]:.6f})"
     
