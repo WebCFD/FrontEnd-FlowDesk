@@ -1,6 +1,0 @@
-# Custom temp directory to avoid /tmp disk quota issues in Replit
-TMPDIR=/home/runner/workspace/.tmp_inductiva
-TEMP=/home/runner/workspace/.tmp_inductiva
-TMP=/home/runner/workspace/.tmp_inductiva
-TSX_CACHE_DIR=/home/runner/workspace/.tmp_inductiva/tsx
-XDG_CACHE_HOME=/home/runner/workspace/.tmp_inductiva

@@ -7,13 +7,6 @@ from datetime import datetime
 from typing import Callable, Dict, Any, List
 import requests
 
-# CRITICAL FIX: Replit has disk quota on /tmp - use workspace directory instead
-CUSTOM_TMP_DIR = '/home/runner/workspace/.tmp_inductiva'
-os.makedirs(CUSTOM_TMP_DIR, exist_ok=True)
-os.environ['TMPDIR'] = CUSTOM_TMP_DIR
-os.environ['TEMP'] = CUSTOM_TMP_DIR
-os.environ['TMP'] = CUSTOM_TMP_DIR
-
 # Add project root to Python path for module imports
 project_root = os.path.dirname(os.path.abspath(__file__))
 if project_root not in sys.path:

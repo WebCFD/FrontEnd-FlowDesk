@@ -2,15 +2,6 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
-import fs from "fs";
-
-const CUSTOM_TMP_DIR = '/home/runner/workspace/.tmp_inductiva';
-fs.mkdirSync(CUSTOM_TMP_DIR, { recursive: true });
-process.env.TMPDIR = CUSTOM_TMP_DIR;
-process.env.TEMP = CUSTOM_TMP_DIR;
-process.env.TMP = CUSTOM_TMP_DIR;
-process.env.TSX_CACHE_DIR = path.join(CUSTOM_TMP_DIR, 'tsx');
-process.env.XDG_CACHE_HOME = CUSTOM_TMP_DIR;
 
 const app = express();
 app.use(express.json());
