@@ -507,6 +507,51 @@ def define_initial_files(sim_path, patch_df):
                     raise BaseException('Boundary Condition Type Unknown')
 
                 f.boundary_field[row['id']] = new_bc_data
+            
+            # Add "limits" patch (background mesh boundaries that survive after snappyHexMesh)
+            # Treat as wall boundary condition
+            limits_bc = dict()
+            if variable == 'alphat':
+                limits_bc["type"] = 'compressible::alphatJayatillekeWallFunction'
+                limits_bc["Prt"] = 0.85
+                limits_bc["value"] = '$internalField'
+            elif variable == 'DR':
+                limits_bc["type"] = 'calculated'
+                limits_bc["value"] = 0
+            elif variable == 'epsilon':
+                limits_bc["type"] = 'epsilonWallFunction'
+                limits_bc["value"] = '$internalField'
+            elif variable == 'omega':
+                limits_bc["type"] = 'omegaWallFunction'
+                limits_bc["value"] = 0.5
+            elif variable == 'h':
+                limits_bc["type"] = 'zeroGradient'
+            elif variable == 'k':
+                limits_bc["type"] = 'kqRWallFunction'
+                limits_bc["value"] = '$internalField'
+            elif variable == 'nut':
+                limits_bc["type"] = 'nutkWallFunction'
+                limits_bc["value"] = '$internalField'
+            elif variable == 'p':
+                limits_bc["type"] = 'calculated'
+                limits_bc["value"] = P_ATM
+            elif variable == 'p_rgh':
+                limits_bc["type"] = 'fixedFluxPressure'
+                limits_bc["value"] = '$internalField'
+            elif variable == 'PMV':
+                limits_bc["type"] = 'calculated'
+                limits_bc["value"] = 0
+            elif variable == 'PPD':
+                limits_bc["type"] = 'calculated'
+                limits_bc["value"] = 5
+            elif variable == 'T':
+                limits_bc["type"] = 'zeroGradient'
+            elif variable == 'U':
+                limits_bc["type"] = 'noSlip'
+            else:
+                raise BaseException(f'Unknown variable: {variable}')
+            
+            f.boundary_field['limits'] = limits_bc
 
 
 def setup(case_path: str, simulation_type: str = 'comfortTest') -> list:
@@ -564,15 +609,6 @@ def setup(case_path: str, simulation_type: str = 'comfortTest') -> list:
         'rm -rf processor*',
         'runApplication decomposePar',
         
-        # DEBUG: Copiar archivos de processor0 para inspección
-        'echo "==================== DEBUG: Copying processor0 files ===================="',
-        'mkdir -p debug_files',
-        'cp processor0/0/h debug_files/processor0_h',
-        'cp processor0/0/U debug_files/processor0_U',
-        'cp processor0/0/p_rgh debug_files/processor0_p_rgh',
-        'cp processor0/constant/thermophysicalProperties debug_files/processor0_thermo',
-        'echo "==================== DEBUG FILES COPIED ===================="',
-        
         # Run solver in parallel
         'runParallel -np 16 buoyantSimpleFoam -parallel',
 
@@ -591,6 +627,9 @@ def setup(case_path: str, simulation_type: str = 'comfortTest') -> list:
 
         # Clean processors
         'rm -rf processor*',
+        
+        # Create marker file for ParaView/PyVista compatibility
+        'touch results.foam',
         ]
     
     logger.info("    * HVAC CFD case setup completed successfully")

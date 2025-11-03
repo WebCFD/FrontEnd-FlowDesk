@@ -53,7 +53,7 @@ class MeshQualityLevel:
             'description': 'Coarse base, aggressive BC refinement, thin layers for stability',
             'base_cell_size': 0.10,  # 10cm base cells (coarse domain)
             'global_level': 0,       # CRITICAL: (0 0) to keep domain coarse
-            'maxGlobalCells': 400000,  # CRITICAL: Force limit to prevent over-refinement
+            'maxGlobalCells': 1000000,  # CRITICAL: Force limit to prevent over-refinement
             'levels': {
                 'pressure_inlet': 3,      # 1.25cm surface refinement (was 4 = too fine!)
                 'pressure_outlet': 3,     # 1.25cm surface refinement
@@ -87,7 +87,7 @@ class MeshQualityLevel:
                 'maxInternalSkewness': 5,
                 'maxConcave': 80,
                 'nCellsBetweenLevels': 3,  # Faster transitions (save cells)
-                'minRefinementCells': 10,  # Prune small refinement regions
+                'minRefinementCells': 0,  # Prune small refinement regions
                 # Relaxed fallback (MORE permissive than main)
                 'relaxed': {
                     'maxNonOrtho': 75,

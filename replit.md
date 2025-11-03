@@ -27,6 +27,25 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 - **Authentication**: Passport.js (local strategy, session-based)
 - **Session Storage**: PostgreSQL
 
+### Replit /tmp Disk Quota Fix (Nov 2, 2025)
+
+**Issue**: Replit imposes strict disk quotas on `/tmp` directory, causing `tsx` and Inductiva to fail with "[Errno 122] Disk quota exceeded" errors.
+
+**Solution**: Custom `TMPDIR` redirection to workspace directory:
+
+1. **TSX Wrapper** (`node_modules/.bin/tsx.wrapper`): Intercepts `tsx` binary and sets `TMPDIR=/home/runner/workspace/.tmp_inductiva` before launching, preventing `/tmp` usage during TypeScript compilation.
+
+2. **Worker Configuration** (`worker_submit.py`): Sets custom temp directory at import time for Python workers handling Inductiva cloud submissions.
+
+3. **Server Configuration** (`server/index.ts`): Sets environment variables at startup (redundant with TSX wrapper, but kept for consistency).
+
+**Implementation**:
+- Custom temp directory: `/home/runner/workspace/.tmp_inductiva/`
+- Environment variables set: `TMPDIR`, `TEMP`, `TMP`, `TSX_CACHE_DIR`, `XDG_CACHE_HOME`
+- TSX binary replaced with wrapper via symlink in `node_modules/.bin/tsx`
+
+**Impact**: Enables seamless operation on Replit despite `/tmp` quotas. No `.replit` modifications required.
+
 ### CFD Meshing Strategy (⭐ HVAC Professional - Nov 2, 2025)
 
 **Active Configuration**: `hvac_pro` (snappyHexMesh optimized from scratch with parametric quality levels)
