@@ -23,11 +23,14 @@ def calculate_patch_normal(geo_mesh, patch_id):
     mask = geo_mesh.cell_data["patch_id"] == patch_id
     patch_cells = geo_mesh.extract_cells(mask)
     
-    # Compute normals for each cell
-    patch_cells = patch_cells.compute_normals(cell_normals=True, point_normals=False)
+    # Convert to PolyData and extract surface
+    patch_surface = patch_cells.extract_surface()
+    
+    # Compute normals for the surface
+    patch_surface = patch_surface.compute_normals(cell_normals=True, point_normals=False)
     
     # Average normals (area-weighted would be better, but this is sufficient)
-    normals = patch_cells.cell_data["Normals"]
+    normals = patch_surface.cell_data["Normals"]
     avg_normal = np.mean(normals, axis=0)
     
     # Normalize
@@ -224,8 +227,16 @@ def generate_refinement_block_with_alignment(geo_mesh, geo_df):
         normal = calculate_patch_normal(geo_mesh, patch_id)
         alignment = classify_bc_alignment(normal)
         
-        # Calculate area if available
-        area = row.get('width', 1.0) * row.get('height', 1.0)
+        # Calculate area if dimensions are available in DataFrame
+        if 'width' in geo_df.columns and 'height' in geo_df.columns:
+            area = row.get('width', 1.0) * row.get('height', 1.0)
+        else:
+            # Estimate area from patch surface
+            mask = geo_mesh.cell_data["patch_id"] == patch_id
+            patch_cells = geo_mesh.extract_cells(mask)
+            patch_surface = patch_cells.extract_surface()
+            area = patch_surface.area
+        
         is_small = area < 0.5  # m²
         
         # Determine refinement levels based on type and alignment
