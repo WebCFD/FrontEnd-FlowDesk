@@ -195,7 +195,8 @@ def generate_location_inside_mesh(mesh):
         
         # Validate point is reasonably centered
         dist_from_center = np.linalg.norm(point - geometric_center)
-        max_expected_offset = 0.5 * max(bounds[1]-bounds[0], bounds[3]-bounds[2], bounds[5]-bounds[4])
+        # Use 30% threshold instead of 50% to be more strict
+        max_expected_offset = 0.3 * max(bounds[1]-bounds[0], bounds[3]-bounds[2], bounds[5]-bounds[4])
         
         if dist_from_center > max_expected_offset:
             logger.warning(f"    * Selected point far from center ({dist_from_center:.2f}m), using geometric center instead")
