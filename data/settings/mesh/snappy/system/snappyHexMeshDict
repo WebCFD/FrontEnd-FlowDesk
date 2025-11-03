@@ -96,7 +96,7 @@ $BOUNDARY_LAYERS
     // GLOBAL FALLBACK PARAMETERS (required by OpenFOAM)
     // Individual patches override these with their own values
     expansionRatio 1.2;
-    finalLayerThickness 0.3;  // Fallback for patches without specific thickness
+    firstLayerThickness 0.002;  // Fallback for patches without specific thickness
     
     // CRITICAL PARAMETERS for smooth transition from orthogonal layers to permissive volume
     nGrow 0;
