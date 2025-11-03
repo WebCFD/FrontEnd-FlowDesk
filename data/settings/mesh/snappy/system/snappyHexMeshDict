@@ -93,6 +93,11 @@ addLayersControls
 $BOUNDARY_LAYERS
     }
     
+    // GLOBAL FALLBACK PARAMETERS (required by OpenFOAM)
+    // Individual patches override these with their own values
+    expansionRatio 1.2;
+    finalLayerThickness 0.3;  // Fallback for patches without specific thickness
+    
     // CRITICAL PARAMETERS for smooth transition from orthogonal layers to permissive volume
     nGrow 0;
     featureAngle 85;                  // PERMISSIVE - allow layers on more surfaces
