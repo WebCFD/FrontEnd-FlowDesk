@@ -3,7 +3,74 @@ import numpy as np
 import pandas as pd
 import pyvista as pv
 
-from src.components.tools.populate_template_file import replace_in_file, generate_regions_block, generate_refinement_block
+from src.components.tools.populate_template_file import replace_in_file, generate_regions_block
+
+
+def calculate_patch_normal(geo_mesh, patch_id):
+    """
+    Calculate the average normal vector of a patch from geo_mesh.
+    
+    Args:
+        geo_mesh: PyVista PolyData with cell_data["patch_id"]
+        patch_id: ID of the patch to analyze
+    
+    Returns:
+        normal: np.array([x, y, z]) - normalized average normal
+    """
+    import numpy as np
+    
+    # Extract cells for this patch
+    mask = geo_mesh.cell_data["patch_id"] == patch_id
+    patch_cells = geo_mesh.extract_cells(mask)
+    
+    # Compute normals for each cell
+    patch_cells = patch_cells.compute_normals(cell_normals=True, point_normals=False)
+    
+    # Average normals (area-weighted would be better, but this is sufficient)
+    normals = patch_cells.cell_data["Normals"]
+    avg_normal = np.mean(normals, axis=0)
+    
+    # Normalize
+    norm = np.linalg.norm(avg_normal)
+    if norm > 0:
+        avg_normal = avg_normal / norm
+    
+    return avg_normal
+
+
+def classify_bc_alignment(normal):
+    """
+    Classify BC according to alignment with principal axes.
+    
+    Args:
+        normal: np.array([x, y, z]) - surface normal
+    
+    Returns:
+        'aligned' | 'quasi_aligned' | 'non_aligned'
+    """
+    import numpy as np
+    
+    # Principal axes
+    axes = [
+        np.array([1, 0, 0]),  # X
+        np.array([0, 1, 0]),  # Y  
+        np.array([0, 0, 1])   # Z
+    ]
+    
+    # Calculate minimum angle with any axis
+    min_angle = 90.0
+    for axis in axes:
+        dot_product = np.abs(np.dot(normal, axis))
+        angle = np.degrees(np.arccos(np.clip(dot_product, -1.0, 1.0)))
+        min_angle = min(min_angle, angle)
+    
+    # Classify according to thresholds
+    if min_angle < 5.0:
+        return 'aligned'
+    elif min_angle < 15.0:  # Strict threshold (was 25.0)
+        return 'quasi_aligned'
+    else:
+        return 'non_aligned'
 
 
 def create_surfaceFeatureExtractDict(template_path, sim_path, stl_filename):
@@ -32,121 +99,175 @@ def create_blockMeshDict(template_path, sim_path, geo_mesh):
 
 def generate_location_inside_mesh(mesh):
     """
-    Generate locationInMesh point for snappyHexMesh internal flow cases.
-    Uses multiple validation strategies to ensure the point is truly interior.
+    Generate locationInMesh point for snappyHexMesh with robust fallback strategy.
     
-    Strategy:
+    Primary strategy:
     1. Generate candidate points from cell centers
     2. Filter out points too close to Z boundaries (floor/ceiling)
     3. Validate points are enclosed using select_enclosed_points
     4. Select point farthest from boundary for robustness
-    5. Fail with clear error if no valid interior point found
     
-    This approach prevents snappyHexMesh failures that occur when locationInMesh
-    falls outside or on the boundary of the geometry.
+    Fallback strategy (if primary fails):
+    5. Use geometric center of bounding box
     """
     import logging
     import numpy as np
     
     logger = logging.getLogger(__name__)
     
-    # Get geometry bounds to identify floor/ceiling levels
-    bounds = mesh.bounds
-    z_min, z_max = bounds[4], bounds[5]
-    z_range = z_max - z_min
+    try:
+        # PRIMARY METHOD - Advanced validation
+        bounds = mesh.bounds
+        z_min, z_max = bounds[4], bounds[5]
+        z_range = z_max - z_min
+        
+        # Safety margin from boundaries (10% of Z range, minimum 0.05m)
+        z_margin = max(0.1 * z_range, 0.05)
+        
+        logger.info(f"    * Geometry Z bounds: [{z_min:.3f}, {z_max:.3f}], range: {z_range:.3f} m")
+        logger.info(f"    * Using Z margin: {z_margin:.3f} m to avoid floor/ceiling boundaries")
+        
+        # Generate candidate points from cell centers
+        cell_centers = mesh.cell_centers()
+        volumes = mesh.compute_cell_sizes()["Volume"]
+        
+        # Get top 20 largest cells as candidates
+        n_candidates = min(20, len(volumes))
+        top_indices = np.argsort(volumes)[-n_candidates:]
+        candidate_points = cell_centers.points[top_indices]
+        
+        # Filter out points too close to floor/ceiling
+        z_coords = candidate_points[:, 2]
+        away_from_boundaries = (z_coords > z_min + z_margin) & (z_coords < z_max - z_margin)
+        
+        if not np.any(away_from_boundaries):
+            logger.warning(f"    * All {n_candidates} candidates near boundaries, relaxing Z margin to {z_margin/2:.3f} m")
+            z_margin_relaxed = z_margin / 2
+            away_from_boundaries = (z_coords > z_min + z_margin_relaxed) & (z_coords < z_max - z_margin_relaxed)
+        
+        filtered_points = candidate_points[away_from_boundaries]
+        n_filtered = len(filtered_points)
+        
+        logger.info(f"    * Testing {n_filtered} candidate interior points (filtered from {n_candidates})")
+        
+        if n_filtered == 0:
+            logger.warning(f"    * No candidates away from boundaries, using all {n_candidates} candidates")
+            filtered_points = candidate_points
+            n_filtered = n_candidates
+        
+        # Create surface mesh and validate enclosure
+        surface_mesh = mesh.extract_surface()
+        candidate_cloud = pv.PolyData(filtered_points)
+        enclosed_mask = candidate_cloud.select_enclosed_points(surface_mesh, tolerance=1e-6, check_surface=True)
+        is_inside = enclosed_mask['SelectedPoints'].astype(bool)
+        
+        logger.info(f"    * Found {np.sum(is_inside)} valid interior points out of {n_filtered} candidates")
+        
+        if not np.any(is_inside):
+            raise Exception("No valid interior points found")
+        
+        # Select point farthest from boundary
+        valid_points = filtered_points[is_inside]
+        distances = []
+        for pt in valid_points:
+            closest_point = surface_mesh.find_closest_point(pt)
+            dist = np.linalg.norm(pt - surface_mesh.points[closest_point])
+            distances.append(dist)
+        
+        best_idx = np.argmax(distances)
+        point = valid_points[best_idx]
+        max_dist = distances[best_idx]
+        
+        logger.info(f"    * Selected interior point: ({point[0]:.6f}, {point[1]:.6f}, {point[2]:.6f})")
+        logger.info(f"    * Distance to nearest boundary: {max_dist:.6f} m")
+        
+        return f"({point[0]:.6f} {point[1]:.6f} {point[2]:.6f})"
     
-    # Safety margin from boundaries (10% of Z range, minimum 0.05m)
-    z_margin = max(0.1 * z_range, 0.05)
+    except Exception as e:
+        # FALLBACK: Geometric center of bounding box
+        logger.warning(f"    ⚠️  Primary method failed: {str(e)}")
+        logger.warning(f"    * Using FALLBACK: geometric center of bounding box")
+        
+        bounds = mesh.bounds
+        center_x = (bounds[0] + bounds[1]) / 2.0
+        center_y = (bounds[2] + bounds[3]) / 2.0
+        center_z = (bounds[4] + bounds[5]) / 2.0
+        
+        logger.info(f"    * Fallback point: ({center_x:.6f}, {center_y:.6f}, {center_z:.6f})")
+        logger.warning(f"    * ⚠️  This may fail if geometry is non-convex or has holes")
+        
+        return f"({center_x:.6f} {center_y:.6f} {center_z:.6f})"
+
+
+def generate_refinement_block_with_alignment(geo_mesh, geo_df):
+    """
+    Generate refinement surfaces with levels based on type, alignment, and area.
     
-    logger.info(f"    * Geometry Z bounds: [{z_min:.3f}, {z_max:.3f}], range: {z_range:.3f} m")
-    logger.info(f"    * Using Z margin: {z_margin:.3f} m to avoid floor/ceiling boundaries")
+    Strategy:
+    - Aligned BC: level (2 3)
+    - Non-aligned BC: level (3 4) - more aggressive
+    - Small area (<0.5m²): +1 additional refinement level
+    """
+    import logging
+    logger = logging.getLogger(__name__)
     
-    # Generate candidate points from cell centers
-    cell_centers = mesh.cell_centers()
-    volumes = mesh.compute_cell_sizes()["Volume"]
+    logger.info("    * Generating refinement surfaces with alignment-based levels")
     
-    # Get top 20 largest cells as candidates (increased from 10 for better selection)
-    n_candidates = min(20, len(volumes))
-    top_indices = np.argsort(volumes)[-n_candidates:]
-    candidate_points = cell_centers.points[top_indices]
+    blocks = []
     
-    # Filter out points too close to floor (Z ≈ z_min) or ceiling (Z ≈ z_max)
-    z_coords = candidate_points[:, 2]
-    away_from_boundaries = (z_coords > z_min + z_margin) & (z_coords < z_max - z_margin)
+    for idx, row in geo_df.iterrows():
+        patch_id = idx
+        patch_name = row['id']
+        bc_type = row['type']
+        
+        # Calculate normal and classify alignment
+        normal = calculate_patch_normal(geo_mesh, patch_id)
+        alignment = classify_bc_alignment(normal)
+        
+        # Calculate area if available
+        area = row.get('width', 1.0) * row.get('height', 1.0)
+        is_small = area < 0.5  # m²
+        
+        # Determine refinement levels based on type and alignment
+        if bc_type in ['pressure_inlet', 'pressure_outlet']:
+            if alignment == 'aligned':
+                base_level = 2
+                max_level = 3
+            else:  # quasi or non-aligned
+                base_level = 3
+                max_level = 4
+            
+            # Additional refinement for small areas
+            if is_small:
+                base_level += 1
+                max_level += 1
+                logger.info(f"      - {patch_name}: SMALL AREA ({area:.2f}m²) → +1 refinement")
+            
+            level = f"({base_level} {max_level})"
+        else:  # walls
+            level = "(0 0)"
+        
+        logger.info(f"      - {patch_name}: type={bc_type}, alignment={alignment}, area={area:.2f}m², level={level}")
+        
+        block = f"""            {patch_name}
+            {{
+                level {level};
+                patchInfo {{ type wall; }}
+            }}"""
+        blocks.append(block)
     
-    if not np.any(away_from_boundaries):
-        # All candidates are near boundaries, relax margin requirement
-        logger.warning(f"    * All {n_candidates} candidates near boundaries, relaxing Z margin to {z_margin/2:.3f} m")
-        z_margin_relaxed = z_margin / 2
-        away_from_boundaries = (z_coords > z_min + z_margin_relaxed) & (z_coords < z_max - z_margin_relaxed)
-    
-    filtered_points = candidate_points[away_from_boundaries]
-    n_filtered = len(filtered_points)
-    
-    logger.info(f"    * Testing {n_filtered} candidate interior points (filtered from {n_candidates} to avoid boundaries)")
-    
-    if n_filtered == 0:
-        logger.warning(f"    * No candidates away from boundaries, using all {n_candidates} candidates")
-        filtered_points = candidate_points
-        n_filtered = n_candidates
-    
-    # Create a closed surface mesh for select_enclosed_points
-    surface_mesh = mesh.extract_surface()
-    
-    # Validate which candidates are truly enclosed
-    candidate_cloud = pv.PolyData(filtered_points)
-    enclosed_mask = candidate_cloud.select_enclosed_points(surface_mesh, tolerance=1e-6, check_surface=True)
-    is_inside = enclosed_mask['SelectedPoints'].astype(bool)
-    
-    logger.info(f"    * Found {np.sum(is_inside)} valid interior points out of {n_filtered} candidates")
-    
-    if not np.any(is_inside):
-        # No valid interior points found - this is a critical error
-        error_msg = (
-            f"\n{'='*80}\n"
-            f"GEOMETRY ERROR: Cannot find valid interior point for locationInMesh!\n"
-            f"{'='*80}\n"
-            f"Tested {n_filtered} candidate points, none are truly enclosed.\n\n"
-            f"This indicates a problem with the geometry:\n"
-            f"  1. Geometry may have holes, gaps, or non-manifold surfaces\n"
-            f"  2. Geometry may be too thin or have zero volume\n"
-            f"  3. Surface normals may be inverted\n\n"
-            f"SnappyHexMesh will fail without a valid interior point.\n"
-            f"Please check and fix the geometry before meshing.\n"
-            f"{'='*80}\n"
-        )
-        logger.error(error_msg)
-        raise Exception(error_msg)
-    
-    # Select the valid point that is farthest from the boundary
-    # This provides maximum robustness for snappyHexMesh
-    valid_points = filtered_points[is_inside]
-    
-    # Compute distance to nearest surface point for each valid interior point
-    distances = []
-    for pt in valid_points:
-        closest_point = surface_mesh.find_closest_point(pt)
-        dist = np.linalg.norm(pt - surface_mesh.points[closest_point])
-        distances.append(dist)
-    
-    # Select point with maximum distance from boundary
-    best_idx = np.argmax(distances)
-    point = valid_points[best_idx]
-    max_dist = distances[best_idx]
-    
-    logger.info(f"    * Selected interior point: ({point[0]:.6f}, {point[1]:.6f}, {point[2]:.6f})")
-    logger.info(f"    * Point Z coordinate: {point[2]:.6f} m (floor: {z_min:.3f} m, ceiling: {z_max:.3f} m)")
-    logger.info(f"    * Distance to nearest boundary: {max_dist:.6f} m")
-    
-    return f"({point[0]:.6f} {point[1]:.6f} {point[2]:.6f})"
+    # Format as OpenFOAM dict
+    blocks_str = "\n".join(blocks)
+    return f"regions\n{blocks_str}"
 
 
 def generate_volumetric_refinement_regions(geo_df, geo_mesh):
     """
-    Generate volumetric refinement regions near pressure boundaries.
+    Generate volumetric refinement regions with distance-based levels according to alignment.
     
-    This creates refinement boxes around windows/doors/vents to ensure
-    high mesh quality in the critical flow regions.
+    Strategy:
+    - Aligned BC: ((0.08 3) (0.25 2) (0.50 1)) - moderate refinement
+    - Non-aligned BC: ((0.05 4) (0.10 3) (0.20 2) (0.40 1)) - aggressive refinement
     """
     import logging
     logger = logging.getLogger(__name__)
@@ -161,76 +282,96 @@ def generate_volumetric_refinement_regions(geo_df, geo_mesh):
     
     blocks = []
     for idx, row in pressure_patches.iterrows():
+        patch_id = idx
         patch_name = row['id']
         
-        # Create a refined box around each pressure boundary
-        # This ensures good mesh quality in the flow region
+        # Calculate alignment
+        normal = calculate_patch_normal(geo_mesh, patch_id)
+        alignment = classify_bc_alignment(normal)
+        
+        # Refinement according to alignment
+        if alignment == 'aligned':
+            levels = "((0.08 3) (0.25 2) (0.50 1))"
+            logger.info(f"      - {patch_name}: ALIGNED - moderate refinement")
+        else:  # non-aligned - MORE AGGRESSIVE
+            levels = "((0.05 4) (0.10 3) (0.20 2) (0.40 1))"
+            logger.info(f"      - {patch_name}: NON-ALIGNED - aggressive refinement")
+        
         block = f"""        {patch_name}_volume
         {{
             mode    distance;
-            levels  ((0.2 3) (0.5 2) (1.0 1));  // 3 zones of refinement extending 1m from surface
+            levels  {levels};
         }}"""
         blocks.append(block)
     
-    if blocks:
-        logger.info(f"    * Volumetric refinement will extend 1.0m from each pressure boundary")
-        logger.info(f"    * Refinement zones: 0-0.2m (level 3), 0.2-0.5m (level 2), 0.5-1.0m (level 1)")
-        return "\n".join(blocks)
-    else:
-        return ""
+    return "\n".join(blocks)
 
 
-def generate_boundary_layers_config(geo_df):
+def generate_boundary_layers_config(geo_df, geo_mesh):
     """
-    Generate boundary layer configuration for snappyHexMesh.
+    Generate boundary layer configuration with alignment-based parameters.
     
-    Strategy for HVAC applications:
-    - Pressure boundaries: 5 layers for accurate velocity/temperature profiles
-    - Walls: 3 layers for thermal boundary layer resolution
+    Strategy:
+    - Pressure boundaries:
+      * Non-aligned: 8 layers, expansion 1.8 (fast transition to volume)
+      * Aligned: 5 layers, expansion 1.2 (conservative growth)
+      * firstLayerThickness: 0.001m
+    - Walls: 3 layers, expansion 1.2, firstLayerThickness: 0.002m
+    
+    Philosophy: High expansion ratio for non-aligned BCs = layers grow fast = 
+    rapid transition from orthogonal layers to permissive volume mesh.
     """
     import logging
     logger = logging.getLogger(__name__)
     
-    logger.info("    * Generating boundary layer configuration")
+    logger.info("    * Generating boundary layer configuration with alignment-based parameters")
     
     blocks = []
     layer_counts = {}
     
     for idx, row in geo_df.iterrows():
+        patch_id = idx
         patch_name = row['id']
-        patch_type = row['type']
+        bc_type = row['type']
         
-        if patch_type in ['pressure_inlet', 'pressure_outlet']:
-            # 5 layers on pressure boundaries for accurate flow profiles
-            n_layers = 5
-            block = f"""        "{patch_name}"
-        {{
-            nSurfaceLayers {n_layers};
-            expansionRatio 1.2;
-            finalLayerThickness 0.3;
-            minThickness 0.001;
-        }}"""
-            layer_counts[patch_type] = layer_counts.get(patch_type, 0) + 1
-        elif patch_type == 'wall':
-            # 3 layers on walls for thermal boundary layer
+        # Calculate alignment
+        normal = calculate_patch_normal(geo_mesh, patch_id)
+        alignment = classify_bc_alignment(normal)
+        
+        # Parameters according to type and alignment
+        if bc_type in ['pressure_inlet', 'pressure_outlet']:
+            first_layer = 0.001  # 0.001m for pressure BC
+            
+            if alignment == 'non_aligned':
+                n_layers = 8  # More layers for smooth transition
+                expansion = 1.8  # HIGH ratio - fast transition to volume
+                logger.info(f"      - {patch_name}: pressure BC, NON-ALIGNED → {n_layers} layers, ratio {expansion}")
+            else:
+                n_layers = 5
+                expansion = 1.2  # Conservative ratio for aligned BC
+                logger.info(f"      - {patch_name}: pressure BC, ALIGNED → {n_layers} layers, ratio {expansion}")
+            
+            layer_counts[bc_type] = layer_counts.get(bc_type, 0) + 1
+            
+        elif bc_type == 'wall':
+            first_layer = 0.002  # 0.002m for walls
             n_layers = 3
-            block = f"""        "{patch_name}"
+            expansion = 1.2
+            layer_counts[bc_type] = layer_counts.get(bc_type, 0) + 1
+        else:
+            continue
+        
+        block = f"""        "{patch_name}"
         {{
             nSurfaceLayers {n_layers};
-            expansionRatio 1.2;
-            finalLayerThickness 0.3;
-            minThickness 0.001;
+            firstLayerThickness {first_layer};
+            expansionRatio {expansion};
         }}"""
-            layer_counts[patch_type] = layer_counts.get(patch_type, 0) + 1
-        else:
-            continue  # Skip other boundary types
-        
         blocks.append(block)
     
-    logger.info(f"    * Boundary layers configured:")
+    logger.info(f"    * Boundary layers summary:")
     for bc_type, count in layer_counts.items():
-        layers = 5 if bc_type in ['pressure_inlet', 'pressure_outlet'] else 3
-        logger.info(f"      - {bc_type}: {count} patches × {layers} layers")
+        logger.info(f"      - {bc_type}: {count} patches configured")
     
     return "\n".join(blocks) if blocks else ""
 
@@ -243,17 +384,18 @@ def create_snappyHexMeshDict(template_path, sim_path, stl_filename, geo_mesh, ge
     output_path = os.path.join(sim_path, "system", "snappyHexMeshDict") 
 
     patch_names = geo_df["id"].tolist()
-    patch_types = geo_df["type"].tolist()
     geometry_regions = generate_regions_block(patch_names)
     emesh_filename = stl_filename.replace(".stl", ".eMesh")
-    refinement_surfaces = generate_refinement_block(patch_types)
+    
+    # Use new alignment-based refinement
+    refinement_surfaces = generate_refinement_block_with_alignment(geo_mesh, geo_df)
     location_inside_mesh = generate_location_inside_mesh(geo_mesh)
     
-    # Generate volumetric refinement regions for pressure boundaries
+    # Generate volumetric refinement regions with alignment
     volumetric_refinement = generate_volumetric_refinement_regions(geo_df, geo_mesh)
     
-    # Generate boundary layer configuration
-    boundary_layers = generate_boundary_layers_config(geo_df)
+    # Generate boundary layer configuration with alignment
+    boundary_layers = generate_boundary_layers_config(geo_df, geo_mesh)
     
     # Check if we should enable boundary layers
     enable_layers = "true" if boundary_layers else "false"
@@ -270,7 +412,7 @@ def create_snappyHexMeshDict(template_path, sim_path, stl_filename, geo_mesh, ge
     
     logger.info(f"    * Boundary layers enabled: {enable_layers}")
     if volumetric_refinement:
-        logger.info("    * Volumetric refinement enabled for pressure boundaries")
+        logger.info("    * Alignment-based volumetric refinement enabled for pressure boundaries")
 
     replace_in_file(input_path, output_path, str_replace_dict)
 
