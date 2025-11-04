@@ -248,13 +248,18 @@ def generate_hvac_refinement_surfaces(geo_df: pd.DataFrame, quality_level: int =
 # VOLUMETRIC REFINEMENT
 # ============================================================================
 
-def generate_hvac_volumetric_refinement(geo_df: pd.DataFrame, quality_level: int = 2) -> str:
+def generate_hvac_volumetric_refinement(geo_df: pd.DataFrame, quality_level: int = 2) -> tuple:
     """
     Generate multi-zone volumetric refinement around pressure boundaries.
     
     Args:
         geo_df: DataFrame with boundary condition information
         quality_level: 1 (coarse), 2 (medium), 3 (fine)
+    
+    Returns:
+        tuple: (geometry_surfaces, refinement_regions)
+            - geometry_surfaces: searchableSurfaces for geometry{} section
+            - refinement_regions: refinementRegions configuration
     
     Creates graduated refinement zones to capture jet development.
     """
@@ -266,7 +271,7 @@ def generate_hvac_volumetric_refinement(geo_df: pd.DataFrame, quality_level: int
     
     if len(pressure_patches) == 0:
         logger.info("  * No pressure boundaries → volumetric refinement disabled")
-        return "        // No pressure boundaries for volumetric refinement"
+        return ("", "        // No pressure boundaries for volumetric refinement")
     
     logger.info("=" * 80)
     logger.info(f"HVAC VOLUMETRIC REFINEMENT - Quality Level {quality_level}")
@@ -281,32 +286,46 @@ def generate_hvac_volumetric_refinement(geo_df: pd.DataFrame, quality_level: int
     
     logger.info("")
     
-    patch_blocks = []
+    # Generate searchableSurfaces for geometry{} section
+    geometry_blocks = []
+    refinement_blocks = []
+    
     for idx, row in pressure_patches.iterrows():
         patch_name = row['id']
         bc_type = row['type']
         
+        # Create searchableSurface that references the STL region
+        geometry_block = f"""    {patch_name}
+    {{
+        type triSurfaceMesh;
+        file geometry.stl;
+        regions
+        {{
+            {patch_name} {{}}
+        }}
+    }}"""
+        geometry_blocks.append(geometry_block)
+        
         # Build distance-based refinement levels
         level_spec = " ".join([f"({z['distance']} {z['level']})" for z in volumetric_zones])
         
-        # Build individual patch entry
-        patch_block = f"""            {patch_name}
-            {{
-                mode    distance;
-                levels  ({level_spec});
-            }}"""
-        patch_blocks.append(patch_block)
+        # Build refinementRegions entry (referencing the searchableSurface)
+        refinement_block = f"""        {patch_name}
+        {{
+            mode    distance;
+            levels  ({level_spec});
+        }}"""
+        refinement_blocks.append(refinement_block)
         
         logger.info(f"  {patch_name} ({bc_type}): multi-zone refinement enabled")
     
     logger.info("=" * 80)
     
-    # Return patches directly (no geometry{} wrapper needed)
-    if patch_blocks:
-        patches_content = "\n".join(patch_blocks)
-        return patches_content
-    else:
-        return "        // No volumetric refinement"
+    # Format output
+    geometry_content = "\n".join(geometry_blocks) if geometry_blocks else ""
+    refinement_content = "\n".join(refinement_blocks) if refinement_blocks else "        // No volumetric refinement"
+    
+    return (geometry_content, refinement_content)
 
 
 # ============================================================================
@@ -428,7 +447,7 @@ def create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo
     geometry_regions = generate_regions_block(geo_df["id"].tolist())
     emesh_filename = stl_filename.replace(".stl", ".eMesh")
     refinement_surfaces = generate_hvac_refinement_surfaces(geo_df, quality_level)
-    volumetric_refinement = generate_hvac_volumetric_refinement(geo_df, quality_level)
+    volumetric_geometry, volumetric_refinement = generate_hvac_volumetric_refinement(geo_df, quality_level)
     boundary_layers = generate_hvac_boundary_layers(geo_df, quality_level)
     location_inside_mesh = generate_location_inside_mesh(geo_mesh)
     
@@ -527,6 +546,7 @@ def create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo
     str_replace_dict = {
         "$STL_FILENAME": stl_filename,
         "$GEOMETRY_REGIONS": geometry_regions,
+        "$VOLUMETRIC_GEOMETRY": volumetric_geometry,
         "$EMESH_FILENAME": emesh_filename,
         "$FEATURE_REFINEMENT_LEVELS": feature_refinement_levels,
         "$FEATURE_ANGLE": feature_angle,

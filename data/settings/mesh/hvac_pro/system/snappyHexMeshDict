@@ -34,6 +34,9 @@ geometry
 
         $GEOMETRY_REGIONS
     }
+
+    // Searchable surfaces for volumetric refinement
+$VOLUMETRIC_GEOMETRY
 };
 
 castellatedMeshControls

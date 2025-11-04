@@ -344,12 +344,11 @@ file: system/snappyHexMeshDict/castellatedMeshControls/refinementRegions/geometr
 
 ---
 
-## ITERACIÓN 5B: Corrección Final de refinementRegions
+## ITERACIÓN 5B: Intento con Sintaxis Directa (INSUFICIENTE)
 
-### 🔍 Causa Raíz REAL
-La sintaxis correcta de `refinementRegions` **NO usa bloque `geometry{}`**. Los patches van **directamente** bajo `refinementRegions{}`.
+### 🔧 Solución Intentada
+Modificado `generate_hvac_volumetric_refinement()` para retornar patches directamente sin wrapper geometry{}.
 
-### ✅ Sintaxis Correcta (snappyHexMesh)
 ```cpp
 refinementRegions
 {
@@ -358,7 +357,74 @@ refinementRegions
         mode    distance;
         levels  ((0.32 3) (0.8 2) (1.6 1) (2.4 0));
     }
+}
+```
+
+### ❌ Resultado
+```
+--> FOAM Warning:
+    Not all entries in refinementRegions dictionary were used.
+    The following entries were not used : 3(door_0F_1 window_0F_1 window_0F_2)
+
+Shell refinement iteration 0:
+    Marked for refinement due to refinement shells: 0 cells.
+```
+
+**Problema:** snappyHexMesh **NO reconoció los patches** porque no existen como searchableSurfaces independientes.
+
+---
+
+## ITERACIÓN 5C: Solución DEFINITIVA - searchableSurfaces Independientes
+
+### 🔍 Causa Raíz DEFINITIVA
+`refinementRegions` requiere que los patches estén definidos como **searchableSurfaces independientes en la sección `geometry{}`**, NO solo como regiones del triSurfaceMesh principal.
+
+### ✅ Arquitectura Correcta
+
+**1. geometry{} section - Definir searchableSurfaces:**
+```cpp
+geometry
+{
+    geometry.stl  // STL principal
+    {
+        type triSurfaceMesh;
+        file geometry.stl;
+        regions { ... }
+    }
+    
+    // Searchable surfaces INDEPENDIENTES para volumetric refinement
+    window_0F_1
+    {
+        type triSurfaceMesh;
+        file geometry.stl;
+        regions
+        {
+            window_0F_1 {}
+        }
+    }
+    
     door_0F_1
+    {
+        type triSurfaceMesh;
+        file geometry.stl;
+        regions
+        {
+            door_0F_1 {}
+        }
+    }
+}
+```
+
+**2. refinementRegions{} - Referenciar las surfaces:**
+```cpp
+refinementRegions
+{
+    window_0F_1          // ← Ahora ES una surface reconocida
+    {
+        mode    distance;
+        levels  ((0.32 3) (0.8 2) (1.6 1) (2.4 0));
+    }
+    door_0F_1            // ← Surface independiente
     {
         mode    distance;
         levels  ((0.32 3) (0.8 2) (1.6 1) (2.4 0));
@@ -366,32 +432,46 @@ refinementRegions
 }
 ```
 
-**Diferencia clave:** 
-- `refinementSurfaces` SÍ usa `geometry{}` para agrupar patches
-- `refinementRegions` NO usa `geometry{}`, patches van directamente
-
 ### 🔧 Solución Implementada
-Modificado `generate_hvac_volumetric_refinement()` para retornar patches directamente sin wrapper.
 
-**Archivo modificado:**
-- `src/components/mesh/hvac_pro.py` - Líneas 307-312
+Modificado `generate_hvac_volumetric_refinement()` para retornar **2 outputs**:
+1. `geometry_surfaces`: searchableSurfaces para section geometry{}
+2. `refinement_regions`: configuración de refinementRegions{}
 
-**Cambio:**
+**Archivos modificados:**
+- `src/components/mesh/hvac_pro.py` (líneas 254-331): Función retorna tupla
+- `src/components/mesh/hvac_pro.py` (línea 453): Desempaqueta tupla
+- `src/components/mesh/hvac_pro.py` (línea 552): Agrega $VOLUMETRIC_GEOMETRY al dict
+- `data/settings/mesh/hvac_pro/system/snappyHexMeshDict` (líneas 41-42): Placeholder
+
+**Código clave:**
 ```python
-# ANTES (incorrecto)
-return f"""        geometry
+def generate_hvac_volumetric_refinement(...) -> tuple:
+    # Generar searchableSurfaces
+    geometry_block = f"""    {patch_name}
+    {{
+        type triSurfaceMesh;
+        file geometry.stl;
+        regions
         {{
-{patches_content}
+            {patch_name} {{}}
+        }}
+    }}"""
+    
+    # Generar refinementRegions
+    refinement_block = f"""        {patch_name}
+        {{
+            mode    distance;
+            levels  ({level_spec});
         }}"""
-
-# AHORA (correcto)
-return patches_content
+    
+    return (geometry_content, refinement_content)
 ```
 
 ### 📊 Resultado Esperado
-- ✅ snappyHexMesh reconocerá todos los patches
-- ✅ Shell refinement aplicará distancias volumétricas (0.32/0.80/1.60/2.40m)
-- ✅ No más errores de sintaxis
+- ✅ snappyHexMesh reconocerá todos los patches como searchableSurfaces
+- ✅ Shell refinement marcará celdas según distancia
+- ✅ Refinamiento volumétrico finalmente APLICADO
 
 ---
 
