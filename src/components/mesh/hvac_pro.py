@@ -57,7 +57,7 @@ class MeshQualityLevel:
             'levels': {
                 'pressure_inlet': 3,      # 1.25cm surface (jump: 0→3 = 3 levels, acceptable)
                 'pressure_outlet': 3,     # 1.25cm surface (jump: 0→3 = 3 levels, acceptable)
-                'wall': 0,                # Same as base (no jump)
+                'wall': 1,                # 5cm (improves rectangular capture, reduces corner degeneracy)
                 'floor_ceiling': 0,       # Same as base (no jump)
                 'default': 0              # Base level
             },
@@ -70,9 +70,9 @@ class MeshQualityLevel:
             ],
             'boundary_layers': None,  # NO LAYERS - isotropic refinement only
             'feature_edge_refinement': {
-                'enabled': False,        # Disabled to avoid complexity
-                'min_level': 0,          
-                'max_level': 0,
+                'enabled': True,         # Enabled to capture 90° edges (windows/doors)
+                'min_level': 2,          # Align with BC minimum level
+                'max_level': 2,          # Captures rectangular edges without over-refining
                 'feature_angle': 30
             },
             'mesh_quality': {
