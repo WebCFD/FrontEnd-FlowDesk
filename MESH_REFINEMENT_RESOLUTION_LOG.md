@@ -529,8 +529,48 @@ VTK/
 
 ---
 
-**ESTADO:** ✅ COMPLETAMENTE RESUELTO
-- ✅ Sintaxis refinementRegions DEFINITIVAMENTE corregida (sin geometry{} wrapper)
-- ✅ Post-procesamiento de CADA iteración habilitado (writeInterval=1, critical para crashes tempranos)
-- ✅ Pipeline procesa TODAS las iteraciones (reconstructPar + foamToVTK sin -latestTime)
-- ✅ Listo para siguiente simulación en Inductiva
+---
+
+## ITERACIÓN 6: Crash por Temperatura Negativa + Campos No Escritos
+
+### ❌ Síntomas
+```
+Time = 1: ✓ Completado
+Time = 2:
+  Solving for h, residual = 0.0168
+  ❌ FOAM FATAL ERROR: Negative initial temperature T0: -47,472K
+  ❌ NO se escribieron campos de Time = 1
+```
+
+### 🔍 Causa Raíz #1: writeControl timeStep
+**Problema:** Con `writeControl timeStep` + `writeInterval 1`, OpenFOAM escribe **AL FINAL** del timestep.  
+**Resultado:** Crash al inicio de Time = 2 → nunca escribe Time = 1.
+
+### 🔧 Solución: writeControl runTime
+```cpp
+writeControl      runTime;     // Escribir por tiempo de reloj
+writeInterval     0.5;          // Cada 0.5 segundos (captura Time=1)
+runTimeModifiable true;         // Habilitar escritura inmediata
+```
+
+**Ventaja:** Escribe basado en tiempo de ejecución, no en timesteps completados → captura datos incluso si crashea.
+
+### 🔍 Causa Raíz #2: Temperatura Negativa
+**Error:** `h → T conversion → T = -47,472K`  
+**Origen:** Campo de entalpía (h) divergiendo en Time = 2.
+
+**Posibles causas:**
+1. Inconsistencia en BCs de velocidad (window_0F_1 usa `pressureInletOutletVelocity`, otros `inletOutlet`)
+2. Flujo másico extremo en pressure boundaries
+3. Condiciones iniciales incompatibles entre p, T, h
+
+**Archivos modificados:**
+- `data/settings/cfd/hvac/system/controlDict` - writeControl cambiado a runTime
+
+---
+
+**ESTADO:** ⚠️ PARCIALMENTE RESUELTO
+- ✅ Sintaxis refinementRegions corregida (searchableSurfaces independientes)
+- ✅ writeControl runTime configurado (capturará Time=1 antes de crash)
+- ⚠️ Crash por temperatura negativa requiere investigación de BCs
+- 🔄 Próxima simulación escribirá campos antes de crashear

@@ -12,16 +12,16 @@ startTime         0;
 stopAt            endTime;
 endTime           3;
 deltaT            1;
-writeControl      timeStep;
-writeInterval     1;  // Write EVERY iteration (critical for debugging early crashes)
+writeControl      runTime;     // Write by wall-clock time (more reliable for crashes)
+writeInterval     0.5;          // Write every 0.5 seconds (ensures Time=1 is captured)
 adjustTimeStep    no;
-purgeWrite        0;  // Keep all timesteps (0 = no purge)
+purgeWrite        0;            // Keep all timesteps (0 = no purge)
 writeFormat       ascii;
 writePrecision    6;
 writeCompression  off;
 timeFormat        general;
 timePrecision     6;
-runTimeModifiable false;
+runTimeModifiable true;         // Enable runtime modification for immediate writes
 
 functions
 {
