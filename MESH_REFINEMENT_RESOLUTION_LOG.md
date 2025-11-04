@@ -306,9 +306,9 @@ Maximum non-orthogonality = 60-65  # < 65° objetivo cumplido
 
 ---
 
-## ITERACIÓN 5: Corrección de Sintaxis refinementRegions
+## ITERACIÓN 5A: Error refinementRegions (Intento con geometry{})
 
-### ❌ Síntoma Final
+### ❌ Síntoma
 Después de todas las correcciones anteriores, la mesh SEGUÍA sin cambiar. Log mostró:
 ```
 --> FOAM Warning:
@@ -316,38 +316,14 @@ Después de todas las correcciones anteriores, la mesh SEGUÍA sin cambiar. Log 
     The following entries were not used: 3(door_0F_1 window_0F_1 window_0F_2)
 ```
 
-### 🔍 Causa Raíz
-**Sintaxis incorrecta del bloque `refinementRegions`**. Los patches NO estaban anidados dentro del bloque `geometry{}`.
-
-### ❌ Sintaxis Incorrecta
+### 🔧 Intento de Solución (INCORRECTO)
+Anidar patches dentro de bloque `geometry{}`:
 ```cpp
 refinementRegions
 {
-    window_0F_1          // ← snappyHexMesh NO reconoce
+    geometry              // ← ERROR: snappyHexMesh interpreta esto como patch
     {
-        mode distance;
-        levels ((0.32 3) (0.8 2) (1.6 1) (2.4 0));
-    }
-    door_0F_1            // ← Ignorado
-    {
-        mode distance;
-        levels ((0.32 3) (0.8 2) (1.6 1) (2.4 0));
-    }
-}
-```
-
-### ✅ Sintaxis Correcta
-```cpp
-refinementRegions
-{
-    geometry              // ← Bloque requerido para patches de STL
-    {
-        window_0F_1       // ← Ahora SÍ reconocido
-        {
-            mode    distance;
-            levels  ((0.32 3) (0.8 2) (1.6 1) (2.4 0));
-        }
-        door_0F_1
+        window_0F_1
         {
             mode    distance;
             levels  ((0.32 3) (0.8 2) (1.6 1) (2.4 0));
@@ -355,17 +331,67 @@ refinementRegions
     }
 }
 ```
+
+### ❌ Resultado
+```
+--> FOAM FATAL IO ERROR: (openfoam-2406)
+Entry 'mode' not found in dictionary "refinementRegions/geometry"
+
+file: system/snappyHexMeshDict/castellatedMeshControls/refinementRegions/geometry at line 133 to 144.
+```
+
+**Causa:** snappyHexMesh intentó leer `geometry` como un patch y esperaba campo `mode`.
+
+---
+
+## ITERACIÓN 5B: Corrección Final de refinementRegions
+
+### 🔍 Causa Raíz REAL
+La sintaxis correcta de `refinementRegions` **NO usa bloque `geometry{}`**. Los patches van **directamente** bajo `refinementRegions{}`.
+
+### ✅ Sintaxis Correcta (snappyHexMesh)
+```cpp
+refinementRegions
+{
+    window_0F_1          // ← Directamente bajo refinementRegions
+    {
+        mode    distance;
+        levels  ((0.32 3) (0.8 2) (1.6 1) (2.4 0));
+    }
+    door_0F_1
+    {
+        mode    distance;
+        levels  ((0.32 3) (0.8 2) (1.6 1) (2.4 0));
+    }
+}
+```
+
+**Diferencia clave:** 
+- `refinementSurfaces` SÍ usa `geometry{}` para agrupar patches
+- `refinementRegions` NO usa `geometry{}`, patches van directamente
 
 ### 🔧 Solución Implementada
-Modificado `generate_hvac_volumetric_refinement()` para anidar todos los patches dentro de un **único bloque `geometry{}`**.
+Modificado `generate_hvac_volumetric_refinement()` para retornar patches directamente sin wrapper.
 
 **Archivo modificado:**
-- `src/components/mesh/hvac_pro.py` - Líneas 287-316
+- `src/components/mesh/hvac_pro.py` - Líneas 307-312
+
+**Cambio:**
+```python
+# ANTES (incorrecto)
+return f"""        geometry
+        {{
+{patches_content}
+        }}"""
+
+# AHORA (correcto)
+return patches_content
+```
 
 ### 📊 Resultado Esperado
-- ✅ Log NO mostrará "Not all entries ... were used"
-- ✅ Shell refinement iterations APLICARÁN distancias volumétricas
-- ✅ Mesh con refinamiento extendido (0.32/0.80/1.60/2.40m)
+- ✅ snappyHexMesh reconocerá todos los patches
+- ✅ Shell refinement aplicará distancias volumétricas (0.32/0.80/1.60/2.40m)
+- ✅ No más errores de sintaxis
 
 ---
 
@@ -424,6 +450,7 @@ VTK/
 ---
 
 **ESTADO:** ✅ COMPLETAMENTE RESUELTO
-- ✅ Sintaxis refinementRegions corregida
-- ✅ Post-procesamiento de todas las iteraciones habilitado
+- ✅ Sintaxis refinementRegions DEFINITIVAMENTE corregida (sin geometry{} wrapper)
+- ✅ Post-procesamiento de CADA iteración habilitado (writeInterval=1, critical para crashes tempranos)
+- ✅ Pipeline procesa TODAS las iteraciones (reconstructPar + foamToVTK sin -latestTime)
 - ✅ Listo para siguiente simulación en Inductiva

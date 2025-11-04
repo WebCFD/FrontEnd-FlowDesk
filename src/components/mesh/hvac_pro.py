@@ -301,14 +301,10 @@ def generate_hvac_volumetric_refinement(geo_df: pd.DataFrame, quality_level: int
     
     logger.info("=" * 80)
     
-    # CRITICAL FIX: Must nest ALL patches inside single geometry{} block for snappyHexMesh
-    # Otherwise patches are ignored with warning "Not all entries in refinementRegions used"
+    # Return patches directly (no geometry{} wrapper needed)
     if patch_blocks:
         patches_content = "\n".join(patch_blocks)
-        return f"""        geometry
-        {{
-{patches_content}
-        }}"""
+        return patches_content
     else:
         return "        // No volumetric refinement"
 
