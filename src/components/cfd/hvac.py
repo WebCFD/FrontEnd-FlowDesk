@@ -390,6 +390,11 @@ def setup(case_path: str, simulation_type: str = 'comfortTest') -> list:
         'cp -r 0.orig 0',
         'echo "==================== INITIAL CONDITIONS COPIED ===================="',
         
+        # Generate VTK for time 0 (initial uniform fields) - BEFORE potentialFoam
+        'echo "==================== GENERATING VTK FOR TIME 0 (INITIAL STATE) ===================="',
+        'foamToVTK -time 0 -fields "(T U p p_rgh h)" 2>&1 | tee log.foamToVTK_time0',
+        'echo "==================== TIME 0 VTK COMPLETED ===================="',
+        
         # Decompose for parallel execution
         'rm -rf processor*',
         'runApplication decomposePar',
@@ -405,7 +410,7 @@ def setup(case_path: str, simulation_type: str = 'comfortTest') -> list:
         
         # Initialize velocity and pressure fields with Laplacian solution for better stability
         'echo "==================== INITIALIZING FIELDS WITH potentialFoam ===================="',
-        'runParallel -np 16 potentialFoam -initialiseUBCs -writep -parallel',
+        'runParallel -np 16 potentialFoam -initialiseUBCs -parallel',
         'echo "==================== FIELD INITIALIZATION COMPLETED ===================="',
         
         # Run solver in parallel
