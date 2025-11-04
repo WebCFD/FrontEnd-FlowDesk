@@ -618,7 +618,7 @@ Modificado `generate_hvac_volumetric_refinement()` para incluir campo `name` en 
 
 **ESTADO:** ✅ COMPLETAMENTE RESUELTO
 - ✅ Sintaxis refinementRegions corregida (searchableSurfaces independientes con campo name)
-- ✅ writeControl runTime configurado (capturará Time=1 antes de crash)
+- ✅ writeControl runTime configurado con writeInterval=1s (t=0,1,2,3...)
 - ✅ Volumetric refinement listo para aplicarse
 - ⚠️ Crash por temperatura negativa requiere investigación separada de BCs
-- 🔄 Próxima simulación: mesh volumétrico + campos escritos cada 0.5s
+- 🔄 Próxima simulación: mesh volumétrico + campos escritos cada 1s (debugging optimizado)

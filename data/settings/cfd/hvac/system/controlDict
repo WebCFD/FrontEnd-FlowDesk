@@ -13,7 +13,7 @@ stopAt            endTime;
 endTime           3;
 deltaT            1;
 writeControl      runTime;     // Write by wall-clock time (more reliable for crashes)
-writeInterval     0.5;          // Write every 0.5 seconds (ensures Time=1 is captured)
+writeInterval     1;            // Write every 1 second (t=0,1,2,3... for debugging)
 adjustTimeStep    no;
 purgeWrite        0;            // Keep all timesteps (0 = no purge)
 writeFormat       ascii;
