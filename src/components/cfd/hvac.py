@@ -573,6 +573,11 @@ def setup(case_path: str, simulation_type: str = 'comfortTest') -> list:
         'cp processor0/constant/thermophysicalProperties debug_files/processor0_thermo',
         'echo "==================== DEBUG FILES COPIED ===================="',
         
+        # Initialize velocity and pressure fields with Laplacian solution for better stability
+        'echo "==================== INITIALIZING FIELDS WITH potentialFoam ===================="',
+        'runParallel -np 16 potentialFoam -initialiseUBCs -parallel',
+        'echo "==================== FIELD INITIALIZATION COMPLETED ===================="',
+        
         # Run solver in parallel
         'runParallel -np 16 buoyantSimpleFoam -parallel',
 

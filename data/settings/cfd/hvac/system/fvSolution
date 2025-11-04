@@ -79,13 +79,15 @@ relaxationFactors
     fields
     {
         rho             0.1;   // Conservative start - Nov 1, 2025
-        p_rgh           0.3;
+        p_rgh           0.2;   // Reduced from 0.3 for better stability (Nov 4, 2025)
+        p_rghFinal      0.3;
     }
     equations
     {
-        U               0.3;
+        U               0.5;   // Reduced from 0.3 for smoother convergence (Nov 4, 2025)
         h               0.3;   // Conservative to prevent h<0 in first iterations
-        "(k|epsilon|omega)" 0.3;
+        "(k|epsilon|omega)" 0.5;   // Reduced from 0.3 for stability (Nov 4, 2025)
+        UFinal          0.7;
     }
 }
 
