@@ -16,37 +16,22 @@ CP = 1005.0  # Specific heat at constant pressure [J/(kg·K)]
 HF = 0.0  # Formation enthalpy [J/kg]
 # Note: Using Boussinesq (incompressiblePerfectGas + hConst): h = Cp×T, ρ = pRef/(R×T)
 
-# DIMENSIONS
+# DIMENSIONS - MINIMAL FIELDS FOR buoyantSimpleFoam LAMINAR
+# Only 5 essential fields required for solver operation
 DIMENSIONS_DICT = {
-    'alphat':   FoamFile.DimensionSet(mass=1, length=-1, time=-1),
-    'DR':       FoamFile.DimensionSet(),
-    'epsilon':  FoamFile.DimensionSet(length=2, time=-3),
-    'h':        FoamFile.DimensionSet(length=2, time=-2),  # J/kg = m²/s²
-    'k':        FoamFile.DimensionSet(length=2, time=-2),
-    'nut':      FoamFile.DimensionSet(length=2, time=-1),
-    'omega':    FoamFile.DimensionSet(time=-1),  # 1/s
-    'p':        FoamFile.DimensionSet(mass=1, length=-1, time=-2),
-    'p_rgh':    FoamFile.DimensionSet(mass=1, length=-1, time=-2),
-    'PMV':      FoamFile.DimensionSet(),
-    'PPD':      FoamFile.DimensionSet(),
-    'T':        FoamFile.DimensionSet(temperature=1),
-    'U':        FoamFile.DimensionSet(length=1, time=-1),
+    'h':        FoamFile.DimensionSet(length=2, time=-2),  # J/kg = m²/s² - Primary thermodynamic variable
+    'p':        FoamFile.DimensionSet(mass=1, length=-1, time=-2),  # Pressure [Pa]
+    'p_rgh':    FoamFile.DimensionSet(mass=1, length=-1, time=-2),  # Buoyancy-corrected pressure [Pa]
+    'T':        FoamFile.DimensionSet(temperature=1),  # Temperature [K]
+    'U':        FoamFile.DimensionSet(length=1, time=-1),  # Velocity [m/s]
 }
 
 INTERNALFIELD_DICT = {
-    'alphat':   0,
-    'DR':       0,
-    'epsilon':  0.23,
-    'h':        294515.75,  # h = Cp×T = 1005×293.15 for Boussinesq
-    'k':        0.08,
-    'nut':      0,
-    'omega':    0.5,
+    'h':        294515.75,  # h = Cp×T = 1005×293.15 for Boussinesq (20°C)
     'p':        101325,     # Atmospheric pressure [Pa]
     'p_rgh':    0,          # Hydrostatic-corrected pressure [Pa]
-    'PMV':      1.40936,
-    'PPD':      46.0115,
     'T':        293.15,     # Reference temperature for Boussinesq [K] (20°C)
-    'U':        np.array([0, 0, 0]),
+    'U':        np.array([0, 0, 0]),  # Initial velocity (quiescent fluid)
 }
 
 # Reference values for pressure calculations
@@ -186,41 +171,16 @@ def define_initial_files(sim_path, patch_df):
                     new_bc_data = dict()
                     
                     # Force all patches to wall-type boundary conditions
-                    if(variable == 'alphat'):
-                        new_bc_data["type"] = 'compressible::alphatJayatillekeWallFunction'
-                        new_bc_data["Prt"] = 0.85
-                        new_bc_data["value"] = '$internalField'
-                    elif(variable == 'DR'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = 0
-                    elif(variable == 'epsilon'):
-                        new_bc_data["type"] = 'epsilonWallFunction'
-                        new_bc_data["value"] = '$internalField'
-                    elif(variable == 'omega'):
-                        new_bc_data["type"] = 'omegaWallFunction'
-                        new_bc_data["value"] = 0.5
-                    elif(variable == 'h'):
+                    if(variable == 'h'):
                         # Uniform enthalpy at 20°C (equilibrium)
                         new_bc_data["type"] = 'fixedValue'
                         new_bc_data["value"] = CP * 293.15  # h = Cp×T = 294515.75 J/kg
-                    elif(variable == 'k'):
-                        new_bc_data["type"] = 'kqRWallFunction'
-                        new_bc_data["value"] = '$internalField'
-                    elif(variable == 'nut'):
-                        new_bc_data["type"] = 'nutkWallFunction'
-                        new_bc_data["value"] = '$internalField'
                     elif(variable == 'p'):
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = P_ATM
                     elif(variable == 'p_rgh'):
                         new_bc_data["type"] = 'fixedFluxPressure'
                         new_bc_data["value"] = '$internalField'
-                    elif(variable == 'PMV'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = 0
-                    elif(variable == 'PPD'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = 5
                     elif(variable == 'T'):
                         # Uniform temperature at 20°C (equilibrium)
                         new_bc_data["type"] = 'fixedValue'
@@ -247,20 +207,7 @@ def define_initial_files(sim_path, patch_df):
             for _, row in patch_df.iterrows():
                 new_bc_data = dict()
                 if(row['type'] == 'wall'):
-                    if(variable == 'alphat'):
-                        new_bc_data["type"] = 'compressible::alphatJayatillekeWallFunction'
-                        new_bc_data["Prt"] = 0.85
-                        new_bc_data["value"] = '$internalField'
-                    elif(variable == 'DR'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = 0
-                    elif(variable == 'epsilon'):
-                        new_bc_data["type"] = 'epsilonWallFunction'
-                        new_bc_data["value"] = '$internalField'
-                    elif(variable == 'omega'):
-                        new_bc_data["type"] = 'omegaWallFunction'
-                        new_bc_data["value"] = 0.5
-                    elif(variable == 'h'):
+                    if(variable == 'h'):
                         # Enthalpy for perfectGas: h = Cp×T
                         new_bc_data["type"] = 'fixedValue'
                         T_celsius = row['T']
@@ -268,12 +215,6 @@ def define_initial_files(sim_path, patch_df):
                         h_value = CP * T_wall
                         logger.info(f"    BC {row['id']} ({row['type']}): T={T_celsius}°C → T_K={T_wall}K → h={h_value} J/kg")
                         new_bc_data["value"] = h_value
-                    elif(variable == 'k'):
-                        new_bc_data["type"] = 'kqRWallFunction'
-                        new_bc_data["value"] = '$internalField'
-                    elif(variable == 'nut'):
-                        new_bc_data["type"] = 'nutkWallFunction'
-                        new_bc_data["value"] = '$internalField'
                     elif(variable == 'p'):
                         # p = p_rgh + p_atm (for walls, p_rgh ≈ 0)
                         new_bc_data["type"] = 'calculated'
@@ -281,12 +222,6 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'p_rgh'):
                         new_bc_data["type"] = 'fixedFluxPressure'
                         new_bc_data["value"] = '$internalField'
-                    elif(variable == 'PMV'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = 1.40936
-                    elif(variable == 'PPD'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = 46.0115
                     elif(variable == 'T'):
                         new_bc_data["type"] = 'fixedValue'
                         new_bc_data["value"] = row['T'] + 273.15
@@ -295,20 +230,7 @@ def define_initial_files(sim_path, patch_df):
                     else:
                         raise BaseException('Unknown variable')
                 elif(row['type'] == 'velocity_inlet'):
-                    if(variable == 'alphat'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = '$internalField'
-                    elif(variable == 'DR'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = 16.61
-                    elif(variable == 'epsilon'):
-                        new_bc_data["type"] = 'turbulentMixingLengthDissipationRateInlet'
-                        new_bc_data["mixingLength"] = 0.0168
-                        new_bc_data["value"] = '$internalField'
-                    elif(variable == 'omega'):
-                        new_bc_data["type"] = 'fixedValue'
-                        new_bc_data["value"] = 0.5
-                    elif(variable == 'h'):
+                    if(variable == 'h'):
                         # Enthalpy for perfectGas: h = Cp×T
                         new_bc_data["type"] = 'fixedValue'
                         T_celsius = row['T']
@@ -316,13 +238,6 @@ def define_initial_files(sim_path, patch_df):
                         h_value = CP * T_wall
                         logger.info(f"    BC {row['id']} ({row['type']}): T={T_celsius}°C → T_K={T_wall}K → h={h_value} J/kg")
                         new_bc_data["value"] = h_value
-                    elif(variable == 'k'):
-                        new_bc_data["type"] = 'turbulentIntensityKineticEnergyInlet'
-                        new_bc_data["intensity"] = 0.14
-                        new_bc_data["value"] = '$internalField'
-                    elif(variable == 'nut'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = '$internalField'
                     elif(variable == 'p'):
                         # p = p_rgh + p_atm (for walls, p_rgh ≈ 0)
                         new_bc_data["type"] = 'calculated'
@@ -330,12 +245,6 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'p_rgh'):
                         new_bc_data["type"] = 'fixedFluxPressure'
                         new_bc_data["value"] = '$internalField'
-                    elif(variable == 'PMV'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = -1.18438
-                    elif(variable == 'PPD'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = 34.4876
                     elif(variable == 'T'):
                         new_bc_data["type"] = 'fixedValue'
                         new_bc_data["value"] = row['T'] + 273.15
@@ -348,30 +257,10 @@ def define_initial_files(sim_path, patch_df):
                     else:
                         raise BaseException('Unknown variable')
                 elif(row['type'] == 'pressure_inlet'):
-                    if(variable == 'alphat'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = '$internalField'
-                    elif(variable == 'DR'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = 16.61
-                    elif(variable == 'epsilon'):
-                        new_bc_data["type"] = 'turbulentMixingLengthDissipationRateInlet'
-                        new_bc_data["mixingLength"] = 0.0168
-                        new_bc_data["value"] = '$internalField'
-                    elif(variable == 'omega'):
-                        new_bc_data["type"] = 'fixedValue'
-                        new_bc_data["value"] = 0.5
-                    elif(variable == 'h'):
+                    if(variable == 'h'):
                         # Enthalpy inlet: zeroGradient to avoid overconstraining with fixedValue p_rgh
                         new_bc_data["type"] = 'zeroGradient'
                         logger.info(f"    BC {row['id']} ({row['type']}): h = zeroGradient (temperature adapts to flow)")
-                    elif(variable == 'k'):
-                        new_bc_data["type"] = 'turbulentIntensityKineticEnergyInlet'
-                        new_bc_data["intensity"] = 0.14
-                        new_bc_data["value"] = '$internalField'
-                    elif(variable == 'nut'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = '$internalField'
                     elif(variable == 'p'):
                         # Let solver calculate p from p_rgh + ρ·g·h + p_ref (hydrostatic consistency)
                         new_bc_data["type"] = 'calculated'
@@ -380,12 +269,6 @@ def define_initial_files(sim_path, patch_df):
                         # Use fixedValue for pressure inlet (simple and stable)
                         new_bc_data["type"] = 'fixedValue'
                         new_bc_data["value"] = 0  # p_rgh = 0 at atmospheric pressure opening
-                    elif(variable == 'PMV'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = -1.18438
-                    elif(variable == 'PPD'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = 34.4876
                     elif(variable == 'T'):
                         # Temperature inlet: zeroGradient to avoid overconstraining with fixedValue p_rgh
                         new_bc_data["type"] = 'zeroGradient'
@@ -400,30 +283,9 @@ def define_initial_files(sim_path, patch_df):
                     else:
                         raise BaseException('Unknown variable')
                 elif(row['type'] == 'pressure_outlet'):
-                    if(variable == 'alphat'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = '$internalField'
-                    elif(variable == 'DR'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = 0
-                    elif(variable == 'epsilon'):
-                        new_bc_data["type"] = 'inletOutlet'
-                        new_bc_data["inletValue"] = '$internalField'
-                        new_bc_data["value"] = '$internalField'
-                    elif(variable == 'omega'):
-                        new_bc_data["type"] = 'inletOutlet'
-                        new_bc_data["inletValue"] = 0.5
-                        new_bc_data["value"] = 0.5
-                    elif(variable == 'h'):
+                    if(variable == 'h'):
                         # Enthalpy outlet: zeroGradient to avoid overconstraining with fixedValue p_rgh
                         new_bc_data["type"] = 'zeroGradient'
-                    elif(variable == 'k'):
-                        new_bc_data["type"] = 'inletOutlet'
-                        new_bc_data["inletValue"] = '$internalField'
-                        new_bc_data["value"] = '$internalField'
-                    elif(variable == 'nut'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = '$internalField'
                     elif(variable == 'p'):
                         # Let solver calculate p from p_rgh + ρ·g·h + p_ref (hydrostatic consistency)
                         new_bc_data["type"] = 'calculated'
@@ -432,12 +294,6 @@ def define_initial_files(sim_path, patch_df):
                         # Use fixedValue for pressure outlet (simple and stable)
                         new_bc_data["type"] = 'fixedValue'
                         new_bc_data["value"] = 0  # p_rgh = 0 at atmospheric pressure opening
-                    elif(variable == 'PMV'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = 1.40936
-                    elif(variable == 'PPD'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = 46.0115
                     elif(variable == 'T'):
                         # Temperature outlet: zeroGradient to avoid overconstraining with fixedValue p_rgh
                         new_bc_data["type"] = 'zeroGradient'
@@ -454,31 +310,11 @@ def define_initial_files(sim_path, patch_df):
                     else:
                         raise BaseException('Unknown variable')
                 elif(row['type'] == 'mass_flow_inlet'):
-                    if(variable == 'alphat'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = '$internalField'
-                    elif(variable == 'DR'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = 16.61
-                    elif(variable == 'epsilon'):
-                        new_bc_data["type"] = 'turbulentMixingLengthDissipationRateInlet'
-                        new_bc_data["mixingLength"] = 0.0168
-                        new_bc_data["value"] = '$internalField'
-                    elif(variable == 'omega'):
-                        new_bc_data["type"] = 'fixedValue'
-                        new_bc_data["value"] = 0.5
-                    elif(variable == 'h'):
+                    if(variable == 'h'):
                         # Enthalpy for perfectGas: h = Cp×T
                         new_bc_data["type"] = 'fixedValue'
                         T_inlet = row['T'] + 273.15
                         new_bc_data["value"] = CP * T_inlet
-                    elif(variable == 'k'):
-                        new_bc_data["type"] = 'turbulentIntensityKineticEnergyInlet'
-                        new_bc_data["intensity"] = 0.14
-                        new_bc_data["value"] = '$internalField'
-                    elif(variable == 'nut'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = '$internalField'
                     elif(variable == 'p'):
                         # p = p_rgh + p_atm (for walls, p_rgh ≈ 0)
                         new_bc_data["type"] = 'calculated'
@@ -486,12 +322,6 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'p_rgh'):
                         new_bc_data["type"] = 'fixedFluxPressure'
                         new_bc_data["value"] = '$internalField'
-                    elif(variable == 'PMV'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = -1.18438
-                    elif(variable == 'PPD'):
-                        new_bc_data["type"] = 'calculated'
-                        new_bc_data["value"] = 34.4876
                     elif(variable == 'T'):
                         new_bc_data["type"] = 'fixedValue'
                         new_bc_data["value"] = row['T'] + 273.15
