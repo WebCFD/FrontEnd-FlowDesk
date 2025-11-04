@@ -405,7 +405,7 @@ def setup(case_path: str, simulation_type: str = 'comfortTest') -> list:
         
         # Initialize velocity and pressure fields with Laplacian solution for better stability
         'echo "==================== INITIALIZING FIELDS WITH potentialFoam ===================="',
-        'runParallel -np 16 potentialFoam -initialiseUBCs -parallel',
+        'runParallel -np 16 potentialFoam -initialiseUBCs -writep -parallel',
         'echo "==================== FIELD INITIALIZATION COMPLETED ===================="',
         
         # Run solver in parallel
