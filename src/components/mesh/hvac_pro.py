@@ -52,21 +52,21 @@ class MeshQualityLevel:
             'name': 'Conservative isotropic (no layers)',
             'description': 'No boundary layers, isotropic refinement, strict quality (maxNonOrtho<65)',
             'base_cell_size': 0.10,  # 10cm base cells (coarse domain)
-            'global_level': 2,       # Base level 2 (2.5cm) - avoids large level jumps
+            'global_level': 0,       # No global refinement (10cm base cells)
             'maxGlobalCells': 400000,  # Force limit to prevent over-refinement
             'levels': {
-                'pressure_inlet': 4,      # 0.625cm surface (jump: 2→4 = 2 levels ✓)
-                'pressure_outlet': 4,     # 0.625cm surface (jump: 2→4 = 2 levels ✓)
-                'wall': 2,                # Same as base (no jump)
-                'floor_ceiling': 2,       # Same as base (no jump)
-                'default': 2              # Base level
+                'pressure_inlet': 3,      # 1.25cm surface (jump: 0→3 = 3 levels, acceptable)
+                'pressure_outlet': 3,     # 1.25cm surface (jump: 0→3 = 3 levels, acceptable)
+                'wall': 0,                # Same as base (no jump)
+                'floor_ceiling': 0,       # Same as base (no jump)
+                'default': 0              # Base level
             },
             'volumetric_zones': [
-                # Four-zone isotropic refinement (no layers, smoother transitions)
-                {'distance': 0.08, 'level': 4, 'name': 'bc_core_0_8cm'},      # 0-8cm: 0.625cm cells (isotropic)
-                {'distance': 0.20, 'level': 3, 'name': 'bc_near_8_20cm'},     # 8-20cm: 1.25cm cells
-                {'distance': 0.40, 'level': 2, 'name': 'bc_mid_20_40cm'},     # 20-40cm: 2.5cm cells (base)
-                {'distance': 0.60, 'level': 2, 'name': 'bc_far_40_60cm'},     # 40-60cm: 2.5cm cells (base)
+                # Four-zone progressive isotropic refinement (smooth 3→2→1→0)
+                {'distance': 0.08, 'level': 3, 'name': 'bc_core_0_8cm'},      # 0-8cm: 1.25cm cells
+                {'distance': 0.20, 'level': 2, 'name': 'bc_near_8_20cm'},     # 8-20cm: 2.5cm cells
+                {'distance': 0.40, 'level': 1, 'name': 'bc_mid_20_40cm'},     # 20-40cm: 5cm cells
+                {'distance': 0.60, 'level': 0, 'name': 'bc_far_40_60cm'},     # 40-60cm: 10cm cells (base)
             ],
             'boundary_layers': None,  # NO LAYERS - isotropic refinement only
             'feature_edge_refinement': {
