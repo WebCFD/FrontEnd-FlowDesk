@@ -109,7 +109,7 @@ $BOUNDARY_LAYERS
     maxFaceThicknessRatio 0.95;       // VERY PERMISSIVE - allow thick layers
     maxThicknessToMedialRatio 0.9;    // PERMISSIVE
     minThickness 0.0005;              // Absolute minimum thickness
-    minMedianAxisAngle 85;
+    minMedialAxisAngle 85;
     nBufferCellsNoExtrude 0;
     nLayerIter 250;                   // INCREASED iterations for quality
     nRelaxedIter 100;

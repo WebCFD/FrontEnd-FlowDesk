@@ -103,7 +103,7 @@ class MeshQualityLevel:
                 'maxFaceThicknessRatio': 0.8,    # Very permissive
                 'maxThicknessToMedialRatio': 0.8,
                 'minThickness': 0.0005,          # Min 0.5mm absolute
-                'minMedianAxisAngle': 70,        # More permissive
+                'minMedialAxisAngle': 70,        # More permissive (OpenFOAM correct spelling)
                 'nLayerIter': 200,
                 'nRelaxedIter': 100
             }
@@ -493,7 +493,7 @@ def create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo
     layer_max_face_thickness = str(layer_controls.get('maxFaceThicknessRatio', 0.6))
     layer_max_thickness_medial = str(layer_controls.get('maxThicknessToMedialRatio', 0.6))
     layer_min_thickness = str(layer_controls.get('minThickness', 0.1 if use_relative else 0.0005))
-    layer_min_median_angle = str(layer_controls.get('minMedianAxisAngle', 80))
+    layer_min_medial_angle = str(layer_controls.get('minMedialAxisAngle', 80))
     layer_n_layer_iter = str(layer_controls.get('nLayerIter', 150))
     layer_n_relaxed_iter = str(layer_controls.get('nRelaxedIter', 75))
     
@@ -541,7 +541,7 @@ def create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo
         "$LAYER_MAX_FACE_THICKNESS_RATIO": layer_max_face_thickness,
         "$LAYER_MAX_THICKNESS_TO_MEDIAL_RATIO": layer_max_thickness_medial,
         "$LAYER_MIN_THICKNESS": layer_min_thickness,
-        "$LAYER_MIN_MEDIAN_AXIS_ANGLE": layer_min_median_angle,
+        "$LAYER_MIN_MEDIAL_AXIS_ANGLE": layer_min_medial_angle,
         "$LAYER_N_LAYER_ITER": layer_n_layer_iter,
         "$LAYER_N_RELAXED_ITER": layer_n_relaxed_iter,
         "$GLOBAL_EXPANSION_RATIO": global_expansion,

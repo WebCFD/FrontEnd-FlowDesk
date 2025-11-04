@@ -116,7 +116,7 @@ $BOUNDARY_LAYERS
     maxFaceThicknessRatio $LAYER_MAX_FACE_THICKNESS_RATIO;
     maxThicknessToMedialRatio $LAYER_MAX_THICKNESS_TO_MEDIAL_RATIO;
     minThickness $LAYER_MIN_THICKNESS;
-    minMedianAxisAngle $LAYER_MIN_MEDIAN_AXIS_ANGLE;
+    minMedialAxisAngle $LAYER_MIN_MEDIAL_AXIS_ANGLE;
     nBufferCellsNoExtrude 0;
     nLayerIter $LAYER_N_LAYER_ITER;
     nRelaxedIter $LAYER_N_RELAXED_ITER;
