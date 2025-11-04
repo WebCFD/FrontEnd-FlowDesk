@@ -355,7 +355,9 @@ def generate_hvac_boundary_layers(geo_df: pd.DataFrame, quality_level: int = 2) 
         else:
             continue  # No layers for this BC type
         
-        # Generate layer block with ONLY 2 thickness params (OpenFOAM v2406 requirement)
+        # Generate layer block with nSurfaceLayers + firstLayerThickness + expansionRatio
+        # CRITICAL: OpenFOAM v2406 requires exactly TWO thickness parameters
+        # We use: firstLayerThickness + expansionRatio (most common combination)
         # Check if using relative or absolute sizing
         use_relative = layer_config.get('relativeSizes', True)
         
@@ -368,6 +370,7 @@ def generate_hvac_boundary_layers(geo_df: pd.DataFrame, quality_level: int = 2) 
         
         block = f"""        "{patch_name}"
         {{
+            nSurfaceLayers {layer_config['nLayers']};
             firstLayerThickness {first_layer};
             expansionRatio {layer_config['expansionRatio']};
         }}"""
@@ -494,6 +497,20 @@ def create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo
     layer_n_layer_iter = str(layer_controls.get('nLayerIter', 150))
     layer_n_relaxed_iter = str(layer_controls.get('nRelaxedIter', 75))
     
+    # Global fallback parameters for addLayersControls (required by OpenFOAM v2406)
+    # Use conservative defaults from wall configuration
+    if 'wall' in boundary_layers_config:
+        wall_config = boundary_layers_config['wall']
+        if use_relative:
+            global_first_layer = "0.25"
+        else:
+            global_first_layer = str(wall_config['firstLayerThickness'])
+        global_expansion = str(wall_config['expansionRatio'])
+    else:
+        # Ultimate fallback if no boundary layers configured
+        global_first_layer = "0.002" if not use_relative else "0.25"
+        global_expansion = "1.2"
+    
     # Replace placeholders
     str_replace_dict = {
         "$STL_FILENAME": stl_filename,
@@ -527,6 +544,8 @@ def create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo
         "$LAYER_MIN_MEDIAN_AXIS_ANGLE": layer_min_median_angle,
         "$LAYER_N_LAYER_ITER": layer_n_layer_iter,
         "$LAYER_N_RELAXED_ITER": layer_n_relaxed_iter,
+        "$GLOBAL_EXPANSION_RATIO": global_expansion,
+        "$GLOBAL_FIRST_LAYER_THICKNESS": global_first_layer,
     }
     
     replace_in_file(input_path, output_path, str_replace_dict)

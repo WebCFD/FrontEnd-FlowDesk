@@ -27,9 +27,15 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 - **Authentication**: Passport.js (local strategy, session-based)
 - **Session Storage**: PostgreSQL
 
-### CFD Meshing Strategy (⭐ HVAC Professional - Nov 2, 2025)
+### CFD Meshing Strategy (⭐ HVAC Professional - Nov 4, 2025)
 
 **Active Configuration**: `hvac_pro` (snappyHexMesh optimized from scratch with parametric quality levels)
+
+**Critical Fix Applied (Nov 4, 2025)**: Added OpenFOAM v2406 compliance
+- Added `nSurfaceLayers` to each patch in boundary layer configuration
+- Added global fallback parameters (`expansionRatio`, `firstLayerThickness`) required by OpenFOAM
+- Increased `nSmoothThickness` from 20 to 40 for smooth layer transitions
+- Ensures compatibility with Inductiva's OpenFOAM v2406 environment
 
 **Design Philosophy**: Physics-based mesh sizing derived from:
 - Jet resolution requirements (10-15 cells across jet diameter)

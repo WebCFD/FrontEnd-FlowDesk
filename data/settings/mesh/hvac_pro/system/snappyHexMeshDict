@@ -100,6 +100,11 @@ addLayersControls
 $BOUNDARY_LAYERS
     }
     
+    // GLOBAL FALLBACK PARAMETERS (required by OpenFOAM)
+    // Individual patches override these with their own values
+    expansionRatio $GLOBAL_EXPANSION_RATIO;
+    firstLayerThickness $GLOBAL_FIRST_LAYER_THICKNESS;
+    
     // Advanced layer generation for maximum coverage
     nGrow 0;
     featureAngle $LAYER_FEATURE_ANGLE;
@@ -107,7 +112,7 @@ $BOUNDARY_LAYERS
     nRelaxIter $LAYER_N_RELAX_ITER;
     nSmoothSurfaceNormals 5;
     nSmoothNormals $LAYER_N_SMOOTH_NORMALS;
-    nSmoothThickness 20;
+    nSmoothThickness 40;              // CRITICAL - 40 not 20 for smooth transition
     maxFaceThicknessRatio $LAYER_MAX_FACE_THICKNESS_RATIO;
     maxThicknessToMedialRatio $LAYER_MAX_THICKNESS_TO_MEDIAL_RATIO;
     minThickness $LAYER_MIN_THICKNESS;
