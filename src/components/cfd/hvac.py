@@ -390,7 +390,12 @@ def setup(case_path: str, simulation_type: str = 'comfortTest') -> list:
         'cp -r 0.orig 0',
         'echo "==================== INITIAL CONDITIONS COPIED ===================="',
         
-        # Generate VTK for time 0 (initial uniform fields) - BEFORE potentialFoam
+        # Apply hydrostatic pressure distribution for physical consistency
+        'echo "==================== APPLYING HYDROSTATIC PRESSURE GRADIENT ===================="',
+        'runApplication setFields',
+        'echo "==================== HYDROSTATIC PRESSURE INITIALIZED: p(z) = p_atm - rho*g*z ===================="',
+        
+        # Generate VTK for time 0 (initial fields with hydrostatic pressure) - BEFORE potentialFoam
         'echo "==================== GENERATING VTK FOR TIME 0 (INITIAL STATE) ===================="',
         'foamToVTK -time 0 -fields "(T U p p_rgh h)" 2>&1 | tee log.foamToVTK_time0',
         'echo "==================== TIME 0 VTK COMPLETED ===================="',
