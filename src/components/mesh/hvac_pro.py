@@ -54,6 +54,8 @@ class MeshQualityLevel:
             'base_cell_size': 0.10,  # 10cm base cells (coarse domain)
             'global_level': 0,       # No global refinement (10cm base cells)
             'maxGlobalCells': 1000000,  # Increased from 400k to allow extended volumetric zones (Nov 4, 2025)
+            'maxLocalCells': 500000,   # Increased from 200k for extended volumetric zones (Nov 4, 2025)
+            'maxLoadUnbalance': 0.25,  # Relaxed from 0.10 to allow extended refinement (Nov 4, 2025)
             'levels': {
                 'pressure_inlet': 3,      # 1.25cm surface (jump: 0→3 = 3 levels, acceptable)
                 'pressure_outlet': 3,     # 1.25cm surface (jump: 0→3 = 3 levels, acceptable)
@@ -462,6 +464,8 @@ def create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo
     
     # Cell count limits
     max_global_cells = str(config.get('maxGlobalCells', 5000000))
+    max_local_cells = str(config.get('maxLocalCells', 200000))
+    max_load_unbalance = str(config.get('maxLoadUnbalance', 0.10))
     
     # Mesh quality parameters (from config or defaults)
     mesh_quality = config.get('mesh_quality', {})
@@ -529,6 +533,8 @@ def create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo
         "$ADD_LAYERS": add_layers,
         "$GLOBAL_LEVEL": global_level,
         "$MAX_GLOBAL_CELLS": max_global_cells,
+        "$MAX_LOCAL_CELLS": max_local_cells,
+        "$MAX_LOAD_UNBALANCE": max_load_unbalance,
         "$NCELLS_BETWEEN_LEVELS": n_cells_between,
         "$MIN_REFINEMENT_CELLS": min_refinement_cells,
         "$MAX_NON_ORTHO": max_non_ortho,

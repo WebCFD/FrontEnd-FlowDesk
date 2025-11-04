@@ -39,10 +39,10 @@ geometry
 castellatedMeshControls
 {
     // Cell limits (parametric per quality level)
-    maxLocalCells 200000;
+    maxLocalCells $MAX_LOCAL_CELLS;
     maxGlobalCells $MAX_GLOBAL_CELLS;
     minRefinementCells $MIN_REFINEMENT_CELLS;
-    maxLoadUnbalance 0.10;
+    maxLoadUnbalance $MAX_LOAD_UNBALANCE;
     nCellsBetweenLevels $NCELLS_BETWEEN_LEVELS;
 
     features
