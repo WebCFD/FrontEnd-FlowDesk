@@ -48,12 +48,12 @@ class MeshQualityLevel:
     """
     
     CONFIGS = {
-        1: {  # COARSE - ~200k cells (conservative isotropic strategy)
+        1: {  # COARSE - ~300-400k cells (conservative isotropic strategy with extended BC zones)
             'name': 'Conservative isotropic (no layers)',
             'description': 'No boundary layers, isotropic refinement, strict quality (maxNonOrtho<65)',
             'base_cell_size': 0.10,  # 10cm base cells (coarse domain)
             'global_level': 0,       # No global refinement (10cm base cells)
-            'maxGlobalCells': 400000,  # Force limit to prevent over-refinement
+            'maxGlobalCells': 1000000,  # Increased from 400k to allow extended volumetric zones (Nov 4, 2025)
             'levels': {
                 'pressure_inlet': 3,      # 1.25cm surface (jump: 0→3 = 3 levels, acceptable)
                 'pressure_outlet': 3,     # 1.25cm surface (jump: 0→3 = 3 levels, acceptable)
