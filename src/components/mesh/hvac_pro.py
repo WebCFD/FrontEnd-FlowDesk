@@ -301,7 +301,7 @@ def generate_hvac_volumetric_refinement(geo_df: pd.DataFrame, quality_level: int
         file geometry.stl;
         regions
         {{
-            {patch_name} {{}}
+            {patch_name} {{ name {patch_name}; }}
         }}
     }}"""
         geometry_blocks.append(geometry_block)

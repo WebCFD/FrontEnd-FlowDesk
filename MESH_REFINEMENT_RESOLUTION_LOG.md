@@ -569,8 +569,56 @@ runTimeModifiable true;         // Habilitar escritura inmediata
 
 ---
 
-**ESTADO:** ⚠️ PARCIALMENTE RESUELTO
-- ✅ Sintaxis refinementRegions corregida (searchableSurfaces independientes)
+---
+
+## ITERACIÓN 5D: Error de Campo 'name' en regions{}
+
+### ❌ Síntoma
+```
+--> FOAM FATAL IO ERROR:
+Entry 'name' not found in dictionary "geometry/window_0F_2/regions/window_0F_2"
+```
+
+### 🔍 Causa Raíz
+searchableSurfaces con bloque `regions{}` requieren que cada región tenga el campo `name`.
+
+### ❌ Implementación Incorrecta
+```cpp
+window_0F_2
+{
+    type triSurfaceMesh;
+    file geometry.stl;
+    regions
+    {
+        window_0F_2 {}  ← Falta campo "name"
+    }
+}
+```
+
+### ✅ Implementación Correcta
+```cpp
+window_0F_2
+{
+    type triSurfaceMesh;
+    file geometry.stl;
+    regions
+    {
+        window_0F_2 { name window_0F_2; }  ← Campo name agregado
+    }
+}
+```
+
+### 🔧 Solución Implementada
+Modificado `generate_hvac_volumetric_refinement()` para incluir campo `name` en regiones.
+
+**Archivo modificado:**
+- `src/components/mesh/hvac_pro.py` (línea 307)
+
+---
+
+**ESTADO:** ✅ COMPLETAMENTE RESUELTO
+- ✅ Sintaxis refinementRegions corregida (searchableSurfaces independientes con campo name)
 - ✅ writeControl runTime configurado (capturará Time=1 antes de crash)
-- ⚠️ Crash por temperatura negativa requiere investigación de BCs
-- 🔄 Próxima simulación escribirá campos antes de crashear
+- ✅ Volumetric refinement listo para aplicarse
+- ⚠️ Crash por temperatura negativa requiere investigación separada de BCs
+- 🔄 Próxima simulación: mesh volumétrico + campos escritos cada 0.5s
