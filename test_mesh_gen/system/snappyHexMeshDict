@@ -123,12 +123,12 @@ castellatedMeshControls
         window_0F_1
         {
             mode    distance;
-            levels  ((0.16 3) (0.4 2) (0.8 1) (1.2 0));
+            levels  ((0.32 3) (0.8 2) (1.6 1) (2.4 0));
         }
         door_0F_1
         {
             mode    distance;
-            levels  ((0.16 3) (0.4 2) (0.8 1) (1.2 0));
+            levels  ((0.32 3) (0.8 2) (1.6 1) (2.4 0));
         }
     }
 
