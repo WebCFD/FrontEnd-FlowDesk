@@ -48,64 +48,47 @@ class MeshQualityLevel:
     """
     
     CONFIGS = {
-        1: {  # COARSE - ~200k cells (optimized for BC stability)
-            'name': 'BC-focused 200k (all-in on boundaries)',
-            'description': 'Coarse base, aggressive BC refinement, thin layers for stability',
+        1: {  # COARSE - ~200k cells (conservative isotropic strategy)
+            'name': 'Conservative isotropic (no layers)',
+            'description': 'No boundary layers, isotropic refinement, strict quality (maxNonOrtho<65)',
             'base_cell_size': 0.10,  # 10cm base cells (coarse domain)
-            'global_level': 0,       # CRITICAL: (0 0) to keep domain coarse
-            'maxGlobalCells': 400000,  # CRITICAL: Force limit to prevent over-refinement
+            'global_level': 0,       # (0 0) to keep domain coarse
+            'maxGlobalCells': 400000,  # Force limit to prevent over-refinement
             'levels': {
-                'pressure_inlet': 3,      # 1.25cm surface refinement (was 4 = too fine!)
-                'pressure_outlet': 3,     # 1.25cm surface refinement
-                'wall': 1,                # 0-5cm range (minimal - layers will handle it)
-                'floor_ceiling': 1,       # 0-5cm range (minimal)
+                'pressure_inlet': 4,      # 0.625cm surface refinement (finer to compensate no layers)
+                'pressure_outlet': 4,     # 0.625cm surface refinement
+                'wall': 1,                # 5cm (no refinement needed)
+                'floor_ceiling': 1,       # 5cm (no refinement needed)
                 'default': 0              # Coarse base
             },
             'volumetric_zones': [
-                # Three-zone aggressive refinement around pressure boundaries
-                {'distance': 0.08, 'level': 3, 'name': 'bc_core_0_8cm'},      # 0-8cm: 1.25cm cells
-                {'distance': 0.25, 'level': 2, 'name': 'bc_near_8_25cm'},     # 8-25cm: 2.5cm cells
-                {'distance': 0.50, 'level': 1, 'name': 'bc_mid_25_50cm'},     # 25-50cm: 5cm cells (reduced from 60cm)
+                # Four-zone isotropic refinement (no layers, smoother transitions)
+                {'distance': 0.08, 'level': 4, 'name': 'bc_core_0_8cm'},      # 0-8cm: 0.625cm cells (isotropic)
+                {'distance': 0.20, 'level': 3, 'name': 'bc_near_8_20cm'},     # 8-20cm: 1.25cm cells
+                {'distance': 0.40, 'level': 2, 'name': 'bc_mid_20_40cm'},     # 20-40cm: 2.5cm cells
+                {'distance': 0.60, 'level': 1, 'name': 'bc_far_40_60cm'},     # 40-60cm: 5cm cells
             ],
-            'boundary_layers': {
-                # Thin layers for numerical stability (2 layers only - save cells!)
-                # ABSOLUTE sizing (relativeSizes false)
-                'pressure_inlet': {'nLayers': 2, 'firstLayerThickness': 0.001, 'expansionRatio': 1.3, 'relativeSizes': False},
-                'pressure_outlet': {'nLayers': 2, 'firstLayerThickness': 0.001, 'expansionRatio': 1.3, 'relativeSizes': False},
-                'wall': {'nLayers': 2, 'firstLayerThickness': 0.002, 'expansionRatio': 1.4, 'relativeSizes': False},
-            },
+            'boundary_layers': None,  # NO LAYERS - isotropic refinement only
             'feature_edge_refinement': {
-                'enabled': True,         # Moderate feature detection
-                'min_level': 1,          
-                'max_level': 2,          # Moderate refinement
-                'feature_angle': 45      # Moderate angle
+                'enabled': False,        # Disabled to avoid complexity
+                'min_level': 0,          
+                'max_level': 0,
+                'feature_angle': 30
             },
             'mesh_quality': {
-                # Very relaxed quality - priority is getting layers to stick!
-                'maxNonOrtho': 70,
-                'maxBoundarySkewness': 25,
-                'maxInternalSkewness': 5,
-                'maxConcave': 80,
-                'nCellsBetweenLevels': 3,  # Faster transitions (save cells)
-                'minRefinementCells': 10,  # Prune small refinement regions
-                # Relaxed fallback (MORE permissive than main)
+                # Strict quality controls for orthogonality
+                'maxNonOrtho': 65,              # OBJECTIVE: <65° non-orthogonality
+                'maxBoundarySkewness': 20,      # More strict
+                'maxInternalSkewness': 4,       # More strict
+                'maxConcave': 75,               # More strict
+                'nCellsBetweenLevels': 4,       # Smoother transitions
+                'minRefinementCells': 5,        # Allow small zones
+                # Relaxed fallback (still conservative)
                 'relaxed': {
-                    'maxNonOrtho': 75,
-                    'maxBoundarySkewness': 35,
-                    'maxInternalSkewness': 6
+                    'maxNonOrtho': 70,          # Fallback still conservative
+                    'maxBoundarySkewness': 25,
+                    'maxInternalSkewness': 5
                 }
-            },
-            'layer_controls': {
-                # Very aggressive settings for maximum layer success
-                'featureAngle': 80,              # More permissive (was 75)
-                'nRelaxIter': 15,                # More relaxation
-                'nSmoothNormals': 10,            # More smoothing
-                'maxFaceThicknessRatio': 0.8,    # Very permissive
-                'maxThicknessToMedialRatio': 0.8,
-                'minThickness': 0.0005,          # Min 0.5mm absolute
-                'minMedialAxisAngle': 70,        # More permissive (OpenFOAM correct spelling)
-                'nLayerIter': 200,
-                'nRelaxedIter': 100
             }
         },
         2: {  # MEDIUM - ~500k cells ⭐ DEFAULT
@@ -332,9 +315,20 @@ def generate_hvac_boundary_layers(geo_df: pd.DataFrame, quality_level: int = 2) 
         quality_level: 1 (coarse), 2 (medium), 3 (fine)
     
     Layer sizing based on y+ requirements, scaled by quality level.
+    Returns empty string if boundary_layers is None (no layers strategy).
     """
     config = MeshQualityLevel.get_config(quality_level)
     boundary_layers = config['boundary_layers']
+    
+    # Handle None case (no layers strategy)
+    if boundary_layers is None:
+        logger.info("=" * 80)
+        logger.info(f"HVAC BOUNDARY LAYERS - Quality Level {quality_level}")
+        logger.info("=" * 80)
+        logger.info("  ⚠️  Boundary layers DISABLED (isotropic refinement strategy)")
+        logger.info("  Strategy: No layers → isotropic cells → natural orthogonality")
+        logger.info("=" * 80)
+        return "        // No boundary layers (isotropic refinement strategy)"
     
     logger.info("=" * 80)
     logger.info(f"HVAC BOUNDARY LAYERS - Quality Level {quality_level}")
@@ -433,26 +427,34 @@ def create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo
     
     # Feature edge refinement configuration
     if quality_level == 1 and 'feature_edge_refinement' in config:
-        # Level 1: Uniform mesh with feature edge refinement only
+        # Level 1: Check if feature refinement is enabled
         feature_config = config['feature_edge_refinement']
-        base_size = config['base_cell_size']
         
-        # Calculate distances for feature refinement
-        # level 3: 10mm / 2^3 = 1.25mm
-        min_distance = base_size * 0.001  # Very close to edge
-        max_distance = base_size * 0.02   # Further from edge
-        
-        feature_refinement_levels = f"            levels (({min_distance} {feature_config['max_level']}) ({max_distance} {feature_config['min_level']}));"
-        feature_angle = str(feature_config['feature_angle'])
-        
-        logger.info(f"  Feature edge refinement: {base_size*1000}mm → {base_size*1000 / (2**feature_config['max_level']):.2f}mm at edges")
+        if feature_config.get('enabled', False):
+            # Feature edge refinement enabled
+            base_size = config['base_cell_size']
+            
+            # Calculate distances for feature refinement
+            min_distance = base_size * 0.001  # Very close to edge
+            max_distance = base_size * 0.02   # Further from edge
+            
+            feature_refinement_levels = f"            levels (({min_distance} {feature_config['max_level']}) ({max_distance} {feature_config['min_level']}));"
+            feature_angle = str(feature_config['feature_angle'])
+            
+            logger.info(f"  Feature edge refinement: {base_size*1000}mm → {base_size*1000 / (2**feature_config['max_level']):.2f}mm at edges")
+        else:
+            # Feature edge refinement disabled
+            feature_refinement_levels = "            levels ((0.001 0));"
+            feature_angle = "30"
+            logger.info(f"  Feature edge refinement: DISABLED (isotropic strategy)")
     else:
         # Level 2/3: Standard feature refinement
         feature_refinement_levels = "            levels ((0.001 6) (0.005 4) (0.020 2));  // Fine feature resolution"
         feature_angle = "25"
     
-    # Enable layers if any boundary layers configured
-    add_layers = "true" if len(config.get('boundary_layers', {})) > 0 else "false"
+    # Enable layers if any boundary layers configured (handle None case)
+    boundary_layers_config = config.get('boundary_layers')
+    add_layers = "true" if (boundary_layers_config is not None and len(boundary_layers_config) > 0) else "false"
     
     # Global refinement level
     global_level = str(config.get('global_level', 1))
@@ -477,8 +479,8 @@ def create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo
     
     # Boundary layer parameters (detect if using relative or absolute sizing)
     # Check first boundary layer config to determine sizing mode
-    boundary_layers_config = config.get('boundary_layers', {})
-    if boundary_layers_config:
+    # Handle None case for boundary_layers
+    if boundary_layers_config is not None and len(boundary_layers_config) > 0:
         first_bc_config = next(iter(boundary_layers_config.values()))
         use_relative = first_bc_config.get('relativeSizes', True)
     else:
@@ -486,6 +488,7 @@ def create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo
     relative_sizes = "true" if use_relative else "false"
     
     # Layer controls (from config or defaults)
+    # Use empty dict if layer_controls not present (for no-layers strategy)
     layer_controls = config.get('layer_controls', {})
     layer_feature_angle = str(layer_controls.get('featureAngle', 75))
     layer_n_relax_iter = str(layer_controls.get('nRelaxIter', 12))
@@ -499,7 +502,7 @@ def create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo
     
     # Global fallback parameters for addLayersControls (required by OpenFOAM v2406)
     # Use conservative defaults from wall configuration
-    if 'wall' in boundary_layers_config:
+    if boundary_layers_config is not None and 'wall' in boundary_layers_config:
         wall_config = boundary_layers_config['wall']
         if use_relative:
             global_first_layer = "0.25"

@@ -27,11 +27,22 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 - **Authentication**: Passport.js (local strategy, session-based)
 - **Session Storage**: PostgreSQL
 
-### CFD Meshing Strategy (⭐ HVAC Professional - Nov 4, 2025)
+### CFD Meshing Strategy (⭐ HVAC Professional - Nov 4, 2024)
 
 **Active Configuration**: `hvac_pro` (snappyHexMesh optimized from scratch with parametric quality levels)
 
-**Critical Fixes Applied (Nov 4, 2025)**: Added OpenFOAM v2406 compliance
+**Latest Update (Nov 4, 2024)**: Conservative Isotropic Strategy (Quality Level 1)
+- **Objective**: Non-orthogonality < 65° at boundaries WITHOUT boundary layers
+- **Strategy**: Isotropic refinement only, NO boundary layers
+  - Boundary layers: `None` (disabled completely)
+  - Surface refinement: level 4 (0.625cm cells, up from level 3)
+  - Volumetric zones: 4 zones (0-8cm, 8-20cm, 20-40cm, 40-60cm at levels 4,3,2,1)
+  - Feature edge refinement: Disabled
+  - Quality controls: Strict (`maxNonOrtho: 65°`, `maxBoundarySkewness: 20`, `nCellsBetweenLevels: 4`)
+- **Expected**: maxNonOrtho < 65°, 0 concave cells, <5% polyhedra, ~200-300k cells, 1-2 min mesh time
+- **Modified**: `src/components/mesh/hvac_pro.py` (Level 1 config + `generate_hvac_boundary_layers()`)
+
+**Critical Fixes Applied (Nov 4, 2024)**: Added OpenFOAM v2406 compliance
 - Added `nSurfaceLayers` to each patch in boundary layer configuration
 - Added global fallback parameters (`expansionRatio`, `firstLayerThickness`) required by OpenFOAM
 - Increased `nSmoothThickness` from 20 to 40 for smooth layer transitions
