@@ -80,31 +80,24 @@ def update_controldict_iterations(case_path, simulation_type):
     iterations_map = {
         'comfortTest': 3,
         'comfort30Iter': 30,
-        'diagnostic100Iter': 100,  # For stability analysis with reduced relaxation
         'test_calculation': 3
     }
     
     iterations = iterations_map.get(simulation_type, 3)  # Default to 3 if type unknown
     logger.info(f"    * Setting endTime to {iterations} iterations")
     
-    # Determine writeInterval based on iteration count
-    if iterations >= 100:
-        write_interval = 10  # Every 10 iterations for long runs
-    else:
-        write_interval = 1  # Every iteration for short runs
-    
     sim_path = os.path.join(case_path, "sim")
     case = FoamCase(sim_path)
     with case['system']['controlDict'] as ctrl:
         ctrl['endTime'] = iterations
-        ctrl['writeInterval'] = write_interval
+        ctrl['writeInterval'] = 1  # Write EVERY iteration for debugging (Nov 4, 2025)
         
-        # CRITICAL: Also update VTK function writeInterval
+        # CRITICAL: Also update VTK function writeInterval to write every iteration
         if 'functions' in ctrl and 'writeVTK' in ctrl['functions']:
-            ctrl['functions']['writeVTK']['writeInterval'] = write_interval
-            logger.info(f"    * Updated VTK writeInterval to {write_interval}")
+            ctrl['functions']['writeVTK']['writeInterval'] = 1
+            logger.info(f"    * Updated VTK writeInterval to 1 (every iteration)")
         
-        logger.info(f"    * ✅ controlDict updated: endTime={iterations}, writeInterval={write_interval}")
+        logger.info(f"    * ✅ controlDict fully updated: endTime={iterations}, writeInterval=1 (every iteration)")
 
 
 def update_controldict_patches(sim_path, patch_df):
