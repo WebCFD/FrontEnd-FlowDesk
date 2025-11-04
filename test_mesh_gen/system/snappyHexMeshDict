@@ -120,15 +120,18 @@ castellatedMeshControls
     // Multi-zone refinement around pressure boundaries for jet capture
     refinementRegions
     {
-        window_0F_1
+        geometry
         {
-            mode    distance;
-            levels  ((0.32 3) (0.8 2) (1.6 1) (2.4 0));
-        }
-        door_0F_1
-        {
-            mode    distance;
-            levels  ((0.32 3) (0.8 2) (1.6 1) (2.4 0));
+            window_0F_1
+            {
+                mode    distance;
+                levels  ((0.32 3) (0.8 2) (1.6 1) (2.4 0));
+            }
+            door_0F_1
+            {
+                mode    distance;
+                levels  ((0.32 3) (0.8 2) (1.6 1) (2.4 0));
+            }
         }
     }
 

@@ -281,7 +281,7 @@ def generate_hvac_volumetric_refinement(geo_df: pd.DataFrame, quality_level: int
     
     logger.info("")
     
-    blocks = []
+    patch_blocks = []
     for idx, row in pressure_patches.iterrows():
         patch_name = row['id']
         bc_type = row['type']
@@ -289,20 +289,28 @@ def generate_hvac_volumetric_refinement(geo_df: pd.DataFrame, quality_level: int
         # Build distance-based refinement levels
         level_spec = " ".join([f"({z['distance']} {z['level']})" for z in volumetric_zones])
         
-        # Use the patch name from geometry (not _volume suffix)
-        # Reference the actual surface in the STL file
-        block = f"""        {patch_name}
-        {{
-            mode    distance;
-            levels  ({level_spec});
-        }}"""
-        blocks.append(block)
+        # Build individual patch entry
+        patch_block = f"""            {patch_name}
+            {{
+                mode    distance;
+                levels  ({level_spec});
+            }}"""
+        patch_blocks.append(patch_block)
         
-        logger.info(f"  {patch_name} ({bc_type}): 3-zone refinement enabled")
+        logger.info(f"  {patch_name} ({bc_type}): multi-zone refinement enabled")
     
     logger.info("=" * 80)
     
-    return "\n".join(blocks) if blocks else "        // No volumetric refinement"
+    # CRITICAL FIX: Must nest ALL patches inside single geometry{} block for snappyHexMesh
+    # Otherwise patches are ignored with warning "Not all entries in refinementRegions used"
+    if patch_blocks:
+        patches_content = "\n".join(patch_blocks)
+        return f"""        geometry
+        {{
+{patches_content}
+        }}"""
+    else:
+        return "        // No volumetric refinement"
 
 
 # ============================================================================
