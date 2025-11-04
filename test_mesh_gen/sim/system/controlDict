@@ -1,0 +1,52 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+application       buoyantSimpleFoam;
+startFrom         startTime;
+startTime         0;
+stopAt            endTime;
+
+endTime 3;
+deltaT            1;
+writeControl      timeStep;    // Write by iteration number
+
+writeInterval 1;            // Write every iteration
+adjustTimeStep    no;
+purgeWrite        0;            // Keep all timesteps (0 = no purge)
+writeFormat       ascii;
+writePrecision    6;
+writeCompression  off;
+timeFormat        general;
+timePrecision     6;
+runTimeModifiable true;         // Enable runtime modification for immediate writes
+
+functions
+{
+    // DEBUG: Write VTK every iteration to capture fields before crash
+    writeVTK
+    {
+        type            surfaces;
+        libs            ("libsampling.so");
+        writeControl    timeStep;  // Write every timestep        writeInterval 1;         // Every iteration
+        
+        surfaceFormat   vtk;
+        fields          (h T U p p_rgh);  // Include T for debugging
+        
+        interpolationScheme cellPoint;
+        
+        surfaces
+        {
+            internalMesh
+            {
+                type            patch;
+                patches         (floor ceiling);
+                interpolate     true;
+            }
+        }
+    }
+}
