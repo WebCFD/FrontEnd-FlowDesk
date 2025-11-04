@@ -63,10 +63,11 @@ class MeshQualityLevel:
             },
             'volumetric_zones': [
                 # Four-zone progressive isotropic refinement (smooth 3→2→1→0)
-                {'distance': 0.16, 'level': 3, 'name': 'bc_core_0_16cm'},     # 0-16cm: 1.25cm cells
-                {'distance': 0.40, 'level': 2, 'name': 'bc_near_16_40cm'},    # 16-40cm: 2.5cm cells
-                {'distance': 0.80, 'level': 1, 'name': 'bc_mid_40_80cm'},     # 40-80cm: 5cm cells
-                {'distance': 1.20, 'level': 0, 'name': 'bc_far_80_120cm'},    # 80-120cm: 10cm cells (base)
+                # Extended distances (2x) for more layers of fine cells at BC
+                {'distance': 0.32, 'level': 3, 'name': 'bc_core_0_32cm'},     # 0-32cm: 1.25cm cells
+                {'distance': 0.80, 'level': 2, 'name': 'bc_near_32_80cm'},    # 32-80cm: 2.5cm cells
+                {'distance': 1.60, 'level': 1, 'name': 'bc_mid_80_160cm'},    # 80-160cm: 5cm cells
+                {'distance': 2.40, 'level': 0, 'name': 'bc_far_160_240cm'},   # 160-240cm: 10cm cells (base)
             ],
             'boundary_layers': None,  # NO LAYERS - isotropic refinement only
             'feature_edge_refinement': {
