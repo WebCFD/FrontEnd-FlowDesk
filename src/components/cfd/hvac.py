@@ -263,9 +263,13 @@ def define_initial_files(sim_path, patch_df):
                         raise BaseException('Unknown variable')
                 elif(row['type'] == 'pressure_inlet'):
                     if(variable == 'h'):
-                        # Enthalpy inlet: zeroGradient to avoid overconstraining with fixedValue p_rgh
-                        new_bc_data["type"] = 'zeroGradient'
-                        logger.info(f"    BC {row['id']} ({row['type']}): h = zeroGradient (temperature adapts to flow)")
+                        # Enthalpy for perfectGas: h = Cp×T (use exterior temperature from CSV)
+                        new_bc_data["type"] = 'fixedValue'
+                        T_celsius = row['T']
+                        T_exterior = T_celsius + 273.15  # Convert °C → K
+                        h_value = CP * T_exterior
+                        logger.info(f"    BC {row['id']} ({row['type']}): T={T_celsius}°C → T_K={T_exterior}K → h={h_value} J/kg")
+                        new_bc_data["value"] = h_value
                     elif(variable == 'p'):
                         # Let solver calculate p from p_rgh + ρ·g·h (hydrostatic consistency)
                         new_bc_data["type"] = 'calculated'
@@ -274,11 +278,13 @@ def define_initial_files(sim_path, patch_df):
                         # p_rgh value for atmospheric pressure at typical aperture height
                         # This ensures p ≈ 101325 Pa at the opening, not ~0 Pa
                         new_bc_data["type"] = 'fixedValue'
-                        new_bc_data["value"] = P_RGH_APERTURE  # ≈ 101307 Pa for z=1.5m
+                        new_bc_data["value"] = P_RGH_APERTURE  # 101325 Pa
                         logger.info(f"    BC {row['id']} ({row['type']}): p_rgh = {P_RGH_APERTURE:.1f} Pa → p ≈ {P_ATM:.0f} Pa")
                     elif(variable == 'T'):
-                        # Temperature inlet: zeroGradient to avoid overconstraining with fixedValue p_rgh
-                        new_bc_data["type"] = 'zeroGradient'
+                        # Temperature inlet: fixedValue to impose exterior temperature
+                        new_bc_data["type"] = 'fixedValue'
+                        new_bc_data["value"] = row['T'] + 273.15  # Convert °C → K
+                        logger.info(f"    BC {row['id']} ({row['type']}): T = {row['T']}°C = {row['T'] + 273.15}K")
                     elif(variable == 'U'):
                         if (row['open']):
                             # Use pressureInletOutletVelocity for pressure-driven inflow
@@ -291,8 +297,13 @@ def define_initial_files(sim_path, patch_df):
                         raise BaseException('Unknown variable')
                 elif(row['type'] == 'pressure_outlet'):
                     if(variable == 'h'):
-                        # Enthalpy outlet: zeroGradient to avoid overconstraining with fixedValue p_rgh
-                        new_bc_data["type"] = 'zeroGradient'
+                        # Enthalpy for perfectGas: h = Cp×T (use exterior temperature from CSV)
+                        new_bc_data["type"] = 'fixedValue'
+                        T_celsius = row['T']
+                        T_exterior = T_celsius + 273.15  # Convert °C → K
+                        h_value = CP * T_exterior
+                        logger.info(f"    BC {row['id']} ({row['type']}): T={T_celsius}°C → T_K={T_exterior}K → h={h_value} J/kg")
+                        new_bc_data["value"] = h_value
                     elif(variable == 'p'):
                         # Let solver calculate p from p_rgh + ρ·g·h (hydrostatic consistency)
                         new_bc_data["type"] = 'calculated'
@@ -301,11 +312,13 @@ def define_initial_files(sim_path, patch_df):
                         # p_rgh value for atmospheric pressure at typical aperture height
                         # This ensures p ≈ 101325 Pa at the opening, not ~0 Pa
                         new_bc_data["type"] = 'fixedValue'
-                        new_bc_data["value"] = P_RGH_APERTURE  # ≈ 101307 Pa for z=1.5m
+                        new_bc_data["value"] = P_RGH_APERTURE  # 101325 Pa
                         logger.info(f"    BC {row['id']} ({row['type']}): p_rgh = {P_RGH_APERTURE:.1f} Pa → p ≈ {P_ATM:.0f} Pa")
                     elif(variable == 'T'):
-                        # Temperature outlet: zeroGradient to avoid overconstraining with fixedValue p_rgh
-                        new_bc_data["type"] = 'zeroGradient'
+                        # Temperature outlet: fixedValue to impose exterior temperature
+                        new_bc_data["type"] = 'fixedValue'
+                        new_bc_data["value"] = row['T'] + 273.15  # Convert °C → K
+                        logger.info(f"    BC {row['id']} ({row['type']}): T = {row['T']}°C = {row['T'] + 273.15}K")
                     elif(variable == 'U'):
                         if (row['open']):
                             # Use inletOutlet for adjustable mass flow conservation
