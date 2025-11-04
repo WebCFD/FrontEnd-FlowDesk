@@ -581,18 +581,28 @@ def setup(case_path: str, simulation_type: str = 'comfortTest') -> list:
         # Run solver in parallel
         'runParallel -np 16 buoyantSimpleFoam -parallel',
 
-        # 3. Reconstruct the results back into serial for post-processing
-        'runApplication reconstructPar -latestTime',
+        # 3. Reconstruct ALL timesteps (not just latestTime) for complete iteration history
+        'echo "==================== RECONSTRUCTING ALL ITERATIONS ===================="',
+        'runApplication reconstructPar',  # Without -latestTime = reconstruct all
+        'echo "==================== RECONSTRUCTION COMPLETED ===================="',
 
-        # 3.5. Calculate PMV/PPD thermal comfort fields from T and U
+        # 3.5. Calculate PMV/PPD thermal comfort fields from T and U (latest timestep only)
         'echo "==================== CALCULATING PMV/PPD THERMAL COMFORT ===================="',
         'python3 /workspace/src/components/post/calculate_comfort.py . 2>&1 | tee log.comfort',
         'echo "==================== PMV/PPD CALCULATION COMPLETED ===================="',
 
-        # 4. Generate VTK surface files (external surfaces only, optimized for web viewer)
-        # -surfaceFields: Only surface data (walls, boundaries)
-        # -faceSet: All faces including internal ones (for volume representation)
-        'runApplication foamToVTK -latestTime -surfaceFields -fields "(T U p p_rgh PMV PPD)"',
+        # 4. Generate VTK files for ALL timesteps with VOLUMETRIC data
+        'echo "==================== GENERATING VTK FOR ALL ITERATIONS ===================="',
+        # Process all timesteps (no -latestTime flag)
+        # -excludePatches: Skip internal patches to reduce file size
+        # Note: Generates VTK/ directory with subdirs for each timestep
+        'runApplication foamToVTK -fields "(T U p p_rgh PMV PPD)" -excludePatches "(.*_master|.*_slave)"',
+        'echo "==================== VTK GENERATION COMPLETED ===================="',
+        
+        # Also generate lightweight surface-only VTK for quick preview
+        'echo "==================== GENERATING SURFACE VTK (QUICK PREVIEW) ===================="',
+        'foamToVTK -latestTime -surfaceFields -fields "(T U p p_rgh PMV PPD)" 2>&1 | tee log.foamToVTK_surface',
+        'echo "==================== SURFACE VTK COMPLETED ===================="',
 
         # Clean processors
         'rm -rf processor*',

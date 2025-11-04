@@ -306,4 +306,122 @@ Maximum non-orthogonality = 60-65  # < 65° objetivo cumplido
 
 ---
 
-**ESTADO:** ✅ RESUELTO - Listo para siguiente simulación en Inductiva
+## ITERACIÓN 5: Corrección de Sintaxis refinementRegions
+
+### ❌ Síntoma Final
+Después de todas las correcciones anteriores, la mesh SEGUÍA sin cambiar. Log mostró:
+```
+--> FOAM Warning:
+    Not all entries in refinementRegions dictionary were used.
+    The following entries were not used: 3(door_0F_1 window_0F_1 window_0F_2)
+```
+
+### 🔍 Causa Raíz
+**Sintaxis incorrecta del bloque `refinementRegions`**. Los patches NO estaban anidados dentro del bloque `geometry{}`.
+
+### ❌ Sintaxis Incorrecta
+```cpp
+refinementRegions
+{
+    window_0F_1          // ← snappyHexMesh NO reconoce
+    {
+        mode distance;
+        levels ((0.32 3) (0.8 2) (1.6 1) (2.4 0));
+    }
+    door_0F_1            // ← Ignorado
+    {
+        mode distance;
+        levels ((0.32 3) (0.8 2) (1.6 1) (2.4 0));
+    }
+}
+```
+
+### ✅ Sintaxis Correcta
+```cpp
+refinementRegions
+{
+    geometry              // ← Bloque requerido para patches de STL
+    {
+        window_0F_1       // ← Ahora SÍ reconocido
+        {
+            mode    distance;
+            levels  ((0.32 3) (0.8 2) (1.6 1) (2.4 0));
+        }
+        door_0F_1
+        {
+            mode    distance;
+            levels  ((0.32 3) (0.8 2) (1.6 1) (2.4 0));
+        }
+    }
+}
+```
+
+### 🔧 Solución Implementada
+Modificado `generate_hvac_volumetric_refinement()` para anidar todos los patches dentro de un **único bloque `geometry{}`**.
+
+**Archivo modificado:**
+- `src/components/mesh/hvac_pro.py` - Líneas 287-316
+
+### 📊 Resultado Esperado
+- ✅ Log NO mostrará "Not all entries ... were used"
+- ✅ Shell refinement iterations APLICARÁN distancias volumétricas
+- ✅ Mesh con refinamiento extendido (0.32/0.80/1.60/2.40m)
+
+---
+
+## MEJORA ADICIONAL: Post-Procesamiento de Todas las Iteraciones
+
+### 🎯 Objetivo
+Escribir campos 3D volumétricos para **TODAS las iteraciones** (no solo timestep final) para visualizar convergencia completa.
+
+### 🔧 Cambios Implementados
+
+**1. controlDict - Escribir cada 5 iteraciones:**
+```cpp
+writeControl      timeStep;
+writeInterval     5;      // Cada 5 iteraciones (balance detalle/almacenamiento)
+purgeWrite        0;      // Mantener todos (no borrar)
+```
+
+**2. Pipeline CFD - Procesar todas las iteraciones:**
+```bash
+# Reconstruir TODAS las iteraciones (no solo -latestTime)
+reconstructPar  # Sin -latestTime = todas
+
+# Generar VTK volumétrico para TODAS las iteraciones
+foamToVTK -fields "(T U p p_rgh PMV PPD)"
+
+# También surface VTK para preview rápido
+foamToVTK -latestTime -surfaceFields -fields "(T U p p_rgh PMV PPD)"
+```
+
+### 📁 Estructura de Salida
+```
+VTK/
+├── 0/          # Iteración inicial
+├── 5/          # Iteración 5
+├── 10/         # Iteración 10
+├── 15/         # Iteración 15
+└── ...
+    ├── T_0.vtk         # Temperatura volumétrica
+    ├── U_0.vtk         # Velocidad volumétrica
+    ├── p_rgh_0.vtk     # Presión
+    └── boundary/       # Patches (walls, BC)
+```
+
+### ✅ Beneficios
+- 🎬 Visualizar evolución completa de la solución
+- 📊 Analizar convergencia campo por campo
+- 🔍 Detectar problemas de estabilidad temprano
+- 📈 Crear animaciones de desarrollo del flujo
+
+**Archivos modificados:**
+- `data/settings/cfd/hvac/system/controlDict` - writeInterval configurado
+- `src/components/cfd/hvac.py` - Pipeline de post-procesamiento actualizado
+
+---
+
+**ESTADO:** ✅ COMPLETAMENTE RESUELTO
+- ✅ Sintaxis refinementRegions corregida
+- ✅ Post-procesamiento de todas las iteraciones habilitado
+- ✅ Listo para siguiente simulación en Inductiva

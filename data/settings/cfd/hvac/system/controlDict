@@ -13,9 +13,9 @@ stopAt            endTime;
 endTime           3;
 deltaT            1;
 writeControl      timeStep;
-writeInterval     1;  // DEBUG: Write every iteration to capture fields before crash
+writeInterval     5;  // Write every 5 iterations (balance between detail and storage)
 adjustTimeStep    no;
-purgeWrite        0;
+purgeWrite        0;  // Keep all timesteps (0 = no purge)
 writeFormat       ascii;
 writePrecision    6;
 writeCompression  off;
