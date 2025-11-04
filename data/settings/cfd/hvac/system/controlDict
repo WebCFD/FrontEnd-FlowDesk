@@ -13,7 +13,7 @@ stopAt            endTime;
 endTime           3;
 deltaT            1;
 writeControl      timeStep;
-writeInterval     5;  // Write every 5 iterations (balance between detail and storage)
+writeInterval     1;  // Write EVERY iteration (critical for debugging early crashes)
 adjustTimeStep    no;
 purgeWrite        0;  // Keep all timesteps (0 = no purge)
 writeFormat       ascii;

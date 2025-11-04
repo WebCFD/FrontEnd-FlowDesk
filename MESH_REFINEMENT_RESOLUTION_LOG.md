@@ -376,12 +376,14 @@ Escribir campos 3D volumétricos para **TODAS las iteraciones** (no solo timeste
 
 ### 🔧 Cambios Implementados
 
-**1. controlDict - Escribir cada 5 iteraciones:**
+**1. controlDict - Escribir CADA iteración:**
 ```cpp
 writeControl      timeStep;
-writeInterval     5;      // Cada 5 iteraciones (balance detalle/almacenamiento)
+writeInterval     1;      // CADA iteración (crítico para debugging de crashes tempranos)
 purgeWrite        0;      // Mantener todos (no borrar)
 ```
+
+**Justificación:** Como la simulación crashea en las primeras 2-3 iteraciones, es **crítico** capturar cada paso para identificar exactamente dónde/cómo falla.
 
 **2. Pipeline CFD - Procesar todas las iteraciones:**
 ```bash
