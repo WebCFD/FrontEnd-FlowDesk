@@ -52,21 +52,21 @@ class MeshQualityLevel:
             'name': 'Conservative isotropic (no layers)',
             'description': 'No boundary layers, isotropic refinement, strict quality (maxNonOrtho<65)',
             'base_cell_size': 0.10,  # 10cm base cells (coarse domain)
-            'global_level': 0,       # (0 0) to keep domain coarse
+            'global_level': 2,       # Base level 2 (2.5cm) - avoids large level jumps
             'maxGlobalCells': 400000,  # Force limit to prevent over-refinement
             'levels': {
-                'pressure_inlet': 4,      # 0.625cm surface refinement (finer to compensate no layers)
-                'pressure_outlet': 4,     # 0.625cm surface refinement
-                'wall': 1,                # 5cm (no refinement needed)
-                'floor_ceiling': 1,       # 5cm (no refinement needed)
-                'default': 0              # Coarse base
+                'pressure_inlet': 4,      # 0.625cm surface (jump: 2→4 = 2 levels ✓)
+                'pressure_outlet': 4,     # 0.625cm surface (jump: 2→4 = 2 levels ✓)
+                'wall': 2,                # Same as base (no jump)
+                'floor_ceiling': 2,       # Same as base (no jump)
+                'default': 2              # Base level
             },
             'volumetric_zones': [
                 # Four-zone isotropic refinement (no layers, smoother transitions)
                 {'distance': 0.08, 'level': 4, 'name': 'bc_core_0_8cm'},      # 0-8cm: 0.625cm cells (isotropic)
                 {'distance': 0.20, 'level': 3, 'name': 'bc_near_8_20cm'},     # 8-20cm: 1.25cm cells
-                {'distance': 0.40, 'level': 2, 'name': 'bc_mid_20_40cm'},     # 20-40cm: 2.5cm cells
-                {'distance': 0.60, 'level': 1, 'name': 'bc_far_40_60cm'},     # 40-60cm: 5cm cells
+                {'distance': 0.40, 'level': 2, 'name': 'bc_mid_20_40cm'},     # 20-40cm: 2.5cm cells (base)
+                {'distance': 0.60, 'level': 2, 'name': 'bc_far_40_60cm'},     # 40-60cm: 2.5cm cells (base)
             ],
             'boundary_layers': None,  # NO LAYERS - isotropic refinement only
             'feature_edge_refinement': {
@@ -76,17 +76,17 @@ class MeshQualityLevel:
                 'feature_angle': 30
             },
             'mesh_quality': {
-                # Strict quality controls for orthogonality
-                'maxNonOrtho': 65,              # OBJECTIVE: <65° non-orthogonality
-                'maxBoundarySkewness': 20,      # More strict
-                'maxInternalSkewness': 4,       # More strict
-                'maxConcave': 75,               # More strict
-                'nCellsBetweenLevels': 4,       # Smoother transitions
+                # STRICT quality controls for orthogonality <65°
+                'maxNonOrtho': 65,              # TARGET: <65° non-orthogonality
+                'maxBoundarySkewness': 6,       # STRICT for BC patches (rectangular)
+                'maxInternalSkewness': 4,       # Strict internal
+                'maxConcave': 75,               # Conservative
+                'nCellsBetweenLevels': 3,       # SMOOTH transitions (not 4!)
                 'minRefinementCells': 5,        # Allow small zones
-                # Relaxed fallback (still conservative)
+                # Relaxed fallback (still must meet target!)
                 'relaxed': {
-                    'maxNonOrtho': 70,          # Fallback still conservative
-                    'maxBoundarySkewness': 25,
+                    'maxNonOrtho': 65,          # NO relaxation - must meet target!
+                    'maxBoundarySkewness': 8,   # Slightly relaxed but strict
                     'maxInternalSkewness': 5
                 }
             }

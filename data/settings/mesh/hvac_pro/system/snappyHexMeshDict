@@ -77,8 +77,8 @@ $VOLUMETRIC_REFINEMENT
 
 snapControls
 {
-    // High-quality surface snapping
-    nSmoothPatch 5;
+    // High-quality surface snapping (optimized for rectangular BC patches)
+    nSmoothPatch 7;  // 6-8 recommended for rectangular patches
     tolerance 1.5;
     nSolveIter 50;
     nRelaxIter 8;
