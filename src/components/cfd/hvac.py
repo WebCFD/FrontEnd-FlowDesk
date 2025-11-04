@@ -28,14 +28,19 @@ DIMENSIONS_DICT = {
 
 INTERNALFIELD_DICT = {
     'h':        294515.75,  # h = Cp×T = 1005×293.15 for Boussinesq (20°C)
-    'p':        101325,     # Atmospheric pressure [Pa]
-    'p_rgh':    0,          # Hydrostatic-corrected pressure [Pa]
+    'p':        101325,     # Atmospheric pressure [Pa] (will be modified by setFields for hydrostatic gradient)
+    'p_rgh':    101325,     # Modified pressure (constant in hydrostatic equilibrium)
     'T':        293.15,     # Reference temperature for Boussinesq [K] (20°C)
     'U':        np.array([0, 0, 0]),  # Initial velocity (quiescent fluid)
 }
 
 # Reference values for pressure calculations
 P_ATM = 101325  # Atmospheric pressure [Pa]
+RHO_REF = 1.2   # Reference air density at 20°C [kg/m³]
+G = 9.81        # Gravitational acceleration [m/s²]
+# For hydrostatic equilibrium: p_rgh = constant = p_atm
+# This ensures p(z) = p_rgh - rho*g*z has the correct gradient
+P_RGH_APERTURE = P_ATM  # p_rgh at atmospheric pressure openings = 101325 Pa
 
 
 def define_constant_files(template_path, sim_path):
@@ -262,13 +267,15 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'zeroGradient'
                         logger.info(f"    BC {row['id']} ({row['type']}): h = zeroGradient (temperature adapts to flow)")
                     elif(variable == 'p'):
-                        # Let solver calculate p from p_rgh + ρ·g·h + p_ref (hydrostatic consistency)
+                        # Let solver calculate p from p_rgh + ρ·g·h (hydrostatic consistency)
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = '$internalField'
                     elif(variable == 'p_rgh'):
-                        # Use fixedValue for pressure inlet (simple and stable)
+                        # p_rgh value for atmospheric pressure at typical aperture height
+                        # This ensures p ≈ 101325 Pa at the opening, not ~0 Pa
                         new_bc_data["type"] = 'fixedValue'
-                        new_bc_data["value"] = 0  # p_rgh = 0 at atmospheric pressure opening
+                        new_bc_data["value"] = P_RGH_APERTURE  # ≈ 101307 Pa for z=1.5m
+                        logger.info(f"    BC {row['id']} ({row['type']}): p_rgh = {P_RGH_APERTURE:.1f} Pa → p ≈ {P_ATM:.0f} Pa")
                     elif(variable == 'T'):
                         # Temperature inlet: zeroGradient to avoid overconstraining with fixedValue p_rgh
                         new_bc_data["type"] = 'zeroGradient'
@@ -287,13 +294,15 @@ def define_initial_files(sim_path, patch_df):
                         # Enthalpy outlet: zeroGradient to avoid overconstraining with fixedValue p_rgh
                         new_bc_data["type"] = 'zeroGradient'
                     elif(variable == 'p'):
-                        # Let solver calculate p from p_rgh + ρ·g·h + p_ref (hydrostatic consistency)
+                        # Let solver calculate p from p_rgh + ρ·g·h (hydrostatic consistency)
                         new_bc_data["type"] = 'calculated'
                         new_bc_data["value"] = '$internalField'
                     elif(variable == 'p_rgh'):
-                        # Use fixedValue for pressure outlet (simple and stable)
+                        # p_rgh value for atmospheric pressure at typical aperture height
+                        # This ensures p ≈ 101325 Pa at the opening, not ~0 Pa
                         new_bc_data["type"] = 'fixedValue'
-                        new_bc_data["value"] = 0  # p_rgh = 0 at atmospheric pressure opening
+                        new_bc_data["value"] = P_RGH_APERTURE  # ≈ 101307 Pa for z=1.5m
+                        logger.info(f"    BC {row['id']} ({row['type']}): p_rgh = {P_RGH_APERTURE:.1f} Pa → p ≈ {P_ATM:.0f} Pa")
                     elif(variable == 'T'):
                         # Temperature outlet: zeroGradient to avoid overconstraining with fixedValue p_rgh
                         new_bc_data["type"] = 'zeroGradient'
