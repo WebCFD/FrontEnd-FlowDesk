@@ -277,11 +277,13 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       // Apply the same field visualization
       applyVisualization(mapper, slicedData, activeMode as VisualizationMode);
       
-      // Create actor
+      // Create actor with surface representation
       const actor = vtkActor.newInstance();
       actor.setMapper(mapper);
       actor.getProperty().setOpacity(1.0); // Solid, no transparency
       actor.getProperty().setEdgeVisibility(false); // Disable edge rendering
+      actor.getProperty().setRepresentation(2); // 2 = Surface representation (not wireframe)
+      actor.getProperty().setLighting(true); // Enable lighting for better visualization
       
       return actor;
     };
