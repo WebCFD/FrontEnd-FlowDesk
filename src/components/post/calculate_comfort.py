@@ -172,6 +172,7 @@ def main(case_path):
     VALID_TEMP_MIN = 10.0  # °C
     VALID_TEMP_MAX = 40.0  # °C  
     VALID_VEL_MAX = 5.0    # m/s
+    INVALID_VALUE = -1000.0  # Sentinel value for invalid/out-of-range cells
     
     invalid_count = 0
     for i in range(n_cells):
@@ -185,18 +186,27 @@ def main(case_path):
             vel <= VALID_VEL_MAX):
             # Calculate PMV
             try:
-                pmv_field[i] = calculate_pmv_fanger(tdb, tr, vel, RH, MET, CLO)
-                # Calculate PPD
-                ppd_field[i] = calculate_ppd(pmv_field[i])
-            except (OverflowError, ValueError, RuntimeWarning):
-                # Handle numerical errors
-                pmv_field[i] = np.nan
-                ppd_field[i] = np.nan
+                pmv_val = calculate_pmv_fanger(tdb, tr, vel, RH, MET, CLO)
+                ppd_val = calculate_ppd(pmv_val)
+                
+                # Check if results are finite (not NaN, not inf)
+                if np.isfinite(pmv_val) and np.isfinite(ppd_val):
+                    pmv_field[i] = pmv_val
+                    ppd_field[i] = ppd_val
+                else:
+                    # Numerical overflow/underflow - use sentinel value
+                    pmv_field[i] = INVALID_VALUE
+                    ppd_field[i] = INVALID_VALUE
+                    invalid_count += 1
+            except (OverflowError, ValueError):
+                # Handle numerical errors - use sentinel value
+                pmv_field[i] = INVALID_VALUE
+                ppd_field[i] = INVALID_VALUE
                 invalid_count += 1
         else:
-            # Out of valid range - set to NaN
-            pmv_field[i] = np.nan
-            ppd_field[i] = np.nan
+            # Out of valid range - use sentinel value
+            pmv_field[i] = INVALID_VALUE
+            ppd_field[i] = INVALID_VALUE
             invalid_count += 1
     
     # Statistics
@@ -205,18 +215,18 @@ def main(case_path):
     valid_cells = n_cells - invalid_count
     valid_pct = (valid_cells / n_cells) * 100
     logger.info(f"  Valid cells for PMV/PPD: {valid_cells}/{n_cells} ({valid_pct:.1f}%)")
-    logger.info(f"  Invalid/out-of-range cells: {invalid_count} ({(invalid_count/n_cells)*100:.1f}%)")
+    logger.info(f"  Invalid/out-of-range cells (marked as {INVALID_VALUE}): {invalid_count} ({(invalid_count/n_cells)*100:.1f}%)")
     
-    # Only calculate stats on valid (non-NaN) values
-    valid_pmv = pmv_field[~np.isnan(pmv_field)]
-    valid_ppd = ppd_field[~np.isnan(ppd_field)]
+    # Only calculate stats on valid values (exclude INVALID_VALUE sentinel)
+    valid_pmv = pmv_field[pmv_field != INVALID_VALUE]
+    valid_ppd = ppd_field[ppd_field != INVALID_VALUE]
     
     if len(valid_pmv) > 0:
         logger.info(f"  PMV: min={valid_pmv.min():.2f}, max={valid_pmv.max():.2f}, mean={valid_pmv.mean():.2f}")
         logger.info(f"  PPD: min={valid_ppd.min():.1f}%, max={valid_ppd.max():.1f}%, mean={valid_ppd.mean():.1f}%")
     else:
-        logger.info(f"  PMV: No valid values")
-        logger.info(f"  PPD: No valid values")
+        logger.info(f"  PMV: No valid values (all marked as {INVALID_VALUE})")
+        logger.info(f"  PPD: No valid values (all marked as {INVALID_VALUE})")
     
     # Comfort classification (ISO 7730)
     comfortable = np.sum((pmv_field >= -0.5) & (pmv_field <= 0.5))
