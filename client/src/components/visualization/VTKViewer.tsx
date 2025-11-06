@@ -241,46 +241,109 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     const { planePositions, planesEnabled } = filterConfig.clip;
     const sourceData = sourceDataRef.current;
     
-    // Helper function to create a cutting plane slice with field data
+    // Helper function to create a filled cutting plane with interpolated field data
     const createSlice = (origin: [number, number, number], normal: [number, number, number], planeSize: [number, number]) => {
-      // Create the cutting plane
-      const plane = vtkPlane.newInstance();
-      plane.setOrigin(...origin);
-      plane.setNormal(...normal);
+      // Create a filled plane geometry
+      const planeSource = vtkPlaneSource.newInstance();
+      planeSource.setOrigin(...origin);
       
-      // Use vtkCutter to slice the data
-      const cutter = vtkCutter.newInstance();
-      cutter.setInputData(sourceData);
-      cutter.setCutFunction(plane);
-      cutter.update();
+      const [width, height] = planeSize;
       
-      // Get the sliced data
-      const slicedData = cutter.getOutputData();
+      // Set up the plane extent based on normal direction
+      if (Math.abs(normal[0]) > 0.5) {
+        // X-normal plane (YZ plane)
+        planeSource.setPoint1(origin[0], origin[1] + height, origin[2]);
+        planeSource.setPoint2(origin[0], origin[1], origin[2] + width);
+      } else if (Math.abs(normal[1]) > 0.5) {
+        // Y-normal plane (XZ plane)
+        planeSource.setPoint1(origin[0] + width, origin[1], origin[2]);
+        planeSource.setPoint2(origin[0], origin[1], origin[2] + height);
+      } else {
+        // Z-normal plane (XY plane)
+        planeSource.setPoint1(origin[0] + width, origin[1], origin[2]);
+        planeSource.setPoint2(origin[0], origin[1] + height, origin[2]);
+      }
       
-      console.log('[VTKViewer] Cutter produced', slicedData.getNumberOfPoints(), 'points,', 
-                  slicedData.getNumberOfCells(), 'cells,',
-                  slicedData.getNumberOfPolys(), 'polys,',
-                  slicedData.getNumberOfLines(), 'lines');
+      // High resolution for smooth visualization
+      planeSource.setXResolution(50);
+      planeSource.setYResolution(50);
+      planeSource.update();
       
-      // Debug: check if point data was transferred
-      const pointData = slicedData.getPointData();
-      const numArrays = pointData.getNumberOfArrays();
-      console.log('[VTKViewer] Sliced data has', numArrays, 'arrays');
+      const planeData = planeSource.getOutputData();
+      const planePoints = planeData.getPoints().getData();
+      const numPlanePoints = planeData.getNumberOfPoints();
       
-      // Create mapper
+      // Get source data points and field arrays
+      const sourcePoints = sourceData.getPoints().getData();
+      const sourcePointData = sourceData.getPointData();
+      
+      // Manually interpolate field values using nearest neighbor
+      // Get all field arrays from source
+      const fieldArrays: any[] = [];
+      for (let i = 0; i < sourcePointData.getNumberOfArrays(); i++) {
+        const array = sourcePointData.getArray(i);
+        fieldArrays.push({
+          name: array.getName(),
+          components: array.getNumberOfComponents(),
+          sourceData: array.getData(),
+          interpolated: new Float32Array(numPlanePoints * array.getNumberOfComponents())
+        });
+      }
+      
+      // For each point on the plane, find nearest source point and copy field value
+      for (let i = 0; i < numPlanePoints; i++) {
+        const px = planePoints[i * 3];
+        const py = planePoints[i * 3 + 1];
+        const pz = planePoints[i * 3 + 2];
+        
+        // Find nearest source point (simple nearest neighbor)
+        let minDist = Infinity;
+        let nearestIdx = 0;
+        
+        for (let j = 0; j < sourcePoints.length / 3; j++) {
+          const sx = sourcePoints[j * 3];
+          const sy = sourcePoints[j * 3 + 1];
+          const sz = sourcePoints[j * 3 + 2];
+          
+          const dist = (px - sx) ** 2 + (py - sy) ** 2 + (pz - sz) ** 2;
+          if (dist < minDist) {
+            minDist = dist;
+            nearestIdx = j;
+          }
+        }
+        
+        // Copy field values from nearest source point
+        fieldArrays.forEach(field => {
+          for (let c = 0; c < field.components; c++) {
+            field.interpolated[i * field.components + c] = 
+              field.sourceData[nearestIdx * field.components + c];
+          }
+        });
+      }
+      
+      // Add interpolated field arrays to plane data
+      fieldArrays.forEach(field => {
+        const dataArray = vtkDataArray.newInstance({
+          name: field.name,
+          values: field.interpolated,
+          numberOfComponents: field.components
+        });
+        planeData.getPointData().addArray(dataArray);
+      });
+      
+      console.log('[VTKViewer] Created filled plane with', numPlanePoints, 'points and', fieldArrays.length, 'interpolated fields');
+      
+      // Create mapper and apply visualization
       const mapper = vtkMapper.newInstance();
-      mapper.setInputData(slicedData);
+      mapper.setInputData(planeData);
       
-      // Apply the same field visualization
-      applyVisualization(mapper, slicedData, activeMode as VisualizationMode);
+      applyVisualization(mapper, planeData, activeMode as VisualizationMode);
       
       // Create actor
       const actor = vtkActor.newInstance();
       actor.setMapper(mapper);
       actor.getProperty().setOpacity(1.0);
-      actor.getProperty().setLineWidth(5); // Make lines thicker if they're lines
-      actor.getProperty().setRepresentation(2); // Surface mode
-      actor.getProperty().setLighting(false); // Disable lighting to show pure colors
+      actor.getProperty().setLighting(false); // Disable lighting to show pure field colors
       
       return actor;
     };
