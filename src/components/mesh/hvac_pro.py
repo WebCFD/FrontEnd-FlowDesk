@@ -57,19 +57,18 @@ class MeshQualityLevel:
             'maxLocalCells': 500000,   # Increased from 200k for extended volumetric zones (Nov 4, 2025)
             'maxLoadUnbalance': 0.25,  # Relaxed from 0.10 to allow extended refinement (Nov 4, 2025)
             'levels': {
-                'pressure_inlet': 3,      # 1.25cm surface (jump: 0→3 = 3 levels, acceptable)
-                'pressure_outlet': 3,     # 1.25cm surface (jump: 0→3 = 3 levels, acceptable)
+                'pressure_inlet': 2,      # 2.5cm surface (reduced refinement)
+                'pressure_outlet': 2,     # 2.5cm surface (reduced refinement)
                 'wall': 1,                # 5cm (improves rectangular capture, reduces corner degeneracy)
                 'floor_ceiling': 0,       # Same as base (no jump)
                 'default': 0              # Base level
             },
             'volumetric_zones': [
-                # Four-zone progressive isotropic refinement (smooth 3→2→1→0)
-                # Extended distances (2x) for more layers of fine cells at BC
-                {'distance': 0.32, 'level': 3, 'name': 'bc_core_0_32cm'},     # 0-32cm: 1.25cm cells
-                {'distance': 0.80, 'level': 2, 'name': 'bc_near_32_80cm'},    # 32-80cm: 2.5cm cells
-                {'distance': 1.60, 'level': 1, 'name': 'bc_mid_80_160cm'},    # 80-160cm: 5cm cells
-                {'distance': 2.40, 'level': 0, 'name': 'bc_far_160_240cm'},   # 160-240cm: 10cm cells (base)
+                # Three-zone progressive isotropic refinement (smooth 2→1→0)
+                # Reduced distances for lighter refinement
+                {'distance': 0.16, 'level': 2, 'name': 'bc_core_0_16cm'},     # 0-16cm: 2.5cm cells
+                {'distance': 0.40, 'level': 1, 'name': 'bc_near_16_40cm'},    # 16-40cm: 5cm cells
+                {'distance': 0.80, 'level': 0, 'name': 'bc_far_40_80cm'},     # 40-80cm: 10cm cells (base)
             ],
             'boundary_layers': None,  # NO LAYERS - isotropic refinement only
             'feature_edge_refinement': {

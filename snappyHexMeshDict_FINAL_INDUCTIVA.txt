@@ -102,7 +102,7 @@ castellatedMeshControls
                 }
             window_0F_1
                 {
-                    level (2 3);
+                    level (1 2);
                     patchInfo { type patch; }
                 }
             wall_0F_3
@@ -117,7 +117,7 @@ castellatedMeshControls
                 }
             door_0F_1
                 {
-                    level (2 3);
+                    level (1 2);
                     patchInfo { type patch; }
                 }
             floor_0F
@@ -145,12 +145,12 @@ castellatedMeshControls
             window_0F_1
             {
                 mode    distance;
-                levels  ((0.32 3) (0.8 2) (1.6 1) (2.4 0));
+                levels  ((0.16 2) (0.4 1) (0.8 0));
             }
             door_0F_1
             {
                 mode    distance;
-                levels  ((0.32 3) (0.8 2) (1.6 1) (2.4 0));
+                levels  ((0.16 2) (0.4 1) (0.8 0));
             }
         }
     }
@@ -233,9 +233,9 @@ meshQualityControls
     // Relaxed controls for difficult layer regions (MORE permissive than main)
     relaxed
     {
-        maxNonOrtho 60;
-        maxBoundarySkewness 6;
-        maxInternalSkewness 3;
+        maxNonOrtho 50_RELAXED;
+        maxBoundarySkewness 4_RELAXED;
+        maxInternalSkewness 2_RELAXED;
     }
 }
 
