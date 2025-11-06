@@ -338,6 +338,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       const mapper = vtkMapper.newInstance();
       mapper.setInputData(planeData);
       
+      // CRITICAL: Ensure mapper uses cell data for coloring
+      mapper.setScalarModeToUsePointData();
+      
       applyVisualization(mapper, planeData, activeMode as VisualizationMode);
       
       // Create actor
@@ -345,10 +348,13 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       actor.setMapper(mapper);
       actor.getProperty().setOpacity(1.0);
       actor.getProperty().setLighting(false); // Disable lighting to show pure field colors
+      actor.getProperty().setEdgeVisibility(false); // No edges
       
-      // Debug: Check actor visibility and bounds
+      // Debug output
       console.log('[VTKViewer] Plane actor visibility:', actor.getVisibility());
       console.log('[VTKViewer] Plane actor bounds:', actor.getBounds());
+      console.log('[VTKViewer] Plane data - points:', planeData.getNumberOfPoints(), 'polys:', planeData.getNumberOfPolys(), 'cells:', planeData.getNumberOfCells());
+      console.log('[VTKViewer] Mapper scalar range:', mapper.getScalarRange());
       
       return actor;
     };
