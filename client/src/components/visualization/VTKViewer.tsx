@@ -250,18 +250,19 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       const [width, height] = planeSize;
       
       // Set up the plane extent based on normal direction
+      // Point1 and Point2 must span the full width and height FROM the corner
       if (Math.abs(normal[0]) > 0.5) {
-        // X-normal plane (YZ plane)
-        planeSource.setPoint1(origin[0], origin[1] + height, origin[2]);
-        planeSource.setPoint2(origin[0], origin[1], origin[2] + width);
+        // X-normal plane (YZ plane) - origin is at min corner
+        planeSource.setPoint1(origin[0], origin[1], origin[2] + width); // along Z
+        planeSource.setPoint2(origin[0], origin[1] + height, origin[2]); // along Y
       } else if (Math.abs(normal[1]) > 0.5) {
-        // Y-normal plane (XZ plane)
-        planeSource.setPoint1(origin[0] + width, origin[1], origin[2]);
-        planeSource.setPoint2(origin[0], origin[1], origin[2] + height);
+        // Y-normal plane (XZ plane) - origin is at min corner
+        planeSource.setPoint1(origin[0] + width, origin[1], origin[2]); // along X
+        planeSource.setPoint2(origin[0], origin[1], origin[2] + height); // along Z
       } else {
-        // Z-normal plane (XY plane)
-        planeSource.setPoint1(origin[0] + width, origin[1], origin[2]);
-        planeSource.setPoint2(origin[0], origin[1] + height, origin[2]);
+        // Z-normal plane (XY plane) - origin is at min corner
+        planeSource.setPoint1(origin[0] + width, origin[1], origin[2]); // along X
+        planeSource.setPoint2(origin[0], origin[1] + height, origin[2]); // along Y
       }
       
       // Medium resolution for better performance
