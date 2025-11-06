@@ -66,8 +66,8 @@ def update_controldict_iterations(case_path, simulation_type):
     Update controlDict endTime and writeInterval based on simulation type.
     
     Maps simulation types to iteration counts:
-    - comfortTest: 3 iterations (fast test)
-    - comfort30Iter: 30 iterations (full simulation)
+    - comfortTest: 3 iterations, write every iteration
+    - comfort30Iter: 500 iterations, write only last iteration
     - test_calculation: 3 iterations (default)
     
     Args:
@@ -76,28 +76,28 @@ def update_controldict_iterations(case_path, simulation_type):
     """
     logger.info(f"    * Updating controlDict iterations for simulation type: {simulation_type}")
     
-    # Map simulation types to iterations
-    iterations_map = {
-        'comfortTest': 3,
-        'comfort30Iter': 30,
-        'test_calculation': 3
+    # Map simulation types to (iterations, writeInterval)
+    config_map = {
+        'comfortTest': (3, 1),      # 3 iter, write every iteration
+        'comfort30Iter': (500, 500), # 500 iter, write only last iteration
+        'test_calculation': (3, 1)   # 3 iter, write every iteration
     }
     
-    iterations = iterations_map.get(simulation_type, 3)  # Default to 3 if type unknown
-    logger.info(f"    * Setting endTime to {iterations} iterations")
+    iterations, write_interval = config_map.get(simulation_type, (3, 1))  # Default to 3 iter, write all
+    logger.info(f"    * Setting endTime={iterations}, writeInterval={write_interval}")
     
     sim_path = os.path.join(case_path, "sim")
     case = FoamCase(sim_path)
     with case['system']['controlDict'] as ctrl:
         ctrl['endTime'] = iterations
-        ctrl['writeInterval'] = 1  # Write EVERY iteration for debugging (Nov 4, 2025)
+        ctrl['writeInterval'] = write_interval
         
-        # CRITICAL: Also update VTK function writeInterval to write every iteration
+        # CRITICAL: Also update VTK function writeInterval
         if 'functions' in ctrl and 'writeVTK' in ctrl['functions']:
-            ctrl['functions']['writeVTK']['writeInterval'] = 1
-            logger.info(f"    * Updated VTK writeInterval to 1 (every iteration)")
+            ctrl['functions']['writeVTK']['writeInterval'] = write_interval
+            logger.info(f"    * Updated VTK writeInterval to {write_interval}")
         
-        logger.info(f"    * ✅ controlDict fully updated: endTime={iterations}, writeInterval=1 (every iteration)")
+        logger.info(f"    * ✅ controlDict updated: endTime={iterations}, writeInterval={write_interval}")
 
 
 def update_controldict_patches(sim_path, patch_df):
