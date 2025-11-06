@@ -79,7 +79,7 @@ def update_controldict_iterations(case_path, simulation_type):
     # Map simulation types to (iterations, writeInterval, purgeWrite)
     config_map = {
         'comfortTest': (3, 1, 0),      # 3 iter, write every iteration, keep all
-        'comfort30Iter': (500, 1, 0),  # 500 iter, write every iteration, keep all
+        'comfort30Iter': (500, 1, 1),  # 500 iter, write every iteration, keep only last
         'test_calculation': (3, 1, 0)   # 3 iter, write every iteration, keep all
     }
     
