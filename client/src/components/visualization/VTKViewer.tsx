@@ -48,7 +48,16 @@ interface FilterConfig {
   };
   clip: {
     enabled: boolean;
-    plane: { origin: number[]; normal: number[] };
+    planesEnabled: {
+      x: boolean;
+      y: boolean;
+      z: boolean;
+    };
+    planePositions: {
+      x: number;
+      y: number;
+      z: number;
+    };
   };
   vectors: {
     enabled: boolean;
@@ -156,10 +165,19 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [colormapMax, setColormapMax] = useState<number | null>(null);
   const [opacity, setOpacity] = useState<number>(1.0); // 1.0 = opaco, 0.0 = transparente
   const [dataWarning, setDataWarning] = useState<string | null>(null);
+  const [domainBounds, setDomainBounds] = useState<{ min: number[]; max: number[]; center: number[] }>({
+    min: [0, 0, 0],
+    max: [1, 1, 1],
+    center: [0.5, 0.5, 0.5]
+  });
   const [filterConfig, setFilterConfig] = useState<FilterConfig>({
     isosurface: { enabled: false, values: [0.5] },
     threshold: { enabled: false, range: [0, 1] },
-    clip: { enabled: false, plane: { origin: [0, 0, 0], normal: [1, 0, 0] } },
+    clip: { 
+      enabled: false, 
+      planesEnabled: { x: true, y: true, z: true },
+      planePositions: { x: 0.5, y: 0.5, z: 0.5 }
+    },
     vectors: { enabled: false, scale: 1.0, density: 0.1 }
   });
   
@@ -176,6 +194,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     vectors?: any;
   }>({});
   const actorsRef = useRef<any[]>([]); // Array de actores para múltiples visualizaciones
+  const clippingPlaneActorsRef = useRef<any[]>([]); // Actores para los planos de corte visibles
 
   const visualizationControls = [
     { id: 'pressure' as const, label: 'Pressure', icon: Layers },
@@ -208,6 +227,110 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         renderWindowRef.current.renderer.removeActor(actor);
       });
     }
+  };
+
+  // Create visual cutting planes
+  const createCuttingPlanes = () => {
+    const planes = [];
+    const { min, max } = domainBounds;
+    const { planePositions, planesEnabled } = filterConfig.clip;
+    
+    // X Plane (YZ plane) - Red
+    if (planesEnabled.x) {
+      const xPlane = vtkPolyData.newInstance();
+      const xPoints = vtkPoints.newInstance();
+      const xPos = planePositions.x;
+      
+      // Create a quad for the plane
+      xPoints.setData(Float32Array.from([
+        xPos, min[1], min[2],
+        xPos, max[1], min[2],
+        xPos, max[1], max[2],
+        xPos, min[1], max[2]
+      ]));
+      xPlane.setPoints(xPoints);
+      
+      const xPolys = new Uint32Array([4, 0, 1, 2, 3]);
+      xPlane.getPolys().setData(xPolys);
+      
+      const xMapper = vtkMapper.newInstance();
+      xMapper.setInputData(xPlane);
+      
+      const xActor = vtkActor.newInstance();
+      xActor.setMapper(xMapper);
+      xActor.getProperty().setColor(1.0, 0.2, 0.2); // Red
+      xActor.getProperty().setOpacity(0.3);
+      xActor.getProperty().setEdgeVisibility(true);
+      xActor.getProperty().setEdgeColor(1.0, 0.0, 0.0);
+      xActor.getProperty().setLineWidth(2);
+      
+      planes.push(xActor);
+    }
+    
+    // Y Plane (XZ plane) - Green
+    if (planesEnabled.y) {
+      const yPlane = vtkPolyData.newInstance();
+      const yPoints = vtkPoints.newInstance();
+      const yPos = planePositions.y;
+      
+      yPoints.setData(Float32Array.from([
+        min[0], yPos, min[2],
+        max[0], yPos, min[2],
+        max[0], yPos, max[2],
+        min[0], yPos, max[2]
+      ]));
+      yPlane.setPoints(yPoints);
+      
+      const yPolys = new Uint32Array([4, 0, 1, 2, 3]);
+      yPlane.getPolys().setData(yPolys);
+      
+      const yMapper = vtkMapper.newInstance();
+      yMapper.setInputData(yPlane);
+      
+      const yActor = vtkActor.newInstance();
+      yActor.setMapper(yMapper);
+      yActor.getProperty().setColor(0.2, 1.0, 0.2); // Green
+      yActor.getProperty().setOpacity(0.3);
+      yActor.getProperty().setEdgeVisibility(true);
+      yActor.getProperty().setEdgeColor(0.0, 1.0, 0.0);
+      yActor.getProperty().setLineWidth(2);
+      
+      planes.push(yActor);
+    }
+    
+    // Z Plane (XY plane) - Blue
+    if (planesEnabled.z) {
+      const zPlane = vtkPolyData.newInstance();
+      const zPoints = vtkPoints.newInstance();
+      const zPos = planePositions.z;
+      
+      zPoints.setData(Float32Array.from([
+        min[0], min[1], zPos,
+        max[0], min[1], zPos,
+        max[0], max[1], zPos,
+        min[0], max[1], zPos
+      ]));
+      zPlane.setPoints(zPoints);
+      
+      const zPolys = new Uint32Array([4, 0, 1, 2, 3]);
+      zPlane.getPolys().setData(zPolys);
+      
+      const zMapper = vtkMapper.newInstance();
+      zMapper.setInputData(zPlane);
+      
+      const zActor = vtkActor.newInstance();
+      zActor.setMapper(zMapper);
+      zActor.getProperty().setColor(0.2, 0.2, 1.0); // Blue
+      zActor.getProperty().setOpacity(0.3);
+      zActor.getProperty().setEdgeVisibility(true);
+      zActor.getProperty().setEdgeColor(0.0, 0.0, 1.0);
+      zActor.getProperty().setLineWidth(2);
+      
+      planes.push(zActor);
+    }
+    
+    console.log('[VTKViewer] Created', planes.length, 'cutting planes');
+    return planes;
   };
 
   // Calcular magnitud de vectores para coloring (with memory leak fix)
@@ -644,24 +767,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       console.log('[VTKViewer] Applied real threshold visualization');
     }
     
-    if (config.clip.enabled) {
-      console.log('[VTKViewer] Applying real clipping effect with normal:', config.clip.plane.normal);
-      
-      // Create clipped visualization with cutting plane simulation
-      const clipMapper = vtkMapper.newInstance();
-      clipMapper.setInputData(filteredData);
-      
-      const clipActor = vtkActor.newInstance();
-      clipActor.setMapper(clipMapper);
-      
-      // Apply clipping-specific visualization
-      applyClipVisualization(clipActor, filteredData, config.clip.plane.origin, config.clip.plane.normal, activeField as VisualizationMode);
-      
-      actors.push(clipActor);
-      applyOpacityToActor(clipActor);
-      filterEffectApplied = true;
-      console.log('[VTKViewer] Applied real clipping visualization');
-    }
+    // Note: Clipping planes are now visualized separately in createCuttingPlanes()
+    // and managed in the useEffect that updates when filterConfig changes
 
     // Create main surface actor only if no filter effects were applied
     if (!filterEffectApplied) {
@@ -1088,6 +1195,31 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       }
 
       console.log('[VTKViewer] Loaded dataset:', dataset.getNumberOfPoints(), 'points');
+      
+      // Calculate domain bounds for cutting planes
+      const bounds = dataset.getBounds();
+      if (bounds && bounds.length === 6) {
+        const [xMin, xMax, yMin, yMax, zMin, zMax] = bounds;
+        const center = [
+          (xMin + xMax) / 2,
+          (yMin + yMax) / 2,
+          (zMin + zMax) / 2
+        ];
+        setDomainBounds({
+          min: [xMin, yMin, zMin],
+          max: [xMax, yMax, zMax],
+          center: center
+        });
+        // Initialize plane positions at center
+        setFilterConfig(prev => ({
+          ...prev,
+          clip: {
+            ...prev.clip,
+            planePositions: { x: center[0], y: center[1], z: center[2] }
+          }
+        }));
+        console.log('[VTKViewer] Domain bounds:', { min: [xMin, yMin, zMin], max: [xMax, yMax, zMax], center });
+      }
 
       // Crear mapper y actor
       const mapper = vtkMapper.newInstance();
@@ -1168,6 +1300,17 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       
       // Add new actors to scene
       addActors(actorsRef.current);
+      
+      // Handle cutting planes visualization
+      removeActors(clippingPlaneActorsRef.current);
+      clippingPlaneActorsRef.current = [];
+      
+      if (filterConfig.clip.enabled) {
+        const planes = createCuttingPlanes();
+        clippingPlaneActorsRef.current = planes;
+        addActors(clippingPlaneActorsRef.current);
+        console.log('[VTKViewer] Added cutting planes to scene');
+      }
       
       // Update background color when it changes
       if (renderWindowRef.current?.renderer) {
@@ -1525,51 +1668,134 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                         />
                       </div>
                       {filterConfig.clip.enabled && (
-                        <div className="space-y-2">
-                          <Label className="text-xs text-gray-600">Normal: X={filterConfig.clip.plane.normal[0]} Y={filterConfig.clip.plane.normal[1]} Z={filterConfig.clip.plane.normal[2]}</Label>
-                          <div className="grid grid-cols-3 gap-2">
-                            <Slider
-                              value={[filterConfig.clip.plane.normal[0]]}
-                              onValueChange={([x]: number[]) => setFilterConfig(prev => ({
-                                ...prev,
-                                clip: { 
-                                  ...prev.clip, 
-                                  plane: { ...prev.clip.plane, normal: [x, prev.clip.plane.normal[1], prev.clip.plane.normal[2]] }
-                                }
-                              }))}
-                              min={-1}
-                              max={1}
-                              step={0.1}
-                              className="w-full"
-                            />
-                            <Slider
-                              value={[filterConfig.clip.plane.normal[1]]}
-                              onValueChange={([y]: number[]) => setFilterConfig(prev => ({
-                                ...prev,
-                                clip: { 
-                                  ...prev.clip, 
-                                  plane: { ...prev.clip.plane, normal: [prev.clip.plane.normal[0], y, prev.clip.plane.normal[2]] }
-                                }
-                              }))}
-                              min={-1}
-                              max={1}
-                              step={0.1}
-                              className="w-full"
-                            />
-                            <Slider
-                              value={[filterConfig.clip.plane.normal[2]]}
-                              onValueChange={([z]: number[]) => setFilterConfig(prev => ({
-                                ...prev,
-                                clip: { 
-                                  ...prev.clip, 
-                                  plane: { ...prev.clip.plane, normal: [prev.clip.plane.normal[0], prev.clip.plane.normal[1], z] }
-                                }
-                              }))}
-                              min={-1}
-                              max={1}
-                              step={0.1}
-                              className="w-full"
-                            />
+                        <div className="space-y-3">
+                          {/* X Plane (Red) */}
+                          <div className="space-y-1">
+                            <div className="flex items-center justify-between">
+                              <Label className="text-xs font-semibold text-red-600 flex items-center gap-1">
+                                <div className="w-3 h-3 bg-red-500 rounded"></div>
+                                X Plane
+                              </Label>
+                              <Switch
+                                checked={filterConfig.clip.planesEnabled.x}
+                                onCheckedChange={(enabled) => setFilterConfig(prev => ({
+                                  ...prev,
+                                  clip: { 
+                                    ...prev.clip, 
+                                    planesEnabled: { ...prev.clip.planesEnabled, x: enabled }
+                                  }
+                                }))}
+                                data-testid="switch-clip-x"
+                              />
+                            </div>
+                            {filterConfig.clip.planesEnabled.x && (
+                              <>
+                                <Label className="text-xs text-gray-500">
+                                  Position: {filterConfig.clip.planePositions.x.toFixed(3)}
+                                </Label>
+                                <Slider
+                                  value={[filterConfig.clip.planePositions.x]}
+                                  onValueChange={([x]: number[]) => setFilterConfig(prev => ({
+                                    ...prev,
+                                    clip: { 
+                                      ...prev.clip, 
+                                      planePositions: { ...prev.clip.planePositions, x }
+                                    }
+                                  }))}
+                                  min={domainBounds.min[0]}
+                                  max={domainBounds.max[0]}
+                                  step={(domainBounds.max[0] - domainBounds.min[0]) / 100}
+                                  className="w-full"
+                                  data-testid="slider-clip-x"
+                                />
+                              </>
+                            )}
+                          </div>
+
+                          {/* Y Plane (Green) */}
+                          <div className="space-y-1">
+                            <div className="flex items-center justify-between">
+                              <Label className="text-xs font-semibold text-green-600 flex items-center gap-1">
+                                <div className="w-3 h-3 bg-green-500 rounded"></div>
+                                Y Plane
+                              </Label>
+                              <Switch
+                                checked={filterConfig.clip.planesEnabled.y}
+                                onCheckedChange={(enabled) => setFilterConfig(prev => ({
+                                  ...prev,
+                                  clip: { 
+                                    ...prev.clip, 
+                                    planesEnabled: { ...prev.clip.planesEnabled, y: enabled }
+                                  }
+                                }))}
+                                data-testid="switch-clip-y"
+                              />
+                            </div>
+                            {filterConfig.clip.planesEnabled.y && (
+                              <>
+                                <Label className="text-xs text-gray-500">
+                                  Position: {filterConfig.clip.planePositions.y.toFixed(3)}
+                                </Label>
+                                <Slider
+                                  value={[filterConfig.clip.planePositions.y]}
+                                  onValueChange={([y]: number[]) => setFilterConfig(prev => ({
+                                    ...prev,
+                                    clip: { 
+                                      ...prev.clip, 
+                                      planePositions: { ...prev.clip.planePositions, y }
+                                    }
+                                  }))}
+                                  min={domainBounds.min[1]}
+                                  max={domainBounds.max[1]}
+                                  step={(domainBounds.max[1] - domainBounds.min[1]) / 100}
+                                  className="w-full"
+                                  data-testid="slider-clip-y"
+                                />
+                              </>
+                            )}
+                          </div>
+
+                          {/* Z Plane (Blue) */}
+                          <div className="space-y-1">
+                            <div className="flex items-center justify-between">
+                              <Label className="text-xs font-semibold text-blue-600 flex items-center gap-1">
+                                <div className="w-3 h-3 bg-blue-500 rounded"></div>
+                                Z Plane
+                              </Label>
+                              <Switch
+                                checked={filterConfig.clip.planesEnabled.z}
+                                onCheckedChange={(enabled) => setFilterConfig(prev => ({
+                                  ...prev,
+                                  clip: { 
+                                    ...prev.clip, 
+                                    planesEnabled: { ...prev.clip.planesEnabled, z: enabled }
+                                  }
+                                }))}
+                                data-testid="switch-clip-z"
+                              />
+                            </div>
+                            {filterConfig.clip.planesEnabled.z && (
+                              <>
+                                <Label className="text-xs text-gray-500">
+                                  Position: {filterConfig.clip.planePositions.z.toFixed(3)}
+                                </Label>
+                                <Slider
+                                  value={[filterConfig.clip.planePositions.z]}
+                                  onValueChange={([z]: number[]) => setFilterConfig(prev => ({
+                                    ...prev,
+                                    clip: { 
+                                      ...prev.clip, 
+                                      planePositions: { ...prev.clip.planePositions, z }
+                                    }
+                                  }))}
+                                  min={domainBounds.min[2]}
+                                  max={domainBounds.max[2]}
+                                  step={(domainBounds.max[2] - domainBounds.min[2]) / 100}
+                                  className="w-full"
+                                  data-testid="slider-clip-z"
+                                />
+                              </>
+                            )}
                           </div>
                         </div>
                       )}
