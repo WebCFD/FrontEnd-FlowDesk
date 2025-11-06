@@ -168,22 +168,55 @@ def main(case_path):
     ppd_field = np.zeros(n_cells)
     
     # Calculate PMV and PPD for each cell
+    # Apply valid range limits for PMV/PPD calculation (Fanger model is valid for thermal comfort zones)
+    VALID_TEMP_MIN = 10.0  # °C
+    VALID_TEMP_MAX = 40.0  # °C  
+    VALID_VEL_MAX = 5.0    # m/s
+    
+    invalid_count = 0
     for i in range(n_cells):
         tdb = T_celsius[i]
         tr = tdb  # Tmrt = Tair (simplification)
         vel = U_mag[i]
         
-        # Calculate PMV
-        pmv_field[i] = calculate_pmv_fanger(tdb, tr, vel, RH, MET, CLO)
-        
-        # Calculate PPD
-        ppd_field[i] = calculate_ppd(pmv_field[i])
+        # Check if values are within valid range for PMV/PPD calculation
+        if (VALID_TEMP_MIN <= tdb <= VALID_TEMP_MAX and 
+            VALID_TEMP_MIN <= tr <= VALID_TEMP_MAX and 
+            vel <= VALID_VEL_MAX):
+            # Calculate PMV
+            try:
+                pmv_field[i] = calculate_pmv_fanger(tdb, tr, vel, RH, MET, CLO)
+                # Calculate PPD
+                ppd_field[i] = calculate_ppd(pmv_field[i])
+            except (OverflowError, ValueError, RuntimeWarning):
+                # Handle numerical errors
+                pmv_field[i] = np.nan
+                ppd_field[i] = np.nan
+                invalid_count += 1
+        else:
+            # Out of valid range - set to NaN
+            pmv_field[i] = np.nan
+            ppd_field[i] = np.nan
+            invalid_count += 1
     
     # Statistics
     logger.info("")
     logger.info("Results:")
-    logger.info(f"  PMV: min={pmv_field.min():.2f}, max={pmv_field.max():.2f}, mean={pmv_field.mean():.2f}")
-    logger.info(f"  PPD: min={ppd_field.min():.1f}%, max={ppd_field.max():.1f}%, mean={ppd_field.mean():.1f}%")
+    valid_cells = n_cells - invalid_count
+    valid_pct = (valid_cells / n_cells) * 100
+    logger.info(f"  Valid cells for PMV/PPD: {valid_cells}/{n_cells} ({valid_pct:.1f}%)")
+    logger.info(f"  Invalid/out-of-range cells: {invalid_count} ({(invalid_count/n_cells)*100:.1f}%)")
+    
+    # Only calculate stats on valid (non-NaN) values
+    valid_pmv = pmv_field[~np.isnan(pmv_field)]
+    valid_ppd = ppd_field[~np.isnan(ppd_field)]
+    
+    if len(valid_pmv) > 0:
+        logger.info(f"  PMV: min={valid_pmv.min():.2f}, max={valid_pmv.max():.2f}, mean={valid_pmv.mean():.2f}")
+        logger.info(f"  PPD: min={valid_ppd.min():.1f}%, max={valid_ppd.max():.1f}%, mean={valid_ppd.mean():.1f}%")
+    else:
+        logger.info(f"  PMV: No valid values")
+        logger.info(f"  PPD: No valid values")
     
     # Comfort classification (ISO 7730)
     comfortable = np.sum((pmv_field >= -0.5) & (pmv_field <= 0.5))
