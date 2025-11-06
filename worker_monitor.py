@@ -181,6 +181,16 @@ def process_completed_simulation(sim):
         if not download_results(task_id, case_name):
             raise Exception("Failed to download results")
         
+        # Create results.foam file for PyVista compatibility
+        sim_path = os.path.join(os.getcwd(), "cases", case_name, "sim")
+        foam_file = os.path.join(sim_path, "results.foam")
+        try:
+            with open(foam_file, 'w') as f:
+                f.write("// Marker file for OpenFOAM case\n")
+            logger.info(f"Created results.foam for {case_name}")
+        except Exception as e:
+            logger.warning(f"Failed to create results.foam: {e}")
+        
         # STEP 5: Post-processing
         update_simulation(sim_id, {
             'progress': 95,
