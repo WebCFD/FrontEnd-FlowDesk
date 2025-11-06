@@ -270,7 +270,7 @@ def generate_hvac_volumetric_refinement(geo_df: pd.DataFrame, quality_level: int
     
     if len(pressure_patches) == 0:
         logger.info("  * No pressure boundaries → volumetric refinement disabled")
-        return ("", "        // No pressure boundaries for volumetric refinement")
+        return ("", "    // No pressure boundaries for volumetric refinement")
     
     logger.info("=" * 80)
     logger.info(f"HVAC VOLUMETRIC REFINEMENT - Quality Level {quality_level}")
@@ -309,11 +309,12 @@ def generate_hvac_volumetric_refinement(geo_df: pd.DataFrame, quality_level: int
         level_spec = " ".join([f"({z['distance']} {z['level']})" for z in volumetric_zones])
         
         # Build refinementRegions entry (referencing the searchableSurface)
-        refinement_block = f"""            {patch_name}
-            {{
-                mode    distance;
-                levels  ({level_spec});
-            }}"""
+        # Indentation: 8 spaces (directly inside refinementRegions{}, no geometry{} wrapper)
+        refinement_block = f"""        {patch_name}
+        {{
+            mode    distance;
+            levels  ({level_spec});
+        }}"""
         refinement_blocks.append(refinement_block)
         
         logger.info(f"  {patch_name} ({bc_type}): multi-zone refinement enabled")
@@ -322,7 +323,7 @@ def generate_hvac_volumetric_refinement(geo_df: pd.DataFrame, quality_level: int
     
     # Format output
     geometry_content = "\n".join(geometry_blocks) if geometry_blocks else ""
-    refinement_content = "\n".join(refinement_blocks) if refinement_blocks else "            // No volumetric refinement"
+    refinement_content = "\n".join(refinement_blocks) if refinement_blocks else "        // No volumetric refinement"
     
     return (geometry_content, refinement_content)
 

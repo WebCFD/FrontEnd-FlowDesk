@@ -71,10 +71,7 @@ $FEATURE_REFINEMENT_LEVELS
     // Multi-zone refinement around pressure boundaries for jet capture
     refinementRegions
     {
-        geometry
-        {
 $VOLUMETRIC_REFINEMENT
-        }
     }
 
     locationInMesh $LOCATION_INSIDE_MESH;
