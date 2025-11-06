@@ -1,0 +1,252 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2312                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// HVAC PROFESSIONAL MESH CONFIGURATION
+// Designed for accurate thermal comfort and air flow simulations
+// Target: High-quality mesh with optimal resolution at critical boundaries
+
+castellatedMesh true;
+snap            true;
+addLayers       false;
+overwrite       true;
+
+geometry
+{
+    geometry.stl
+    {
+        type triSurfaceMesh;
+        file geometry.stl;
+        name geometry;
+        tolerance   1E-6;
+        maxTreeDepth 12;
+
+        regions
+        {
+            wall_0F_1 {   name wall_0F_1; }
+            wall_0F_2 {   name wall_0F_2; }
+            window_0F_1 {   name window_0F_1; }
+            wall_0F_3 {   name wall_0F_3; }
+            wall_0F_4 {   name wall_0F_4; }
+            door_0F_1 {   name door_0F_1; }
+            floor_0F {   name floor_0F; }
+            ceil_0F {   name ceil_0F; }
+        }
+    }
+
+    // Searchable surfaces for volumetric refinement
+    window_0F_1
+    {
+        type triSurfaceMesh;
+        file geometry.stl;
+        regions
+        {
+            window_0F_1 { name window_0F_1; }
+        }
+    }
+    door_0F_1
+    {
+        type triSurfaceMesh;
+        file geometry.stl;
+        regions
+        {
+            door_0F_1 { name door_0F_1; }
+        }
+    }
+};
+
+castellatedMeshControls
+{
+    // Cell limits (parametric per quality level)
+    maxLocalCells 500000;
+    maxGlobalCells 1000000;
+    minRefinementCells 5;
+    maxLoadUnbalance 0.25;
+    nCellsBetweenLevels 3;
+
+    features
+    ( 
+        {
+            file geometry.eMesh;
+            levels ((0.01 2) (0.05 1));
+        }
+    );
+
+    refinementSurfaces
+    {
+        geometry
+        {
+            level (0 0);  // Global base refinement
+            regions
+            {
+            wall_0F_1
+                {
+                    level (0 1);
+                    patchInfo { type wall; }
+                }
+            wall_0F_2
+                {
+                    level (0 1);
+                    patchInfo { type wall; }
+                }
+            window_0F_1
+                {
+                    level (2 3);
+                    patchInfo { type patch; }
+                }
+            wall_0F_3
+                {
+                    level (0 1);
+                    patchInfo { type wall; }
+                }
+            wall_0F_4
+                {
+                    level (0 1);
+                    patchInfo { type wall; }
+                }
+            door_0F_1
+                {
+                    level (2 3);
+                    patchInfo { type patch; }
+                }
+            floor_0F
+                {
+                    level (0 1);
+                    patchInfo { type wall; }
+                }
+            ceil_0F
+                {
+                    level (0 1);
+                    patchInfo { type wall; }
+                }
+            }
+        }
+    }
+
+    resolveFeatureAngle 30;  // Feature detection angle
+
+    // VOLUMETRIC REFINEMENT REGIONS
+    // Multi-zone refinement around pressure boundaries for jet capture
+    refinementRegions
+    {
+        geometry
+        {
+            window_0F_1
+            {
+                mode    distance;
+                levels  ((0.32 3) (0.8 2) (1.6 1) (2.4 0));
+            }
+            door_0F_1
+            {
+                mode    distance;
+                levels  ((0.32 3) (0.8 2) (1.6 1) (2.4 0));
+            }
+        }
+    }
+
+    locationInMesh (2.500000 2.000000 1.250000);
+    allowFreeStandingZoneFaces true;
+}
+
+snapControls
+{
+    // High-quality surface snapping (optimized for rectangular BC patches)
+    nSmoothPatch 8;  // Maximum smoothing for BC orthogonality
+    tolerance 2.0;  // 2.0-2.5 for perfectly aligned rectangular geometry
+    nSolveIter 50;
+    nRelaxIter 8;
+
+    nFeatureSnapIter 15;
+    implicitFeatureSnap false;
+    explicitFeatureSnap true;
+    multiRegionFeatureSnap true;
+}
+
+addLayersControls
+{
+    relativeSizes true;
+    
+    // BOUNDARY LAYER CONFIGURATION
+    // Optimized for HVAC: high coverage, smooth growth
+    layers
+    {
+        // No boundary layers (isotropic refinement strategy)
+    }
+    
+    // GLOBAL FALLBACK PARAMETERS (required by OpenFOAM)
+    // Individual patches override these with their own values
+    expansionRatio 1.2;
+    firstLayerThickness 0.25;
+    
+    // Advanced layer generation for maximum coverage
+    nGrow 0;
+    featureAngle 75;
+    slipFeatureAngle 30;
+    nRelaxIter 12;
+    nSmoothSurfaceNormals 5;
+    nSmoothNormals 8;
+    nSmoothThickness 40;              // CRITICAL - 40 not 20 for smooth transition
+    maxFaceThicknessRatio 0.6;
+    maxThicknessToMedialRatio 0.6;
+    minThickness 0.1;
+    minMedialAxisAngle 80;
+    nBufferCellsNoExtrude 0;
+    nLayerIter 150;
+    nRelaxedIter 75;
+    
+    // Quality enforcement during layer addition
+    additionalReporting true;
+    mergePatchFacesAngle 40;
+}
+
+meshQualityControls
+{
+    // QUALITY CONTROLS FOR CFD (parametric per quality level)
+    
+    maxNonOrtho 50;
+    maxBoundarySkewness 4;
+    maxInternalSkewness 2;
+    maxConcave 75;
+    minVol 1e-18;                // Allow very small cells in layers
+    minTetQuality 1e-15;
+    minArea 1e-18;
+    minTwist 0.01;
+    minDeterminant 0.01;
+    minFaceWeight 0.01;
+    minVolRatio 0.005;
+    minTriangleTwist -1;
+
+    nSmoothScale 8;
+    errorReduction 0.75;
+
+    // Relaxed controls for difficult layer regions (MORE permissive than main)
+    relaxed
+    {
+        maxNonOrtho 60;
+        maxBoundarySkewness 6;
+        maxInternalSkewness 3;
+    }
+}
+
+writeFlags
+(
+    scalarLevels
+    layerSets
+    layerFields
+);
+
+debug 0;
+mergeTolerance 1e-6;
+
+// ************************************************************************* //
