@@ -42,8 +42,7 @@ functions
         {
             internalMesh
             {
-                type            patch;
-                patches         (floor ceiling);
+                type            internal;  // Capture entire internal domain
                 interpolate     true;
             }
         }
