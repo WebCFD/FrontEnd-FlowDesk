@@ -74,23 +74,23 @@ class MeshQualityLevel:
             'boundary_layers': None,  # NO LAYERS - isotropic refinement only
             'feature_edge_refinement': {
                 'enabled': True,         # Enabled to capture 90° edges (windows/doors)
-                'min_level': 2,          # Align with BC minimum level
-                'max_level': 2,          # Captures rectangular edges without over-refining
+                'min_level': 1,          # 5cm distance
+                'max_level': 2,          # 1cm distance  
                 'feature_angle': 30
             },
             'mesh_quality': {
-                # STRICT quality controls for orthogonality <65°
-                'maxNonOrtho': 65,              # TARGET: <65° non-orthogonality
-                'maxBoundarySkewness': 6,       # STRICT for BC patches (rectangular)
-                'maxInternalSkewness': 4,       # Strict internal
+                # PROFESSIONAL CFD quality controls
+                'maxNonOrtho': 50,              # ✅ Improved from 65
+                'maxBoundarySkewness': 4,       # ✅ Improved from 6
+                'maxInternalSkewness': 2,       # ✅ Improved from 4
                 'maxConcave': 75,               # Conservative
-                'nCellsBetweenLevels': 3,       # SMOOTH transitions (not 4!)
+                'nCellsBetweenLevels': 3,       # SMOOTH transitions
                 'minRefinementCells': 5,        # Allow small zones
-                # Relaxed fallback (still must meet target!)
+                # Relaxed fallback (still reasonable)
                 'relaxed': {
-                    'maxNonOrtho': 65,          # NO relaxation - must meet target!
-                    'maxBoundarySkewness': 8,   # Slightly relaxed but strict
-                    'maxInternalSkewness': 5
+                    'maxNonOrtho': 60,          # ✅ Improved from 65
+                    'maxBoundarySkewness': 6,   # ✅ Improved from 8
+                    'maxInternalSkewness': 3    # ✅ Improved from 5
                 }
             }
         },
@@ -310,11 +310,11 @@ def generate_hvac_volumetric_refinement(geo_df: pd.DataFrame, quality_level: int
         level_spec = " ".join([f"({z['distance']} {z['level']})" for z in volumetric_zones])
         
         # Build refinementRegions entry (referencing the searchableSurface)
-        refinement_block = f"""        {patch_name}
-        {{
-            mode    distance;
-            levels  ({level_spec});
-        }}"""
+        refinement_block = f"""            {patch_name}
+            {{
+                mode    distance;
+                levels  ({level_spec});
+            }}"""
         refinement_blocks.append(refinement_block)
         
         logger.info(f"  {patch_name} ({bc_type}): multi-zone refinement enabled")
@@ -323,7 +323,7 @@ def generate_hvac_volumetric_refinement(geo_df: pd.DataFrame, quality_level: int
     
     # Format output
     geometry_content = "\n".join(geometry_blocks) if geometry_blocks else ""
-    refinement_content = "\n".join(refinement_blocks) if refinement_blocks else "        // No volumetric refinement"
+    refinement_content = "\n".join(refinement_blocks) if refinement_blocks else "            // No volumetric refinement"
     
     return (geometry_content, refinement_content)
 
@@ -457,17 +457,11 @@ def create_hvac_pro_snappyHexMeshDict(template_path, sim_path, stl_filename, geo
         feature_config = config['feature_edge_refinement']
         
         if feature_config.get('enabled', False):
-            # Feature edge refinement enabled
-            base_size = config['base_cell_size']
-            
-            # Calculate distances for feature refinement
-            min_distance = base_size * 0.001  # Very close to edge
-            max_distance = base_size * 0.02   # Further from edge
-            
-            feature_refinement_levels = f"            levels (({min_distance} {feature_config['max_level']}) ({max_distance} {feature_config['min_level']}));"
+            # Feature edge refinement enabled with HVAC-realistic distances
+            feature_refinement_levels = f"            levels ((0.01 {feature_config['max_level']}) (0.05 {feature_config['min_level']}));"
             feature_angle = str(feature_config['feature_angle'])
             
-            logger.info(f"  Feature edge refinement: {base_size*1000}mm → {base_size*1000 / (2**feature_config['max_level']):.2f}mm at edges")
+            logger.info(f"  Feature edge refinement: 0-1cm → level {feature_config['max_level']}, 1-5cm → level {feature_config['min_level']}")
         else:
             # Feature edge refinement disabled
             feature_refinement_levels = "            levels ((0.001 0));"

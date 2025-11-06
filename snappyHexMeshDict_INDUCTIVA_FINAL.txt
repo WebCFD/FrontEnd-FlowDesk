@@ -19,40 +19,47 @@ FoamFile
 
 castellatedMesh true;
 snap            true;
-addLayers       $ADD_LAYERS;
+addLayers       false;
 overwrite       true;
 
 geometry
 {
-    $STL_FILENAME
+    geometry.stl
     {
         type triSurfaceMesh;
-        file $STL_FILENAME;
+        file geometry.stl;
         name geometry;
         tolerance   1E-6;
         maxTreeDepth 12;
 
-        $GEOMETRY_REGIONS
+        regions
+        {
+            wall_0F_1 {   name wall_0F_1; }
+            wall_0F_2 {   name wall_0F_2; }
+            window_0F_1 {   name window_0F_1; }
+            wall_0F_3 {   name wall_0F_3; }
+            wall_0F_4 {   name wall_0F_4; }
+            door_0F_1 {   name door_0F_1; }
+            floor_0F {   name floor_0F; }
+            ceil_0F {   name ceil_0F; }
+        }
     }
-
-    // Searchable surfaces for volumetric refinement
-$VOLUMETRIC_GEOMETRY
 };
 
 castellatedMeshControls
 {
     // Cell limits (parametric per quality level)
-    maxLocalCells $MAX_LOCAL_CELLS;
-    maxGlobalCells $MAX_GLOBAL_CELLS;
-    minRefinementCells $MIN_REFINEMENT_CELLS;
-    maxLoadUnbalance $MAX_LOAD_UNBALANCE;
-    nCellsBetweenLevels $NCELLS_BETWEEN_LEVELS;
+    maxLocalCells 500000;
+    maxGlobalCells 1000000;
+    minRefinementCells 5;
+    maxLoadUnbalance 0.25;
+    nCellsBetweenLevels 3;
 
     features
     ( 
         {
-            file $EMESH_FILENAME;
-$FEATURE_REFINEMENT_LEVELS
+            file geometry.eMesh;
+            levels ((0.01 2) (0.05 1));
         }
     );
 
@@ -60,12 +67,54 @@ $FEATURE_REFINEMENT_LEVELS
     {
         geometry
         {
-            level ($GLOBAL_LEVEL $GLOBAL_LEVEL);  // Global base refinement
-            $REFINEMENT_SURFACES
+            level (0 0);  // Global base refinement
+            regions
+            {
+            wall_0F_1
+                {
+                    level (0 1);
+                    patchInfo { type wall; }
+                }
+            wall_0F_2
+                {
+                    level (0 1);
+                    patchInfo { type wall; }
+                }
+            window_0F_1
+                {
+                    level (1 2);
+                    patchInfo { type patch; }
+                }
+            wall_0F_3
+                {
+                    level (0 1);
+                    patchInfo { type wall; }
+                }
+            wall_0F_4
+                {
+                    level (0 1);
+                    patchInfo { type wall; }
+                }
+            door_0F_1
+                {
+                    level (1 2);
+                    patchInfo { type patch; }
+                }
+            floor_0F
+                {
+                    level (0 1);
+                    patchInfo { type wall; }
+                }
+            ceil_0F
+                {
+                    level (0 1);
+                    patchInfo { type wall; }
+                }
+            }
         }
     }
 
-    resolveFeatureAngle $FEATURE_ANGLE;  // Feature detection angle
+    resolveFeatureAngle 30;  // Feature detection angle
 
     // VOLUMETRIC REFINEMENT REGIONS
     // Multi-zone refinement around pressure boundaries for jet capture
@@ -73,11 +122,20 @@ $FEATURE_REFINEMENT_LEVELS
     {
         geometry
         {
-$VOLUMETRIC_REFINEMENT
+            window_0F_1
+            {
+                mode    distance;
+                levels  ((0.16 2) (0.4 1) (0.8 0));
+            }
+            door_0F_1
+            {
+                mode    distance;
+                levels  ((0.16 2) (0.4 1) (0.8 0));
+            }
         }
     }
 
-    locationInMesh $LOCATION_INSIDE_MESH;
+    locationInMesh (2.500000 2.000000 1.250000);
     allowFreeStandingZoneFaces true;
 }
 
@@ -97,35 +155,35 @@ snapControls
 
 addLayersControls
 {
-    relativeSizes $RELATIVE_SIZES;
+    relativeSizes true;
     
     // BOUNDARY LAYER CONFIGURATION
     // Optimized for HVAC: high coverage, smooth growth
     layers
     {
-$BOUNDARY_LAYERS
+        // No boundary layers (isotropic refinement strategy)
     }
     
     // GLOBAL FALLBACK PARAMETERS (required by OpenFOAM)
     // Individual patches override these with their own values
-    expansionRatio $GLOBAL_EXPANSION_RATIO;
-    firstLayerThickness $GLOBAL_FIRST_LAYER_THICKNESS;
+    expansionRatio 1.2;
+    firstLayerThickness 0.25;
     
     // Advanced layer generation for maximum coverage
     nGrow 0;
-    featureAngle $LAYER_FEATURE_ANGLE;
+    featureAngle 75;
     slipFeatureAngle 30;
-    nRelaxIter $LAYER_N_RELAX_ITER;
+    nRelaxIter 12;
     nSmoothSurfaceNormals 5;
-    nSmoothNormals $LAYER_N_SMOOTH_NORMALS;
+    nSmoothNormals 8;
     nSmoothThickness 40;              // CRITICAL - 40 not 20 for smooth transition
-    maxFaceThicknessRatio $LAYER_MAX_FACE_THICKNESS_RATIO;
-    maxThicknessToMedialRatio $LAYER_MAX_THICKNESS_TO_MEDIAL_RATIO;
-    minThickness $LAYER_MIN_THICKNESS;
-    minMedialAxisAngle $LAYER_MIN_MEDIAL_AXIS_ANGLE;
+    maxFaceThicknessRatio 0.6;
+    maxThicknessToMedialRatio 0.6;
+    minThickness 0.1;
+    minMedialAxisAngle 80;
     nBufferCellsNoExtrude 0;
-    nLayerIter $LAYER_N_LAYER_ITER;
-    nRelaxedIter $LAYER_N_RELAXED_ITER;
+    nLayerIter 150;
+    nRelaxedIter 75;
     
     // Quality enforcement during layer addition
     additionalReporting true;
@@ -136,10 +194,10 @@ meshQualityControls
 {
     // QUALITY CONTROLS FOR CFD (parametric per quality level)
     
-    maxNonOrtho $MAX_NON_ORTHO;
-    maxBoundarySkewness $MAX_BOUNDARY_SKEWNESS;
-    maxInternalSkewness $MAX_INTERNAL_SKEWNESS;
-    maxConcave $MAX_CONCAVE;
+    maxNonOrtho 50;
+    maxBoundarySkewness 4;
+    maxInternalSkewness 2;
+    maxConcave 75;
     minVol 1e-18;                // Allow very small cells in layers
     minTetQuality 1e-15;
     minArea 1e-18;
@@ -155,9 +213,9 @@ meshQualityControls
     // Relaxed controls for difficult layer regions (MORE permissive than main)
     relaxed
     {
-        maxNonOrtho $MAX_NON_ORTHO_RELAXED;
-        maxBoundarySkewness $MAX_BOUNDARY_SKEWNESS_RELAXED;
-        maxInternalSkewness $MAX_INTERNAL_SKEWNESS_RELAXED;
+        maxNonOrtho 60;
+        maxBoundarySkewness 6;
+        maxInternalSkewness 3;
     }
 }
 
