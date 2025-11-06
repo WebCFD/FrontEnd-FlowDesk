@@ -91,16 +91,20 @@ function normalizeScalarRange(
 
   let [min, max] = [0, 1];
   
-  // Special handling for PMV/PPD fields: filter out -1000 sentinel and extreme values
+  // Special handling for PMV/PPD fields: filter out -1000 sentinel and invalid values
   if (fieldName === 'PMV' || fieldName === 'PPD') {
     const data = array.getData();
     const validValues: number[] = [];
-    const invalidThreshold = fieldName === 'PMV' ? 10 : 101; // PMV range -10 to +10, PPD 0-100
+    
+    // Theoretical valid ranges: PMV [-3, +3] typical, PPD [0, 100]
+    const isValidPMV = (v: number) => v !== -1000 && isFinite(v) && v >= -3 && v <= 3;
+    const isValidPPD = (v: number) => v !== -1000 && isFinite(v) && v >= 0 && v <= 100;
     
     for (let i = 0; i < data.length; i++) {
       const val = data[i];
-      // Filter out -1000 sentinel and extreme values
-      if (val !== -1000 && isFinite(val) && Math.abs(val) < invalidThreshold) {
+      if (fieldName === 'PMV' && isValidPMV(val)) {
+        validValues.push(val);
+      } else if (fieldName === 'PPD' && isValidPPD(val)) {
         validValues.push(val);
       }
     }
