@@ -1294,22 +1294,35 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       // Remove existing actors
       removeActors(actorsRef.current);
       
-      // Build new pipeline with updated config
-      const newActors = buildPipeline(filterConfig, activeMode);
-      actorsRef.current = newActors;
-      
-      // Add new actors to scene
-      addActors(actorsRef.current);
-      
       // Handle cutting planes visualization
       removeActors(clippingPlaneActorsRef.current);
       clippingPlaneActorsRef.current = [];
+      
+      // Check if any cutting plane is enabled
+      const anyPlaneEnabled = filterConfig.clip.enabled && (
+        filterConfig.clip.planesEnabled.x || 
+        filterConfig.clip.planesEnabled.y || 
+        filterConfig.clip.planesEnabled.z
+      );
+      
+      // Only show internal field when cutting planes are NOT active
+      if (!anyPlaneEnabled) {
+        // Build new pipeline with updated config
+        const newActors = buildPipeline(filterConfig, activeMode);
+        actorsRef.current = newActors;
+        
+        // Add new actors to scene
+        addActors(actorsRef.current);
+      } else {
+        // Clear actors when planes are visible
+        actorsRef.current = [];
+      }
       
       if (filterConfig.clip.enabled) {
         const planes = createCuttingPlanes();
         clippingPlaneActorsRef.current = planes;
         addActors(clippingPlaneActorsRef.current);
-        console.log('[VTKViewer] Added cutting planes to scene');
+        console.log('[VTKViewer] Added cutting planes to scene, internal field hidden');
       }
       
       // Update background color when it changes
