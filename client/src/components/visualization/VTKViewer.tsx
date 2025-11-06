@@ -256,6 +256,20 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       // Get the sliced data
       const slicedData = cutter.getOutputData();
       
+      // Debug: check if point data was transferred
+      const pointData = slicedData.getPointData();
+      const numArrays = pointData.getNumberOfArrays();
+      console.log('[VTKViewer] Sliced data has', slicedData.getNumberOfPoints(), 'points and', numArrays, 'arrays');
+      
+      if (numArrays === 0) {
+        console.warn('[VTKViewer] WARNING: Sliced data has no point data arrays! Field data not transferred.');
+      } else {
+        for (let i = 0; i < numArrays; i++) {
+          const array = pointData.getArray(i);
+          console.log(`  Slice array [${i}]:`, array.getName(), `(${array.getNumberOfComponents()} components)`);
+        }
+      }
+      
       // Create mapper and apply the same visualization as the main field
       const mapper = vtkMapper.newInstance();
       mapper.setInputData(slicedData);
@@ -267,6 +281,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       const actor = vtkActor.newInstance();
       actor.setMapper(mapper);
       actor.getProperty().setOpacity(1.0); // Solid, no transparency
+      actor.getProperty().setEdgeVisibility(false); // Disable edge rendering
       
       return actor;
     };
