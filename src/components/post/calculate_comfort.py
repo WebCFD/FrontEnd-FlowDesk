@@ -174,6 +174,12 @@ def main(case_path):
     VALID_VEL_MAX = 5.0    # m/s
     INVALID_VALUE = -1000.0  # Sentinel value for invalid/out-of-range cells
     
+    # Theoretical valid ranges for PMV and PPD results
+    PMV_MIN = -3.0  # Typical comfort range is -0.5 to +0.5, extreme is -3 to +3
+    PMV_MAX = 3.0
+    PPD_MIN = 0.0   # PPD is a percentage from 0% to 100%
+    PPD_MAX = 100.0
+    
     invalid_count = 0
     for i in range(n_cells):
         tdb = T_celsius[i]
@@ -189,12 +195,15 @@ def main(case_path):
                 pmv_val = calculate_pmv_fanger(tdb, tr, vel, RH, MET, CLO)
                 ppd_val = calculate_ppd(pmv_val)
                 
-                # Check if results are finite (not NaN, not inf)
-                if np.isfinite(pmv_val) and np.isfinite(ppd_val):
+                # Check if results are finite (not NaN, not inf) AND within theoretical ranges
+                if (np.isfinite(pmv_val) and np.isfinite(ppd_val) and
+                    PMV_MIN <= pmv_val <= PMV_MAX and
+                    PPD_MIN <= ppd_val <= PPD_MAX):
+                    # Valid result - use calculated values
                     pmv_field[i] = pmv_val
                     ppd_field[i] = ppd_val
                 else:
-                    # Numerical overflow/underflow - use sentinel value
+                    # Result is finite but outside theoretical range OR infinite - use sentinel
                     pmv_field[i] = INVALID_VALUE
                     ppd_field[i] = INVALID_VALUE
                     invalid_count += 1
@@ -204,7 +213,7 @@ def main(case_path):
                 ppd_field[i] = INVALID_VALUE
                 invalid_count += 1
         else:
-            # Out of valid range - use sentinel value
+            # Input conditions out of valid range - use sentinel value
             pmv_field[i] = INVALID_VALUE
             ppd_field[i] = INVALID_VALUE
             invalid_count += 1

@@ -110,12 +110,20 @@ function normalizeScalarRange(
     }
     
     if (validValues.length === 0) {
-      console.warn(`[VTKViewer] No valid values in ${fieldName} after filtering, using fallback`);
+      const sentinelCount = data.filter((v: number) => v === -1000).length;
+      const allSentinel = sentinelCount === data.length;
+      
+      console.warn(`[VTKViewer] No valid values in ${fieldName} after filtering (${sentinelCount}/${data.length} are -1000)`);
+      
+      const message = allSentinel 
+        ? `${fieldName}: No hay valores válidos. Todos los puntos (-1000) están fuera del rango de confort térmico debido a temperaturas o velocidades extremas en esta simulación.`
+        : `${fieldName}: No hay valores válidos en el rango teórico (${fieldName === 'PMV' ? '-3 a +3' : '0-100'}).`;
+      
       return { 
         range: fieldName === 'PMV' ? [-3, 3] : [0, 100], 
         isUniform: false, 
         isInvalid: true, 
-        message: `Field "${fieldName}" has no valid values (all marked as invalid)` 
+        message
       };
     }
     
