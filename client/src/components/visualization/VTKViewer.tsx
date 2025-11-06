@@ -24,6 +24,9 @@ import vtkPoints from '@kitware/vtk.js/Common/Core/Points';
 import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 import vtkColorTransferFunction from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction';
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
+import vtkPlane from '@kitware/vtk.js/Common/DataModel/Plane';
+// @ts-ignore - vtkCutter doesn't have type declarations but works fine
+import vtkCutter from '@kitware/vtk.js/Filters/Core/Cutter';
 
 // Implementación básica de filtros usando VTK.js core disponible
 // Los filtros avanzados se simulan usando funcionalidad básica existente
@@ -229,104 +232,67 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     }
   };
 
-  // Create visual cutting planes
+  // Create cutting planes that show actual field data values
   const createCuttingPlanes = () => {
+    if (!sourceDataRef.current) return [];
+    
     const planes = [];
-    const { min, max } = domainBounds;
     const { planePositions, planesEnabled } = filterConfig.clip;
+    const sourceData = sourceDataRef.current;
     
-    // X Plane (YZ plane) - Red
+    // Helper function to create a cutting plane with field data visualization
+    const createSlice = (origin: [number, number, number], normal: [number, number, number]) => {
+      // Create the cutting plane
+      const plane = vtkPlane.newInstance();
+      plane.setOrigin(...origin);
+      plane.setNormal(...normal);
+      
+      // Use vtkCutter to slice the data
+      const cutter = vtkCutter.newInstance();
+      cutter.setInputData(sourceData);
+      cutter.setCutFunction(plane);
+      cutter.update();
+      
+      // Get the sliced data
+      const slicedData = cutter.getOutputData();
+      
+      // Create mapper and apply the same visualization as the main field
+      const mapper = vtkMapper.newInstance();
+      mapper.setInputData(slicedData);
+      
+      // Apply the same field visualization
+      applyVisualization(mapper, slicedData, activeMode as VisualizationMode);
+      
+      // Create actor
+      const actor = vtkActor.newInstance();
+      actor.setMapper(mapper);
+      actor.getProperty().setOpacity(1.0); // Solid, no transparency
+      
+      return actor;
+    };
+    
+    // X Plane (YZ plane normal to X-axis)
     if (planesEnabled.x) {
-      const xPlane = vtkPolyData.newInstance();
-      const xPoints = vtkPoints.newInstance();
       const xPos = planePositions.x;
-      
-      // Create a quad for the plane
-      xPoints.setData(Float32Array.from([
-        xPos, min[1], min[2],
-        xPos, max[1], min[2],
-        xPos, max[1], max[2],
-        xPos, min[1], max[2]
-      ]));
-      xPlane.setPoints(xPoints);
-      
-      const xPolys = new Uint32Array([4, 0, 1, 2, 3]);
-      xPlane.getPolys().setData(xPolys);
-      
-      const xMapper = vtkMapper.newInstance();
-      xMapper.setInputData(xPlane);
-      
-      const xActor = vtkActor.newInstance();
-      xActor.setMapper(xMapper);
-      xActor.getProperty().setColor(1.0, 0.2, 0.2); // Red
-      xActor.getProperty().setOpacity(0.3);
-      xActor.getProperty().setEdgeVisibility(true);
-      xActor.getProperty().setEdgeColor(1.0, 0.0, 0.0);
-      xActor.getProperty().setLineWidth(2);
-      
-      planes.push(xActor);
+      const origin = [xPos, 0, 0];
+      const normal = [1, 0, 0]; // Normal along X-axis
+      planes.push(createSlice(origin, normal));
     }
     
-    // Y Plane (XZ plane) - Green
+    // Y Plane (XZ plane normal to Y-axis)
     if (planesEnabled.y) {
-      const yPlane = vtkPolyData.newInstance();
-      const yPoints = vtkPoints.newInstance();
       const yPos = planePositions.y;
-      
-      yPoints.setData(Float32Array.from([
-        min[0], yPos, min[2],
-        max[0], yPos, min[2],
-        max[0], yPos, max[2],
-        min[0], yPos, max[2]
-      ]));
-      yPlane.setPoints(yPoints);
-      
-      const yPolys = new Uint32Array([4, 0, 1, 2, 3]);
-      yPlane.getPolys().setData(yPolys);
-      
-      const yMapper = vtkMapper.newInstance();
-      yMapper.setInputData(yPlane);
-      
-      const yActor = vtkActor.newInstance();
-      yActor.setMapper(yMapper);
-      yActor.getProperty().setColor(0.2, 1.0, 0.2); // Green
-      yActor.getProperty().setOpacity(0.3);
-      yActor.getProperty().setEdgeVisibility(true);
-      yActor.getProperty().setEdgeColor(0.0, 1.0, 0.0);
-      yActor.getProperty().setLineWidth(2);
-      
-      planes.push(yActor);
+      const origin = [0, yPos, 0];
+      const normal = [0, 1, 0]; // Normal along Y-axis
+      planes.push(createSlice(origin, normal));
     }
     
-    // Z Plane (XY plane) - Blue
+    // Z Plane (XY plane normal to Z-axis)
     if (planesEnabled.z) {
-      const zPlane = vtkPolyData.newInstance();
-      const zPoints = vtkPoints.newInstance();
       const zPos = planePositions.z;
-      
-      zPoints.setData(Float32Array.from([
-        min[0], min[1], zPos,
-        max[0], min[1], zPos,
-        max[0], max[1], zPos,
-        min[0], max[1], zPos
-      ]));
-      zPlane.setPoints(zPoints);
-      
-      const zPolys = new Uint32Array([4, 0, 1, 2, 3]);
-      zPlane.getPolys().setData(zPolys);
-      
-      const zMapper = vtkMapper.newInstance();
-      zMapper.setInputData(zPlane);
-      
-      const zActor = vtkActor.newInstance();
-      zActor.setMapper(zMapper);
-      zActor.getProperty().setColor(0.2, 0.2, 1.0); // Blue
-      zActor.getProperty().setOpacity(0.3);
-      zActor.getProperty().setEdgeVisibility(true);
-      zActor.getProperty().setEdgeColor(0.0, 0.0, 1.0);
-      zActor.getProperty().setLineWidth(2);
-      
-      planes.push(zActor);
+      const origin = [0, 0, zPos];
+      const normal = [0, 0, 1]; // Normal along Z-axis
+      planes.push(createSlice(origin, normal));
     }
     
     console.log('[VTKViewer] Created', planes.length, 'cutting planes');
