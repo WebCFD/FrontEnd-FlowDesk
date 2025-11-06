@@ -1192,7 +1192,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   return (
     <div className={`vtk-viewer ${className || ''}`}>
       <Card className="border-slate-200 shadow-lg">
-        <CardHeader className="pb-4">
+        <CardHeader className="pb-2">
           <CardTitle className="text-xl font-semibold text-slate-800 flex items-center gap-2">
             <Layers className="h-5 w-5 text-blue-600" />
             CFD Results Visualization
@@ -1200,47 +1200,61 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
               Simulation #{simulationId}
             </Badge>
           </CardTitle>
-          
-          {/* Data warning badge */}
-          {dataWarning && (
-            <div className="mt-2 flex items-center gap-2 p-2 bg-amber-50 border border-amber-200 rounded-md">
-              <AlertCircle className="h-4 w-4 text-amber-600 flex-shrink-0" />
-              <span className="text-xs text-amber-800">{dataWarning}</span>
-            </div>
-          )}
-          
-          <div className="flex flex-wrap gap-2 mt-4">
-            {visualizationControls.map((control) => (
-              <Button
-                key={control.id}
-                variant={activeMode === control.id ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleModeChange(control.id)}
-                className="text-xs h-8 gap-1"
-                data-testid={`button-visualization-${control.id}`}
-              >
-                <control.icon className="h-3 w-3" />
-                {control.label}
-              </Button>
-            ))}
-          </div>
-          
-          {/* Controles Avanzados Collapsible */}
-          <div className="mt-4 border-t pt-4">
-            <Collapsible open={showAdvancedControls} onOpenChange={setShowAdvancedControls}>
-              <CollapsibleTrigger asChild>
-                <Button variant="ghost" size="sm" className="w-full justify-between p-2" data-testid="button-advanced-controls">
-                  <div className="flex items-center gap-2">
-                    <Sliders className="h-4 w-4" />
-                    <span className="text-sm font-medium">Advanced Controls</span>
+        </CardHeader>
+        
+        <CardContent className="p-0">
+          <div className="flex gap-0">
+            {/* Left Sidebar - Controls */}
+            <div className="w-72 border-r border-slate-200 bg-slate-50/50 overflow-y-auto max-h-[600px]">
+              <div className="p-4 space-y-4">
+                {/* Data warning badge */}
+                {dataWarning && (
+                  <div className="flex items-center gap-2 p-2 bg-amber-50 border border-amber-200 rounded-md">
+                    <AlertCircle className="h-4 w-4 text-amber-600 flex-shrink-0" />
+                    <span className="text-xs text-amber-800">{dataWarning}</span>
                   </div>
-                  <div className={`transition-transform ${showAdvancedControls ? 'rotate-180' : ''}`}>
-                    ▼
+                )}
+                
+                {/* Visualization Mode Selection */}
+                <div>
+                  <h3 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
+                    <Eye className="h-4 w-4" />
+                    Visualization Mode
+                  </h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {visualizationControls.map((control) => (
+                      <Button
+                        key={control.id}
+                        variant={activeMode === control.id ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => handleModeChange(control.id)}
+                        className="text-xs h-9 gap-1 w-full justify-start"
+                        data-testid={`button-visualization-${control.id}`}
+                      >
+                        <control.icon className="h-3 w-3" />
+                        {control.label}
+                      </Button>
+                    ))}
                   </div>
-                </Button>
-              </CollapsibleTrigger>
-              
-              <CollapsibleContent className="space-y-4 mt-4 p-4 bg-slate-50 rounded-lg">
+                </div>
+                
+                <Separator />
+                
+                {/* Controles Avanzados Collapsible */}
+                <Collapsible open={showAdvancedControls} onOpenChange={setShowAdvancedControls}>
+                  <CollapsibleTrigger asChild>
+                    <Button variant="ghost" size="sm" className="w-full justify-between p-2" data-testid="button-advanced-controls">
+                      <div className="flex items-center gap-2">
+                        <Sliders className="h-4 w-4" />
+                        <span className="text-sm font-medium">Advanced Controls</span>
+                      </div>
+                      <div className={`transition-transform ${showAdvancedControls ? 'rotate-180' : ''}`}>
+                        ▼
+                      </div>
+                    </Button>
+                  </CollapsibleTrigger>
+                  
+                  <CollapsibleContent className="space-y-4 mt-4">
                 {/* Scientific Colormaps */}
                 <Collapsible open={showScientificColormaps} onOpenChange={setShowScientificColormaps}>
                   <CollapsibleTrigger asChild>
@@ -1623,18 +1637,18 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                   </CollapsibleContent>
                 </Collapsible>
 
-              </CollapsibleContent>
-            </Collapsible>
-          </div>
-        </CardHeader>
-        
-        <CardContent className="p-0 relative">
-          <div className="flex">
-            <div 
-              ref={containerRef}
-              className={`${activeMode === 'geometry' ? 'w-full' : 'flex-1'} h-96 bg-gradient-to-br from-gray-900 via-blue-900 to-slate-900 rounded-lg relative overflow-hidden`}
-              data-testid="vtk-container"
-            >
+                  </CollapsibleContent>
+                </Collapsible>
+              </div>
+            </div>
+            
+            {/* Right Side - Canvas and Colorbar */}
+            <div className="flex-1 flex">
+              <div 
+                ref={containerRef}
+                className={`${activeMode === 'geometry' ? 'w-full' : 'flex-1'} h-[600px] bg-gradient-to-br from-gray-900 via-blue-900 to-slate-900 relative overflow-hidden`}
+                data-testid="vtk-container"
+              >
               {loading && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 text-white bg-black/50 z-10" data-testid="vtk-loading">
                   <Loader2 className="h-8 w-8 animate-spin" />
@@ -1651,11 +1665,11 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                   </div>
                 </div>
               )}
-            </div>
-            
-            {/* Colormap Scale Bar - Solo para Pressure y Velocity */}
-            {activeMode !== 'geometry' && (
-              <div className="w-20 p-2 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 rounded-r-lg flex flex-col justify-between" data-testid="colormap-bar">
+              </div>
+              
+              {/* Colormap Scale Bar - Solo para Pressure y Velocity */}
+              {activeMode !== 'geometry' && (
+                <div className="w-20 p-2 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 flex flex-col justify-between" data-testid="colormap-bar">
                 <div className="flex flex-col h-full">
                   {/* Título y unidades */}
                   <div className="text-center mb-2">
@@ -1730,8 +1744,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                     )}
                   </div>
                 </div>
-              </div>
-            )}
+                </div>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
