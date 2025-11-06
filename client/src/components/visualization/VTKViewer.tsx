@@ -388,12 +388,16 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     
     const { min, max } = domainBounds;
     
+    console.log('[VTKViewer] Domain bounds for planes - min:', min, 'max:', max);
+    console.log('[VTKViewer] Domain dimensions - X:', (max[0] - min[0]).toFixed(2), 'Y:', (max[1] - min[1]).toFixed(2), 'Z:', (max[2] - min[2]).toFixed(2));
+    
     // X Plane (YZ plane normal to X-axis)
     if (planesEnabled.x) {
       const xPos = planePositions.x;
       const origin: [number, number, number] = [xPos, min[1], min[2]];
       const normal: [number, number, number] = [1, 0, 0]; // Normal along X-axis
       const planeSize: [number, number] = [max[2] - min[2], max[1] - min[1]]; // width (Z), height (Y)
+      console.log('[VTKViewer] X Plane - origin:', origin, 'size:', planeSize);
       planes.push(createSlice(origin, normal, planeSize));
     }
     
@@ -403,6 +407,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       const origin: [number, number, number] = [min[0], yPos, min[2]];
       const normal: [number, number, number] = [0, 1, 0]; // Normal along Y-axis
       const planeSize: [number, number] = [max[0] - min[0], max[2] - min[2]]; // width (X), height (Z)
+      console.log('[VTKViewer] Y Plane - origin:', origin, 'size:', planeSize);
       planes.push(createSlice(origin, normal, planeSize));
     }
     
@@ -412,6 +417,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       const origin: [number, number, number] = [min[0], min[1], zPos];
       const normal: [number, number, number] = [0, 0, 1]; // Normal along Z-axis
       const planeSize: [number, number] = [max[0] - min[0], max[1] - min[1]]; // width (X), height (Y)
+      console.log('[VTKViewer] Z Plane - origin:', origin, 'size:', planeSize);
       planes.push(createSlice(origin, normal, planeSize));
     }
     
