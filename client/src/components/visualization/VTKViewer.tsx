@@ -27,6 +27,7 @@ import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/C
 import vtkPlane from '@kitware/vtk.js/Common/DataModel/Plane';
 // @ts-ignore - vtkCutter doesn't have type declarations but works fine
 import vtkCutter from '@kitware/vtk.js/Filters/Core/Cutter';
+import vtkPlaneSource from '@kitware/vtk.js/Filters/Sources/PlaneSource';
 
 // Implementación básica de filtros usando VTK.js core disponible
 // Los filtros avanzados se simulan usando funcionalidad básica existente
@@ -240,8 +241,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     const { planePositions, planesEnabled } = filterConfig.clip;
     const sourceData = sourceDataRef.current;
     
-    // Helper function to create a cutting plane with field data visualization
-    const createSlice = (origin: [number, number, number], normal: [number, number, number]) => {
+    // Helper function to create a cutting plane slice with field data
+    const createSlice = (origin: [number, number, number], normal: [number, number, number], planeSize: [number, number]) => {
       // Create the cutting plane
       const plane = vtkPlane.newInstance();
       plane.setOrigin(...origin);
@@ -256,60 +257,61 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       // Get the sliced data
       const slicedData = cutter.getOutputData();
       
+      console.log('[VTKViewer] Cutter produced', slicedData.getNumberOfPoints(), 'points,', 
+                  slicedData.getNumberOfCells(), 'cells,',
+                  slicedData.getNumberOfPolys(), 'polys,',
+                  slicedData.getNumberOfLines(), 'lines');
+      
       // Debug: check if point data was transferred
       const pointData = slicedData.getPointData();
       const numArrays = pointData.getNumberOfArrays();
-      console.log('[VTKViewer] Sliced data has', slicedData.getNumberOfPoints(), 'points and', numArrays, 'arrays');
+      console.log('[VTKViewer] Sliced data has', numArrays, 'arrays');
       
-      if (numArrays === 0) {
-        console.warn('[VTKViewer] WARNING: Sliced data has no point data arrays! Field data not transferred.');
-      } else {
-        for (let i = 0; i < numArrays; i++) {
-          const array = pointData.getArray(i);
-          console.log(`  Slice array [${i}]:`, array.getName(), `(${array.getNumberOfComponents()} components)`);
-        }
-      }
-      
-      // Create mapper and apply the same visualization as the main field
+      // Create mapper
       const mapper = vtkMapper.newInstance();
       mapper.setInputData(slicedData);
       
       // Apply the same field visualization
       applyVisualization(mapper, slicedData, activeMode as VisualizationMode);
       
-      // Create actor with surface representation
+      // Create actor
       const actor = vtkActor.newInstance();
       actor.setMapper(mapper);
-      actor.getProperty().setOpacity(1.0); // Solid, no transparency
-      actor.getProperty().setEdgeVisibility(false); // Disable edge rendering
-      actor.getProperty().setRepresentation(2); // 2 = Surface representation (not wireframe)
-      actor.getProperty().setLighting(true); // Enable lighting for better visualization
+      actor.getProperty().setOpacity(1.0);
+      actor.getProperty().setLineWidth(5); // Make lines thicker if they're lines
+      actor.getProperty().setRepresentation(2); // Surface mode
+      actor.getProperty().setLighting(false); // Disable lighting to show pure colors
       
       return actor;
     };
     
+    const { min, max } = domainBounds;
+    
     // X Plane (YZ plane normal to X-axis)
     if (planesEnabled.x) {
       const xPos = planePositions.x;
-      const origin = [xPos, 0, 0];
-      const normal = [1, 0, 0]; // Normal along X-axis
-      planes.push(createSlice(origin, normal));
+      const origin: [number, number, number] = [xPos, min[1], min[2]];
+      const normal: [number, number, number] = [1, 0, 0]; // Normal along X-axis
+      const planeSize: [number, number] = [max[2] - min[2], max[1] - min[1]]; // width (Z), height (Y)
+      planes.push(createSlice(origin, normal, planeSize));
     }
     
     // Y Plane (XZ plane normal to Y-axis)
     if (planesEnabled.y) {
       const yPos = planePositions.y;
-      const origin = [0, yPos, 0];
-      const normal = [0, 1, 0]; // Normal along Y-axis
-      planes.push(createSlice(origin, normal));
+      const origin: [number, number, number] = [min[0], yPos, min[2]];
+      const normal: [number, number, number] = [0, 1, 0]; // Normal along Y-axis
+      const planeSize: [number, number] = [max[0] - min[0], max[2] - min[2]]; // width (X), height (Z)
+      planes.push(createSlice(origin, normal, planeSize));
     }
     
     // Z Plane (XY plane normal to Z-axis)
     if (planesEnabled.z) {
       const zPos = planePositions.z;
-      const origin = [0, 0, zPos];
-      const normal = [0, 0, 1]; // Normal along Z-axis
-      planes.push(createSlice(origin, normal));
+      const origin: [number, number, number] = [min[0], min[1], zPos];
+      const normal: [number, number, number] = [0, 0, 1]; // Normal along Z-axis
+      const planeSize: [number, number] = [max[0] - min[0], max[1] - min[1]]; // width (X), height (Y)
+      planes.push(createSlice(origin, normal, planeSize));
     }
     
     console.log('[VTKViewer] Created', planes.length, 'cutting planes');
