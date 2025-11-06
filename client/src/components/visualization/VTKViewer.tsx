@@ -338,10 +338,37 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       const mapper = vtkMapper.newInstance();
       mapper.setInputData(planeData);
       
-      // CRITICAL: Ensure mapper uses cell data for coloring
-      mapper.setScalarModeToUsePointData();
-      
+      // Apply field visualization BEFORE setting up the actor
       applyVisualization(mapper, planeData, activeMode as VisualizationMode);
+      
+      // CRITICAL FIX: Force mapper to use the correct scalar array
+      // vtkPlaneSource adds TextureCoordinates which can override our field data
+      // We need to explicitly tell the mapper which array to use for coloring
+      const pointData = planeData.getPointData();
+      let targetArrayName = '';
+      
+      switch (activeMode) {
+        case 'pressure':
+          targetArrayName = 'p';
+          break;
+        case 'velocity':
+          targetArrayName = 'U_mag';
+          break;
+        case 'temperature':
+          targetArrayName = 'T_degC';
+          break;
+        default:
+          targetArrayName = 'p';
+      }
+      
+      const targetArray = pointData.getArrayByName(targetArrayName);
+      if (targetArray) {
+        mapper.setScalarModeToUsePointFieldData();
+        mapper.setArrayAccessMode(1); // By name
+        mapper.setColorByArrayName(targetArrayName);
+        pointData.setActiveScalars(targetArrayName);
+        console.log('[VTKViewer] Forced mapper to use array:', targetArrayName, 'range:', targetArray.getRange());
+      }
       
       // Create actor
       const actor = vtkActor.newInstance();
