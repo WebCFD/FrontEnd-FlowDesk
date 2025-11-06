@@ -1,0 +1,188 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+
+// HVAC-OPTIMIZED MESH CONFIGURATION FOR INDUCTIVA
+// Quality-focused settings for thermal comfort CFD simulations
+// Balanced approach: precision around openings + computational efficiency
+
+castellatedMesh true;
+snap            true;
+addLayers       false;
+
+geometry
+{
+    geometry.stl
+    {
+        type triSurfaceMesh;
+        name geometry;
+    }
+}
+
+castellatedMeshControls
+{
+    maxLocalCells 10000000;
+    maxGlobalCells 20000000;
+    minRefinementCells 5;
+    maxLoadUnbalance 0.25;
+    nCellsBetweenLevels 3;
+
+    features
+    ( 
+        {
+            file geometry.eMesh;
+            levels ((0.01 2) (0.05 1));  // 1cm→level2, 5cm→level1 (HVAC-realistic)
+        }
+    );
+
+    refinementSurfaces
+    {
+        geometry
+        {
+            level (0 1);  // Base surface refinement
+            
+            patchInfo
+            {
+                // Ventanas/Puertas: Mayor refinamiento (flujo térmico crítico)
+                window_0F_1 { level (1 2); }
+                door_0F_1   { level (1 2); }
+                
+                // Paredes/suelo/techo: Refinamiento estándar
+                wall_0F_1 { level (0 1); }
+                wall_0F_2 { level (0 1); }
+                wall_0F_3 { level (0 1); }
+                wall_0F_4 { level (0 1); }
+                floor_0F  { level (0 1); }
+                ceil_0F   { level (0 1); }
+            }
+        }
+    }
+
+    // REFINAMIENTO VOLUMÉTRICO: Zona de influencia de aperturas
+    // Captura jets de convección natural y flujos de ventilación
+    refinementRegions
+    {
+        window_0F_1
+        {
+            mode    distance;
+            levels  ((0.16 2) (0.4 1) (0.8 0));  // 16cm→L2, 40cm→L1, 80cm→L0
+        }
+        
+        door_0F_1
+        {
+            mode    distance;
+            levels  ((0.16 2) (0.4 1) (0.8 0));  // 16cm→L2, 40cm→L1, 80cm→L0
+        }
+    }
+
+    resolveFeatureAngle 30;
+    allowFreeStandingZoneFaces false;
+    
+    locationInMesh (1.0 1.0 1.0);  // Punto interior para definir región a mallar
+}
+
+snapControls
+{
+    nSmoothPatch 3;
+    tolerance 2.0;
+    nSolveIter 50;
+    nRelaxIter 5;
+    nFeatureSnapIter 10;
+    implicitFeatureSnap false;
+    explicitFeatureSnap true;
+    multiRegionFeatureSnap false;
+}
+
+addLayersControls
+{
+    // Layers desactivados para primera iteración (castellatedMesh solo)
+    relativeSizes true;
+    layers
+    {
+    }
+    expansionRatio 1.0;
+    finalLayerThickness 0.3;
+    minThickness 0.1;
+    nGrow 0;
+    featureAngle 60;
+    slipFeatureAngle 30;
+    nRelaxIter 3;
+    nSmoothSurfaceNormals 1;
+    nSmoothNormals 3;
+    nSmoothThickness 10;
+    maxFaceThicknessRatio 0.5;
+    maxThicknessToMedialRatio 0.3;
+    minMedialAxisAngle 90;
+    nBufferCellsNoExtrude 0;
+    nLayerIter 50;
+    additionalReporting true;
+    mergePatchFacesAngle 40;
+}
+
+meshQualityControls
+{
+    // CALIDAD PROFESIONAL CFD (endurecido para mejor convergencia)
+    
+    maxNonOrtho 50;              // ✅ Ortogonalidad mejorada (antes: 65)
+    maxBoundarySkewness 4;       // ✅ Menos distorsión en fronteras (antes: 6)
+    maxInternalSkewness 2;       // ✅ Celdas internas de alta calidad (antes: 4)
+    maxConcave 75;
+    minVol 1e-18;                // Allow very small cells in layers
+    minTetQuality 1e-15;
+    minArea 1e-18;
+    minTwist 0.02;
+    minDeterminant 0.001;
+    minFaceWeight 0.02;
+    minVolRatio 0.01;
+    minTriangleTwist -1;
+
+    nSmoothScale 8;
+    errorReduction 0.75;
+
+    // Controles relajados para regiones difíciles
+    // (más permisivos que main, pero aún razonables)
+    relaxed
+    {
+        maxNonOrtho 60;          // ✅ Balanceado (antes: 65)
+        maxBoundarySkewness 6;   // ✅ Mejorado (antes: 8)
+        maxInternalSkewness 3;   // ✅ Más estricto (antes: 5)
+    }
+}
+
+writeFlags
+(
+    scalarLevels
+    layerFields
+);
+
+mergeTolerance 1e-6;
+
+
+// ════════════════════════════════════════════════════════════════════════════
+// CONFIGURACIÓN FINAL - OPTIMIZADA PARA INDUCTIVA
+// ════════════════════════════════════════════════════════════════════════════
+//
+// ESTIMACIÓN DE CELDAS: 200K-500K (reducido desde 500K-1M original)
+//
+// MEJORAS APLICADAS:
+// ✅ Feature refinement realista: 1-5cm (antes: 0.1-2mm irreal)
+// ✅ Refinamiento volumétrico reducido: 80cm máximo (antes: 240cm)
+// ✅ Niveles de refinamiento: max level 2 (antes: 3)
+// ✅ Quality controls endurecidos: NonOrtho=50, Skewness=2/4
+//
+// ZONAS DE REFINAMIENTO:
+// - Ventana/Puerta (superficies): level (1 2)
+// - Zona 0-16cm alrededor: level 2 (captura jets térmicos)
+// - Zona 16-40cm: level 1 (transición)
+// - Zona 40-80cm: level 0 (lejos de apertura)
+//
+// CALIDAD CFD:
+// ✅ maxNonOrtho: 50 (óptimo para buoyantSimpleFoam)
+// ✅ maxBoundarySkewness: 4 (fronteras de alta calidad)
+// ✅ maxInternalSkewness: 2 (volumen de excelente calidad)
+//
+// ════════════════════════════════════════════════════════════════════════════
