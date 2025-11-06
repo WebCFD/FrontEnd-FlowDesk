@@ -264,9 +264,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         planeSource.setPoint2(origin[0], origin[1] + height, origin[2]);
       }
       
-      // High resolution for smooth visualization
-      planeSource.setXResolution(50);
-      planeSource.setYResolution(50);
+      // Medium resolution for better performance
+      planeSource.setXResolution(20);
+      planeSource.setYResolution(20);
       planeSource.update();
       
       const planeData = planeSource.getOutputData();
@@ -344,6 +344,10 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       actor.setMapper(mapper);
       actor.getProperty().setOpacity(1.0);
       actor.getProperty().setLighting(false); // Disable lighting to show pure field colors
+      
+      // Debug: Check actor visibility and bounds
+      console.log('[VTKViewer] Plane actor visibility:', actor.getVisibility());
+      console.log('[VTKViewer] Plane actor bounds:', actor.getBounds());
       
       return actor;
     };
