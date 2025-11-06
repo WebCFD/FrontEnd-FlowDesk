@@ -73,6 +73,7 @@ interface FilterConfig {
 /**
  * Normalizes scalar ranges to prevent zero-width, NaN, or infinity issues
  * that cause vtk.js colormap crashes. Returns safe range for visualization.
+ * For PMV/PPD fields, filters out sentinel values (-1000) and extreme values.
  */
 function normalizeScalarRange(
   array: any, 
@@ -88,18 +89,50 @@ function normalizeScalarRange(
     };
   }
 
-  const rawRange = array.getRange();
+  let [min, max] = [0, 1];
   
-  if (!rawRange || rawRange.length < 2) {
-    return { 
-      range: [0, 1], 
-      isUniform: false, 
-      isInvalid: true, 
-      message: 'Invalid range format' 
-    };
-  }
+  // Special handling for PMV/PPD fields: filter out -1000 sentinel and extreme values
+  if (fieldName === 'PMV' || fieldName === 'PPD') {
+    const data = array.getData();
+    const validValues: number[] = [];
+    const invalidThreshold = fieldName === 'PMV' ? 10 : 101; // PMV range -10 to +10, PPD 0-100
+    
+    for (let i = 0; i < data.length; i++) {
+      const val = data[i];
+      // Filter out -1000 sentinel and extreme values
+      if (val !== -1000 && isFinite(val) && Math.abs(val) < invalidThreshold) {
+        validValues.push(val);
+      }
+    }
+    
+    if (validValues.length === 0) {
+      console.warn(`[VTKViewer] No valid values in ${fieldName} after filtering, using fallback`);
+      return { 
+        range: fieldName === 'PMV' ? [-3, 3] : [0, 100], 
+        isUniform: false, 
+        isInvalid: true, 
+        message: `Field "${fieldName}" has no valid values (all marked as invalid)` 
+      };
+    }
+    
+    min = Math.min(...validValues);
+    max = Math.max(...validValues);
+    console.log(`[VTKViewer] Filtered ${fieldName}: ${validValues.length}/${data.length} valid values, range: [${min}, ${max}]`);
+  } else {
+    // Standard range calculation for other fields
+    const rawRange = array.getRange();
+    
+    if (!rawRange || rawRange.length < 2) {
+      return { 
+        range: [0, 1], 
+        isUniform: false, 
+        isInvalid: true, 
+        message: 'Invalid range format' 
+      };
+    }
 
-  let [min, max] = rawRange;
+    [min, max] = rawRange;
+  }
 
   // Handle NaN values
   if (isNaN(min) || isNaN(max)) {
@@ -360,6 +393,12 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
           break;
         case 'temperature':
           targetArrayName = 'T_degC';
+          break;
+        case 'pmv':
+          targetArrayName = 'PMV';
+          break;
+        case 'ppd':
+          targetArrayName = 'PPD';
           break;
         default:
           targetArrayName = 'p';
