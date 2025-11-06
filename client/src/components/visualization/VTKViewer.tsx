@@ -1364,6 +1364,16 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const handleModeChange = (mode: VisualizationMode) => {
     setActiveMode(mode);
     
+    // Disable cutting planes when changing visualization field
+    // This forces user to re-enable them to see the new field on the planes
+    setFilterConfig(prev => ({
+      ...prev,
+      clip: {
+        ...prev.clip,
+        enabled: false
+      }
+    }));
+    
     if (sourceDataRef.current && renderWindowRef.current?.renderer) {
       // Rebuild pipeline with new mode
       removeActors(actorsRef.current);
