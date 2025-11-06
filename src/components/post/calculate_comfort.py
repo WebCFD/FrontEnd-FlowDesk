@@ -123,7 +123,14 @@ def main(case_path):
     # Sort and get latest
     time_values = [float(t) for t in time_dirs]
     time_values.sort()
-    latest_time = str(time_values[-1])
+    latest_time_float = time_values[-1]
+    
+    # Convert to string: use integer format if it's a whole number
+    if latest_time_float.is_integer():
+        latest_time = str(int(latest_time_float))
+    else:
+        latest_time = str(latest_time_float)
+    
     logger.info(f"Latest timestep: {latest_time}")
     logger.info(f"Comfort parameters:")
     logger.info(f"  - Metabolic rate (Met): {MET} met")
