@@ -233,9 +233,9 @@ meshQualityControls
     // Relaxed controls for difficult layer regions (MORE permissive than main)
     relaxed
     {
-        maxNonOrtho 50_RELAXED;
-        maxBoundarySkewness 4_RELAXED;
-        maxInternalSkewness 2_RELAXED;
+        maxNonOrtho 60;
+        maxBoundarySkewness 6;
+        maxInternalSkewness 3;
     }
 }
 
