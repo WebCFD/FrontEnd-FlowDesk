@@ -250,19 +250,23 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       const [width, height] = planeSize;
       
       // Set up the plane extent based on normal direction
-      // CRITICAL: Point1 and Point2 are RELATIVE vectors from Origin, not absolute positions!
+      // Point1 and Point2 define the two edges of the rectangle from Origin
+      // They create vectors: v1 = (Point1 - Origin) and v2 = (Point2 - Origin)
       if (Math.abs(normal[0]) > 0.5) {
-        // X-normal plane (YZ plane)
-        planeSource.setPoint1(0, 0, width);   // Relative: move width units along Z from origin
-        planeSource.setPoint2(0, height, 0);  // Relative: move height units along Y from origin
+        // X-normal plane (YZ plane) - origin is at [X, minY, minZ]
+        // We need to span from minY to maxY (height) and minZ to maxZ (width)
+        planeSource.setPoint1(origin[0], origin[1], origin[2] + width);   // Move along Z axis
+        planeSource.setPoint2(origin[0], origin[1] + height, origin[2]);  // Move along Y axis
       } else if (Math.abs(normal[1]) > 0.5) {
-        // Y-normal plane (XZ plane)
-        planeSource.setPoint1(width, 0, 0);   // Relative: move width units along X from origin
-        planeSource.setPoint2(0, 0, height);  // Relative: move height units along Z from origin
+        // Y-normal plane (XZ plane) - origin is at [minX, Y, minZ]
+        // We need to span from minX to maxX (width) and minZ to maxZ (height)
+        planeSource.setPoint1(origin[0] + width, origin[1], origin[2]);   // Move along X axis
+        planeSource.setPoint2(origin[0], origin[1], origin[2] + height);  // Move along Z axis
       } else {
-        // Z-normal plane (XY plane)
-        planeSource.setPoint1(width, 0, 0);   // Relative: move width units along X from origin
-        planeSource.setPoint2(0, height, 0);  // Relative: move height units along Y from origin
+        // Z-normal plane (XY plane) - origin is at [minX, minY, Z]
+        // We need to span from minX to maxX (width) and minY to maxY (height)
+        planeSource.setPoint1(origin[0] + width, origin[1], origin[2]);   // Move along X axis
+        planeSource.setPoint2(origin[0], origin[1] + height, origin[2]);  // Move along Y axis
       }
       
       // Medium resolution for better performance
