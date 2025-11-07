@@ -39,10 +39,11 @@ public/uploads/sim_*/
 *~
 
 # Build artifacts (only include dist/)
-src/
 client/src/
 tsconfig.json
 vite.config.ts
+
+# IMPORTANT: Do NOT exclude src/ - Python workers need src/components/
 
 # Documentation and tests
 *.md
