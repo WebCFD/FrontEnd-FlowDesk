@@ -116,6 +116,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Calcular hash de la contraseña proporcionada
       const providedPasswordHash = crypto.createHash('sha256').update(password).digest('hex');
       
+      // DEBUG: Logging para diagnosticar el problema
+      console.log('[EXPRESS DEBUG] Password received:', password);
+      console.log('[EXPRESS DEBUG] Password length:', password.length);
+      console.log('[EXPRESS DEBUG] Provided hash:', providedPasswordHash);
+      console.log('[EXPRESS DEBUG] Expected hash:', CORRECT_PASSWORD_HASH);
+      console.log('[EXPRESS DEBUG] Hashes match:', providedPasswordHash === CORRECT_PASSWORD_HASH);
+      
       // Comparar hashes
       if (providedPasswordHash !== CORRECT_PASSWORD_HASH) {
         console.log('[EXPRESS] Password validation failed: Incorrect password');
