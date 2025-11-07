@@ -9,7 +9,7 @@ packages = ["cairo", "ffmpeg-full", "freetype", "geos", "ghostscript", "glibcLoc
 [deployment]
 deploymentTarget = "cloudrun"
 build = ["npm", "run", "build"]
-run = ["npm", "run", "start"]
+run = ["npm", "start-production.sh"]
 
 [[ports]]
 localPort = 5000
