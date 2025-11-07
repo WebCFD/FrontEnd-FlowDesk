@@ -20,7 +20,12 @@ INDUCTIVA_API_KEY = os.getenv('INDUCTIVA_API_KEY')
 if INDUCTIVA_API_KEY:
     os.environ['INDUCTIVA_API_KEY'] = INDUCTIVA_API_KEY
 
-logging.basicConfig(level=logging.INFO)
+# Configure structured logging with clear prefix
+logging.basicConfig(
+    level=logging.INFO,
+    format='[WORKER_MONITOR] [%(asctime)s] %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
 logger = logging.getLogger(__name__)
 
 def get_cloud_execution_sims():

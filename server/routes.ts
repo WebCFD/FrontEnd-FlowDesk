@@ -14,6 +14,53 @@ import { eq } from "drizzle-orm";
 // Importar crypto para validación de contraseña con hash SHA-256
 // Esta funcionalidad será eliminada próximamente
 import crypto from "crypto";
+import { exec, execSync } from "child_process";
+import { promisify } from "util";
+
+const execPromise = promisify(exec);
+
+// Helper function to check worker health
+function checkWorkerHealth(workerName: string): { status: string; lastSeen?: string; pid?: number } {
+  try {
+    // Intentar encontrar el proceso usando pgrep
+    
+    let processPattern: string;
+    if (workerName === "worker_submit") {
+      processPattern = "worker_submit.py";
+    } else if (workerName === "worker_monitor") {
+      processPattern = "worker_monitor.py";
+    } else {
+      return { status: "unknown" };
+    }
+
+    try {
+      const pidOutput = execSync(`pgrep -f "${processPattern}"`, { encoding: 'utf-8' }).trim();
+      const pid = parseInt(pidOutput.split('\n')[0]);
+      
+      if (pid && !isNaN(pid)) {
+        return {
+          status: "running",
+          pid: pid,
+          lastSeen: new Date().toISOString()
+        };
+      }
+    } catch (pgrepError) {
+      // pgrep returns exit code 1 if no process found
+      return {
+        status: "stopped",
+        lastSeen: new Date().toISOString()
+      };
+    }
+
+    return { status: "unknown" };
+  } catch (error) {
+    console.error(`[EXPRESS] Error checking ${workerName} health:`, error);
+    return { 
+      status: "error",
+      lastSeen: new Date().toISOString()
+    };
+  }
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // ===== DEBUG MIDDLEWARE: Track all VTK requests =====
@@ -68,6 +115,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({
       googleAnalyticsId: process.env.GOOGLE_ANALYTICS_ID || ''
     });
+  });
+
+  // Health check endpoint para verificar estado de workers
+  app.get("/api/health/workers", (req, res) => {
+    try {
+      const healthStatus = {
+        express: {
+          status: "running",
+          uptime: process.uptime(),
+          timestamp: new Date().toISOString()
+        },
+        worker_submit: checkWorkerHealth("worker_submit"),
+        worker_monitor: checkWorkerHealth("worker_monitor"),
+        system: {
+          nodeVersion: process.version,
+          platform: process.platform,
+          memory: {
+            used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
+            total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
+            unit: "MB"
+          }
+        }
+      };
+
+      // Determinar estado general
+      const allHealthy = 
+        healthStatus.worker_submit.status === "running" &&
+        healthStatus.worker_monitor.status === "running";
+
+      res.status(allHealthy ? 200 : 503).json(healthStatus);
+    } catch (error) {
+      console.error('[EXPRESS] Error in health check:', error);
+      res.status(500).json({
+        error: "Health check failed",
+        message: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
   });
 
   // Simulations API endpoints

@@ -29,7 +29,12 @@ API_BASE = os.getenv('API_BASE_URL', 'http://localhost:5000')
 API_KEY = 'flowerpower-external-api'
 POLLING_INTERVAL = 10
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# Configure structured logging with clear prefix
+logging.basicConfig(
+    level=logging.INFO, 
+    format='[WORKER_SUBMIT] [%(asctime)s] %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
 logger = logging.getLogger(__name__)
 
 
