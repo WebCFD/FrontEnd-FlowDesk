@@ -317,6 +317,11 @@ export default function WizardDesign() {
   // Estados para el diálogo de tipo de simulación
   const [showSimulationTypeDialog, setShowSimulationTypeDialog] = useState(false);
   const [selectedSimulationType, setSelectedSimulationType] = useState<'comfortTest' | 'comfort30Iter'>('comfortTest');
+  
+  // ========== TEMPORARY PASSWORD PROTECTION - TO BE REMOVED SOON ==========
+  // Estado para la contraseña de lanzamiento de simulaciones
+  // Esta funcionalidad será eliminada próximamente
+  const [simulationPassword, setSimulationPassword] = useState("");
 
   // Funciones auxiliares para manejo de parámetros por planta
   const getCurrentFloorParameters = () => {
@@ -2796,6 +2801,9 @@ export default function WizardDesign() {
 
   // Función para mostrar el diálogo de tipo de simulación
   const handleStartSimulation = () => {
+    // ========== TEMPORARY PASSWORD PROTECTION - TO BE REMOVED SOON ==========
+    // Limpiar contraseña cuando se abre el diálogo
+    setSimulationPassword("");
     setShowSimulationTypeDialog(true);
   };
 
@@ -2810,6 +2818,9 @@ export default function WizardDesign() {
       
       console.log('[FRONTEND] Creating HVAC simulation with type:', selectedSimulationType);
       
+      // ========== TEMPORARY PASSWORD PROTECTION - TO BE REMOVED SOON ==========
+      // Incluir contraseña en el body de la petición
+      // Esta funcionalidad será eliminada próximamente
       const response = await fetch("/api/simulations/create", {
         method: "POST",
         headers: {
@@ -2821,6 +2832,7 @@ export default function WizardDesign() {
           simulationType: selectedSimulationType,
           status: "pending",
           jsonConfig: simulationData,
+          password: simulationPassword, // TEMPORARY: contraseña de lanzamiento
         }),
       });
 
@@ -2854,6 +2866,9 @@ export default function WizardDesign() {
       });
     } finally {
       setIsCreatingSimulation(false);
+      // ========== TEMPORARY PASSWORD PROTECTION - TO BE REMOVED SOON ==========
+      // Limpiar contraseña después de intentar crear la simulación
+      setSimulationPassword("");
     }
   };
 
@@ -3082,7 +3097,9 @@ export default function WizardDesign() {
       
       const exportData = generateSimulationDataForExport();
 
-      // Llamar al nuevo endpoint para crear la simulación
+      // ========== TEMPORARY PASSWORD PROTECTION - TO BE REMOVED SOON ==========
+      // Llamar al nuevo endpoint para crear la simulación con contraseña
+      // Esta funcionalidad será eliminada próximamente
       const response = await fetch("/api/simulations/create", {
         method: "POST",
         headers: {
@@ -3094,6 +3111,7 @@ export default function WizardDesign() {
           simulationType,
           status: simulationStatus,
           jsonConfig: exportData,
+          password: simulationPassword, // TEMPORARY: contraseña de lanzamiento
         }),
       });
 
@@ -3137,6 +3155,9 @@ export default function WizardDesign() {
       });
     } finally {
       setIsCreatingSimulation(false);
+      // ========== TEMPORARY PASSWORD PROTECTION - TO BE REMOVED SOON ==========
+      // Limpiar contraseña después de intentar crear la simulación
+      setSimulationPassword("");
     }
   };
 
@@ -4224,6 +4245,8 @@ export default function WizardDesign() {
       )}
 
       {/* Dialog to select HVAC simulation type */}
+      {/* ========== TEMPORARY PASSWORD PROTECTION - TO BE REMOVED SOON ========== */}
+      {/* Este diálogo incluye un campo de contraseña temporal que será eliminado próximamente */}
       <Dialog open={showSimulationTypeDialog} onOpenChange={setShowSimulationTypeDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -4256,6 +4279,20 @@ export default function WizardDesign() {
               </div>
             </Button>
           </div>
+          
+          {/* TEMPORARY: Campo de contraseña - será eliminado próximamente */}
+          <div className="space-y-2 mt-4">
+            <Label htmlFor="simulation-password">Launch Password</Label>
+            <Input
+              id="simulation-password"
+              type="password"
+              value={simulationPassword}
+              onChange={(e) => setSimulationPassword(e.target.value)}
+              placeholder="Enter password to launch simulation"
+              data-testid="input-simulation-password"
+            />
+          </div>
+          
           <div className="flex justify-end gap-2 mt-6">
             <Button
               variant="outline"

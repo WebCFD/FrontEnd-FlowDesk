@@ -10,6 +10,10 @@ import path from "path";
 import JSZip from "jszip";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
+// ========== TEMPORARY PASSWORD PROTECTION - TO BE REMOVED SOON ==========
+// Importar crypto para validación de contraseña con hash SHA-256
+// Esta funcionalidad será eliminada próximamente
+import crypto from "crypto";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // ===== DEBUG MIDDLEWARE: Track all VTK requests =====
@@ -91,6 +95,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated()) {
         return res.status(401).json({ message: "Not authenticated" });
       }
+
+      // ========== TEMPORARY PASSWORD PROTECTION - TO BE REMOVED SOON ==========
+      // Validar contraseña de lanzamiento de simulaciones
+      // Esta funcionalidad será eliminada próximamente
+      // CÓMO ELIMINAR: Borrar este bloque completo (líneas con comentario TEMPORARY PASSWORD PROTECTION)
+      const { password } = req.body;
+      
+      // Hash SHA-256 de la contraseña correcta "jrm2025"
+      const CORRECT_PASSWORD_HASH = "8191b44b3d4d4ff5e364574f5d8e08ad6d59a9f8fa6706ea7d4b137d8a683719";
+      
+      // Validar que se proporcionó una contraseña
+      if (!password || typeof password !== 'string') {
+        console.log('[EXPRESS] Password validation failed: No password provided');
+        return res.status(403).json({ 
+          message: "Simulation launch password is required" 
+        });
+      }
+      
+      // Calcular hash de la contraseña proporcionada
+      const providedPasswordHash = crypto.createHash('sha256').update(password).digest('hex');
+      
+      // Comparar hashes
+      if (providedPasswordHash !== CORRECT_PASSWORD_HASH) {
+        console.log('[EXPRESS] Password validation failed: Incorrect password');
+        return res.status(403).json({ 
+          message: "Incorrect simulation launch password" 
+        });
+      }
+      
+      console.log('[EXPRESS] Password validation successful');
+      // ========== FIN DE TEMPORARY PASSWORD PROTECTION ==========
 
       const { name, simulationType, status, jsonConfig } = req.body;
 
