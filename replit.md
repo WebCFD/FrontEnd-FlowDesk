@@ -138,3 +138,37 @@ maxNonOrtho: 55 (strict), maxSkewness: 12 (boundary) / 2.5 (internal)
 ### Development Tools
 - **TypeScript**: Static type checking.
 - **Vite**: Build tool and development server.
+
+## Known Issues
+
+### PMV/PPD Thermal Comfort Visualization (Nov 7, 2024)
+
+**Issue**: PMV (Predicted Mean Vote) and PPD (Predicted Percentage Dissatisfied) fields are not displaying in the VTK visualizer despite being present in the VTKJS files.
+
+**Root Cause**: Data type mismatch between storage and rendering pipeline:
+- PMV/PPD are written as **cell data** (values per cell center) by the Python post-processing script
+- VTKJS export preserves them in `cellData` section
+- VTKViewer cutting plane logic only reads from `pointData.getArrayByName()`, which returns `null` for cell-based arrays
+- Result: Visualizer silently falls back to pressure field when PMV/PPD buttons are clicked
+
+**Current State**:
+- ✅ `calculate_comfort.py` generates PMV/PPD fields with proper validation
+- ✅ Values outside theoretical ranges (PMV: -3 to +3, PPD: 0-100%) are marked as -1000 sentinel
+- ✅ VTKJS files contain PMV/PPD arrays (verified in `public/uploads/sim_*/vtk/`)
+- ✅ Frontend buttons and UI controls exist for PMV/PPD selection
+- ❌ VTKViewer cannot access the data (wrong data location in pipeline)
+
+**Solution Required**:
+Convert cell data to point data before visualization using one of:
+1. Add `vtkCellDataToPointData` filter in VTK pipeline before mapper
+2. Change mapper to `setScalarModeToUseCellFieldData` and read from `cellData` directly
+3. Modify Python export script to interpolate to point data during VTKJS conversion
+
+**Files Involved**:
+- `src/components/post/calculate_comfort.py` - PMV/PPD calculation (writes cell data)
+- `src/components/tools/vtk_to_vtkjs.py` - VTK to VTKJS converter
+- `client/src/components/visualization/VTKViewer.tsx` - Frontend visualizer (reads point data only)
+
+**Workaround**: None available. PMV/PPD visualization is currently non-functional.
+
+**Note**: This issue only affects visualization. PMV/PPD fields are correctly calculated and stored in OpenFOAM format and can be accessed via ParaView or other VTK-compatible tools.
