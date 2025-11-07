@@ -40,7 +40,7 @@ ignoredPaths = [
   "production_logs",
   "attached_assets",
   "src",
-  "client/src"
+  "client/src",
 ]
 
 [deployment]
@@ -51,22 +51,6 @@ run = ["bash", "start-production.sh"]
 [[ports]]
 localPort = 5000
 externalPort = 80
-
-[[ports]]
-localPort = 38525
-externalPort = 3003
-
-[[ports]]
-localPort = 40667
-externalPort = 3000
-
-[[ports]]
-localPort = 41701
-externalPort = 3002
-
-[[ports]]
-localPort = 42203
-externalPort = 3001
 
 [workflows]
 runButton = "Project"
