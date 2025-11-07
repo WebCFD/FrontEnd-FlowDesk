@@ -1,0 +1,59 @@
+# Replit deployment exclusions
+# Exclude development dependencies and large files from deployment image
+
+# Development tools
+.git/
+.github/
+.replit
+replit.nix
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pythonlibs/
+.cache/
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# Simulation data (IMPORTANT: exclude large result files)
+cases/
+inductiva_output/
+simulations/
+public/uploads/sim_*/
+
+# Development files
+*.log
+.DS_Store
+.env.local
+.env.development
+*.swp
+*.swo
+*~
+
+# Build artifacts (only include dist/)
+src/
+client/src/
+tsconfig.json
+vite.config.ts
+
+# Documentation and tests
+*.md
+!README.md
+tests/
+*.test.ts
+*.spec.ts
+
+# Large system packages (already in container)
+.nix-profile/
+.config/
+
+# Production logs (will be recreated)
+production_logs/
