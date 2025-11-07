@@ -27,6 +27,22 @@ packages = [
   "zlib",
 ]
 
+[packager]
+ignoredPaths = [
+  ".git",
+  ".cache",
+  ".pythonlibs",
+  "node_modules",
+  "cases",
+  "inductiva_output",
+  "simulations",
+  "worker_logs",
+  "production_logs",
+  "attached_assets",
+  "src",
+  "client/src"
+]
+
 [deployment]
 deploymentTarget = "cloudrun"
 build = ["npm", "run", "build"]
