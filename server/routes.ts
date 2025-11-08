@@ -970,8 +970,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(401).json({ message: "Database access token required" });
     }
 
-    const token = authHeader.split(' ')[1];
-    if (token !== 'flowerpower') {
+    const providedPasswordHash = authHeader.split(' ')[1];
+    
+    // Hash SHA-256 de la contraseña correcta "flowerpower"
+    const ADMIN_PASSWORD_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
+    
+    // Comparar hashes
+    if (providedPasswordHash !== ADMIN_PASSWORD_HASH) {
       return res.status(403).json({ message: "Invalid database access token" });
     }
 

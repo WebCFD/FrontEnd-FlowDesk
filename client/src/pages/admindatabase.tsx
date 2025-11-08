@@ -151,20 +151,38 @@ const DatabaseLoginForm = ({ onLogin }: { onLogin: (password: string) => void })
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    if (password === 'flowerpower') {
-      onLogin(password);
+    try {
+      // Calcular hash SHA-256 del password
+      const encoder = new TextEncoder();
+      const data = encoder.encode(password);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const passwordHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      
+      // Hash SHA-256 de la contraseña correcta "flowerpower"
+      const ADMIN_PASSWORD_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
+      
+      if (passwordHash === ADMIN_PASSWORD_HASH) {
+        onLogin(passwordHash);
+        toast({
+          title: "Acceso concedido",
+          description: "Bienvenido al panel de administración de base de datos",
+        });
+      } else {
+        toast({
+          title: "Contraseña incorrecta",
+          description: "Ingrese la contraseña correcta para acceder",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
       toast({
-        title: "Acceso concedido",
-        description: "Bienvenido al panel de administración de base de datos",
-      });
-    } else {
-      toast({
-        title: "Contraseña incorrecta",
-        description: "Ingrese la contraseña correcta para acceder",
+        title: "Error",
+        description: "Error al procesar la contraseña",
         variant: "destructive",
       });
     }
