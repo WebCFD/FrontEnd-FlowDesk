@@ -83,35 +83,26 @@ def download_results(task_id, case_name):
         return False
 
 def copy_results_to_public(case_name, sim_id):
-    """Copia resultados a carpeta pública"""
+    """
+    Copia y convierte archivos VTK a carpeta pública para el visualizador web.
+    
+    NOTE: PDF and image generation removed to reduce memory usage.
+    Only VTK files are generated and converted to vtkjs format.
+    """
     try:
         post_path = os.path.join(os.getcwd(), "cases", case_name, "post")
         public_path = os.path.join(os.getcwd(), "public", "uploads", f"sim_{sim_id}")
         
         os.makedirs(public_path, exist_ok=True)
         
-        # Copiar PDF
-        pdf_src = os.path.join(post_path, "post_report.pdf")
-        if os.path.exists(pdf_src):
-            shutil.copy(pdf_src, os.path.join(public_path, "report.pdf"))
-        
-        # Copiar imágenes
-        img_dir = os.path.join(post_path, "images")
-        img_dest = os.path.join(public_path, "images")
-        if os.path.exists(img_dir):
-            os.makedirs(img_dest, exist_ok=True)
-            for img in os.listdir(img_dir):
-                if img.endswith('.png'):
-                    shutil.copy(
-                        os.path.join(img_dir, img),
-                        os.path.join(img_dest, img)
-                    )
-        
-        # Copiar y convertir VTK desde post/obj (slices y volume completo generados por post-procesamiento)
+        # Copiar y convertir VTK desde post/obj (slices y volumen completo)
         obj_dir = os.path.join(post_path, "obj")
         obj_dest = os.path.join(public_path, "vtk")
+        
         if os.path.exists(obj_dir):
             os.makedirs(obj_dest, exist_ok=True)
+            vtk_count = 0
+            
             for vtk in os.listdir(obj_dir):
                 if vtk.endswith('.vtk') or vtk.endswith('.vtu'):
                     vtk_path = os.path.join(obj_dir, vtk)
@@ -121,17 +112,24 @@ def copy_results_to_public(case_name, sim_id):
                     # Convertir VTK/VTU a vtkjs
                     try:
                         vtk_to_vtkjs(vtk_path, vtkjs_path)
+                        vtk_count += 1
                         logger.info(f"Converted {vtk} to {vtkjs_name}")
                     except Exception as e:
                         logger.error(f"Failed to convert {vtk}: {e}")
+            
+            logger.info(f"Converted {vtk_count} VTK files for sim {sim_id}")
+        else:
+            logger.warning(f"No VTK files found in {obj_dir}")
         
-        # Copiar y convertir VTK desde sim/VTK (volumen completo generado por OpenFOAM)
+        # Copiar y convertir VTK desde sim/VTK (archivos raw de OpenFOAM si existen)
         sim_path = os.path.join(os.getcwd(), "cases", case_name, "sim")
         sim_vtk_dir = os.path.join(sim_path, "VTK")
+        
         if os.path.exists(sim_vtk_dir):
             os.makedirs(obj_dest, exist_ok=True)
+            openfoam_count = 0
             
-            # Buscar recursivamente archivos .vtk, .vtu, y .vtp
+            # Buscar recursivamente archivos VTK de OpenFOAM
             for root, dirs, files in os.walk(sim_vtk_dir):
                 for vtk_file in files:
                     if vtk_file.endswith('.vtk') or vtk_file.endswith('.vtu') or vtk_file.endswith('.vtp'):
@@ -143,23 +141,27 @@ def copy_results_to_public(case_name, sim_id):
                         vtkjs_name = f"openfoam_{safe_name}.vtkjs"
                         vtkjs_path = os.path.join(obj_dest, vtkjs_name)
                         
-                        # Convertir VTK/VTU/VTP a vtkjs
+                        # Convertir a vtkjs
                         try:
                             vtk_to_vtkjs(vtk_path, vtkjs_path)
+                            openfoam_count += 1
                             logger.info(f"Converted OpenFOAM {vtk_file} to {vtkjs_name}")
                         except Exception as e:
                             logger.error(f"Failed to convert OpenFOAM {vtk_file}: {e}")
+            
+            if openfoam_count > 0:
+                logger.info(f"Converted {openfoam_count} OpenFOAM VTK files for sim {sim_id}")
         
-        # Retornar rutas (ahora buscamos .vtkjs en lugar de .vtk)
-        images_list = [f"/uploads/sim_{sim_id}/images/{img}" for img in os.listdir(img_dest) if img.endswith('.png')] if os.path.exists(img_dest) else []
-        vtk_list = [f"/uploads/sim_{sim_id}/vtk/{vtk}" for vtk in os.listdir(obj_dest) if vtk.endswith('.vtkjs')] if os.path.exists(obj_dest) else []
+        # Retornar solo archivos VTK (PDF e imágenes ya no se generan)
+        vtk_list = []
+        if os.path.exists(obj_dest):
+            vtk_list = [f"/uploads/sim_{sim_id}/vtk/{vtk}" for vtk in os.listdir(obj_dest) if vtk.endswith('.vtkjs')]
         
         result_paths = {
-            "pdf": f"/uploads/sim_{sim_id}/report.pdf",
-            "images": images_list,
             "vtk": vtk_list
         }
         
+        logger.info(f"Total VTK files available: {len(vtk_list)}")
         return result_paths
         
     except Exception as e:

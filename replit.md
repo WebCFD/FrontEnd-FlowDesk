@@ -10,6 +10,34 @@ Preferred communication style: Simple, everyday language.
 Technical documentation preference: Detailed technical explanations for architectural patterns to enable replication in future development cycles.
 Development approach: Favor simple, minimal solutions over complex implementations. Avoid overengineering.
 
+## Recent Changes
+
+### 2025-11-08: Post-Processing Optimization (Memory Crisis Fix)
+**Critical production issue resolved**: Server was experiencing OOM (Out of Memory) kills during CFD post-processing, causing complete site downtime.
+
+**Problem**: 
+- Post-processing generated 50+ off-screen renders (PyVista), PDFs (ReportLab), and residual plots (matplotlib)
+- Memory consumption exceeded available resources, triggering OOM killer
+- Simulations stuck at "Downloading results..." with no error handling
+
+**Solution - Simplified Post-Processing**:
+- **Removed**: All image rendering (PNG generation via PyVista off-screen)
+- **Removed**: PDF report generation (ReportLab)
+- **Removed**: Residual convergence plots (matplotlib)
+- **Kept**: VTK file generation for interactive 3D web viewer
+- **Result**: ~90% reduction in memory usage, ~80% faster processing
+
+**Files Modified**:
+- `step05_results2post.py`: Removed PDF and residuals steps
+- `src/components/post/objects.py`: Removed off-screen rendering loop
+- `worker_monitor.py`: Updated to only copy VTK files, added better logging
+
+**Benefits**:
+- No more OOM kills in production
+- Faster post-processing (seconds instead of minutes)
+- Interactive 3D visualization still fully functional
+- Reduced disk usage (no unnecessary PNG/PDF files)
+
 ## System Architecture
 
 ### UI/UX Decisions

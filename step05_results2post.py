@@ -2,22 +2,26 @@ import os
 import logging
 
 from src.components.post.objects import post_objects
-from src.components.post.pdf import post_pdf
-from src.components.post.residuals import analyse_residuals
 from src.components.tools.performance import PerformanceMonitor
+
+# NOTE: PDF and residuals analysis removed to reduce memory usage
+# from src.components.post.pdf import post_pdf
+# from src.components.post.residuals import analyse_residuals
 
 logger = logging.getLogger(__name__)
 
 
 def run(case_name: str = "cases/cfd_case") -> None:
     """
-    Process CFD simulation results with parallel processing and memory management.
+    Process CFD simulation results - OPTIMIZED FOR MEMORY EFFICIENCY.
     
-    This function orchestrates the complete post-processing pipeline:
+    This function generates only VTK files for interactive web visualization:
     1. Validates simulation results and sets up post-processing environment
-    2. Analyzes convergence residuals and solution quality
-    3. Generates visualization objects and plots
-    4. Creates comprehensive PDF reports with results
+    2. Generates VTK slice files and complete mesh for web viewer
+    3. Converts VTK to vtkjs format for browser compatibility
+    
+    NOTE: Image rendering, PDF reports, and residual plots have been removed
+    to prevent OOM (Out of Memory) issues in production.
     
     Args:
         case_name: Name of the simulation case
@@ -36,27 +40,12 @@ def run(case_name: str = "cases/cfd_case") -> None:
     logger.info(f"1 - Setting up post-processing environment: {post_path}")
     performance_monitor.update_memory()
     
-    # Try both buoyantPimpleFoam and buoyantSimpleFoam log files
-    logfile_path = os.path.join(sim_path, "log.buoyantPimpleFoam")
-    if not os.path.isfile(logfile_path):
-        logfile_path = os.path.join(sim_path, "log.buoyantSimpleFoam")
-        if not os.path.isfile(logfile_path):
-            logger.error(f"Simulation log file not found in {sim_path}")
-            raise ValueError(f"There are no results for this simulation")
-
-    # Step 2: Analyze convergence residuals
-    logger.info("2 - Analyzing convergence residuals and solution quality")
-    analyse_residuals(logfile_path, post_path)
-    performance_monitor.update_memory()
-
-    # Step 3: Generate visualization objects
-    logger.info("3 - Generating post-processing visualization objects")
-    internal_mesh = post_objects(sim_path, post_path)
-    performance_monitor.update_memory()
+    # NOTE: Residual analysis and PDF generation removed to reduce memory usage
+    # The web viewer provides interactive 3D visualization of results
     
-    # Step 4: Create comprehensive PDF report
-    logger.info("4 - Generating comprehensive PDF report")
-    post_pdf(post_path, internal_mesh)
+    # Generate VTK files for web viewer (lightweight, no rendering)
+    logger.info("2 - Generating VTK files for web viewer")
+    internal_mesh = post_objects(sim_path, post_path)
     performance_monitor.update_memory()
     
     # Log performance summary

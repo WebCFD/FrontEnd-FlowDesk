@@ -84,55 +84,13 @@ def post_objects(sim_path, post_path):
             with pv.vtk_verbosity('off'):
                 slice_mesh = internal_mesh.slice(normal="z", origin=(0, 0, z))
 
-            # Save slice mesh
+            # Save slice mesh (VTK only, no image rendering)
             vtk_path = os.path.join(obj_dir, f"{var_name}_slice_{i:02d}.vtk")
             slice_mesh.save(vtk_path)
-
-            # Save rendered image
-            img_path = os.path.join(img_dir, f"{var_name}_slice_{i:02d}.png")
-
-            plotter = pv.Plotter(off_screen=True, lighting="three lights")
-            plotter.set_background("white")
-
-            # Add transparent walls
-            plotter.add_mesh(
-                surfaces_mesh,
-                color="lightgrey",
-                opacity=0.25,
-                smooth_shading=True,
-            )
-
-            # Add slice with colorbar
-            plotter.add_mesh(
-                slice_mesh,
-                scalars=var_name,
-                cmap=settings["cmap"],
-                clim=clim,
-                show_scalar_bar=True,
-                scalar_bar_args={
-                    "title": settings["label"],
-                    "vertical": True,
-                    "label_font_size": 12,
-                    "title_font_size": 14,
-                    "position_x": 0.88,
-                    "position_y": 0.2,
-                    "height": 0.6,
-                    "width": 0.08,
-                },
-                smooth_shading=True,
-            )
-
-            # Camera view
-            plotter.camera_position = [
-                (center[0] + dx * distance_range,
-                 center[1] + dy * distance_range,
-                 center[2] + dz * distance_range),
-                center,
-                (0, 0, 1),
-            ]
-
-            plotter.show(screenshot=img_path)
-            plotter.close()
+            logger.info(f"          Saved VTK: {var_name}_slice_{i:02d}.vtk")
+            
+            # NOTE: Image rendering removed to reduce memory usage
+            # The web viewer will render these VTK files interactively
 
     # Save complete internal mesh for interactive visualization in web viewer
     logger.info("    * Saving complete internal mesh for web viewer")
