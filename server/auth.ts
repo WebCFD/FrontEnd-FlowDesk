@@ -204,6 +204,112 @@ async function sendWelcomeEmail(username: string, email: string) {
   }
 }
 
+async function sendActivationEmail(username: string, email: string, token: string) {
+  try {
+    console.log(`[Auth] 📧 Sending activation email to ${email}...`);
+    
+    const { client, fromEmail } = await getUncachableResendClient();
+    
+    const baseUrl = process.env.REPLIT_DEV_DOMAIN 
+      ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+      : 'https://flowdesk.es';
+    
+    const activationLink = `${baseUrl}/activate?token=${token}`;
+    
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Activate Your FlowDesk Account</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc;">
+  <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f8fafc;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" style="max-width: 600px; width: 100%; border-collapse: collapse; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          <tr>
+            <td style="padding: 40px; text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px 12px 0 0;">
+              <img src="${baseUrl}/assets/logo.png" alt="FlowDesk Logo" style="width: 179px; height: 80px; margin-bottom: 20px;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: bold;">Activate Your Account</h1>
+            </td>
+          </tr>
+          
+          <tr>
+            <td style="padding: 40px;">
+              <p style="margin: 0 0 20px; color: #1f2937; font-size: 16px; line-height: 1.6;">
+                Hi <strong>${username}</strong>,
+              </p>
+              
+              <p style="margin: 0 0 20px; color: #1f2937; font-size: 16px; line-height: 1.6;">
+                Thank you for signing up for <strong>FlowDesk</strong>! To complete your registration and start running professional CFD simulations, please activate your account by clicking the button below.
+              </p>
+              
+              <table role="presentation" style="margin: 30px 0; width: 100%;">
+                <tr>
+                  <td align="center">
+                    <a href="${activationLink}" style="display: inline-block; padding: 16px 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);">
+                      Activate My Account
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              
+              <p style="margin: 20px 0; color: #6b7280; font-size: 14px; line-height: 1.6;">
+                Or copy and paste this link into your browser:
+              </p>
+              <p style="margin: 0 0 30px; color: #667eea; font-size: 14px; word-break: break-all;">
+                ${activationLink}
+              </p>
+              
+              <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px;">
+                <p style="margin: 0; color: #92400e; font-size: 14px;">
+                  <strong>⏰ This link will expire in 24 hours.</strong> If you didn't create this account, you can safely ignore this email.
+                </p>
+              </div>
+              
+              <p style="margin: 30px 0 0; color: #6b7280; font-size: 14px; line-height: 1.6;">
+                Best regards,<br>
+                <strong style="color: #1f2937;">The FlowDesk Team</strong>
+              </p>
+            </td>
+          </tr>
+          
+          <tr>
+            <td style="padding: 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+              <p style="margin: 0; color: #9ca3af; font-size: 12px;">
+                <a href="https://flowdesk.es/privacy" style="color: #667eea; text-decoration: none; margin: 0 10px;">Privacy</a> |
+                <a href="https://flowdesk.es/terms" style="color: #667eea; text-decoration: none; margin: 0 10px;">Terms</a>
+              </p>
+              <p style="margin: 10px 0 0; color: #9ca3af; font-size: 12px;">
+                © ${new Date().getFullYear()} FlowDesk. All rights reserved.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+    `;
+    
+    const result = await client.emails.send({
+      from: fromEmail,
+      to: email,
+      subject: 'Activate Your FlowDesk Account 🔐',
+      html: html,
+    });
+    
+    console.log(`[Auth] ✅ Activation email sent successfully to ${email}`);
+    return result;
+  } catch (error) {
+    console.error(`[Auth] ❌ Failed to send activation email to ${email}:`, error);
+    throw error; // Throw error - we want registration to fail if email fails
+  }
+}
+
 export function setupAuth(app: Express) {
   const sessionSettings: session.SessionOptions = {
     secret: 'your-secret-key',  // In production, this should be an environment variable
@@ -261,27 +367,37 @@ export function setupAuth(app: Express) {
       // Validate request body against our schema
       const validatedData = insertUserSchema.parse(req.body);
 
+      // Check if email already exists in users or pending activations
       const existingUser = await storage.getUserByEmail(validatedData.email);
       if (existingUser) {
         return res.status(400).json({ message: "Email already exists" });
       }
 
+      const existingPending = await storage.getPendingActivationByEmail(validatedData.email);
+      if (existingPending) {
+        return res.status(400).json({ message: "A verification email has already been sent to this address. Please check your inbox." });
+      }
+
+      // Hash password and generate activation token
       const hashedPassword = await hashPassword(validatedData.password);
-      const user = await storage.createUser({
-        ...validatedData,
+      const token = randomBytes(32).toString('hex');
+      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+      // Store pending activation
+      await storage.createPendingActivation({
+        username: validatedData.username,
+        email: validatedData.email,
         password: hashedPassword,
+        token,
+        expiresAt,
       });
 
-      // Send welcome email (non-blocking)
-      sendWelcomeEmail(user.username, user.email).catch(err => {
-        console.error('[Auth] Welcome email failed but continuing registration:', err);
-      });
+      // Send activation email
+      await sendActivationEmail(validatedData.username, validatedData.email, token);
 
-      req.login(user, (err) => {
-        if (err) return next(err);
-        // Don't send password in response
-        const { password, ...userWithoutPassword } = user;
-        res.status(201).json(userWithoutPassword);
+      res.status(201).json({ 
+        message: "Registration successful! Please check your email to activate your account.",
+        email: validatedData.email
       });
     } catch (error) {
       console.error('Registration error:', error);
@@ -312,6 +428,72 @@ export function setupAuth(app: Express) {
       if (err) return next(err);
       res.sendStatus(200);
     });
+  });
+
+  app.get("/api/auth/activate", async (req, res, next) => {
+    try {
+      const { token } = req.query;
+
+      if (!token || typeof token !== 'string') {
+        return res.status(400).json({ message: "Invalid activation link" });
+      }
+
+      // Cleanup expired activations first
+      await storage.cleanupExpiredActivations();
+
+      // Find pending activation by token
+      const pending = await storage.getPendingActivationByToken(token);
+
+      if (!pending) {
+        return res.status(400).json({ message: "Invalid or expired activation link" });
+      }
+
+      // Check if token has expired
+      if (new Date() > pending.expiresAt) {
+        await storage.deletePendingActivation(pending.id);
+        return res.status(400).json({ message: "Activation link has expired. Please register again." });
+      }
+
+      // Check if email already exists (someone might have registered with same email while this was pending)
+      const existingUser = await storage.getUserByEmail(pending.email);
+      if (existingUser) {
+        await storage.deletePendingActivation(pending.id);
+        return res.status(400).json({ message: "This email is already registered. Please try logging in." });
+      }
+
+      // Create the user
+      const user = await storage.createUser({
+        username: pending.username,
+        email: pending.email,
+        password: pending.password, // Already hashed
+      });
+
+      // Delete pending activation
+      await storage.deletePendingActivation(pending.id);
+
+      // Send welcome email (non-blocking)
+      sendWelcomeEmail(user.username, user.email).catch(err => {
+        console.error('[Auth] Welcome email failed but continuing activation:', err);
+      });
+
+      // Log user in automatically
+      req.login(user, (err) => {
+        if (err) return next(err);
+        const { password, ...userWithoutPassword } = user;
+        res.json({ 
+          success: true, 
+          message: "Account activated successfully! Welcome to FlowDesk.",
+          user: userWithoutPassword
+        });
+      });
+    } catch (error) {
+      console.error('Activation error:', error);
+      if (error instanceof Error) {
+        res.status(500).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: "Activation failed" });
+      }
+    }
   });
 
   app.get("/api/auth/user", (req, res) => {
