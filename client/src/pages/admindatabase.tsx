@@ -689,12 +689,25 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
                 <Database className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
-                  {workersStatus.system.memory.used} {workersStatus.system.memory.unit}
+                <div className="space-y-2">
+                  <div>
+                    <div className="text-sm font-medium text-muted-foreground">Memoria</div>
+                    <div className="text-lg font-bold">
+                      {workersStatus.system.memory.used}/{workersStatus.system.memory.total} {workersStatus.system.memory.unit}
+                    </div>
+                  </div>
+                  {workersStatus.system.disk && (
+                    <div>
+                      <div className="text-sm font-medium text-muted-foreground">Disco</div>
+                      <div className="text-lg font-bold">
+                        {workersStatus.system.disk.used}/{workersStatus.system.disk.total} {workersStatus.system.disk.unit}
+                      </div>
+                    </div>
+                  )}
+                  <p className="text-xs text-muted-foreground pt-1">
+                    Node {workersStatus.system.nodeVersion}
+                  </p>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Node {workersStatus.system.nodeVersion}
-                </p>
               </CardContent>
             </Card>
           </div>

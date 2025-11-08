@@ -1015,6 +1015,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/admindatabase/workers", checkDatabaseAuth, async (req, res) => {
     try {
+      // Get disk usage information
+      let diskUsage = { used: 0, total: 0, unit: "GB" };
+      try {
+        const { execSync } = require('child_process');
+        const dfOutput = execSync('df -BG /').toString();
+        const lines = dfOutput.split('\n');
+        if (lines.length > 1) {
+          const parts = lines[1].split(/\s+/);
+          if (parts.length >= 4) {
+            diskUsage.total = parseInt(parts[1].replace('G', ''));
+            diskUsage.used = parseInt(parts[2].replace('G', ''));
+          }
+        }
+      } catch (diskError) {
+        console.error('[EXPRESS] Error getting disk usage:', diskError);
+      }
+
       const healthStatus = {
         express: {
           status: "running",
@@ -1030,7 +1047,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
             total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
             unit: "MB"
-          }
+          },
+          disk: diskUsage
         }
       };
 
