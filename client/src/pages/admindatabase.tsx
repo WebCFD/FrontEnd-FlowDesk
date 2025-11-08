@@ -8,10 +8,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Users, Database, CheckCircle, Clock, XCircle, DollarSign, Lock, Filter, Activity, Cpu, Server, Edit, Trash2 } from 'lucide-react';
+import { Users, Database, CheckCircle, Clock, XCircle, DollarSign, Lock, Filter, Activity, Cpu, Server, Edit, Trash2, Info, HardDrive } from 'lucide-react';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { queryClient } from '@/lib/queryClient';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 // Helper function to format uptime
 function formatUptime(seconds: number): string {
@@ -78,6 +79,15 @@ interface WorkersStatus {
     memory: {
       used: number;
       total: number;
+      unit: string;
+    };
+    disk: {
+      used: number;
+      total: number;
+      unit: string;
+    };
+    uploads: {
+      size: number;
       unit: string;
     };
   };
@@ -636,7 +646,20 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card data-testid="card-worker-express">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Express Server</CardTitle>
+                <div className="flex items-center gap-1">
+                  <CardTitle className="text-sm font-medium">Express Server</CardTitle>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p className="font-semibold">Servidor Web Principal</p>
+                        <p className="text-xs">API backend que maneja todas las peticiones de usuarios (login, simulaciones, datos). Si cae, toda la aplicación deja de funcionar.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <Server className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -651,7 +674,20 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
 
             <Card data-testid="card-worker-submit">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Worker Submit</CardTitle>
+                <div className="flex items-center gap-1">
+                  <CardTitle className="text-sm font-medium">Worker Submit</CardTitle>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p className="font-semibold">⚠️ CRÍTICO - Procesador de Simulaciones</p>
+                        <p className="text-xs">Toma simulaciones pendientes, genera geometría, crea malla y las envía a Inductiva. Si cae: simulaciones pendientes NO se procesan y usuarios esperan indefinidamente.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <Cpu className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -668,7 +704,20 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
 
             <Card data-testid="card-worker-monitor">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Worker Monitor</CardTitle>
+                <div className="flex items-center gap-1">
+                  <CardTitle className="text-sm font-medium">Worker Monitor</CardTitle>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-xs">
+                        <p className="font-semibold">⚠️ CRÍTICO - Monitor de Resultados</p>
+                        <p className="text-xs">Vigila simulaciones en Inductiva, descarga resultados completados y genera visualizaciones VTK. Si cae: resultados completados NO se descargan = pérdida de dinero.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <Cpu className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -689,25 +738,68 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
                 <Database className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
-                  <div>
-                    <div className="text-sm font-medium text-muted-foreground">Memoria</div>
-                    <div className="text-lg font-bold">
-                      {workersStatus.system.memory.used}/{workersStatus.system.memory.total} {workersStatus.system.memory.unit}
-                    </div>
-                  </div>
-                  {workersStatus.system.disk && (
-                    <div>
-                      <div className="text-sm font-medium text-muted-foreground">Disco</div>
-                      <div className="text-lg font-bold">
-                        {workersStatus.system.disk.used}/{workersStatus.system.disk.total} {workersStatus.system.disk.unit}
+                <TooltipProvider>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-1">
+                      <div className="flex-1">
+                        <div className="text-sm font-medium text-muted-foreground">Memoria RAM</div>
+                        <div className="text-lg font-bold">
+                          {workersStatus.system.memory.used}/{workersStatus.system.memory.total} {workersStatus.system.memory.unit}
+                        </div>
                       </div>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-xs">
+                          <p className="font-semibold">Memoria del Sistema</p>
+                          <p className="text-xs">RAM total del servidor. Calculado con os.totalmem() y os.freemem(). Valor fijo que no varía.</p>
+                        </TooltipContent>
+                      </Tooltip>
                     </div>
-                  )}
-                  <p className="text-xs text-muted-foreground pt-1">
-                    Node {workersStatus.system.nodeVersion}
-                  </p>
-                </div>
+                    {workersStatus.system.disk && (
+                      <div className="flex items-center gap-1">
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-muted-foreground">Disco Sistema</div>
+                          <div className="text-lg font-bold">
+                            {workersStatus.system.disk.used}/{workersStatus.system.disk.total} {workersStatus.system.disk.unit}
+                          </div>
+                        </div>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-xs">
+                            <p className="font-semibold">Disco del Servidor</p>
+                            <p className="text-xs">Espacio total del sistema de archivos raíz (/). Calculado con df -BG /. Incluye sistema operativo, aplicación y archivos temporales.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                    )}
+                    {workersStatus.system.uploads && (
+                      <div className="flex items-center gap-1">
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-muted-foreground">Simulaciones</div>
+                          <div className="text-lg font-bold">
+                            {workersStatus.system.uploads.size} {workersStatus.system.uploads.unit}
+                          </div>
+                        </div>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-xs">
+                            <p className="font-semibold">Espacio de Simulaciones</p>
+                            <p className="text-xs">Espacio usado por resultados de simulaciones en /public/uploads/. Calculado con du -sm. Incluye archivos VTK, imágenes y reportes PDF. ⚠️ CRÍTICO: Si crece mucho puede llenar el disco.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                    )}
+                    <p className="text-xs text-muted-foreground pt-1">
+                      Node {workersStatus.system.nodeVersion}
+                    </p>
+                  </div>
+                </TooltipProvider>
               </CardContent>
             </Card>
           </div>

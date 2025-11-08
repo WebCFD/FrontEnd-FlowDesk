@@ -1032,6 +1032,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.error('[EXPRESS] Error getting disk usage:', diskError);
       }
 
+      // Get uploads folder size (simulation results)
+      let uploadsSize = { size: 0, unit: "MB" };
+      try {
+        const uploadsPath = path.join(process.cwd(), 'public', 'uploads');
+        // Create directory if it doesn't exist
+        if (!fsSync.existsSync(uploadsPath)) {
+          fsSync.mkdirSync(uploadsPath, { recursive: true });
+        }
+        // Get size in MB
+        const duOutput = execSync(`du -sm "${uploadsPath}"`).toString();
+        const sizeMB = parseInt(duOutput.split(/\s+/)[0]);
+        uploadsSize.size = sizeMB;
+      } catch (uploadError) {
+        console.error('[EXPRESS] Error getting uploads size:', uploadError);
+      }
+
       // Get system memory information (total system memory, not just Node.js heap)
       const totalMemoryMB = Math.round(os.totalmem() / 1024 / 1024);
       const freeMemoryMB = Math.round(os.freemem() / 1024 / 1024);
@@ -1053,7 +1069,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             total: totalMemoryMB,
             unit: "MB"
           },
-          disk: diskUsage
+          disk: diskUsage,
+          uploads: uploadsSize
         }
       };
 
