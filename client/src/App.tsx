@@ -11,6 +11,7 @@ import NewSimulation from "@/pages/dashboard/new-simulation";
 import WizardDesign from "@/pages/dashboard/wizard-design";
 import PostAnalysis from "@/pages/dashboard/post-analysis";
 import AdminDatabasePage from "@/pages/admindatabase";
+import ActivatePage from "@/pages/activate";
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import About from "@/pages/about";
@@ -55,6 +56,7 @@ function Router() {
         </ProtectedRoute>
       </Route>
       <Route path="/admindatabase" component={AdminDatabasePage} />
+      <Route path="/activate" component={ActivatePage} />
       <Route path="/privacy" component={Privacy} />
       <Route path="/terms" component={Terms} />
       <Route path="/about" component={About} />
