@@ -56,4 +56,14 @@ def run(case_name: str = "cases/cfd_case") -> None:
 
 
 if __name__ == "__main__":
-    result = run(case_name="FDM_iter2")
+    import sys
+    
+    # Accept case_name as command-line argument
+    if len(sys.argv) > 1:
+        case_name = sys.argv[1]
+    else:
+        # Default for testing
+        case_name = "FDM_iter2"
+    
+    logger.info(f"Starting post-processing for case: {case_name}")
+    result = run(case_name=case_name)
