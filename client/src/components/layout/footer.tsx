@@ -26,8 +26,8 @@ export default function Footer() {
             <h4 className="font-semibold mb-4">Company</h4>
             <ul className="space-y-2">
               <li><Link href="/about">About</Link></li>
-              <li><Link href="/careers">Careers</Link></li>
-              <li><Link href="/contact">Contact</Link></li>
+              <li className="text-muted-foreground cursor-not-allowed">Careers</li>
+              <li><Link href="/#contact">Contact</Link></li>
             </ul>
           </div>
 

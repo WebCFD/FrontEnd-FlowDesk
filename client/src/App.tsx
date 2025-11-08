@@ -13,6 +13,7 @@ import PostAnalysis from "@/pages/dashboard/post-analysis";
 import AdminDatabasePage from "@/pages/admindatabase";
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
+import About from "@/pages/about";
 
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
@@ -56,6 +57,7 @@ function Router() {
       <Route path="/admindatabase" component={AdminDatabasePage} />
       <Route path="/privacy" component={Privacy} />
       <Route path="/terms" component={Terms} />
+      <Route path="/about" component={About} />
       <Route component={NotFound} />
     </Switch>
   );
