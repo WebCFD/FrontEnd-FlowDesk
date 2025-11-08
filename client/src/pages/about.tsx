@@ -80,33 +80,6 @@ export default function About() {
           </section>
 
           <section className="mb-12">
-            <h2 className="text-3xl font-semibold mb-6">Our Technology</h2>
-            <p className="text-lg leading-relaxed mb-4">
-              FlowDesk is built on a foundation of proven, open-source CFD technology:
-            </p>
-            <ul className="list-disc pl-6 mb-6 space-y-3 text-lg">
-              <li>
-                <strong>OpenFOAM:</strong> Industry-standard open-source CFD solver trusted by researchers and engineers worldwide
-              </li>
-              <li>
-                <strong>snappyHexMesh:</strong> Advanced meshing technology optimized for complex geometries
-              </li>
-              <li>
-                <strong>buoyantSimpleFoam:</strong> Specialized solver for thermal comfort and HVAC applications
-              </li>
-              <li>
-                <strong>Cloud Computing:</strong> Scalable infrastructure via Inductiva API for fast, reliable simulations
-              </li>
-              <li>
-                <strong>3D Visualization:</strong> Real-time preview and results analysis powered by Three.js
-              </li>
-            </ul>
-            <p className="text-lg leading-relaxed">
-              This combination ensures you get professional-grade results backed by validated, peer-reviewed computational methods.
-            </p>
-          </section>
-
-          <section className="mb-12">
             <h2 className="text-3xl font-semibold mb-6">Our Commitment</h2>
             <div className="bg-primary/5 border-l-4 border-primary p-6 rounded-r-lg mb-6">
               <p className="text-lg leading-relaxed mb-4">
@@ -153,13 +126,13 @@ export default function About() {
             </p>
             <div className="flex gap-4">
               <Link href="/#contact">
-                <Button size="lg" data-testid="button-contact-sales">
-                  Contact Sales
+                <Button size="lg" data-testid="button-contact-us">
+                  Contact Us
                 </Button>
               </Link>
               <Link href="/dashboard">
-                <Button variant="outline" size="lg" data-testid="button-try-platform">
-                  Try the Platform
+                <Button variant="outline" size="lg" data-testid="button-get-started">
+                  Get Started
                 </Button>
               </Link>
             </div>
