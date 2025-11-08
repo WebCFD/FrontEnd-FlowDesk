@@ -22,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
+import { MailCheck } from "lucide-react";
 
 const registerSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -38,12 +39,16 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [isLoading, setIsLoading] = useState(false);
-  const { setReturnTo, returnTo, setUser } = useAuth();
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
+  const { setReturnTo, returnTo } = useAuth();
 
-  // Clear returnTo when modal opens manually (not due to auth failure)
+  // Clear returnTo and confirmation when modal opens/closes
   useEffect(() => {
     if (isOpen) {
       setReturnTo(null);
+      setShowConfirmation(false);
+      setRegisteredEmail("");
     }
   }, [isOpen, setReturnTo]);
 
@@ -74,25 +79,10 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
         throw new Error(data.message || "Failed to create account");
       }
 
-      // Update client-side auth state
-      setUser({
-        username: data.username,
-        email: data.email,
-        isAnonymous: false
-      });
-
-      toast({
-        title: "Success!",
-        description: "Your account has been created.",
-      });
-
-      onClose();
-      // Only redirect if there's a specific returnTo path stored
-      if (returnTo) {
-        setLocation(returnTo);
-        setReturnTo(null); // Clear the stored path
-      }
-      // If no returnTo path, stay on current page
+      // Show confirmation screen
+      setRegisteredEmail(data.email);
+      setShowConfirmation(true);
+      form.reset();
     } catch (error) {
       toast({
         variant: "destructive",
@@ -107,59 +97,119 @@ export default function RegisterModal({ isOpen, onClose }: RegisterModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Create your account</DialogTitle>
-          <DialogDescription>
-            Start your free trial with FlowDesk
-          </DialogDescription>
-        </DialogHeader>
+        {showConfirmation ? (
+          <>
+            <DialogHeader>
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
+                <MailCheck className="h-8 w-8 text-green-600 dark:text-green-400" />
+              </div>
+              <DialogTitle className="text-center">Check Your Email!</DialogTitle>
+              <DialogDescription className="text-center">
+                We've sent an activation link to <strong className="text-foreground">{registeredEmail}</strong>
+              </DialogDescription>
+            </DialogHeader>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Username</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter your username" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input type="email" placeholder="Enter your email" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="Enter your password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Creating Account..." : "Create Account"}
-            </Button>
-          </form>
-        </Form>
+            <div className="space-y-4 py-4">
+              <div className="rounded-lg bg-muted p-4">
+                <p className="text-sm text-muted-foreground">
+                  Click the activation link in your email to complete your registration and start using FlowDesk.
+                </p>
+              </div>
+              
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <p><strong>Didn't receive the email?</strong></p>
+                <ul className="list-disc list-inside space-y-1 pl-2">
+                  <li>Check your spam or junk folder</li>
+                  <li>Make sure you entered the correct email address</li>
+                  <li>The link expires in 24 hours</li>
+                </ul>
+              </div>
+
+              <Button 
+                onClick={onClose} 
+                className="w-full"
+                data-testid="button-close-confirmation"
+              >
+                Got it!
+              </Button>
+            </div>
+          </>
+        ) : (
+          <>
+            <DialogHeader>
+              <DialogTitle>Create your account</DialogTitle>
+              <DialogDescription>
+                Start your free trial with FlowDesk
+              </DialogDescription>
+            </DialogHeader>
+
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Username</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="Enter your username" 
+                          {...field} 
+                          data-testid="input-username"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="email" 
+                          placeholder="Enter your email" 
+                          {...field} 
+                          data-testid="input-email"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="password" 
+                          placeholder="Enter your password" 
+                          {...field} 
+                          data-testid="input-password"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={isLoading}
+                  data-testid="button-register"
+                >
+                  {isLoading ? "Creating Account..." : "Create Account"}
+                </Button>
+              </form>
+            </Form>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );
