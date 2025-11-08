@@ -66,7 +66,7 @@ async function sendWelcomeEmail(username: string, email: string) {
           <!-- Header -->
           <tr>
             <td style="padding: 40px; text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px 12px 0 0;">
-              <img src="${baseUrl}/assets/logo.png" alt="FlowDesk Logo" style="width: 156px; height: 80px; margin-bottom: 20px;">
+              <img src="${baseUrl}/assets/logo.png" alt="FlowDesk Logo" style="width: 179px; height: 80px; margin-bottom: 20px;">
               <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: bold;">Welcome to FlowDesk!</h1>
             </td>
           </tr>
@@ -89,7 +89,7 @@ async function sendWelcomeEmail(username: string, email: string) {
               <!-- What's Next Section -->
               <div style="background-color: #f8fafc; border-left: 4px solid #667eea; padding: 20px; margin: 30px 0; border-radius: 4px;">
                 <h2 style="margin: 0 0 15px; color: #1f2937; font-size: 20px; font-weight: 600;">
-                  🚀 What's Next?
+                  What's Next?
                 </h2>
                 <ul style="margin: 0; padding-left: 20px; color: #4b5563; font-size: 15px; line-height: 1.8;">
                   <li>Design multi-floor layouts with our intuitive 3D editor</li>
@@ -170,10 +170,10 @@ async function sendWelcomeEmail(username: string, email: string) {
           <tr>
             <td style="padding: 30px 40px; background-color: #f8fafc; border-radius: 0 0 12px 12px; text-align: center;">
               <p style="margin: 0 0 10px; color: #6b7280; font-size: 14px;">
-                <a href="${baseUrl}" style="color: #667eea; text-decoration: none; margin: 0 10px;">FlowDesk</a> |
-                <a href="${baseUrl}/about" style="color: #667eea; text-decoration: none; margin: 0 10px;">About</a> |
-                <a href="${baseUrl}/privacy" style="color: #667eea; text-decoration: none; margin: 0 10px;">Privacy</a> |
-                <a href="${baseUrl}/terms" style="color: #667eea; text-decoration: none; margin: 0 10px;">Terms</a>
+                <a href="https://flowdesk.es" style="color: #667eea; text-decoration: none; margin: 0 10px;">FlowDesk</a> |
+                <a href="https://flowdesk.es/about" style="color: #667eea; text-decoration: none; margin: 0 10px;">About</a> |
+                <a href="https://flowdesk.es/privacy" style="color: #667eea; text-decoration: none; margin: 0 10px;">Privacy</a> |
+                <a href="https://flowdesk.es/terms" style="color: #667eea; text-decoration: none; margin: 0 10px;">Terms</a>
               </p>
               <p style="margin: 10px 0 0; color: #9ca3af; font-size: 12px;">
                 © ${new Date().getFullYear()} FlowDesk. All rights reserved.
