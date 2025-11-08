@@ -7,6 +7,7 @@ import { promisify } from "util";
 import { storage } from "./storage";
 import { User as SelectUser, insertUserSchema } from "@shared/schema";
 import createMemoryStore from "memorystore";
+import { getUncachableResendClient } from "./resend";
 
 const MemoryStore = createMemoryStore(session);
 
@@ -36,6 +37,162 @@ async function comparePasswords(supplied: string, stored: string) {
   } catch (error) {
     console.error("Error comparing passwords:", error);
     return false;
+  }
+}
+
+async function sendWelcomeEmail(username: string, email: string) {
+  try {
+    console.log(`[Auth] 📧 Sending welcome email to ${email}...`);
+    
+    const { client, fromEmail } = await getUncachableResendClient();
+    
+    const baseUrl = process.env.REPLIT_DEV_DOMAIN 
+      ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+      : 'https://flowdesk.es';
+    
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to FlowDesk</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc;">
+  <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f8fafc;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" style="max-width: 600px; width: 100%; border-collapse: collapse; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          <!-- Header -->
+          <tr>
+            <td style="padding: 40px 40px 30px; text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px 12px 0 0;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: bold;">Welcome to FlowDesk! 🎉</h1>
+            </td>
+          </tr>
+          
+          <!-- Content -->
+          <tr>
+            <td style="padding: 40px;">
+              <p style="margin: 0 0 20px; color: #1f2937; font-size: 16px; line-height: 1.6;">
+                Hi <strong>${username}</strong>,
+              </p>
+              
+              <p style="margin: 0 0 20px; color: #1f2937; font-size: 16px; line-height: 1.6;">
+                Thank you for joining <strong>FlowDesk</strong>! We're thrilled to have you on board. 
+              </p>
+              
+              <p style="margin: 0 0 30px; color: #1f2937; font-size: 16px; line-height: 1.6;">
+                FlowDesk makes professional CFD thermal comfort simulations accessible to everyone. Whether you're an HVAC engineer, architect, or student, our cloud-based platform will help you visualize and analyze air flow and thermal comfort with ease.
+              </p>
+              
+              <!-- What's Next Section -->
+              <div style="background-color: #f8fafc; border-left: 4px solid #667eea; padding: 20px; margin: 30px 0; border-radius: 4px;">
+                <h2 style="margin: 0 0 15px; color: #1f2937; font-size: 20px; font-weight: 600;">
+                  🚀 What's Next?
+                </h2>
+                <ul style="margin: 0; padding-left: 20px; color: #4b5563; font-size: 15px; line-height: 1.8;">
+                  <li>Create your first 3D design with our intuitive editor</li>
+                  <li>Configure air flow systems and boundary conditions</li>
+                  <li>Run your first CFD simulation in the cloud</li>
+                  <li>Analyze results with our powerful visualization tools</li>
+                </ul>
+              </div>
+              
+              <!-- CTA Button -->
+              <table role="presentation" style="margin: 30px 0; width: 100%;">
+                <tr>
+                  <td align="center">
+                    <a href="${baseUrl}/dashboard" style="display: inline-block; padding: 16px 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);">
+                      Start Your First Simulation
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              
+              <!-- Features -->
+              <div style="margin: 30px 0;">
+                <h3 style="margin: 0 0 20px; color: #1f2937; font-size: 18px; font-weight: 600;">
+                  ✨ Key Features You'll Love:
+                </h3>
+                <table role="presentation" style="width: 100%;">
+                  <tr>
+                    <td style="padding: 10px 0;">
+                      <strong style="color: #667eea;">☁️ Cloud-Powered:</strong>
+                      <span style="color: #4b5563; font-size: 15px;"> No expensive hardware needed</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 10px 0;">
+                      <strong style="color: #667eea;">🎨 3D Design Tools:</strong>
+                      <span style="color: #4b5563; font-size: 15px;"> Multi-floor layouts & custom furniture</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 10px 0;">
+                      <strong style="color: #667eea;">⚡ Fast Results:</strong>
+                      <span style="color: #4b5563; font-size: 15px;"> OpenFOAM simulations in minutes</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 10px 0;">
+                      <strong style="color: #667eea;">📊 Visualization:</strong>
+                      <span style="color: #4b5563; font-size: 15px;"> Interactive 3D results analysis</span>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              
+              <!-- Support -->
+              <div style="margin: 30px 0; padding: 20px; background-color: #fef3c7; border-radius: 8px;">
+                <p style="margin: 0; color: #92400e; font-size: 15px; line-height: 1.6;">
+                  <strong>💡 Need Help?</strong><br>
+                  Our team is here to support you. If you have any questions, feel free to reach out to us at 
+                  <a href="mailto:info@flowdesk.es" style="color: #667eea; text-decoration: none; font-weight: 600;">info@flowdesk.es</a>
+                </p>
+              </div>
+              
+              <p style="margin: 30px 0 0; color: #6b7280; font-size: 15px; line-height: 1.6;">
+                Best regards,<br>
+                <strong style="color: #1f2937;">The FlowDesk Team</strong>
+              </p>
+            </td>
+          </tr>
+          
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 30px 40px; background-color: #f8fafc; border-radius: 0 0 12px 12px; text-align: center;">
+              <p style="margin: 0 0 10px; color: #6b7280; font-size: 14px;">
+                <a href="${baseUrl}" style="color: #667eea; text-decoration: none; margin: 0 10px;">FlowDesk</a> |
+                <a href="${baseUrl}/about" style="color: #667eea; text-decoration: none; margin: 0 10px;">About</a> |
+                <a href="${baseUrl}/privacy" style="color: #667eea; text-decoration: none; margin: 0 10px;">Privacy</a> |
+                <a href="${baseUrl}/terms" style="color: #667eea; text-decoration: none; margin: 0 10px;">Terms</a>
+              </p>
+              <p style="margin: 10px 0 0; color: #9ca3af; font-size: 12px;">
+                © ${new Date().getFullYear()} FlowDesk. All rights reserved.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+    `;
+    
+    const result = await client.emails.send({
+      from: fromEmail,
+      to: email,
+      subject: 'Welcome to FlowDesk - Your CFD Journey Starts Now! 🚀',
+      html: html,
+    });
+    
+    console.log(`[Auth] ✅ Welcome email sent successfully to ${email}`);
+    return result;
+  } catch (error) {
+    console.error(`[Auth] ❌ Failed to send welcome email to ${email}:`, error);
+    // Don't throw error - we don't want to fail registration if email fails
+    return null;
   }
 }
 
@@ -105,6 +262,11 @@ export function setupAuth(app: Express) {
       const user = await storage.createUser({
         ...validatedData,
         password: hashedPassword,
+      });
+
+      // Send welcome email (non-blocking)
+      sendWelcomeEmail(user.username, user.email).catch(err => {
+        console.error('[Auth] Welcome email failed but continuing registration:', err);
       });
 
       req.login(user, (err) => {
