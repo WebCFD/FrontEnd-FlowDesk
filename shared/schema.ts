@@ -126,13 +126,12 @@ export const updateSimulationAdminSchema = z.object({
   isPublic: z.boolean().optional(),
 });
 
-// Schema for contact messages (deprecated)
-export const contactMessageSchema = createInsertSchema(contactMessages)
-  .pick({
-    name: true,
-    email: true,
-    message: true,
-  });
+// Schema for contact messages (no longer stored in DB, just validated for email)
+export const contactMessageSchema = z.object({
+  name: z.string().min(2, "Name is required"),
+  email: z.string().email("Invalid email address"),
+  message: z.string().min(10, "Message must be at least 10 characters"),
+});
 
 // Simulation data schemas
 export const airOrientationSchema = z.object({

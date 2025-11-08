@@ -14,6 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -23,6 +25,7 @@ const formSchema = z.object({
 
 export default function Contact() {
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -33,6 +36,7 @@ export default function Contact() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSubmitting(true);
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
@@ -42,21 +46,26 @@ export default function Contact() {
         body: JSON.stringify(values),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error("Failed to send message");
+        throw new Error(data.message || "Failed to send message");
       }
 
       toast({
-        title: "Message sent!",
-        description: "We'll get back to you as soon as possible.",
+        title: "¡Mensaje enviado!",
+        description: "Te responderemos lo antes posible. Gracias por contactarnos.",
       });
       form.reset();
     } catch (error) {
+      console.error("Contact form error:", error);
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to send message. Please try again.",
+        title: "Error al enviar",
+        description: error instanceof Error ? error.message : "No se pudo enviar el mensaje. Por favor, inténtalo de nuevo.",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -90,9 +99,14 @@ export default function Contact() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>Nombre</FormLabel>
                     <FormControl>
-                      <Input placeholder="Your name" {...field} />
+                      <Input 
+                        placeholder="Tu nombre" 
+                        disabled={isSubmitting}
+                        data-testid="input-contact-name"
+                        {...field} 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -105,7 +119,13 @@ export default function Contact() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="your@email.com" {...field} />
+                      <Input 
+                        type="email"
+                        placeholder="tu@email.com" 
+                        disabled={isSubmitting}
+                        data-testid="input-contact-email"
+                        {...field} 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -116,11 +136,13 @@ export default function Contact() {
                 name="message"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Message</FormLabel>
+                    <FormLabel>Mensaje</FormLabel>
                     <FormControl>
                       <Textarea 
-                        placeholder="How can we help you?"
+                        placeholder="¿Cómo podemos ayudarte?"
                         className="min-h-[120px]"
+                        disabled={isSubmitting}
+                        data-testid="textarea-contact-message"
                         {...field}
                       />
                     </FormControl>
@@ -128,7 +150,21 @@ export default function Contact() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">Send Message</Button>
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={isSubmitting}
+                data-testid="button-send-contact"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Enviando...
+                  </>
+                ) : (
+                  "Enviar mensaje"
+                )}
+              </Button>
             </form>
           </Form>
         </motion.div>

@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertUserSchema, insertSimulationSchema, updateSimulationStatusSchema, updateUserSchema, updateSimulationAdminSchema, simulations, users } from "@shared/schema";
+import { insertUserSchema, insertSimulationSchema, updateSimulationStatusSchema, updateUserSchema, updateSimulationAdminSchema, simulations, users, contactMessageSchema } from "@shared/schema";
 import { z } from "zod";
 import { setupAuth } from "./auth";
 import { promises as fs } from "fs";
@@ -17,6 +17,7 @@ import crypto from "crypto";
 import { exec, execSync } from "child_process";
 import { promisify } from "util";
 import os from "os";
+import { getUncachableResendClient } from "./resend";
 
 const execPromise = promisify(exec);
 
@@ -116,6 +117,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({
       googleAnalyticsId: process.env.GOOGLE_ANALYTICS_ID || ''
     });
+  });
+
+  // Contact form endpoint - sends email via Resend
+  app.post("/api/contact", async (req, res) => {
+    try {
+      const contactData = contactMessageSchema.parse(req.body);
+      
+      const { client, fromEmail } = await getUncachableResendClient();
+      
+      await client.emails.send({
+        from: fromEmail,
+        to: 'info@flowdesk.es',
+        replyTo: contactData.email,
+        subject: `FlowDesk Contact Form: ${contactData.name}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #2563eb;">New Contact Form Submission</h2>
+            <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <p><strong>From:</strong> ${contactData.name}</p>
+              <p><strong>Email:</strong> ${contactData.email}</p>
+            </div>
+            <div style="background: white; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
+              <h3 style="margin-top: 0;">Message:</h3>
+              <p style="white-space: pre-wrap;">${contactData.message}</p>
+            </div>
+            <p style="color: #6b7280; font-size: 12px; margin-top: 20px;">
+              This message was sent via the FlowDesk contact form at ${new Date().toLocaleString('es-ES', { timeZone: 'Europe/Madrid' })}
+            </p>
+          </div>
+        `
+      });
+
+      res.json({ success: true, message: "Message sent successfully" });
+    } catch (error) {
+      console.error("[Express] Contact form error:", error);
+      
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Invalid form data",
+          errors: error.errors 
+        });
+      }
+      
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to send message. Please try again later." 
+      });
+    }
   });
 
   // Simulations API endpoints
