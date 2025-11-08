@@ -12,6 +12,43 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 
 ## Recent Changes
 
+### 2025-11-08: Worker Memory Isolation with Subprocess
+**Critical Fix**: Resolved worker_monitor OOM (Out of Memory) kills by isolating post-processing in subprocess.
+
+**Problem**: 
+- worker_monitor.py executed PyVista/VTK post-processing in the same process
+- Memory accumulated with each simulation (500MB-2GB per simulation)
+- Python's garbage collector didn't release PyVista memory quickly enough
+- After processing 2-3 simulations, OOM killer terminated the worker (PID 57 Killed)
+
+**Solution - Subprocess Isolation**:
+- Modified `step05_results2post.py` to accept CLI arguments (case_name)
+- Modified `worker_monitor.py` to execute post-processing in isolated subprocess
+- Process lifecycle: spawn → process → die → **automatic memory cleanup**
+- Worker process remains lightweight (~500MB) and never accumulates memory
+- Added timeout (10 minutes) and robust error handling for subprocess failures
+
+**Technical Implementation**:
+```python
+# Before: Direct call (memory accumulates)
+results2post(case_name)
+
+# After: Subprocess isolation (memory freed on completion)
+subprocess.run(["python3", "-u", "step05_results2post.py", case_name], 
+               timeout=600, check=True)
+```
+
+**Files Modified**:
+- `worker_monitor.py`: Replaced direct import with subprocess.run() call
+- `step05_results2post.py`: Added CLI argument parsing for case_name
+
+**Benefits**:
+- ✅ Worker process never killed by OOM
+- ✅ Can process unlimited simulations sequentially
+- ✅ If post-processing fails, worker survives
+- ✅ Better error isolation and logging
+- ✅ Zero additional costs (no need for more RAM)
+
 ### 2025-11-08: Email Activation System for New Users
 **Feature**: Implemented email verification flow to prevent spam accounts and ensure valid email addresses.
 
