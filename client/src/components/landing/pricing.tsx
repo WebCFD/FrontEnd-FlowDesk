@@ -6,43 +6,53 @@ import { useLocation } from "wouter";
 
 const plans = [
   {
-    name: "Pay as you go",
-    price: "5",
-    description: "Perfect for occasional users and small projects",
+    name: "Pay as You Go",
+    price: "9.99",
+    description: "Perfect for occasional users and quick projects",
     priceDetail: "€ per simulation",
+    subtitle: "No commitments, pay only when you need",
     features: [
-      "Analysis Only",
-      "Online Result Viewer",
-      "30 day data retention",
-      "PDF Reporting and Raw Data",
-      "Simulation Sharing"
-    ]
+      "Professional analysis tools",
+      "Online interactive results viewer",
+      "Store up to 5 simulation cases",
+      "Professional PDF reporting",
+      "Share and download simulations"
+    ],
+    idealFor: "Consultants, students, and one-time projects"
   },
   {
-    name: "Discovery",
-    price: "99",
-    description: "Ideal for teams and regular simulations",
-    priceDetail: "€ per 25 simulations",
+    name: "Annual Subscription",
+    price: "39.99",
+    description: "Unlock unlimited potential with our most popular plan",
+    priceDetail: "€/month (billed annually at €479.88)",
+    subtitle: "Save up to €480/year vs Pay as You Go",
+    badge: "Most Popular",
     features: [
-      "Analysis and Design Advice",
-      "Online Result Viewer",
-      "Data Retention during plan",
-      "PDF Reporting and Raw Data",
-      "Simulation Sharing"
-    ]
+      "10 FREE simulations every month included",
+      "Additional simulations at only €5.99 each",
+      "40% savings vs Pay as You Go",
+      "Store your last 20 simulation results",
+      "Flexible cancellation with proportional refund",
+      "Priority email support"
+    ],
+    idealFor: "Engineering firms, design teams, and regular users"
   },
   {
-    name: "Enterprise",
+    name: "Tailored & Custom Solutions",
     price: "Custom",
-    description: "For organizations with specific requirements",
+    description: "Your vision, our expertise. Let's build something extraordinary together",
+    subtitle: "Contact us for a personalized quote",
     features: [
-      "Unlimited simulations",
-      "Custom workflow integration",
-      "Personal success manager",
-      "SLA guarantee",
-      "Custom features",
-      "Training & onboarding"
-    ]
+      "Custom FlowDesk development for your needs",
+      "Specialized CFD expertise for your industry",
+      "Bespoke user interface and workflow design",
+      "Custom CFD magnitudes and physics models",
+      "Advanced analysis and optimization tools",
+      "Full-stack development by specialists",
+      "Dedicated technical support and training",
+      "Integration with your existing systems"
+    ],
+    idealFor: "Enterprises, research institutions, and specialized industries"
   }
 ];
 
@@ -67,26 +77,41 @@ export default function Pricing() {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
             >
-              <Card className="flex flex-col h-full">
+              <Card className={`flex flex-col h-full ${plan.badge ? 'border-primary border-2 shadow-lg' : ''}`}>
                 <CardHeader>
-                  <CardTitle>{plan.name}</CardTitle>
+                  <div className="flex items-center justify-between mb-2">
+                    <CardTitle>{plan.name}</CardTitle>
+                    {plan.badge && (
+                      <span className="bg-primary text-primary-foreground text-xs font-semibold px-2 py-1 rounded">
+                        {plan.badge}
+                      </span>
+                    )}
+                  </div>
                   <div className="mt-4">
                     <span className="text-4xl font-bold">
-                      {plan.price === "Custom" ? plan.price : plan.price}
+                      {plan.price === "Custom" ? plan.price : `€${plan.price}`}
                     </span>
-                    {plan.priceDetail && <span className="text-muted-foreground ml-1">{plan.priceDetail}</span>}
+                    {plan.priceDetail && <span className="text-muted-foreground ml-1 text-sm">{plan.priceDetail}</span>}
                   </div>
+                  {plan.subtitle && (
+                    <p className="text-sm text-primary font-medium mt-2">{plan.subtitle}</p>
+                  )}
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground mb-6">{plan.description}</p>
-                  <ul className="space-y-4">
+                  <ul className="space-y-3 mb-6">
                     {plan.features.map((feature, i) => (
-                      <li key={i} className="flex items-center gap-2">
-                        <Check className="h-5 w-5 text-primary" />
-                        <span>{feature}</span>
+                      <li key={i} className="flex items-start gap-2">
+                        <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                        <span className="text-sm">{feature}</span>
                       </li>
                     ))}
                   </ul>
+                  {plan.idealFor && (
+                    <p className="text-xs text-muted-foreground italic border-t pt-4">
+                      Ideal for: {plan.idealFor}
+                    </p>
+                  )}
                 </CardContent>
                 <CardFooter className="mt-auto">
                   <Button 
