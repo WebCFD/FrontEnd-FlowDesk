@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertUserSchema, insertSimulationSchema, updateSimulationStatusSchema, simulations, users } from "@shared/schema";
+import { insertUserSchema, insertSimulationSchema, updateSimulationStatusSchema, updateUserSchema, updateSimulationAdminSchema, simulations, users } from "@shared/schema";
 import { z } from "zod";
 import { setupAuth } from "./auth";
 import { promises as fs } from "fs";
@@ -1033,6 +1033,126 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('[EXPRESS] Error fetching workers health:', error);
       res.status(500).json({ message: "Error fetching workers health" });
+    }
+  });
+
+  app.patch("/api/admindatabase/users/:id", checkDatabaseAuth, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+
+      const updateData = updateUserSchema.parse(req.body);
+      
+      await db
+        .update(users)
+        .set({
+          ...updateData,
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, userId));
+
+      const updatedUser = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, userId))
+        .limit(1);
+
+      if (updatedUser.length === 0) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json(updatedUser[0]);
+    } catch (error) {
+      console.error('Error updating user:', error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid user data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Error updating user" });
+    }
+  });
+
+  app.delete("/api/admindatabase/users/:id", checkDatabaseAuth, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+
+      const result = await db
+        .delete(users)
+        .where(eq(users.id, userId))
+        .returning();
+
+      if (result.length === 0) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({ message: "User deleted successfully", deletedUser: result[0] });
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      res.status(500).json({ message: "Error deleting user" });
+    }
+  });
+
+  app.patch("/api/admindatabase/simulations/:id", checkDatabaseAuth, async (req, res) => {
+    try {
+      const simulationId = parseInt(req.params.id);
+      if (isNaN(simulationId)) {
+        return res.status(400).json({ message: "Invalid simulation ID" });
+      }
+
+      const updateData = updateSimulationAdminSchema.parse(req.body);
+      
+      await db
+        .update(simulations)
+        .set({
+          ...updateData,
+          updatedAt: new Date(),
+        })
+        .where(eq(simulations.id, simulationId));
+
+      const updatedSimulation = await db
+        .select()
+        .from(simulations)
+        .where(eq(simulations.id, simulationId))
+        .limit(1);
+
+      if (updatedSimulation.length === 0) {
+        return res.status(404).json({ message: "Simulation not found" });
+      }
+
+      res.json(updatedSimulation[0]);
+    } catch (error) {
+      console.error('Error updating simulation:', error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid simulation data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Error updating simulation" });
+    }
+  });
+
+  app.delete("/api/admindatabase/simulations/:id", checkDatabaseAuth, async (req, res) => {
+    try {
+      const simulationId = parseInt(req.params.id);
+      if (isNaN(simulationId)) {
+        return res.status(400).json({ message: "Invalid simulation ID" });
+      }
+
+      const result = await db
+        .delete(simulations)
+        .where(eq(simulations.id, simulationId))
+        .returning();
+
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Simulation not found" });
+      }
+
+      res.json({ message: "Simulation deleted successfully", deletedSimulation: result[0] });
+    } catch (error) {
+      console.error('Error deleting simulation:', error);
+      res.status(500).json({ message: "Error deleting simulation" });
     }
   });
 

@@ -60,6 +60,12 @@ export const insertUserSchema = createInsertSchema(users)
     password: z.string().min(8, "Password must be at least 8 characters"),
   });
 
+// Schema for updating user (admin only)
+export const updateUserSchema = z.object({
+  fullName: z.string().optional(),
+  credits: z.string().transform(val => parseFloat(val)).optional(),
+});
+
 // Schema for creating simulations
 export const insertSimulationSchema = createInsertSchema(simulations)
   .pick({
@@ -107,6 +113,17 @@ export const updateSimulationStatusSchema = z.object({
   result: z.any().optional(),
   startedAt: z.date().optional(),
   completedAt: z.date().optional(),
+});
+
+// Schema for updating simulation (admin only)
+export const updateSimulationAdminSchema = z.object({
+  status: z.enum([
+    'pending', 'processing', 'geometry', 'meshing',
+    'cfd_setup', 'cloud_execution', 'post_processing',
+    'completed', 'failed'
+  ]).optional(),
+  cost: z.string().transform(val => parseFloat(val)).optional(),
+  isPublic: z.boolean().optional(),
 });
 
 // Schema for contact messages (deprecated)
