@@ -1,8 +1,30 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Linkedin, Wind, Zap, Users, Globe } from "lucide-react";
 
 export default function About() {
+  const [location, setLocation] = useLocation();
+
+  const scrollToSection = (sectionId: string) => {
+    if (location !== '/') {
+      // Si no estamos en la landing page, navegar primero
+      setLocation('/');
+      // Esperar a que se cargue la página y luego hacer scroll
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      // Si ya estamos en la landing page, hacer scroll directo
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-5xl">
@@ -125,11 +147,13 @@ export default function About() {
               Ready to experience the future of CFD simulation? Create your free account and run your first thermal comfort analysis today.
             </p>
             <div className="flex gap-4">
-              <Link href="/#contact">
-                <Button size="lg" data-testid="button-contact-us">
-                  Contact Us
-                </Button>
-              </Link>
+              <Button 
+                size="lg" 
+                data-testid="button-contact-us"
+                onClick={() => scrollToSection('contact')}
+              >
+                Contact Us
+              </Button>
               <Link href="/dashboard">
                 <Button variant="outline" size="lg" data-testid="button-get-started">
                   Get Started
