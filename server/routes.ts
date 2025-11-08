@@ -759,14 +759,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(401).json({ message: "Authentication required for VTK internal files" });
     }
 
-    // Map to actual .vtkjs file location
+    // Map to actual .vtkjs file location (including sim_ID/vtk/ prefix)
     let vtkjsPath;
     if (simulationId === 33 && filename === 'result') {
       vtkjsPath = path.join(process.cwd(), 'client', 'public', 'cfd-data.vtkjs');
     } else {
       const uploadsPath = process.env.NODE_ENV === 'production' 
-        ? path.join('/app/uploads', id) 
-        : path.join(process.cwd(), 'client', 'public');
+        ? path.join('/app', 'uploads', `sim_${id}`, 'vtk')
+        : path.join(process.cwd(), 'client', 'public', 'uploads', `sim_${id}`, 'vtk');
       vtkjsPath = path.join(uploadsPath, `${filename}.vtkjs`);
     }
     
@@ -951,10 +951,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
 
-    // En producción, usar path absoluto; en dev, relativo
+    // Build correct path based on environment (including sim_ID/vtk/ prefix)
     const uploadsPath = process.env.NODE_ENV === 'production' 
-      ? path.join('/app/uploads', id) // Ajustar según tu deploy
-      : path.join(process.cwd(), 'client', 'public'); // Por ahora usar public para pruebas
+      ? path.join('/app', 'uploads', `sim_${id}`, 'vtk')
+      : path.join(process.cwd(), 'client', 'public', 'uploads', `sim_${id}`, 'vtk');
       
     // Map specific files for testing
     let actualFilePath;
