@@ -117,43 +117,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  // Health check endpoint para verificar estado de workers
-  app.get("/api/health/workers", (req, res) => {
-    try {
-      const healthStatus = {
-        express: {
-          status: "running",
-          uptime: process.uptime(),
-          timestamp: new Date().toISOString()
-        },
-        worker_submit: checkWorkerHealth("worker_submit"),
-        worker_monitor: checkWorkerHealth("worker_monitor"),
-        system: {
-          nodeVersion: process.version,
-          platform: process.platform,
-          memory: {
-            used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
-            total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
-            unit: "MB"
-          }
-        }
-      };
-
-      // Determinar estado general
-      const allHealthy = 
-        healthStatus.worker_submit.status === "running" &&
-        healthStatus.worker_monitor.status === "running";
-
-      res.status(allHealthy ? 200 : 503).json(healthStatus);
-    } catch (error) {
-      console.error('[EXPRESS] Error in health check:', error);
-      res.status(500).json({
-        error: "Health check failed",
-        message: error instanceof Error ? error.message : "Unknown error"
-      });
-    }
-  });
-
   // Simulations API endpoints
   app.post("/api/simulations", async (req, res) => {
     try {
@@ -1042,6 +1005,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error fetching database stats:', error);
       res.status(500).json({ message: "Error fetching database stats" });
+    }
+  });
+
+  app.get("/api/admindatabase/workers", checkDatabaseAuth, async (req, res) => {
+    try {
+      const healthStatus = {
+        express: {
+          status: "running",
+          uptime: process.uptime(),
+          timestamp: new Date().toISOString()
+        },
+        worker_submit: checkWorkerHealth("worker_submit"),
+        worker_monitor: checkWorkerHealth("worker_monitor"),
+        system: {
+          nodeVersion: process.version,
+          platform: process.platform,
+          memory: {
+            used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
+            total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
+            unit: "MB"
+          }
+        }
+      };
+
+      res.json(healthStatus);
+    } catch (error) {
+      console.error('[EXPRESS] Error fetching workers health:', error);
+      res.status(500).json({ message: "Error fetching workers health" });
     }
   });
 
