@@ -1,7 +1,29 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Separator } from "@/components/ui/separator";
 
 export default function Footer() {
+  const [location, setLocation] = useLocation();
+
+  const scrollToSection = (sectionId: string) => {
+    if (location !== '/') {
+      // Si no estamos en la landing page, navegar primero
+      setLocation('/');
+      // Esperar a que se cargue la página y luego hacer scroll
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      // Si ya estamos en la landing page, hacer scroll directo
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
   return (
     <footer className="bg-slate-50">
       <div className="container mx-auto px-4 py-12">
@@ -16,9 +38,33 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Product</h4>
             <ul className="space-y-2">
-              <li><Link href="#features">Features</Link></li>
-              <li><Link href="#pricing">Pricing</Link></li>
-              <li><Link href="#case-studies">Case Studies</Link></li>
+              <li>
+                <button 
+                  onClick={() => scrollToSection('features')}
+                  className="hover:underline cursor-pointer"
+                  data-testid="link-features"
+                >
+                  Features
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => scrollToSection('pricing')}
+                  className="hover:underline cursor-pointer"
+                  data-testid="link-pricing"
+                >
+                  Pricing
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => scrollToSection('case-studies')}
+                  className="hover:underline cursor-pointer"
+                  data-testid="link-case-studies"
+                >
+                  Case Studies
+                </button>
+              </li>
             </ul>
           </div>
 
@@ -27,7 +73,15 @@ export default function Footer() {
             <ul className="space-y-2">
               <li><Link href="/about">About</Link></li>
               <li className="text-muted-foreground cursor-not-allowed">Careers</li>
-              <li><Link href="/#contact">Contact</Link></li>
+              <li>
+                <button 
+                  onClick={() => scrollToSection('contact')}
+                  className="hover:underline cursor-pointer"
+                  data-testid="link-contact"
+                >
+                  Contact
+                </button>
+              </li>
             </ul>
           </div>
 
