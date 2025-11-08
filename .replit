@@ -52,10 +52,6 @@ run = ["bash", "start-production.sh"]
 localPort = 5000
 externalPort = 80
 
-[[ports]]
-localPort = 38829
-externalPort = 3001
-
 [workflows]
 runButton = "Project"
 
