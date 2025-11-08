@@ -776,12 +776,17 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
                         </Tooltip>
                       </div>
                     )}
-                    {workersStatus.system.uploads && (
+                    {workersStatus.system.uploads && workersStatus.system.disk && (
                       <div className="flex items-center gap-1">
                         <div className="flex-1">
                           <div className="text-sm font-medium text-muted-foreground">Simulaciones</div>
                           <div className="text-lg font-bold">
-                            {workersStatus.system.uploads.size} {workersStatus.system.uploads.unit}
+                            {(() => {
+                              const uploadsGB = (workersStatus.system.uploads.size / 1024).toFixed(1);
+                              const availableGB = workersStatus.system.disk.total - workersStatus.system.disk.used;
+                              const percentage = availableGB > 0 ? ((workersStatus.system.uploads.size / 1024 / availableGB) * 100).toFixed(0) : 0;
+                              return `${uploadsGB} / ${availableGB} GB (${percentage}%)`;
+                            })()}
                           </div>
                         </div>
                         <Tooltip>
@@ -789,8 +794,8 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
                             <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
                           </TooltipTrigger>
                           <TooltipContent className="max-w-xs">
-                            <p className="font-semibold">Espacio de Simulaciones</p>
-                            <p className="text-xs">Espacio usado por resultados de simulaciones en /public/uploads/. Calculado con du -sm. Incluye archivos VTK, imágenes y reportes PDF. ⚠️ CRÍTICO: Si crece mucho puede llenar el disco.</p>
+                            <p className="font-semibold">⚠️ CRÍTICO - Espacio de Simulaciones</p>
+                            <p className="text-xs">Espacio usado por resultados en /public/uploads/ vs. espacio disponible en disco (Total - Sistema). Calculado: uploads / (disco_total - disco_usado). Si llega a 100%, el disco se llenará y las simulaciones fallarán.</p>
                           </TooltipContent>
                         </Tooltip>
                       </div>
