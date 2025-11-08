@@ -1,14 +1,17 @@
 import { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Users, Database, CheckCircle, Clock, XCircle, DollarSign, Lock, Filter, Activity, Cpu, Server } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { Users, Database, CheckCircle, Clock, XCircle, DollarSign, Lock, Filter, Activity, Cpu, Server, Edit, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import { queryClient } from '@/lib/queryClient';
 
 // Helper function to format uptime
 function formatUptime(seconds: number): string {
@@ -210,8 +213,232 @@ const DatabaseLoginForm = ({ onLogin }: { onLogin: (password: string) => void })
   );
 };
 
+// Edit User Modal Component
+const EditUserModal = ({ user, authToken, open, onOpenChange }: { 
+  user: AdminUser; 
+  authToken: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) => {
+  const { toast } = useToast();
+  const [fullName, setFullName] = useState(user.fullName || '');
+  const [credits, setCredits] = useState(parseFloat(user.credits).toString());
+
+  const updateUserMutation = useMutation({
+    mutationFn: async (data: { fullName?: string; credits?: string }) => {
+      const response = await fetch(`/api/admindatabase/users/${user.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`,
+        },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Failed to update user');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admindatabase/users'] });
+      toast({ title: "Usuario actualizado", description: "Los cambios se han guardado correctamente" });
+      onOpenChange(false);
+    },
+    onError: () => {
+      toast({ title: "Error", description: "No se pudo actualizar el usuario", variant: "destructive" });
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateUserMutation.mutate({ fullName, credits });
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent data-testid="dialog-edit-user">
+        <DialogHeader>
+          <DialogTitle>Editar Usuario</DialogTitle>
+          <DialogDescription>Modificar información del usuario {user.username}</DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="fullName">Nombre Completo</Label>
+            <Input
+              id="fullName"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder="Nombre completo del usuario"
+              data-testid="input-edit-fullname"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="credits">Créditos (€)</Label>
+            <Input
+              id="credits"
+              type="number"
+              step="0.01"
+              value={credits}
+              onChange={(e) => setCredits(e.target.value)}
+              placeholder="0.00"
+              data-testid="input-edit-credits"
+            />
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} data-testid="button-cancel-edit">
+              Cancelar
+            </Button>
+            <Button type="submit" disabled={updateUserMutation.isPending} data-testid="button-save-user">
+              {updateUserMutation.isPending ? 'Guardando...' : 'Guardar'}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Edit Simulation Modal Component
+const EditSimulationModal = ({ simulation, authToken, open, onOpenChange }: { 
+  simulation: AdminSimulation; 
+  authToken: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) => {
+  const { toast } = useToast();
+  const [status, setStatus] = useState(simulation.status);
+  const [cost, setCost] = useState(parseFloat(simulation.cost).toString());
+  const [isPublic, setIsPublic] = useState(simulation.isPublic);
+
+  const updateSimulationMutation = useMutation({
+    mutationFn: async (data: { status?: string; cost?: string; isPublic?: boolean }) => {
+      const response = await fetch(`/api/admindatabase/simulations/${simulation.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authToken}`,
+        },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Failed to update simulation');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admindatabase/simulations'] });
+      toast({ title: "Simulación actualizada", description: "Los cambios se han guardado correctamente" });
+      onOpenChange(false);
+    },
+    onError: () => {
+      toast({ title: "Error", description: "No se pudo actualizar la simulación", variant: "destructive" });
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateSimulationMutation.mutate({ status, cost, isPublic });
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent data-testid="dialog-edit-simulation">
+        <DialogHeader>
+          <DialogTitle>Editar Simulación</DialogTitle>
+          <DialogDescription>Modificar información de la simulación {simulation.name}</DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="status">Estado</Label>
+            <select
+              id="status"
+              value={status}
+              onChange={(e) => setStatus(e.target.value as any)}
+              className="w-full h-10 px-3 py-2 text-sm border rounded-md"
+              data-testid="select-edit-status"
+            >
+              <option value="pending">Pending</option>
+              <option value="processing">Processing</option>
+              <option value="geometry">Geometry</option>
+              <option value="meshing">Meshing</option>
+              <option value="cfd_setup">CFD Setup</option>
+              <option value="cloud_execution">Cloud Execution</option>
+              <option value="post_processing">Post Processing</option>
+              <option value="completed">Completed</option>
+              <option value="failed">Failed</option>
+            </select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="cost">Costo (€)</Label>
+            <Input
+              id="cost"
+              type="number"
+              step="0.01"
+              value={cost}
+              onChange={(e) => setCost(e.target.value)}
+              placeholder="0.00"
+              data-testid="input-edit-cost"
+            />
+          </div>
+          <div className="flex items-center space-x-2">
+            <input
+              id="isPublic"
+              type="checkbox"
+              checked={isPublic}
+              onChange={(e) => setIsPublic(e.target.checked)}
+              className="h-4 w-4"
+              data-testid="checkbox-edit-public"
+            />
+            <Label htmlFor="isPublic">Simulación Pública</Label>
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} data-testid="button-cancel-edit-sim">
+              Cancelar
+            </Button>
+            <Button type="submit" disabled={updateSimulationMutation.isPending} data-testid="button-save-simulation">
+              {updateSimulationMutation.isPending ? 'Guardando...' : 'Guardar'}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Delete Confirmation Dialog Component
+const DeleteConfirmDialog = ({ 
+  open, 
+  onOpenChange, 
+  onConfirm, 
+  title, 
+  description,
+  isPending
+}: { 
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onConfirm: () => void;
+  title: string;
+  description: string;
+  isPending: boolean;
+}) => {
+  return (
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent data-testid="dialog-delete-confirm">
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription>{description}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel data-testid="button-cancel-delete">Cancelar</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm} disabled={isPending} data-testid="button-confirm-delete">
+            {isPending ? 'Eliminando...' : 'Eliminar'}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+};
+
 // Main admin database component
 const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
+  const { toast } = useToast();
+
   // Filter states
   const [userFilters, setUserFilters] = useState({
     username: '',
@@ -225,6 +452,55 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
     email: '',
     status: '',
     simulationType: '',
+  });
+
+  // Edit/Delete states
+  const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
+  const [editingSimulation, setEditingSimulation] = useState<AdminSimulation | null>(null);
+  const [deletingUser, setDeletingUser] = useState<AdminUser | null>(null);
+  const [deletingSimulation, setDeletingSimulation] = useState<AdminSimulation | null>(null);
+
+  // Delete mutations
+  const deleteUserMutation = useMutation({
+    mutationFn: async (userId: number) => {
+      const response = await fetch(`/api/admindatabase/users/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+        },
+      });
+      if (!response.ok) throw new Error('Failed to delete user');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admindatabase/users'] });
+      toast({ title: "Usuario eliminado", description: "El usuario ha sido eliminado correctamente" });
+      setDeletingUser(null);
+    },
+    onError: () => {
+      toast({ title: "Error", description: "No se pudo eliminar el usuario", variant: "destructive" });
+    },
+  });
+
+  const deleteSimulationMutation = useMutation({
+    mutationFn: async (simulationId: number) => {
+      const response = await fetch(`/api/admindatabase/simulations/${simulationId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+        },
+      });
+      if (!response.ok) throw new Error('Failed to delete simulation');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admindatabase/simulations'] });
+      toast({ title: "Simulación eliminada", description: "La simulación ha sido eliminada correctamente" });
+      setDeletingSimulation(null);
+    },
+    onError: () => {
+      toast({ title: "Error", description: "No se pudo eliminar la simulación", variant: "destructive" });
+    },
   });
   // Fetch admin stats with auth token
   const { data: stats, isLoading: statsLoading } = useQuery<AdminStats>({
@@ -532,6 +808,7 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
                     <TableHead>Créditos</TableHead>
                     <TableHead>Fecha Registro</TableHead>
                     <TableHead>Última Actualización</TableHead>
+                    <TableHead>Acciones</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -544,6 +821,26 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
                       <TableCell data-testid={`text-credits-${user.id}`}>€{parseFloat(user.credits).toFixed(2)}</TableCell>
                       <TableCell data-testid={`text-created-${user.id}`}>{format(new Date(user.createdAt), 'dd/MM/yyyy HH:mm')}</TableCell>
                       <TableCell data-testid={`text-updated-${user.id}`}>{format(new Date(user.updatedAt), 'dd/MM/yyyy HH:mm')}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setEditingUser(user)}
+                            data-testid={`button-edit-user-${user.id}`}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => setDeletingUser(user)}
+                            data-testid={`button-delete-user-${user.id}`}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -645,6 +942,7 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
                     <TableHead>Fecha Completado</TableHead>
                     <TableHead>Última Actualización</TableHead>
                     <TableHead>Config JSON</TableHead>
+                    <TableHead>Acciones</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -694,6 +992,26 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
                           <span className="text-muted-foreground">-</span>
                         )}
                       </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setEditingSimulation(sim)}
+                            data-testid={`button-edit-simulation-${sim.id}`}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => setDeletingSimulation(sim)}
+                            data-testid={`button-delete-simulation-${sim.id}`}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -702,6 +1020,50 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
           )}
         </CardContent>
       </Card>
+
+      {/* Edit User Modal */}
+      {editingUser && (
+        <EditUserModal
+          user={editingUser}
+          authToken={authToken}
+          open={!!editingUser}
+          onOpenChange={(open) => !open && setEditingUser(null)}
+        />
+      )}
+
+      {/* Edit Simulation Modal */}
+      {editingSimulation && (
+        <EditSimulationModal
+          simulation={editingSimulation}
+          authToken={authToken}
+          open={!!editingSimulation}
+          onOpenChange={(open) => !open && setEditingSimulation(null)}
+        />
+      )}
+
+      {/* Delete User Dialog */}
+      {deletingUser && (
+        <DeleteConfirmDialog
+          open={!!deletingUser}
+          onOpenChange={(open) => !open && setDeletingUser(null)}
+          onConfirm={() => deleteUserMutation.mutate(deletingUser.id)}
+          title="Eliminar Usuario"
+          description={`¿Estás seguro de que quieres eliminar al usuario ${deletingUser.username}? Esta acción no se puede deshacer.`}
+          isPending={deleteUserMutation.isPending}
+        />
+      )}
+
+      {/* Delete Simulation Dialog */}
+      {deletingSimulation && (
+        <DeleteConfirmDialog
+          open={!!deletingSimulation}
+          onOpenChange={(open) => !open && setDeletingSimulation(null)}
+          onConfirm={() => deleteSimulationMutation.mutate(deletingSimulation.id)}
+          title="Eliminar Simulación"
+          description={`¿Estás seguro de que quieres eliminar la simulación "${deletingSimulation.name}"? Esta acción no se puede deshacer.`}
+          isPending={deleteSimulationMutation.isPending}
+        />
+      )}
     </div>
   );
 };
