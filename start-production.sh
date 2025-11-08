@@ -108,7 +108,7 @@ trap cleanup SIGTERM SIGINT
 log "Iniciando todos los procesos..."
 
 # Iniciar Express (Node.js)
-start_process "express" "node dist/index.js"
+start_process "express" "NODE_ENV=production node dist/index.js"
 
 # Iniciar Worker Submit (Python)
 start_process "worker_submit" "python3 -u worker_submit.py"
@@ -126,7 +126,7 @@ while true; do
     log "--- Verificación de procesos ---"
     
     # Verificar Express
-    check_and_restart "express" "node dist/index.js" "node dist/index.js"
+    check_and_restart "express" "node dist/index.js" "NODE_ENV=production node dist/index.js"
     
     # Verificar Worker Submit
     check_and_restart "worker_submit" "worker_submit.py" "python3 -u worker_submit.py"
