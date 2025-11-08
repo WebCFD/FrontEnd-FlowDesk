@@ -12,6 +12,30 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 
 ## Recent Changes
 
+### 2025-11-08: Email Activation System for New Users
+**Feature**: Implemented email verification flow to prevent spam accounts and ensure valid email addresses.
+
+**Changes**:
+- **Database**: Added `pending_activations` table to store registration data before email verification
+- **Backend**:
+  - Modified `/api/auth/register` to create pending activation instead of immediate user creation
+  - Created `/api/auth/activate` endpoint to validate tokens and create users
+  - Added `sendActivationEmail()` function with branded email template
+  - Implemented 24-hour token expiration and cleanup logic
+- **Frontend**:
+  - Updated registration modal to show email confirmation screen after signup
+  - Created `/activate` page to handle activation links from emails
+  - User is automatically logged in after successful activation
+- **User Flow**: Register → Email sent → Click link → Account activated with 25€ credits → Auto-login
+
+**Files Modified**:
+- `shared/schema.ts`: Added pendingActivations table
+- `server/storage.ts`: Added CRUD methods for pending activations
+- `server/auth.ts`: Modified registration flow, added activation endpoint and email function
+- `client/src/components/auth/register-modal.tsx`: Added confirmation UI
+- `client/src/pages/activate.tsx`: New activation page
+- `client/src/App.tsx`: Registered /activate route
+
 ### 2025-11-08: Post-Processing Optimization (Memory Crisis Fix)
 **Critical production issue resolved**: Server was experiencing OOM (Out of Memory) kills during CFD post-processing, causing complete site downtime.
 
