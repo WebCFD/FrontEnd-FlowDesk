@@ -112,8 +112,8 @@ export default function Contact() {
       }
 
       toast({
-        title: "¡Mensaje enviado!",
-        description: "Te responderemos lo antes posible. Gracias por contactarnos.",
+        title: "Message sent!",
+        description: "We'll get back to you as soon as possible. Thank you for contacting us.",
       });
       form.reset();
       
@@ -126,8 +126,8 @@ export default function Contact() {
       console.error("Contact form error:", error);
       toast({
         variant: "destructive",
-        title: "Error al enviar",
-        description: error instanceof Error ? error.message : "No se pudo enviar el mensaje. Por favor, inténtalo de nuevo.",
+        title: "Error sending message",
+        description: error instanceof Error ? error.message : "Failed to send message. Please try again.",
       });
       
       // Reset Turnstile on error
@@ -170,10 +170,10 @@ export default function Contact() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nombre</FormLabel>
+                    <FormLabel>Name</FormLabel>
                     <FormControl>
                       <Input 
-                        placeholder="Tu nombre" 
+                        placeholder="Your name" 
                         disabled={isSubmitting}
                         data-testid="input-contact-name"
                         {...field} 
@@ -207,10 +207,10 @@ export default function Contact() {
                 name="message"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Mensaje</FormLabel>
+                    <FormLabel>Message</FormLabel>
                     <FormControl>
                       <Textarea 
-                        placeholder="¿Cómo podemos ayudarte?"
+                        placeholder="How can we help you?"
                         className="min-h-[120px]"
                         disabled={isSubmitting}
                         data-testid="textarea-contact-message"
@@ -226,7 +226,7 @@ export default function Contact() {
                   <div ref={turnstileRef} data-testid="turnstile-widget"></div>
                   <p className="text-xs text-muted-foreground flex items-center gap-1">
                     <Shield className="h-3 w-3" />
-                    Protegido por Cloudflare Turnstile
+                    Protected by Cloudflare Turnstile
                   </p>
                 </div>
               )}
@@ -240,10 +240,10 @@ export default function Contact() {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Enviando...
+                    Sending...
                   </>
                 ) : (
-                  "Enviar mensaje"
+                  "Send Message"
                 )}
               </Button>
             </form>
