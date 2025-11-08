@@ -11,6 +11,8 @@ import NewSimulation from "@/pages/dashboard/new-simulation";
 import WizardDesign from "@/pages/dashboard/wizard-design";
 import PostAnalysis from "@/pages/dashboard/post-analysis";
 import AdminDatabasePage from "@/pages/admindatabase";
+import Privacy from "@/pages/privacy";
+import Terms from "@/pages/terms";
 
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
@@ -52,6 +54,8 @@ function Router() {
         </ProtectedRoute>
       </Route>
       <Route path="/admindatabase" component={AdminDatabasePage} />
+      <Route path="/privacy" component={Privacy} />
+      <Route path="/terms" component={Terms} />
       <Route component={NotFound} />
     </Switch>
   );
