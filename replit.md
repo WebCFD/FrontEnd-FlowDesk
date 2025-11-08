@@ -100,6 +100,63 @@ maxNonOrtho: 55 (strict), maxSkewness: 12 (boundary) / 2.5 (internal)
 - Implementation: `src/components/mesh/hvac_pro.py` (parametric system)
 - Documentation: `data/settings/mesh/hvac_pro/README.md` (detailed guide)
 
+### Admin Database Panel (Updated Nov 8, 2024)
+
+**Overview**: Unified administrative interface at `/admindatabase` for monitoring system health and managing database records.
+
+**Features**:
+- **Workers Monitoring** (auto-refresh every 10s):
+  - Express server status and uptime
+  - Worker Submit process status (PID, health)
+  - Worker Monitor process status (PID, health)
+  - System memory usage and Node version
+- **Database Management**:
+  - View all users with filterable table (username, email, fullName)
+  - Edit user credits and fullName
+  - Delete users with confirmation
+  - View all simulations with advanced filters (name, status, type, user)
+  - Edit simulation status, cost, and public visibility
+  - Delete simulations with confirmation
+- **Statistics Dashboard**: Real-time metrics for users, simulations, and credits used
+
+**Architecture**:
+- **Authentication**: Simple password-based ("flowerpower") with Bearer token
+- **Backend Endpoints**:
+  - `GET /api/admindatabase/workers` - Workers health status (protected)
+  - `GET /api/admindatabase/users` - List all users (protected)
+  - `PATCH /api/admindatabase/users/:id` - Update user (protected)
+  - `DELETE /api/admindatabase/users/:id` - Delete user (protected)
+  - `GET /api/admindatabase/simulations` - List all simulations (protected)
+  - `PATCH /api/admindatabase/simulations/:id` - Update simulation (protected)
+  - `DELETE /api/admindatabase/simulations/:id` - Delete simulation (protected)
+  - `GET /api/admindatabase/stats` - Database statistics (protected)
+- **Frontend**: React with shadcn/ui, TanStack Query for data fetching, auto-refresh for workers status
+- **Removed**: Public `/api/health/workers` endpoint (moved to protected admin panel)
+
+**⚠️ CRITICAL SECURITY LIMITATION**:
+
+The current admin authentication system has **severe security vulnerabilities**:
+
+1. **Hardcoded password**: The password "flowerpower" is hardcoded in plain text in both frontend and backend
+2. **No encryption**: Token is passed as plain text in HTTP headers
+3. **No rate limiting**: Vulnerable to brute force attacks
+4. **No session management**: Simple Bearer token without expiration
+5. **No audit logging**: No record of admin actions
+
+**RECOMMENDED SECURITY IMPROVEMENTS** (Priority: **CRITICAL**):
+
+Implement proper authentication system:
+- Use JWT tokens with expiration and refresh tokens
+- Add bcrypt/scrypt password hashing
+- Implement rate limiting (express-rate-limit)
+- Add session management with secure cookies
+- Implement audit logging for admin actions
+- Add two-factor authentication (2FA)
+- Use environment variables for sensitive data
+- Implement CSRF protection
+
+Until these improvements are implemented, the admin panel should **only be accessed from trusted networks** and the password should be **changed immediately to a strong, unique password**.
+
 ### Core Features & Design Patterns
 - **3D Design Engine**: Three.js-based, supporting multi-floor designs, 2D to 3D transformations, and wall extrusion.
 - **Furniture and Object System**: Dynamic loading, custom STL import, thermal/airflow property management.
