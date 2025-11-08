@@ -264,17 +264,22 @@ def main():
     while True:
         try:
             sims = get_cloud_execution_sims()
+            logger.info(f"Polling: Found {len(sims)} simulation(s) in cloud_execution")
             
             for sim in sims:
                 task_id = sim.get('taskId')
                 if not task_id:
+                    logger.warning(f"Sim {sim.get('id')} has no taskId, skipping")
                     continue
                 
+                logger.info(f"Checking status for sim {sim.get('id')} (task: {task_id})")
                 status = check_task_status(task_id)
+                logger.info(f"Sim {sim.get('id')} status: {status}")
                 
                 if status == 'TaskStatusCode.SUCCESS':
                     process_completed_simulation(sim)
                 elif status == 'TaskStatusCode.FAILED':
+                    logger.error(f"Sim {sim.get('id')} FAILED in Inductiva")
                     update_simulation(sim['id'], {
                         'status': 'failed',
                         'errorMessage': 'Inductiva task failed'
