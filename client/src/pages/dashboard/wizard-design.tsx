@@ -2594,13 +2594,30 @@ export default function WizardDesign() {
                     <span className="font-semibold text-purple-900 text-sm">Custom Solutions</span>
                   </div>
                   <div className="text-lg font-bold text-purple-600 mb-2">Custom</div>
-                  <div className="text-xs text-purple-800 space-y-1">
+                  <div className="text-xs text-purple-800 space-y-1 mb-3">
                     <div>• Tailored development</div>
                     <div>• CFD expertise</div>
                     <div>• Custom interface</div>
                     <div>• Advanced analysis</div>
                     <div>• Dedicated support</div>
                   </div>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    className="w-full text-xs border-purple-300 text-purple-700 hover:bg-purple-100"
+                    onClick={() => {
+                      setLocation('/');
+                      setTimeout(() => {
+                        const element = document.getElementById('contact');
+                        if (element) {
+                          element.scrollIntoView({ behavior: 'smooth' });
+                        }
+                      }, 100);
+                    }}
+                    data-testid="button-contact-custom"
+                  >
+                    Contact Us
+                  </Button>
                 </div>
               </div>
 
