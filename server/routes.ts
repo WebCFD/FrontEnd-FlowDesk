@@ -973,7 +973,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const providedPasswordHash = authHeader.split(' ')[1];
     
     // Hash SHA-256 de la contraseña correcta "flowerpower"
-    const ADMIN_PASSWORD_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
+    const ADMIN_PASSWORD_HASH = "b49f2bc773151f63cead40e9fb5bf30a70dbe79e2fdbef56ebe64d3db2f6a536";
     
     // Comparar hashes
     if (providedPasswordHash !== ADMIN_PASSWORD_HASH) {
