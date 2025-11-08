@@ -2337,7 +2337,7 @@ export default function WizardDesign() {
               <div className="flex justify-between items-center text-sm">
                 <span className="text-gray-600">Cost:</span>
                 <span className="font-medium text-blue-600">
-                  €{getSimulationCost(simulationType)}
+                  depending on plan
                 </span>
               </div>
               

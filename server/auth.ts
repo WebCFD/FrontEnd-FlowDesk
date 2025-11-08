@@ -66,7 +66,7 @@ async function sendWelcomeEmail(username: string, email: string) {
           <!-- Header -->
           <tr>
             <td style="padding: 40px; text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px 12px 0 0;">
-              <img src="${baseUrl}/assets/logo.png" alt="FlowDesk Logo" style="width: 120px; height: 80px; margin-bottom: 20px;">
+              <img src="${baseUrl}/assets/logo.png" alt="FlowDesk Logo" style="width: 156px; height: 80px; margin-bottom: 20px;">
               <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: bold;">Welcome to FlowDesk!</h1>
             </td>
           </tr>
