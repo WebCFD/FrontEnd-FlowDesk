@@ -530,6 +530,18 @@ def create_floor_mesh(patch_df: pd.DataFrame, level_name: str, level_data: Dict[
     # 2. Compute the centroid (center of mass) of each part
     centroids = [part.center for part in polygon_meshes]
     sorted_polygons = [p for _, p in sorted(zip(centroids, polygon_meshes), key=lambda cp: cp[0][2])]
+    
+    # Validate that we have exactly 2 boundaries (floor and ceiling)
+    if len(sorted_polygons) < 2:
+        raise ValueError(
+            f"Room does not form a closed volume. Expected 2 boundaries (floor + ceiling), "
+            f"but found {len(sorted_polygons)}. This usually means:\n"
+            f"  1. Walls are not connected at corners\n"
+            f"  2. There are gaps between walls\n"
+            f"  3. The room layout is incomplete\n"
+            f"Please check that all walls connect properly to form a closed rectangular room."
+        )
+    
     polygon_floor = sorted_polygons[0]
     polygon_ceil = sorted_polygons[1]
 
