@@ -77,6 +77,15 @@ export default function Profile() {
               <Label>Email</Label>
               <div className="text-lg">{user?.email}</div>
             </div>
+            <div>
+              <Label>Available Credits</Label>
+              <div className="text-lg font-semibold text-green-600 dark:text-green-400">
+                €{typeof user?.credits === 'string' ? parseFloat(user.credits).toFixed(2) : '0.00'}
+              </div>
+              <p className="text-sm text-muted-foreground mt-1">
+                Each simulation costs €9.99. You can run {typeof user?.credits === 'string' ? Math.floor(parseFloat(user.credits) / 9.99) : 0} simulations.
+              </p>
+            </div>
           </CardContent>
         </Card>
 

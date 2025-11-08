@@ -312,7 +312,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         simulationCost = 0; // Free for testing
         console.log('[EXPRESS] Test calculation - no credit debit');
       } else {
-        simulationCost = simulationType === 'comfortTest' ? 10 : 12; // Thermal Comfort TEST: €10, 30 ITERATIONS: €12
+        simulationCost = simulationType === 'comfortTest' ? 9.99 : 12; // Thermal Comfort TEST: €9.99, 30 ITERATIONS: €12
         const hasEnoughCredits = await storage.debitUserCredits(req.user.id, simulationCost);
         
         if (!hasEnoughCredits) {
