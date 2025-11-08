@@ -16,6 +16,7 @@ import { eq } from "drizzle-orm";
 import crypto from "crypto";
 import { exec, execSync } from "child_process";
 import { promisify } from "util";
+import os from "os";
 
 const execPromise = promisify(exec);
 
@@ -1018,7 +1019,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get disk usage information
       let diskUsage = { used: 0, total: 0, unit: "GB" };
       try {
-        const { execSync } = require('child_process');
         const dfOutput = execSync('df -BG /').toString();
         const lines = dfOutput.split('\n');
         if (lines.length > 1) {
@@ -1032,6 +1032,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.error('[EXPRESS] Error getting disk usage:', diskError);
       }
 
+      // Get system memory information (total system memory, not just Node.js heap)
+      const totalMemoryMB = Math.round(os.totalmem() / 1024 / 1024);
+      const freeMemoryMB = Math.round(os.freemem() / 1024 / 1024);
+      const usedMemoryMB = totalMemoryMB - freeMemoryMB;
+
       const healthStatus = {
         express: {
           status: "running",
@@ -1044,8 +1049,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           nodeVersion: process.version,
           platform: process.platform,
           memory: {
-            used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
-            total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
+            used: usedMemoryMB,
+            total: totalMemoryMB,
             unit: "MB"
           },
           disk: diskUsage
