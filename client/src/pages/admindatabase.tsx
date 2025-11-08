@@ -6,9 +6,44 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Users, Database, CheckCircle, Clock, XCircle, DollarSign, Lock, Filter } from 'lucide-react';
+import { Users, Database, CheckCircle, Clock, XCircle, DollarSign, Lock, Filter, Activity, Cpu, Server } from 'lucide-react';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+
+// Helper function to format uptime
+function formatUptime(seconds: number): string {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  
+  if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  }
+  return `${minutes}m`;
+}
+
+// Helper function to get status color
+function getStatusColor(status: string): string {
+  switch (status) {
+    case 'running':
+      return 'text-green-600';
+    case 'stopped':
+      return 'text-red-600';
+    default:
+      return 'text-yellow-600';
+  }
+}
+
+// Helper function to get status icon
+function getStatusIcon(status: string): string {
+  switch (status) {
+    case 'running':
+      return '🟢';
+    case 'stopped':
+      return '🔴';
+    default:
+      return '🟡';
+  }
+}
 
 // Types for admin APIs
 interface AdminStats {
@@ -18,6 +53,31 @@ interface AdminStats {
   processingSimulations: number;
   failedSimulations: number;
   totalCreditsUsed: number;
+}
+
+interface WorkerHealth {
+  status: string;
+  lastSeen?: string;
+  pid?: number;
+}
+
+interface WorkersStatus {
+  express: {
+    status: string;
+    uptime: number;
+    timestamp: string;
+  };
+  worker_submit: WorkerHealth;
+  worker_monitor: WorkerHealth;
+  system: {
+    nodeVersion: string;
+    platform: string;
+    memory: {
+      used: number;
+      total: number;
+      unit: string;
+    };
+  };
 }
 
 interface AdminUser {
@@ -208,6 +268,21 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
     }
   });
 
+  // Fetch workers status with auto-refresh every 10 seconds
+  const { data: workersStatus, isLoading: workersLoading } = useQuery<WorkersStatus>({
+    queryKey: ['/api/admindatabase/workers'],
+    queryFn: async () => {
+      const response = await fetch('/api/admindatabase/workers', {
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+        },
+      });
+      if (!response.ok) throw new Error('Failed to fetch workers status');
+      return response.json();
+    },
+    refetchInterval: 10000, // Auto-refresh every 10 seconds
+  });
+
   // Filtered data using useMemo for performance
   const filteredUsers = useMemo(() => {
     if (!users) return [];
@@ -255,7 +330,84 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
         </Badge>
       </div>
 
-      {/* Stats Cards */}
+      {/* Workers Status Cards */}
+      {workersStatus && (
+        <>
+          <div className="border-b pb-2">
+            <h2 className="text-xl font-semibold flex items-center gap-2">
+              <Activity className="h-5 w-5" />
+              Estado de Workers
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card data-testid="card-worker-express">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Express Server</CardTitle>
+                <Server className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className={`text-2xl font-bold ${getStatusColor(workersStatus.express.status)}`}>
+                  {getStatusIcon(workersStatus.express.status)} {workersStatus.express.status}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Uptime: {formatUptime(workersStatus.express.uptime)}
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card data-testid="card-worker-submit">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Worker Submit</CardTitle>
+                <Cpu className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className={`text-2xl font-bold ${getStatusColor(workersStatus.worker_submit.status)}`}>
+                  {getStatusIcon(workersStatus.worker_submit.status)} {workersStatus.worker_submit.status}
+                </div>
+                {workersStatus.worker_submit.pid && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    PID: {workersStatus.worker_submit.pid}
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card data-testid="card-worker-monitor">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Worker Monitor</CardTitle>
+                <Cpu className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className={`text-2xl font-bold ${getStatusColor(workersStatus.worker_monitor.status)}`}>
+                  {getStatusIcon(workersStatus.worker_monitor.status)} {workersStatus.worker_monitor.status}
+                </div>
+                {workersStatus.worker_monitor.pid && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    PID: {workersStatus.worker_monitor.pid}
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card data-testid="card-system-info">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">System Info</CardTitle>
+                <Database className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {workersStatus.system.memory.used} {workersStatus.system.memory.unit}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Node {workersStatus.system.nodeVersion}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </>
+      )}
+
+      {/* Database Stats Cards */}
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
           <Card data-testid="card-total-users">
