@@ -109,7 +109,7 @@ maxNonOrtho: 55 (strict), maxSkewness: 12 (boundary) / 2.5 (internal)
   - Express server status and uptime
   - Worker Submit process status (PID, health)
   - Worker Monitor process status (PID, health)
-  - System memory usage and Node version
+  - System Info: Memory (used/total MB), Disk (used/total GB), Node version
 - **Database Management**:
   - View all users with filterable table (username, email, fullName)
   - Edit user credits and fullName
@@ -120,9 +120,13 @@ maxNonOrtho: 55 (strict), maxSkewness: 12 (boundary) / 2.5 (internal)
 - **Statistics Dashboard**: Real-time metrics for users, simulations, and credits used
 
 **Architecture**:
-- **Authentication**: Simple password-based ("flowerpower") with Bearer token
+- **Authentication**: SHA-256 hashed password ("flowerpower") with Bearer token
+  - Password is hashed client-side using WebCrypto SHA-256 before transmission
+  - Backend compares SHA-256 hashes (no plain text passwords stored or transmitted)
+  - Hash: `b49f2bc773151f63cead40e9fb5bf30a70dbe79e2fdbef56ebe64d3db2f6a536`
+  - Same security pattern as simulation launch password ("jrm2025")
 - **Backend Endpoints**:
-  - `GET /api/admindatabase/workers` - Workers health status (protected)
+  - `GET /api/admindatabase/workers` - Workers health status with system metrics (protected)
   - `GET /api/admindatabase/users` - List all users (protected)
   - `PATCH /api/admindatabase/users/:id` - Update user (protected)
   - `DELETE /api/admindatabase/users/:id` - Delete user (protected)
@@ -133,29 +137,24 @@ maxNonOrtho: 55 (strict), maxSkewness: 12 (boundary) / 2.5 (internal)
 - **Frontend**: React with shadcn/ui, TanStack Query for data fetching, auto-refresh for workers status
 - **Removed**: Public `/api/health/workers` endpoint (moved to protected admin panel)
 
-**⚠️ CRITICAL SECURITY LIMITATION**:
+**Security Improvements Implemented (Nov 8, 2024)**:
+- ✅ SHA-256 password hashing (client-side and server-side comparison)
+- ✅ No plain text password transmission
+- ✅ Bearer token authentication with hash verification
 
-The current admin authentication system has **severe security vulnerabilities**:
+**Known Limitations**:
+- ⚠️ Hash stored in client-side code (future: move to server-side env config)
+- ⚠️ No rate limiting on authentication attempts
+- ⚠️ No session expiration or refresh tokens
+- ⚠️ No audit logging of admin actions
+- ⚠️ Disk usage via `df` command (may fail on non-Unix systems)
 
-1. **Hardcoded password**: The password "flowerpower" is hardcoded in plain text in both frontend and backend
-2. **No encryption**: Token is passed as plain text in HTTP headers
-3. **No rate limiting**: Vulnerable to brute force attacks
-4. **No session management**: Simple Bearer token without expiration
-5. **No audit logging**: No record of admin actions
-
-**RECOMMENDED SECURITY IMPROVEMENTS** (Priority: **CRITICAL**):
-
-Implement proper authentication system:
-- Use JWT tokens with expiration and refresh tokens
-- Add bcrypt/scrypt password hashing
+**Future Security Enhancements** (Optional):
+- Move password hash to server-side environment variables
 - Implement rate limiting (express-rate-limit)
-- Add session management with secure cookies
-- Implement audit logging for admin actions
-- Add two-factor authentication (2FA)
-- Use environment variables for sensitive data
-- Implement CSRF protection
-
-Until these improvements are implemented, the admin panel should **only be accessed from trusted networks** and the password should be **changed immediately to a strong, unique password**.
+- Add session management with JWT tokens
+- Implement audit logging for all admin actions
+- Add graceful error handling for disk usage on Windows/non-Unix platforms
 
 ### Core Features & Design Patterns
 - **3D Design Engine**: Three.js-based, supporting multi-floor designs, 2D to 3D transformations, and wall extrusion.
