@@ -48,6 +48,17 @@ export const contactMessages = pgTable("contact_messages", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Pending user activations
+export const pendingActivations = pgTable("pending_activations", {
+  id: serial("id").primaryKey(),
+  username: text("username").notNull(),
+  email: text("email").notNull().unique(),
+  password: text("password").notNull(),
+  token: text("token").notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Schema for user registration and update
 export const insertUserSchema = createInsertSchema(users)
   .pick({
@@ -198,6 +209,7 @@ export type InsertSimulation = z.infer<typeof insertSimulationSchema>;
 export type UpdateSimulationStatus = z.infer<typeof updateSimulationStatusSchema>;
 export type ContactMessage = typeof contactMessages.$inferSelect;
 export type InsertContactMessage = z.infer<typeof contactMessageSchema>;
+export type PendingActivation = typeof pendingActivations.$inferSelect;
 
 // Simulation data types
 export type AirOrientation = z.infer<typeof airOrientationSchema>;

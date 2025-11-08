@@ -1,6 +1,6 @@
-import { users, simulations, type User, type InsertUser, type Simulation, type InsertSimulation, type UpdateSimulationStatus } from "@shared/schema";
+import { users, simulations, pendingActivations, type User, type InsertUser, type Simulation, type InsertSimulation, type UpdateSimulationStatus, type PendingActivation } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, lt } from "drizzle-orm";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 
@@ -13,6 +13,13 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   updateUserCredits(userId: number, credits: string): Promise<void>;
   debitUserCredits(userId: number, amount: number): Promise<boolean>;
+
+  // Pending activation methods
+  getPendingActivationByEmail(email: string): Promise<PendingActivation | undefined>;
+  getPendingActivationByToken(token: string): Promise<PendingActivation | undefined>;
+  createPendingActivation(activation: { username: string; email: string; password: string; token: string; expiresAt: Date }): Promise<PendingActivation>;
+  deletePendingActivation(id: number): Promise<void>;
+  cleanupExpiredActivations(): Promise<void>;
 
   // Simulation methods
   createSimulation(simulation: InsertSimulation & { userId: number }): Promise<Simulation>;
@@ -108,6 +115,32 @@ export class DatabaseStorage implements IStorage {
     const newCredits = (currentCredits - amount).toFixed(2);
     await this.updateUserCredits(userId, newCredits);
     return true;
+  }
+
+  async getPendingActivationByEmail(email: string): Promise<PendingActivation | undefined> {
+    const [activation] = await db.select().from(pendingActivations).where(eq(pendingActivations.email, email));
+    return activation;
+  }
+
+  async getPendingActivationByToken(token: string): Promise<PendingActivation | undefined> {
+    const [activation] = await db.select().from(pendingActivations).where(eq(pendingActivations.token, token));
+    return activation;
+  }
+
+  async createPendingActivation(activation: { username: string; email: string; password: string; token: string; expiresAt: Date }): Promise<PendingActivation> {
+    const [newActivation] = await db
+      .insert(pendingActivations)
+      .values(activation)
+      .returning();
+    return newActivation;
+  }
+
+  async deletePendingActivation(id: number): Promise<void> {
+    await db.delete(pendingActivations).where(eq(pendingActivations.id, id));
+  }
+
+  async cleanupExpiredActivations(): Promise<void> {
+    await db.delete(pendingActivations).where(lt(pendingActivations.expiresAt, new Date()));
   }
 
   async updateSimulationStatus(id: number, statusUpdate: UpdateSimulationStatus): Promise<Simulation> {
