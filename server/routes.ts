@@ -18,6 +18,7 @@ import { exec, execSync } from "child_process";
 import { promisify } from "util";
 import os from "os";
 import { getUncachableResendClient } from "./resend";
+import rateLimit from "express-rate-limit";
 
 const execPromise = promisify(exec);
 
@@ -115,16 +116,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Endpoint para obtener configuración del cliente, incluyendo claves API
   app.get("/api/config", (req, res) => {
     res.json({
-      googleAnalyticsId: process.env.GOOGLE_ANALYTICS_ID || ''
+      googleAnalyticsId: process.env.GOOGLE_ANALYTICS_ID || '',
+      turnstileSiteKey: process.env.TURNSTILE_SITE_KEY || ''
     });
   });
 
+  // Rate limiter for contact form - 5 messages per hour per IP
+  const contactFormLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 5, // 5 requests per hour
+    message: {
+      success: false,
+      message: "Demasiados mensajes enviados. Por favor, espera una hora antes de intentarlo de nuevo."
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+    handler: (req, res) => {
+      console.log("[Express] 🚫 Rate limit exceeded for IP:", req.ip);
+      res.status(429).json({
+        success: false,
+        message: "Demasiados mensajes enviados. Por favor, espera una hora antes de intentarlo de nuevo."
+      });
+    }
+  });
+
   // Contact form endpoint - sends email via Resend
-  app.post("/api/contact", async (req, res) => {
+  app.post("/api/contact", contactFormLimiter, async (req, res) => {
     try {
       console.log("[Express] 📧 Contact form submission received");
       const contactData = contactMessageSchema.parse(req.body);
       console.log("[Express] ✅ Contact data validated:", { name: contactData.name, email: contactData.email });
+      
+      // Verify Cloudflare Turnstile token if provided
+      if (contactData.turnstileToken && process.env.TURNSTILE_SECRET_KEY) {
+        console.log("[Express] 🔒 Verifying Turnstile token...");
+        const turnstileResponse = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            secret: process.env.TURNSTILE_SECRET_KEY,
+            response: contactData.turnstileToken,
+            remoteip: req.ip
+          })
+        });
+        
+        const turnstileResult = await turnstileResponse.json();
+        
+        if (!turnstileResult.success) {
+          console.log("[Express] ❌ Turnstile verification failed:", turnstileResult);
+          return res.status(400).json({
+            success: false,
+            message: "Verificación de seguridad fallida. Por favor, recarga la página e intenta de nuevo."
+          });
+        }
+        
+        console.log("[Express] ✅ Turnstile verification successful");
+      }
       
       console.log("[Express] 🔑 Getting Resend client...");
       const { client, fromEmail } = await getUncachableResendClient();

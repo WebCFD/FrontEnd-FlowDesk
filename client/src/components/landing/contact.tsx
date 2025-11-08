@@ -14,8 +14,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { Loader2, Shield } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -23,9 +24,27 @@ const formSchema = z.object({
   message: z.string().min(10, "Message must be at least 10 characters"),
 });
 
+declare global {
+  interface Window {
+    turnstile?: {
+      render: (element: string | HTMLElement, options: any) => string;
+      reset: (widgetId: string) => void;
+      remove: (widgetId: string) => void;
+    };
+  }
+}
+
 export default function Contact() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string>("");
+  const turnstileRef = useRef<HTMLDivElement>(null);
+  const widgetIdRef = useRef<string>("");
+  
+  const { data: config } = useQuery({
+    queryKey: ['/api/config'],
+  });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -35,6 +54,43 @@ export default function Contact() {
     },
   });
 
+  useEffect(() => {
+    if (!config?.turnstileSiteKey) return;
+
+    const script = document.createElement('script');
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+    script.async = true;
+    script.defer = true;
+    
+    script.onload = () => {
+      if (window.turnstile && turnstileRef.current && !widgetIdRef.current) {
+        widgetIdRef.current = window.turnstile.render(turnstileRef.current, {
+          sitekey: config.turnstileSiteKey,
+          callback: (token: string) => {
+            setTurnstileToken(token);
+          },
+          'error-callback': () => {
+            setTurnstileToken('');
+          },
+          theme: 'light',
+          size: 'normal',
+        });
+      }
+    };
+    
+    document.body.appendChild(script);
+
+    return () => {
+      if (widgetIdRef.current && window.turnstile) {
+        window.turnstile.remove(widgetIdRef.current);
+        widgetIdRef.current = '';
+      }
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
+  }, [config?.turnstileSiteKey]);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
@@ -43,7 +99,10 @@ export default function Contact() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify({
+          ...values,
+          turnstileToken
+        }),
       });
 
       const data = await response.json();
@@ -57,6 +116,12 @@ export default function Contact() {
         description: "Te responderemos lo antes posible. Gracias por contactarnos.",
       });
       form.reset();
+      
+      // Reset Turnstile widget
+      if (widgetIdRef.current && window.turnstile) {
+        window.turnstile.reset(widgetIdRef.current);
+        setTurnstileToken('');
+      }
     } catch (error) {
       console.error("Contact form error:", error);
       toast({
@@ -64,6 +129,12 @@ export default function Contact() {
         title: "Error al enviar",
         description: error instanceof Error ? error.message : "No se pudo enviar el mensaje. Por favor, inténtalo de nuevo.",
       });
+      
+      // Reset Turnstile on error
+      if (widgetIdRef.current && window.turnstile) {
+        window.turnstile.reset(widgetIdRef.current);
+        setTurnstileToken('');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -150,10 +221,20 @@ export default function Contact() {
                   </FormItem>
                 )}
               />
+              {config?.turnstileSiteKey && (
+                <div className="flex flex-col items-center gap-2">
+                  <div ref={turnstileRef} data-testid="turnstile-widget"></div>
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Shield className="h-3 w-3" />
+                    Protegido por Cloudflare Turnstile
+                  </p>
+                </div>
+              )}
+              
               <Button 
                 type="submit" 
                 className="w-full" 
-                disabled={isSubmitting}
+                disabled={isSubmitting || (config?.turnstileSiteKey && !turnstileToken)}
                 data-testid="button-send-contact"
               >
                 {isSubmitting ? (
