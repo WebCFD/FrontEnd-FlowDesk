@@ -122,11 +122,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Contact form endpoint - sends email via Resend
   app.post("/api/contact", async (req, res) => {
     try {
+      console.log("[Express] 📧 Contact form submission received");
       const contactData = contactMessageSchema.parse(req.body);
+      console.log("[Express] ✅ Contact data validated:", { name: contactData.name, email: contactData.email });
       
+      console.log("[Express] 🔑 Getting Resend client...");
       const { client, fromEmail } = await getUncachableResendClient();
+      console.log("[Express] ✅ Resend client obtained, fromEmail:", fromEmail);
       
-      await client.emails.send({
+      console.log("[Express] 📤 Sending email to info@flowdesk.es...");
+      const result = await client.emails.send({
         from: fromEmail,
         to: 'info@flowdesk.es',
         replyTo: contactData.email,
@@ -148,10 +153,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           </div>
         `
       });
-
+      
+      console.log("[Express] ✅ Email sent successfully! Result:", JSON.stringify(result));
       res.json({ success: true, message: "Message sent successfully" });
     } catch (error) {
-      console.error("[Express] Contact form error:", error);
+      console.error("[Express] ❌ Contact form error:", error);
+      console.error("[Express] ❌ Error details:", JSON.stringify(error, null, 2));
       
       if (error instanceof z.ZodError) {
         return res.status(400).json({ 
@@ -163,7 +170,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.status(500).json({ 
         success: false, 
-        message: "Failed to send message. Please try again later." 
+        message: "Failed to send message. Please try again later.",
+        error: error instanceof Error ? error.message : String(error)
       });
     }
   });
