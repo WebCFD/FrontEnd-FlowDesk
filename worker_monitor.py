@@ -5,10 +5,10 @@ import logging
 import shutil
 import requests
 import inductiva
+import subprocess
 
 sys.path.append('.')
 
-from step05_results2post import run as results2post
 from src.components.tools.vtk_to_vtkjs import vtk_to_vtkjs
 
 # Config
@@ -198,13 +198,41 @@ def process_completed_simulation(sim):
         except Exception as e:
             logger.warning(f"Failed to create results.foam: {e}")
         
-        # STEP 5: Post-processing
+        # STEP 5: Post-processing (isolated subprocess to prevent memory leaks)
         update_simulation(sim_id, {
             'progress': 95,
             'currentStep': 'Generating visualizations...'
         })
         
-        results2post(case_name)
+        logger.info(f"Starting post-processing in isolated subprocess for {case_name}")
+        
+        # Execute post-processing in a separate process to ensure memory cleanup
+        # This prevents PyVista/VTK memory accumulation in the worker process
+        try:
+            result = subprocess.run(
+                ["python3", "-u", "step05_results2post.py", case_name],
+                capture_output=True,
+                text=True,
+                timeout=600,  # 10 minute timeout for post-processing
+                check=True
+            )
+            
+            # Log subprocess output for debugging
+            if result.stdout:
+                logger.info(f"Post-processing output: {result.stdout}")
+            if result.stderr:
+                logger.warning(f"Post-processing stderr: {result.stderr}")
+            
+            logger.info(f"Post-processing subprocess completed successfully for {case_name}")
+            
+        except subprocess.TimeoutExpired as e:
+            logger.error(f"Post-processing timeout after 10 minutes for {case_name}")
+            raise Exception(f"Post-processing timeout: {str(e)}")
+        except subprocess.CalledProcessError as e:
+            logger.error(f"Post-processing failed with exit code {e.returncode} for {case_name}")
+            logger.error(f"Subprocess stdout: {e.stdout}")
+            logger.error(f"Subprocess stderr: {e.stderr}")
+            raise Exception(f"Post-processing failed: {e.stderr}")
         
         # Copy to public folder
         result_paths = copy_results_to_public(case_name, sim_id)
