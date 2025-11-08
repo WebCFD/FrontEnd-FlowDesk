@@ -1396,6 +1396,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // External API to get post_processing simulations (for worker monitor recovery)
+  app.get("/api/external/simulations/post_processing", async (req, res) => {
+    try {
+      // Check API key for external access
+      const apiKey = req.headers['x-api-key'];
+      if (!apiKey || apiKey !== 'flowerpower-external-api') {
+        return res.status(401).json({ message: "Invalid API key" });
+      }
+
+      console.log('[EXPRESS] Fetching post_processing simulations...');
+
+      // Get all simulations with status 'post_processing' (orphaned simulations)
+      const postProcessingSimulations = await db
+        .select({
+          id: simulations.id,
+          userId: simulations.userId,
+          name: simulations.name,
+          filePath: simulations.filePath,
+          status: simulations.status,
+          simulationType: simulations.simulationType,
+          packageType: simulations.packageType,
+          cost: simulations.cost,
+          taskId: simulations.taskId,
+          jsonConfig: simulations.jsonConfig,
+          createdAt: simulations.createdAt,
+          updatedAt: simulations.updatedAt,
+        })
+        .from(simulations)
+        .where(eq(simulations.status, 'post_processing'))
+        .orderBy(simulations.createdAt);
+
+      console.log('[EXPRESS] Found post_processing simulations:', postProcessingSimulations.length);
+
+      res.json({
+        success: true,
+        count: postProcessingSimulations.length,
+        simulations: postProcessingSimulations
+      });
+    } catch (error) {
+      console.error('[EXPRESS] Error fetching post_processing simulations:', error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // External API to get simulation details with user info
   app.get("/api/external/simulations/:id", async (req, res) => {
     try {

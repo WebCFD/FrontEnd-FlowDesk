@@ -12,6 +12,45 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 
 ## Recent Changes
 
+### 2025-11-08: Post-Processing Recovery System
+**Feature**: Implemented orphaned simulation recovery to prevent stuck simulations.
+
+**Problem**: 
+- If worker restarts while a simulation is in "post_processing" state, it becomes orphaned
+- Worker only polled "cloud_execution" state, leaving "post_processing" sims abandoned
+- No visibility into worker activity due to lack of logging
+
+**Solution - Dual-State Polling + Logging**:
+- Added `get_post_processing_sims()` function in worker_monitor.py
+- Created `/api/external/simulations/post_processing` endpoint in backend
+- Modified main worker loop to check BOTH states:
+  1. "cloud_execution" → normal processing flow
+  2. "post_processing" → recovery flow for orphaned sims
+- Added comprehensive logging showing simulation counts and statuses every 30 seconds
+
+**Technical Implementation**:
+```python
+# Worker polls both states each cycle
+cloud_sims = get_cloud_execution_sims()
+logger.info(f"Polling: Found {len(cloud_sims)} simulation(s) in cloud_execution")
+
+post_sims = get_post_processing_sims()
+if post_sims:
+    logger.warning(f"Recovery: Found {len(post_sims)} orphaned simulation(s) in post_processing")
+    for sim in post_sims:
+        process_completed_simulation(sim)
+```
+
+**Files Modified**:
+- `worker_monitor.py`: Added post_processing polling and detailed logging
+- `server/routes.ts`: Added GET `/api/external/simulations/post_processing` endpoint
+
+**Benefits**:
+- ✅ Orphaned simulations automatically recovered on next worker cycle
+- ✅ Detailed logs for debugging (polling status, sim counts, task IDs)
+- ✅ No manual intervention required
+- ✅ Worker survives restarts without losing in-progress work
+
 ### 2025-11-08: Worker Memory Isolation with Subprocess
 **Critical Fix**: Resolved worker_monitor OOM (Out of Memory) kills by isolating post-processing in subprocess.
 

@@ -47,6 +47,23 @@ def get_cloud_execution_sims():
         logger.error(f"Failed to fetch cloud sims: {e}")
         return []
 
+def get_post_processing_sims():
+    """Obtiene sims con status='post_processing' (huérfanas que necesitan completarse)"""
+    try:
+        response = requests.get(
+            f"{API_BASE}/api/external/simulations/post_processing",
+            headers={'x-api-key': API_KEY}
+        )
+        if response.ok:
+            data = response.json()
+            if isinstance(data, dict) and 'simulations' in data:
+                return data['simulations']
+            return data if isinstance(data, list) else []
+        return []
+    except Exception as e:
+        logger.error(f"Failed to fetch post_processing sims: {e}")
+        return []
+
 def update_simulation(sim_id, data):
     """Actualiza status/progress de simulación"""
     try:
@@ -263,6 +280,7 @@ def main():
     
     while True:
         try:
+            # 1️⃣ Buscar sims en cloud_execution
             sims = get_cloud_execution_sims()
             logger.info(f"Polling: Found {len(sims)} simulation(s) in cloud_execution")
             
@@ -284,6 +302,14 @@ def main():
                         'status': 'failed',
                         'errorMessage': 'Inductiva task failed'
                     })
+            
+            # 2️⃣ Buscar sims huérfanas en post_processing (recovery)
+            post_sims = get_post_processing_sims()
+            if post_sims:
+                logger.warning(f"Recovery: Found {len(post_sims)} orphaned simulation(s) in post_processing")
+                for sim in post_sims:
+                    logger.info(f"Recovering orphaned sim {sim['id']}")
+                    process_completed_simulation(sim)
             
             time.sleep(POLLING_INTERVAL)
             
