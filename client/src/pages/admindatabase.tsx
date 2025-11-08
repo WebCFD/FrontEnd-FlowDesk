@@ -783,9 +783,10 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
                           <div className="text-lg font-bold">
                             {(() => {
                               const uploadsGB = (workersStatus.system.uploads.size / 1024).toFixed(1);
-                              const availableGB = workersStatus.system.disk.total - workersStatus.system.disk.used;
-                              const percentage = availableGB > 0 ? ((workersStatus.system.uploads.size / 1024 / availableGB) * 100).toFixed(0) : 0;
-                              return `${uploadsGB} / ${availableGB} GB (${percentage}%)`;
+                              const systemWithoutUploads = workersStatus.system.disk.used - (workersStatus.system.uploads.size / 1024);
+                              const maxForUploads = workersStatus.system.disk.total - systemWithoutUploads;
+                              const percentage = maxForUploads > 0 ? ((workersStatus.system.uploads.size / 1024 / maxForUploads) * 100).toFixed(0) : 0;
+                              return `${uploadsGB} / ${maxForUploads.toFixed(0)} GB (${percentage}%)`;
                             })()}
                           </div>
                         </div>
@@ -795,7 +796,7 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
                           </TooltipTrigger>
                           <TooltipContent className="max-w-xs">
                             <p className="font-semibold">⚠️ CRÍTICO - Espacio de Simulaciones</p>
-                            <p className="text-xs">Espacio usado por resultados en /public/uploads/ vs. espacio disponible en disco (Total - Sistema). Calculado: uploads / (disco_total - disco_usado). Si llega a 100%, el disco se llenará y las simulaciones fallarán.</p>
+                            <p className="text-xs">Espacio usado por resultados en /public/uploads/ vs. espacio máximo para simulaciones. Calculado: uploads / (total - (usado - uploads)). Si llega a 100%, las simulaciones llenarán el disco y fallarán.</p>
                           </TooltipContent>
                         </Tooltip>
                       </div>
