@@ -65,8 +65,9 @@ async function sendWelcomeEmail(username: string, email: string) {
         <table role="presentation" style="max-width: 600px; width: 100%; border-collapse: collapse; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
           <!-- Header -->
           <tr>
-            <td style="padding: 40px 40px 30px; text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px 12px 0 0;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: bold;">Welcome to FlowDesk! 🎉</h1>
+            <td style="padding: 40px; text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px 12px 0 0;">
+              <img src="${baseUrl}/assets/logo.png" alt="FlowDesk Logo" style="width: 80px; height: 80px; margin-bottom: 20px;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: bold;">Welcome to FlowDesk!</h1>
             </td>
           </tr>
           
@@ -82,7 +83,7 @@ async function sendWelcomeEmail(username: string, email: string) {
               </p>
               
               <p style="margin: 0 0 30px; color: #1f2937; font-size: 16px; line-height: 1.6;">
-                FlowDesk makes professional CFD thermal comfort simulations accessible to everyone. Whether you're an HVAC engineer, architect, or student, our cloud-based platform will help you visualize and analyze air flow and thermal comfort with ease.
+                FlowDesk makes professional CFD thermal comfort simulations accessible to everyone. Whether you're an HVAC engineer, architect, or student, our cloud-based platform helps you optimize energy efficiency, improve comfort, and promote sustainability through advanced air flow analysis.
               </p>
               
               <!-- What's Next Section -->
@@ -91,10 +92,11 @@ async function sendWelcomeEmail(username: string, email: string) {
                   🚀 What's Next?
                 </h2>
                 <ul style="margin: 0; padding-left: 20px; color: #4b5563; font-size: 15px; line-height: 1.8;">
-                  <li>Create your first 3D design with our intuitive editor</li>
-                  <li>Configure air flow systems and boundary conditions</li>
-                  <li>Run your first CFD simulation in the cloud</li>
-                  <li>Analyze results with our powerful visualization tools</li>
+                  <li>Design multi-floor layouts with our intuitive 3D editor</li>
+                  <li>Configure HVAC systems and thermal boundary conditions</li>
+                  <li>Run cloud-powered CFD simulations in minutes</li>
+                  <li>Analyze thermal comfort and energy efficiency metrics</li>
+                  <li>Export results and optimize for sustainability</li>
                 </ul>
               </div>
               
@@ -112,31 +114,37 @@ async function sendWelcomeEmail(username: string, email: string) {
               <!-- Features -->
               <div style="margin: 30px 0;">
                 <h3 style="margin: 0 0 20px; color: #1f2937; font-size: 18px; font-weight: 600;">
-                  ✨ Key Features You'll Love:
+                  Key Features You'll Love:
                 </h3>
                 <table role="presentation" style="width: 100%;">
                   <tr>
                     <td style="padding: 10px 0;">
-                      <strong style="color: #667eea;">☁️ Cloud-Powered:</strong>
-                      <span style="color: #4b5563; font-size: 15px;"> No expensive hardware needed</span>
+                      <strong style="color: #667eea;">Cloud-Powered Computing:</strong>
+                      <span style="color: #4b5563; font-size: 15px;"> No expensive hardware or software licenses needed</span>
                     </td>
                   </tr>
                   <tr>
                     <td style="padding: 10px 0;">
-                      <strong style="color: #667eea;">🎨 3D Design Tools:</strong>
-                      <span style="color: #4b5563; font-size: 15px;"> Multi-floor layouts & custom furniture</span>
+                      <strong style="color: #667eea;">Advanced 3D Design:</strong>
+                      <span style="color: #4b5563; font-size: 15px;"> Multi-floor layouts with custom furniture placement</span>
                     </td>
                   </tr>
                   <tr>
                     <td style="padding: 10px 0;">
-                      <strong style="color: #667eea;">⚡ Fast Results:</strong>
-                      <span style="color: #4b5563; font-size: 15px;"> OpenFOAM simulations in minutes</span>
+                      <strong style="color: #667eea;">Customized CFD Solver:</strong>
+                      <span style="color: #4b5563; font-size: 15px;"> Professional-grade thermal comfort analysis</span>
                     </td>
                   </tr>
                   <tr>
                     <td style="padding: 10px 0;">
-                      <strong style="color: #667eea;">📊 Visualization:</strong>
-                      <span style="color: #4b5563; font-size: 15px;"> Interactive 3D results analysis</span>
+                      <strong style="color: #667eea;">Energy Efficiency:</strong>
+                      <span style="color: #4b5563; font-size: 15px;"> Optimize HVAC systems for sustainability and cost savings</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 10px 0;">
+                      <strong style="color: #667eea;">Interactive Results:</strong>
+                      <span style="color: #4b5563; font-size: 15px;"> 3D visualization and detailed performance metrics</span>
                     </td>
                   </tr>
                 </table>
