@@ -46,9 +46,11 @@ async function sendWelcomeEmail(username: string, email: string) {
     
     const { client, fromEmail } = await getUncachableResendClient();
     
-    const baseUrl = process.env.REPLIT_DEV_DOMAIN 
-      ? `https://${process.env.REPLIT_DEV_DOMAIN}`
-      : 'https://flowdesk.es';
+    const baseUrl = process.env.NODE_ENV === 'production'
+      ? 'https://flowdesk.es'
+      : (process.env.REPLIT_DEV_DOMAIN 
+          ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+          : 'http://localhost:5000');
     
     const html = `
 <!DOCTYPE html>
@@ -199,7 +201,6 @@ async function sendWelcomeEmail(username: string, email: string) {
     return result;
   } catch (error) {
     console.error(`[Auth] ❌ Failed to send welcome email to ${email}:`, error);
-    // Don't throw error - we don't want to fail registration if email fails
     return null;
   }
 }
@@ -210,7 +211,6 @@ async function sendActivationEmail(username: string, email: string, token: strin
     
     const { client, fromEmail } = await getUncachableResendClient();
     
-    // Always use flowdesk.es in production, REPLIT_DEV_DOMAIN only in development
     const baseUrl = process.env.NODE_ENV === 'production'
       ? 'https://flowdesk.es'
       : (process.env.REPLIT_DEV_DOMAIN 
@@ -309,21 +309,21 @@ async function sendActivationEmail(username: string, email: string, token: strin
     return result;
   } catch (error) {
     console.error(`[Auth] ❌ Failed to send activation email to ${email}:`, error);
-    throw error; // Throw error - we want registration to fail if email fails
+    throw error;
   }
 }
 
 export function setupAuth(app: Express) {
   const sessionSettings: session.SessionOptions = {
-    secret: 'your-secret-key',  // In production, this should be an environment variable
+    secret: 'your-secret-key',
     resave: false,
     saveUninitialized: false,
     cookie: {
       secure: process.env.NODE_ENV === "production",
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      maxAge: 24 * 60 * 60 * 1000
     },
     store: new MemoryStore({
-      checkPeriod: 86400000 // prune expired entries every 24h
+      checkPeriod: 86400000
     })
   };
 
@@ -367,10 +367,8 @@ export function setupAuth(app: Express) {
 
   app.post("/api/auth/register", async (req, res, next) => {
     try {
-      // Validate request body against our schema
       const validatedData = insertUserSchema.parse(req.body);
 
-      // Check if email already exists in users or pending activations
       const existingUser = await storage.getUserByEmail(validatedData.email);
       if (existingUser) {
         return res.status(400).json({ message: "Email already exists" });
@@ -381,12 +379,10 @@ export function setupAuth(app: Express) {
         return res.status(400).json({ message: "A verification email has already been sent to this address. Please check your inbox." });
       }
 
-      // Hash password and generate activation token
       const hashedPassword = await hashPassword(validatedData.password);
       const token = randomBytes(32).toString('hex');
-      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-      // Store pending activation
       await storage.createPendingActivation({
         username: validatedData.username,
         email: validatedData.email,
@@ -395,7 +391,6 @@ export function setupAuth(app: Express) {
         expiresAt,
       });
 
-      // Send activation email
       await sendActivationEmail(validatedData.username, validatedData.email, token);
 
       res.status(201).json({ 
@@ -441,45 +436,37 @@ export function setupAuth(app: Express) {
         return res.status(400).json({ message: "Invalid activation link" });
       }
 
-      // Cleanup expired activations first
       await storage.cleanupExpiredActivations();
 
-      // Find pending activation by token
       const pending = await storage.getPendingActivationByToken(token);
 
       if (!pending) {
         return res.status(400).json({ message: "Invalid or expired activation link" });
       }
 
-      // Check if token has expired
       if (new Date() > pending.expiresAt) {
         await storage.deletePendingActivation(pending.id);
         return res.status(400).json({ message: "Activation link has expired. Please register again." });
       }
 
-      // Check if email already exists (someone might have registered with same email while this was pending)
       const existingUser = await storage.getUserByEmail(pending.email);
       if (existingUser) {
         await storage.deletePendingActivation(pending.id);
         return res.status(400).json({ message: "This email is already registered. Please try logging in." });
       }
 
-      // Create the user
       const user = await storage.createUser({
         username: pending.username,
         email: pending.email,
-        password: pending.password, // Already hashed
+        password: pending.password,
       });
 
-      // Delete pending activation
       await storage.deletePendingActivation(pending.id);
 
-      // Send welcome email (non-blocking)
       sendWelcomeEmail(user.username, user.email).catch(err => {
         console.error('[Auth] Welcome email failed but continuing activation:', err);
       });
 
-      // Log user in automatically
       req.login(user, (err) => {
         if (err) return next(err);
         const { password, ...userWithoutPassword } = user;
