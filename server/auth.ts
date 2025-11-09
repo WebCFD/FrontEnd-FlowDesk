@@ -153,7 +153,7 @@ async function sendWelcomeEmail(username: string, email: string) {
               <!-- Support -->
               <div style="margin: 30px 0; padding: 20px; background-color: #fef3c7; border-radius: 8px;">
                 <p style="margin: 0; color: #92400e; font-size: 15px; line-height: 1.6;">
-                  <strong>💡 Need Help?</strong><br>
+                  <strong>Need Help?</strong><br>
                   Our team is here to support you. If you have any questions, feel free to reach out to us at 
                   <a href="mailto:info@flowdesk.es" style="color: #667eea; text-decoration: none; font-weight: 600;">info@flowdesk.es</a>
                 </p>
@@ -268,7 +268,7 @@ async function sendActivationEmail(username: string, email: string, token: strin
               
               <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px;">
                 <p style="margin: 0; color: #92400e; font-size: 14px;">
-                  <strong>⏰ This link will expire in 24 hours.</strong> If you didn't create this account, you can safely ignore this email.
+                  <strong>This link will expire in 24 hours.</strong> If you didn't create this account, you can safely ignore this email.
                 </p>
               </div>
               
