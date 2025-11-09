@@ -1127,12 +1127,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let diskUsage = { used: 0, total: 0, unit: "GB" };
       try {
         const dfOutput = execSync('df -BG /').toString();
+        console.log('[ADMIN] df output:', dfOutput);
         const lines = dfOutput.split('\n');
         if (lines.length > 1) {
           const parts = lines[1].split(/\s+/);
+          console.log('[ADMIN] df parts:', parts);
           if (parts.length >= 4) {
-            diskUsage.total = parseInt(parts[1].replace('G', ''));
-            diskUsage.used = parseInt(parts[2].replace('G', ''));
+            // Use parseFloat to handle decimal values, then round
+            const totalStr = parts[1].replace('G', '').trim();
+            const usedStr = parts[2].replace('G', '').trim();
+            diskUsage.total = Math.round(parseFloat(totalStr));
+            diskUsage.used = Math.round(parseFloat(usedStr));
+            console.log('[ADMIN] Disk usage:', diskUsage);
           }
         }
       } catch (diskError) {
@@ -1149,8 +1155,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         // Get size in MB
         const duOutput = execSync(`du -sm "${uploadsPath}"`).toString();
-        const sizeMB = parseInt(duOutput.split(/\s+/)[0]);
+        console.log('[ADMIN] du output:', duOutput);
+        const sizeMB = Math.round(parseFloat(duOutput.split(/\s+/)[0]));
         uploadsSize.size = sizeMB;
+        console.log('[ADMIN] Uploads size:', uploadsSize);
       } catch (uploadError) {
         console.error('[EXPRESS] Error getting uploads size:', uploadError);
       }

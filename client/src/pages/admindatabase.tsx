@@ -760,7 +760,7 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
                     {workersStatus.system.disk && (
                       <div className="flex items-center gap-1">
                         <div className="flex-1">
-                          <div className="text-sm font-medium text-muted-foreground">Disco Sistema</div>
+                          <div className="text-sm font-medium text-muted-foreground">System Disk</div>
                           <div className="text-lg font-bold">
                             {workersStatus.system.disk.used}/{workersStatus.system.disk.total} {workersStatus.system.disk.unit}
                           </div>
@@ -770,8 +770,8 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
                             <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
                           </TooltipTrigger>
                           <TooltipContent className="max-w-xs">
-                            <p className="font-semibold">Disco del Servidor</p>
-                            <p className="text-xs">Espacio total del sistema de archivos raíz (/). Calculado con df -BG /. Incluye sistema operativo, aplicación y archivos temporales.</p>
+                            <p className="font-semibold">Server Disk Space</p>
+                            <p className="text-xs">Total root filesystem space (/). Calculated with df -BG /. Includes OS, application, and temporary files.</p>
                           </TooltipContent>
                         </Tooltip>
                       </div>
@@ -779,7 +779,7 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
                     {workersStatus.system.uploads && workersStatus.system.disk && (
                       <div className="flex items-center gap-1">
                         <div className="flex-1">
-                          <div className="text-sm font-medium text-muted-foreground">Simulaciones</div>
+                          <div className="text-sm font-medium text-muted-foreground">Simulations</div>
                           <div className="text-lg font-bold">
                             {(() => {
                               const uploadsGB = (workersStatus.system.uploads.size / 1024).toFixed(1);
@@ -795,8 +795,8 @@ const AdminDatabasePanel = ({ authToken }: { authToken: string }) => {
                             <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
                           </TooltipTrigger>
                           <TooltipContent className="max-w-xs">
-                            <p className="font-semibold">⚠️ CRÍTICO - Espacio de Simulaciones</p>
-                            <p className="text-xs">Espacio usado por resultados en /public/uploads/ vs. espacio máximo para simulaciones. Calculado: uploads / (total - (usado - uploads)). Si llega a 100%, las simulaciones llenarán el disco y fallarán.</p>
+                            <p className="font-semibold">⚠️ CRITICAL - Simulation Storage</p>
+                            <p className="text-xs">Space used by results in /public/uploads/ vs. max available for simulations. Calculated: uploads / (total - (used - uploads)). If it reaches 100%, simulations will fill the disk and fail.</p>
                           </TooltipContent>
                         </Tooltip>
                       </div>
