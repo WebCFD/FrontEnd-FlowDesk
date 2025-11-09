@@ -191,7 +191,7 @@ async function sendWelcomeEmail(username: string, email: string) {
     const result = await client.emails.send({
       from: fromEmail,
       to: email,
-      subject: 'Welcome to FlowDesk - Your CFD Journey Starts Now! 🚀',
+      subject: 'Welcome to FlowDesk - Your CFD Journey Starts Now!',
       html: html,
     });
     
@@ -301,7 +301,7 @@ async function sendActivationEmail(username: string, email: string, token: strin
     const result = await client.emails.send({
       from: fromEmail,
       to: email,
-      subject: 'Activate Your FlowDesk Account 🔐',
+      subject: 'Activate Your FlowDesk Account',
       html: html,
     });
     
