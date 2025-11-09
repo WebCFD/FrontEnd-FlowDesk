@@ -209,6 +209,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [selectedColormap, setSelectedColormap] = useState<string>('jet_cfd');
   const [invertColormap, setInvertColormap] = useState<boolean>(false);
   const [showGrid, setShowGrid] = useState<boolean>(false);
+  const [showEdges, setShowEdges] = useState<boolean>(false);
   const [backgroundColor, setBackgroundColor] = useState<string>('#ffffff'); // Blanco por defecto
   const [colormapMin, setColormapMin] = useState<number | null>(null);
   const [colormapMax, setColormapMax] = useState<number | null>(null);
@@ -267,6 +268,17 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const applyOpacityToActor = (actor: any) => {
     if (actor && actor.getProperty) {
       actor.getProperty().setOpacity(opacity);
+    }
+  };
+
+  // Helper function to apply edge visibility to actors
+  const applyEdgeVisibilityToActor = (actor: any) => {
+    if (actor && actor.getProperty) {
+      actor.getProperty().setEdgeVisibility(showEdges);
+      if (showEdges) {
+        actor.getProperty().setEdgeColor(0.2, 0.2, 0.2); // Dark gray edges
+        actor.getProperty().setLineWidth(1);
+      }
     }
   };
 
@@ -430,7 +442,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       actor.setMapper(mapper);
       actor.getProperty().setOpacity(1.0);
       actor.getProperty().setLighting(false); // Disable lighting to show pure field colors
-      actor.getProperty().setEdgeVisibility(false); // No edges
+      
+      // Apply edge visibility based on user preference
+      applyEdgeVisibilityToActor(actor);
       
       // Debug output
       console.log('[VTKViewer] Plane actor visibility:', actor.getVisibility());
@@ -891,6 +905,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       
       actors.push(contourActor);
       applyOpacityToActor(contourActor);
+      applyEdgeVisibilityToActor(contourActor);
       filterEffectApplied = true;
       console.log('[VTKViewer] Applied real contour visualization');
     }
@@ -910,6 +925,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       
       actors.push(thresholdActor);
       applyOpacityToActor(thresholdActor);
+      applyEdgeVisibilityToActor(thresholdActor);
       filterEffectApplied = true;
       console.log('[VTKViewer] Applied real threshold visualization');
     }
@@ -931,6 +947,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       
       actors.push(surfaceActor);
       applyOpacityToActor(surfaceActor);
+      applyEdgeVisibilityToActor(surfaceActor);
     }
 
     // Real vector visualization with advanced techniques
@@ -1500,7 +1517,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       // Render the scene
       renderWindowRef.current.renderWindow.render();
     }
-  }, [filterConfig, selectedColormap, invertColormap, showGrid, backgroundColor, colormapMin, colormapMax, opacity]);
+  }, [filterConfig, selectedColormap, invertColormap, showGrid, showEdges, backgroundColor, colormapMin, colormapMax, opacity]);
 
   return (
     <div className={`vtk-viewer ${className || ''}`}>
@@ -1618,6 +1635,16 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                           checked={showGrid}
                           onCheckedChange={setShowGrid}
                           data-testid="toggle-show-grid"
+                        />
+                      </div>
+                      
+                      {/* Toggle para mostrar edges */}
+                      <div className="flex items-center justify-between mt-2">
+                        <Label className="text-sm">Show Edges</Label>
+                        <Switch
+                          checked={showEdges}
+                          onCheckedChange={setShowEdges}
+                          data-testid="toggle-show-edges"
                         />
                       </div>
                       
