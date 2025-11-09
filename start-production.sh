@@ -49,19 +49,41 @@ is_running() {
     return $?
 }
 
+# Función para matar procesos zombie con shutdown graceful
+kill_process() {
+    local process_pattern=$1
+    local name=$2
+    
+    # Buscar procesos con el patrón
+    local pids=$(pgrep -f "$process_pattern")
+    
+    if [ -n "$pids" ]; then
+        log "🧹 Detectados procesos zombie de $name: $pids - intentando shutdown graceful..."
+        
+        # Paso 1: Intentar SIGTERM (graceful shutdown)
+        pkill -TERM -f "$process_pattern" 2>/dev/null || true
+        
+        # Paso 2: Esperar 3 segundos para shutdown graceful
+        sleep 3
+        
+        # Paso 3: Verificar si el proceso todavía existe
+        local remaining_pids=$(pgrep -f "$process_pattern")
+        
+        if [ -n "$remaining_pids" ]; then
+            log "⚠️  Procesos no respondieron a SIGTERM, escalando a SIGKILL: $remaining_pids"
+            pkill -9 -f "$process_pattern" 2>/dev/null || true
+            sleep 1  # Esperar a que se libere el puerto
+        else
+            log "✅ Shutdown graceful exitoso"
+        fi
+    fi
+}
+
 # Función para iniciar un proceso
 start_process() {
     local name=$1
     local command=$2
     local log_file="$LOG_DIR/${name}.log"
-    
-    log "Iniciando $name..."
-    
-    # Ejecutar comando en background con logs
-    nohup bash -c "$command" >> "$log_file" 2>&1 &
-    
-    # Esperar un momento para verificar inicio
-    sleep 2
     
     # Obtener patrón de proceso según el nombre
     local pattern
@@ -76,6 +98,17 @@ start_process() {
             pattern="worker_monitor.py"
             ;;
     esac
+    
+    # IMPORTANTE: Matar procesos zombie ANTES de iniciar nuevo proceso
+    kill_process "$pattern" "$name"
+    
+    log "Iniciando $name..."
+    
+    # Ejecutar comando en background con logs
+    nohup bash -c "$command" >> "$log_file" 2>&1 &
+    
+    # Esperar un momento para verificar inicio
+    sleep 2
     
     if is_running "$pattern"; then
         local pid=$(pgrep -f "$pattern" | head -1)
