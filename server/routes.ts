@@ -496,10 +496,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log('[VTK-FILES] Endpoint called for simulation:', req.params.id);
     try {
       const simulationId = parseInt(req.params.id);
-      const vtkDir = path.join(process.cwd(), 'public', 'uploads', `sim_${simulationId}`, 'vtk');
+      
+      // Use production path if NODE_ENV=production, otherwise use public folder
+      const isProduction = process.env.NODE_ENV === 'production';
+      const vtkDir = isProduction 
+        ? path.join('/app/uploads', `sim_${simulationId}`, 'vtk')
+        : path.join(process.cwd(), 'public', 'uploads', `sim_${simulationId}`, 'vtk');
+      
+      console.log('[VTK-FILES] Looking for files in:', vtkDir);
       
       // Check if directory exists
       if (!fsSync.existsSync(vtkDir)) {
+        console.log('[VTK-FILES] Directory not found:', vtkDir);
         return res.json({ files: [] });
       }
       
