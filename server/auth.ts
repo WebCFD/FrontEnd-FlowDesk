@@ -210,9 +210,12 @@ async function sendActivationEmail(username: string, email: string, token: strin
     
     const { client, fromEmail } = await getUncachableResendClient();
     
-    const baseUrl = process.env.REPLIT_DEV_DOMAIN 
-      ? `https://${process.env.REPLIT_DEV_DOMAIN}`
-      : 'https://flowdesk.es';
+    // Always use flowdesk.es in production, REPLIT_DEV_DOMAIN only in development
+    const baseUrl = process.env.NODE_ENV === 'production'
+      ? 'https://flowdesk.es'
+      : (process.env.REPLIT_DEV_DOMAIN 
+          ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+          : 'http://localhost:5000');
     
     const activationLink = `${baseUrl}/activate?token=${token}`;
     
