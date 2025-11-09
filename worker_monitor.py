@@ -193,14 +193,21 @@ def copy_results_to_public(case_name, sim_id):
         return None
 
 def process_completed_simulation(sim):
-    """Procesa simulación completada en Inductiva"""
+    """
+    Procesa simulación completada en Inductiva.
+    
+    IMPORTANTE: Esta función DEBE ser llamada solo una vez por ciclo
+    para prevenir acumulación de memoria y OOM kills.
+    """
     sim_id = sim['id']
     task_id = sim.get('taskId')
     case_name = f"sim_{sim_id}"
     
+    logger.info(f"=" * 60)
+    logger.info(f"🔄 STARTING PROCESSING: Simulation #{sim_id}")
+    logger.info(f"=" * 60)
+    
     try:
-        logger.info(f"Processing completed sim {sim_id}")
-        
         # Update: post_processing
         update_simulation(sim_id, {
             'status': 'post_processing',
@@ -209,18 +216,21 @@ def process_completed_simulation(sim):
         })
         
         # Download results
+        logger.info(f"[Sim {sim_id}] Step 1/4: Downloading results from Inductiva...")
         if not download_results(task_id, case_name):
             raise Exception("Failed to download results")
+        logger.info(f"[Sim {sim_id}] ✅ Results downloaded successfully")
         
         # Create results.foam file for PyVista compatibility
+        logger.info(f"[Sim {sim_id}] Step 2/4: Creating results.foam marker...")
         sim_path = os.path.join(os.getcwd(), "cases", case_name, "sim")
         foam_file = os.path.join(sim_path, "results.foam")
         try:
             with open(foam_file, 'w') as f:
                 f.write("// Marker file for OpenFOAM case\n")
-            logger.info(f"Created results.foam for {case_name}")
+            logger.info(f"[Sim {sim_id}] ✅ results.foam created")
         except Exception as e:
-            logger.warning(f"Failed to create results.foam: {e}")
+            logger.warning(f"[Sim {sim_id}] ⚠️ Failed to create results.foam: {e}")
         
         # STEP 5: Post-processing (isolated subprocess to prevent memory leaks)
         update_simulation(sim_id, {
@@ -228,7 +238,8 @@ def process_completed_simulation(sim):
             'currentStep': 'Generating visualizations...'
         })
         
-        logger.info(f"Starting post-processing in isolated subprocess for {case_name}")
+        logger.info(f"[Sim {sim_id}] Step 3/4: Running post-processing in isolated subprocess...")
+        logger.info(f"[Sim {sim_id}] ⚡ This subprocess will handle PyVista/VTK memory separately")
         
         # Execute post-processing in a separate process to ensure memory cleanup
         # This prevents PyVista/VTK memory accumulation in the worker process
@@ -243,26 +254,29 @@ def process_completed_simulation(sim):
             
             # Log subprocess output for debugging
             if result.stdout:
-                logger.info(f"Post-processing output: {result.stdout}")
+                logger.info(f"[Sim {sim_id}] Post-processing output:\n{result.stdout}")
             if result.stderr:
-                logger.warning(f"Post-processing stderr: {result.stderr}")
+                logger.warning(f"[Sim {sim_id}] Post-processing stderr:\n{result.stderr}")
             
-            logger.info(f"Post-processing subprocess completed successfully for {case_name}")
+            logger.info(f"[Sim {sim_id}] ✅ Post-processing subprocess completed successfully")
             
         except subprocess.TimeoutExpired as e:
-            logger.error(f"Post-processing timeout after 10 minutes for {case_name}")
+            logger.error(f"[Sim {sim_id}] ❌ Post-processing timeout after 10 minutes")
             raise Exception(f"Post-processing timeout: {str(e)}")
         except subprocess.CalledProcessError as e:
-            logger.error(f"Post-processing failed with exit code {e.returncode} for {case_name}")
-            logger.error(f"Subprocess stdout: {e.stdout}")
-            logger.error(f"Subprocess stderr: {e.stderr}")
+            logger.error(f"[Sim {sim_id}] ❌ Post-processing failed with exit code {e.returncode}")
+            logger.error(f"[Sim {sim_id}] Subprocess stdout: {e.stdout}")
+            logger.error(f"[Sim {sim_id}] Subprocess stderr: {e.stderr}")
             raise Exception(f"Post-processing failed: {e.stderr}")
         
         # Copy to public folder
+        logger.info(f"[Sim {sim_id}] Step 4/4: Copying VTK files to public folder...")
         result_paths = copy_results_to_public(case_name, sim_id)
         
         if not result_paths:
             raise Exception("Failed to copy results")
+        
+        logger.info(f"[Sim {sim_id}] ✅ VTK files copied successfully ({len(result_paths.get('vtk', []))} files)")
         
         # Update: completed
         update_simulation(sim_id, {
@@ -273,78 +287,136 @@ def process_completed_simulation(sim):
             'completedAt': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
         })
         
-        logger.info(f"Sim {sim_id} completed successfully")
+        logger.info(f"🎉 SIMULATION #{sim_id} COMPLETED SUCCESSFULLY")
+        logger.info(f"=" * 60)
+        return True
         
     except Exception as e:
-        logger.error(f"Error processing sim {sim_id}: {e}")
+        logger.error(f"❌ ERROR PROCESSING SIMULATION #{sim_id}: {e}")
+        logger.error(f"=" * 60)
         update_simulation(sim_id, {
             'status': 'failed',
             'errorMessage': str(e)
         })
+        return False
+    finally:
+        # CRITICAL: Clean up temporary files to free disk space
+        try:
+            temp_case_path = os.path.join(os.getcwd(), "cases", case_name)
+            if os.path.exists(temp_case_path):
+                logger.info(f"[Sim {sim_id}] 🧹 Cleaning up temporary files in {temp_case_path}")
+                # Keep only essential files, delete large temp files
+                sim_dir = os.path.join(temp_case_path, "sim")
+                if os.path.exists(sim_dir):
+                    # Delete large OpenFOAM time directories but keep results.foam
+                    for item in os.listdir(sim_dir):
+                        item_path = os.path.join(sim_dir, item)
+                        if os.path.isdir(item_path) and item.replace('.', '').isdigit():
+                            shutil.rmtree(item_path)
+                            logger.info(f"[Sim {sim_id}] Deleted time directory: {item}")
+        except Exception as cleanup_error:
+            logger.warning(f"[Sim {sim_id}] ⚠️ Cleanup warning (non-critical): {cleanup_error}")
 
 def main():
-    logger.info("Worker Monitor started")
+    logger.info("=" * 80)
+    logger.info("🚀 WORKER MONITOR STARTED - PRODUCTION MODE")
+    logger.info("⚡ Memory Management: ENABLED (1 simulation per 30s cycle)")
+    logger.info("🔒 OOM Protection: ACTIVE (subprocess isolation + garbage collection)")
+    logger.info("=" * 80)
+    
+    cycle_count = 0
     
     while True:
+        cycle_count += 1
+        processed_in_cycle = False
+        
         try:
+            logger.info(f"\n{'='*80}")
+            logger.info(f"🔄 POLLING CYCLE #{cycle_count}")
+            logger.info(f"{'='*80}")
+            
             # 1️⃣ Buscar sims en cloud_execution
             sims = get_cloud_execution_sims()
-            logger.info(f"Polling: Found {len(sims)} simulation(s) in cloud_execution")
+            logger.info(f"📊 Found {len(sims)} simulation(s) in 'cloud_execution' state")
             
             # Process only ONE simulation per cycle to prevent memory accumulation
+            # CRITICAL: This limit prevents OOM kills by ensuring memory is freed between sims
             processed_count = 0
+            
             for sim in sims:
+                # SAFETY GATE: Stop after processing 1 simulation
                 if processed_count >= 1:
-                    logger.info(f"Deferring remaining simulations to next cycle (memory management)")
+                    remaining = len(sims) - processed_count
+                    logger.info(f"⏸️  MEMORY PROTECTION: Deferring {remaining} remaining simulation(s) to next cycle")
+                    logger.info(f"⏱️  Next cycle in {POLLING_INTERVAL} seconds")
                     break
                 
                 task_id = sim.get('taskId')
                 if not task_id:
-                    logger.warning(f"Sim {sim.get('id')} has no taskId, skipping")
+                    logger.warning(f"⚠️  Sim {sim.get('id')} has no taskId, skipping")
                     continue
                 
-                logger.info(f"Checking status for sim {sim.get('id')} (task: {task_id})")
+                logger.info(f"🔍 Checking Inductiva status for sim {sim.get('id')} (task: {task_id})")
                 status = check_task_status(task_id)
-                logger.info(f"Sim {sim.get('id')} status: {status}")
+                logger.info(f"📋 Sim {sim.get('id')} status: {status}")
                 
                 if status == 'TaskStatusCode.SUCCESS':
-                    process_completed_simulation(sim)
-                    processed_count += 1
-                    
-                    # Force garbage collection after processing to free memory
-                    gc.collect()
-                    logger.info(f"Memory cleanup completed after sim {sim.get('id')}")
+                    # Process simulation in try-finally to GUARANTEE memory cleanup
+                    try:
+                        success = process_completed_simulation(sim)
+                        if success:
+                            processed_count += 1
+                            processed_in_cycle = True
+                    finally:
+                        # CRITICAL: ALWAYS force garbage collection, even if processing failed
+                        logger.info(f"🧹 Forcing garbage collection...")
+                        gc.collect()
+                        logger.info(f"✅ Memory cleanup completed after sim {sim.get('id')}")
                     
                 elif status == 'TaskStatusCode.FAILED':
-                    logger.error(f"Sim {sim.get('id')} FAILED in Inductiva")
+                    logger.error(f"❌ Sim {sim.get('id')} FAILED in Inductiva cloud")
                     update_simulation(sim['id'], {
                         'status': 'failed',
                         'errorMessage': 'Inductiva task failed'
                     })
             
             # 2️⃣ Buscar sims huérfanas en post_processing (recovery)
-            # Only if we didn't process any cloud_execution sims
+            # Only if we didn't process any cloud_execution sims (avoid double-processing)
             if processed_count == 0:
                 post_sims = get_post_processing_sims()
                 if post_sims:
-                    logger.warning(f"Recovery: Found {len(post_sims)} orphaned simulation(s) in post_processing")
+                    logger.warning(f"🔧 RECOVERY MODE: Found {len(post_sims)} orphaned simulation(s) in 'post_processing' state")
                     # Recover only the first orphaned simulation
-                    if len(post_sims) > 0:
-                        sim = post_sims[0]
-                        logger.info(f"Recovering orphaned sim {sim['id']}")
-                        process_completed_simulation(sim)
-                        
-                        # Force garbage collection after recovery
+                    sim = post_sims[0]
+                    logger.info(f"🔄 Attempting to recover orphaned sim {sim['id']}")
+                    
+                    try:
+                        success = process_completed_simulation(sim)
+                        if success:
+                            processed_in_cycle = True
+                    finally:
+                        # CRITICAL: ALWAYS force garbage collection after recovery
+                        logger.info(f"🧹 Forcing garbage collection after recovery...")
                         gc.collect()
-                        logger.info(f"Memory cleanup completed after recovering sim {sim['id']}")
+                        logger.info(f"✅ Memory cleanup completed after recovering sim {sim['id']}")
             
+            # Summary of cycle
+            if not processed_in_cycle:
+                logger.info(f"💤 No simulations processed this cycle")
+            
+            logger.info(f"⏳ Sleeping for {POLLING_INTERVAL} seconds until next cycle...")
             time.sleep(POLLING_INTERVAL)
             
         except KeyboardInterrupt:
-            logger.info("Worker stopped")
+            logger.info("\n" + "=" * 80)
+            logger.info("🛑 Worker Monitor stopped by user (KeyboardInterrupt)")
+            logger.info("=" * 80)
             break
         except Exception as e:
-            logger.error(f"Worker error: {e}")
+            logger.error(f"❌ CRITICAL ERROR in worker cycle #{cycle_count}: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+            logger.info(f"🔄 Attempting to continue... sleeping for {POLLING_INTERVAL} seconds")
             time.sleep(POLLING_INTERVAL)
 
 if __name__ == "__main__":
