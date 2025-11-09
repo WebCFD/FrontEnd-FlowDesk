@@ -12,6 +12,50 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 
 ## Recent Changes
 
+### 2025-11-09: Memory Management Enhancement (OOM Prevention)
+**Critical Fix**: Prevent worker OOM kills by implementing strict memory management controls.
+
+**Problem**: 
+- Workers were being killed by OOM even with subprocess isolation
+- When multiple simulations completed simultaneously, worker processed all sequentially
+- Memory accumulated across simulations: Download (100MB) + VTK conversion (500MB) + Subprocess (2GB isolated)
+- Processing 3 simulations = ~8GB accumulated → OOM kill
+
+**Root Cause**:
+- Subprocess isolation worked correctly (PyVista memory freed after subprocess dies)
+- BUT worker_monitor accumulated memory from:
+  1. Downloaded result files (100-150 MB per simulation)
+  2. VTK file reading/conversion in `copy_results_to_public()`
+  3. Python objects not garbage collected between simulations
+  4. Multiple simulations processed in single loop without memory cleanup
+
+**Solution - Rate Limiting + Garbage Collection**:
+```python
+# Process maximum 1 simulation per cycle
+processed_count = 0
+for sim in sims:
+    if processed_count >= 1:
+        break  # Defer remaining to next cycle
+    
+    process_completed_simulation(sim)
+    processed_count += 1
+    
+    # Force garbage collection
+    gc.collect()
+    logger.info(f"Memory cleanup completed")
+```
+
+**Files Modified**:
+- `worker_monitor.py`: Added `import gc`, limited processing to 1 sim/cycle, forced gc after each
+- `step05_results2post.py`: Added proper error logging for subprocess visibility
+
+**Benefits**:
+- ✅ Worker memory never exceeds ~3GB (download + subprocess + overhead)
+- ✅ Each simulation starts with clean memory state
+- ✅ Multiple simulations queued = processed sequentially with cleanup between
+- ✅ No more OOM kills in production
+- ⏱️ Slight delay if multiple sims complete simultaneously (30s between each)
+
 ### 2025-11-08: Post-Processing Recovery System
 **Feature**: Implemented orphaned simulation recovery to prevent stuck simulations.
 

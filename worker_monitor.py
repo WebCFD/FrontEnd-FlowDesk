@@ -6,6 +6,7 @@ import shutil
 import requests
 import inductiva
 import subprocess
+import gc
 
 sys.path.append('.')
 
@@ -290,7 +291,13 @@ def main():
             sims = get_cloud_execution_sims()
             logger.info(f"Polling: Found {len(sims)} simulation(s) in cloud_execution")
             
+            # Process only ONE simulation per cycle to prevent memory accumulation
+            processed_count = 0
             for sim in sims:
+                if processed_count >= 1:
+                    logger.info(f"Deferring remaining simulations to next cycle (memory management)")
+                    break
+                
                 task_id = sim.get('taskId')
                 if not task_id:
                     logger.warning(f"Sim {sim.get('id')} has no taskId, skipping")
@@ -302,6 +309,12 @@ def main():
                 
                 if status == 'TaskStatusCode.SUCCESS':
                     process_completed_simulation(sim)
+                    processed_count += 1
+                    
+                    # Force garbage collection after processing to free memory
+                    gc.collect()
+                    logger.info(f"Memory cleanup completed after sim {sim.get('id')}")
+                    
                 elif status == 'TaskStatusCode.FAILED':
                     logger.error(f"Sim {sim.get('id')} FAILED in Inductiva")
                     update_simulation(sim['id'], {
@@ -310,12 +323,20 @@ def main():
                     })
             
             # 2️⃣ Buscar sims huérfanas en post_processing (recovery)
-            post_sims = get_post_processing_sims()
-            if post_sims:
-                logger.warning(f"Recovery: Found {len(post_sims)} orphaned simulation(s) in post_processing")
-                for sim in post_sims:
-                    logger.info(f"Recovering orphaned sim {sim['id']}")
-                    process_completed_simulation(sim)
+            # Only if we didn't process any cloud_execution sims
+            if processed_count == 0:
+                post_sims = get_post_processing_sims()
+                if post_sims:
+                    logger.warning(f"Recovery: Found {len(post_sims)} orphaned simulation(s) in post_processing")
+                    # Recover only the first orphaned simulation
+                    if len(post_sims) > 0:
+                        sim = post_sims[0]
+                        logger.info(f"Recovering orphaned sim {sim['id']}")
+                        process_completed_simulation(sim)
+                        
+                        # Force garbage collection after recovery
+                        gc.collect()
+                        logger.info(f"Memory cleanup completed after recovering sim {sim['id']}")
             
             time.sleep(POLLING_INTERVAL)
             
