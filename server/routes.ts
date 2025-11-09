@@ -1578,6 +1578,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // TEMPORARY DEBUG ENDPOINT - Get simulation JSON content
+  app.get("/api/debug/simulation/:id/json", async (req, res) => {
+    try {
+      const simId = parseInt(req.params.id);
+      const simulation = await storage.getSimulation(simId);
+      
+      if (!simulation) {
+        return res.status(404).json({ message: "Simulation not found" });
+      }
+
+      const filePath = path.join(process.cwd(), simulation.filePath);
+      
+      try {
+        const jsonContent = await fs.readFile(filePath, 'utf-8');
+        const jsonData = JSON.parse(jsonContent);
+        res.json({
+          simulation: {
+            id: simulation.id,
+            name: simulation.name,
+            status: simulation.status,
+            errorMessage: simulation.errorMessage,
+            filePath: simulation.filePath
+          },
+          jsonData
+        });
+      } catch (fileError) {
+        console.error('[DEBUG] Error reading JSON file:', fileError);
+        res.status(500).json({ 
+          message: "Error reading simulation file",
+          error: fileError instanceof Error ? fileError.message : String(fileError),
+          filePath: simulation.filePath
+        });
+      }
+    } catch (error) {
+      console.error('[DEBUG] Error in debug endpoint:', error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
