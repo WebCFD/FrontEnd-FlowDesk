@@ -298,8 +298,42 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     const { planePositions, planesEnabled } = filterConfig.clip;
     const sourceData = sourceDataRef.current;
     
-    // Helper function to create a filled cutting plane with interpolated field data
+    // Helper function to create a cutting plane using vtkCutter (TEST)
     const createSlice = (origin: [number, number, number], normal: [number, number, number], planeSize: [number, number]) => {
+      // ============================================
+      // NEW: Use vtkCutter for native mesh slicing
+      // ============================================
+      console.log('[VTKViewer] Testing vtkCutter - origin:', origin, 'normal:', normal);
+      
+      // Create implicit plane function
+      const plane = vtkPlane.newInstance();
+      plane.setOrigin(...origin);
+      plane.setNormal(...normal);
+      
+      // Create cutter filter
+      const cutter = vtkCutter.newInstance();
+      cutter.setCutFunction(plane);
+      cutter.setInputData(sourceData);
+      cutter.update();
+      
+      const planeData = cutter.getOutputData();
+      const numPlanePoints = planeData.getNumberOfPoints();
+      const numCells = planeData.getNumberOfCells();
+      const numPolys = planeData.getNumberOfPolys();
+      const numLines = planeData.getNumberOfLines();
+      
+      console.log('[VTKViewer] vtkCutter output:', {
+        points: numPlanePoints,
+        cells: numCells,
+        polys: numPolys,
+        lines: numLines,
+        arrays: planeData.getPointData().getNumberOfArrays()
+      });
+      
+      // ============================================
+      // OLD MANUAL INTERPOLATION (BACKUP - COMMENTED OUT)
+      // ============================================
+      /*
       // Create a filled plane geometry
       const planeSource = vtkPlaneSource.newInstance();
       planeSource.setOrigin(...origin);
@@ -394,6 +428,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       });
       
       console.log('[VTKViewer] Created filled plane with', numPlanePoints, 'points and', fieldArrays.length, 'interpolated fields');
+      */
       
       // Create mapper and apply visualization
       const mapper = vtkMapper.newInstance();
