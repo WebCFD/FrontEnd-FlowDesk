@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useQuery } from "@tanstack/react-query";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,12 @@ export default function Profile() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+
+  // Fetch user data including credits (same as dashboard)
+  const { data: userData } = useQuery({
+    queryKey: ['/api/auth/user'],
+    enabled: !!user && !user.isAnonymous,
+  });
 
   const form = useForm<PasswordForm>({
     resolver: zodResolver(passwordSchema),
@@ -80,10 +87,10 @@ export default function Profile() {
             <div>
               <Label>Available Credits</Label>
               <div className="text-lg font-semibold text-green-600 dark:text-green-400">
-                €{typeof user?.credits === 'string' ? parseFloat(user.credits).toFixed(2) : '0.00'}
+                €{userData?.credits ? parseFloat(userData.credits).toFixed(2) : '0.00'}
               </div>
               <p className="text-sm text-muted-foreground mt-1">
-                Each simulation costs €9.99. You can run {typeof user?.credits === 'string' ? Math.floor(parseFloat(user.credits) / 9.99) : 0} simulations.
+                Each simulation costs €9.99. You can run {userData?.credits ? Math.floor(parseFloat(userData.credits) / 9.99) : 0} simulations.
               </p>
             </div>
           </CardContent>
