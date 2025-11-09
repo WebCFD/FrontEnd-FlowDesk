@@ -58,6 +58,13 @@ def run(case_name: str = "cases/cfd_case") -> None:
 if __name__ == "__main__":
     import sys
     
+    # Configure logging to print to stderr for subprocess visibility
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(levelname)s - %(message)s',
+        handlers=[logging.StreamHandler(sys.stderr)]
+    )
+    
     # Accept case_name as command-line argument
     if len(sys.argv) > 1:
         case_name = sys.argv[1]
@@ -66,4 +73,13 @@ if __name__ == "__main__":
         case_name = "FDM_iter2"
     
     logger.info(f"Starting post-processing for case: {case_name}")
-    result = run(case_name=case_name)
+    
+    try:
+        result = run(case_name=case_name)
+        logger.info("✅ Post-processing completed successfully")
+        sys.exit(0)
+    except Exception as e:
+        logger.error(f"❌ Post-processing failed: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
+        sys.exit(1)
