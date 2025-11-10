@@ -113,7 +113,7 @@ def copy_results_to_public(case_name, sim_id):
         # Use production path if NODE_ENV=production, otherwise use public folder
         is_production = os.getenv('NODE_ENV') == 'production'
         if is_production:
-            public_path = os.path.join("/app/uploads", f"sim_{sim_id}")
+            public_path = os.path.join("/tmp/uploads", f"sim_{sim_id}")
         else:
             public_path = os.path.join(os.getcwd(), "public", "uploads", f"sim_{sim_id}")
         

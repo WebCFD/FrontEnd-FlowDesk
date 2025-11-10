@@ -500,7 +500,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Use production path if NODE_ENV=production, otherwise use public folder
       const isProduction = process.env.NODE_ENV === 'production';
       const vtkDir = isProduction 
-        ? path.join('/app/uploads', `sim_${simulationId}`, 'vtk')
+        ? path.join('/tmp/uploads', `sim_${simulationId}`, 'vtk')
         : path.join(process.cwd(), 'public', 'uploads', `sim_${simulationId}`, 'vtk');
       
       console.log('[VTK-FILES] Looking for files in:', vtkDir);

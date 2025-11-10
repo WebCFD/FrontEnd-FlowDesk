@@ -14,10 +14,10 @@ app.use(express.static(path.join(process.cwd(), 'public')));
 const nodeEnv = process.env.NODE_ENV || 'development';
 log(`Starting server in ${nodeEnv} mode`);
 
-// In production, also serve uploads from /app/uploads
+// In production, also serve uploads from /tmp/uploads
 if (nodeEnv === 'production') {
-  app.use('/uploads', express.static('/app/uploads'));
-  log('Serving production uploads from /app/uploads');
+  app.use('/uploads', express.static('/tmp/uploads'));
+  log('Serving production uploads from /tmp/uploads');
 }
 
 app.use((req, res, next) => {

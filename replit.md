@@ -12,6 +12,48 @@ Development approach: Favor simple, minimal solutions over complex implementatio
 
 ## Recent Changes
 
+### 2025-11-10: Production Storage Path Fix (Cloud Run Compatibility)
+**Critical Fix**: Changed VTK file storage from `/app/uploads` to `/tmp/uploads` for Google Cloud Run compatibility.
+
+**Problem**: 
+- Simulation 241 failed with "Failed to copy results" error
+- Worker tried to save VTK files to `/app/uploads/`, which is read-only in Cloud Run
+- Google Cloud Run containers have read-only filesystem except for `/tmp`
+
+**Root Cause**:
+- Production code used `/app/uploads` assuming writable filesystem
+- Cloud Run containers only allow writes to `/tmp` directory
+- `os.makedirs()` failed with permission error when creating `/app/uploads/sim_X/`
+
+**Solution - Use /tmp for Ephemeral Storage**:
+```python
+# worker_monitor.py
+is_production = os.getenv('NODE_ENV') == 'production'
+if is_production:
+    public_path = os.path.join("/tmp/uploads", f"sim_{sim_id}")  # ✅ Writable
+else:
+    public_path = os.path.join(os.getcwd(), "public", "uploads", f"sim_{sim_id}")
+```
+
+```typescript
+// server/index.ts
+if (nodeEnv === 'production') {
+  app.use('/uploads', express.static('/tmp/uploads'));  // ✅ Serve from /tmp
+}
+```
+
+**Files Modified**:
+- `worker_monitor.py`: Changed production path to `/tmp/uploads`
+- `server/index.ts`: Express serves `/uploads` from `/tmp/uploads`
+- `server/routes.ts`: VTK file listing endpoint uses `/tmp/uploads`
+- `start-production.sh`: Workers receive `NODE_ENV=production` environment variable
+
+**Benefits**:
+- ✅ Workers can write VTK files successfully in Cloud Run
+- ✅ No permission errors
+- ✅ Simulations complete successfully
+- ⚠️ Note: `/tmp` storage is ephemeral and cleared on container restart (512 MB limit)
+
 ### 2025-11-09: Memory Management Enhancement (OOM Prevention)
 **Critical Fix**: Prevent worker OOM kills by implementing strict memory management controls.
 
