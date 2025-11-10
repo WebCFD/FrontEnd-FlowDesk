@@ -180,10 +180,10 @@ log "Iniciando todos los procesos..."
 start_process "express" "NODE_ENV=production node dist/index.js"
 
 # Iniciar Worker Submit (Python)
-start_process "worker_submit" "python3 -u worker_submit.py"
+start_process "worker_submit" "NODE_ENV=production python3 -u worker_submit.py"
 
 # Iniciar Worker Monitor (Python)
-start_process "worker_monitor" "python3 -u worker_monitor.py"
+start_process "worker_monitor" "NODE_ENV=production python3 -u worker_monitor.py"
 
 echo ""
 log "Todos los procesos iniciados. Entrando en modo supervisión..."
@@ -207,10 +207,10 @@ while true; do
     check_and_restart "express" "node dist/index.js" "NODE_ENV=production node dist/index.js"
     
     # Verificar Worker Submit
-    check_and_restart "worker_submit" "worker_submit.py" "python3 -u worker_submit.py"
+    check_and_restart "worker_submit" "worker_submit.py" "NODE_ENV=production python3 -u worker_submit.py"
     
     # Verificar Worker Monitor
-    check_and_restart "worker_monitor" "worker_monitor.py" "python3 -u worker_monitor.py"
+    check_and_restart "worker_monitor" "worker_monitor.py" "NODE_ENV=production python3 -u worker_monitor.py"
     
     # Incrementar contador y resetear cada hora
     CHECK_COUNT=$((CHECK_COUNT + 1))
