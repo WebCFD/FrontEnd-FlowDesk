@@ -706,7 +706,7 @@ wheels = [
 
 [[package]]
 name = "inductiva"
-version = "0.18.7"
+version = "0.18.9"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -725,9 +725,9 @@ dependencies = [
     { name = "urllib3" },
     { name = "websocket-client" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/38/1b/b6fa60684ddd7ac3cb7a436b515305ead2d00f7355eba09ec957616dcaab/inductiva-0.18.7.tar.gz", hash = "sha256:935b0086ff94b2b87f0f3daf9a1a94b9ad3cd32c53d00d5ade039748b2313a8f", size = 235418, upload-time = "2025-10-27T17:59:10.014Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ec/55/780643da78cae0e37e3304322160fe6cfaf3406a4a1ecfc8270f07775c7c/inductiva-0.18.9.tar.gz", hash = "sha256:16b8a63031d47b83796da91efcb48fb3ae8ad01fe54e30447444cf333b9712a7", size = 266295, upload-time = "2025-11-12T12:44:41.668Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b2/40/3cfce2a2fce1091c88fdfc72648b5a72c7c1c624025c74d0023c3a29bff4/inductiva-0.18.7-py3-none-any.whl", hash = "sha256:943188d74eee047eb0ec368a4aee57e8ed8cbbb159dc82442591b443383f0bdf", size = 507440, upload-time = "2025-10-27T17:59:08.613Z" },
+    { url = "https://files.pythonhosted.org/packages/bc/65/8c9bef1025d277356b0c98d2aead6e12df07ad3f82f425116ceb105b24f9/inductiva-0.18.9-py3-none-any.whl", hash = "sha256:26670ca673031e1bbb5460c4a52367ea992b1b9fbf1b3b5916b683feb575e292", size = 571053, upload-time = "2025-11-12T12:44:40.204Z" },
 ]
 
 [[package]]
@@ -1699,7 +1699,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "foamlib", specifier = ">=0.2.0" },
-    { name = "inductiva", specifier = ">=0.18.7" },
+    { name = "inductiva", specifier = ">=0.18.9" },
     { name = "matplotlib", specifier = ">=3.10.7" },
     { name = "numpy", specifier = ">=1.26.0" },
     { name = "pandas", specifier = ">=2.2.0" },
