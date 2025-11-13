@@ -1,228 +1,12 @@
 # HVAC Simulation Platform
 
 ## Overview
-
-This project is a full-stack web application designed for HVAC (Heating, Ventilation, and Air Conditioning) simulation and design. It offers an interactive 3D environment for building multi-floor layouts, placing objects, configuring air flow systems, and performing thermal simulations. The platform aims to provide HVAC professionals and enthusiasts with a comprehensive tool to visualize and analyze thermal dynamics, export simulation data, and ultimately improve building efficiency and comfort.
+This project is a full-stack web application for HVAC simulation and design. It provides an interactive 3D environment for building multi-floor layouts, placing objects, configuring air flow systems, and performing thermal simulations. The platform aims to offer HVAC professionals and enthusiasts a comprehensive tool to visualize and analyze thermal dynamics, export simulation data, and improve building efficiency and comfort. The business vision is to provide a leading solution in the HVAC design software market, enabling significant advancements in sustainable building practices.
 
 ## User Preferences
-
 Preferred communication style: Simple, everyday language.
 Technical documentation preference: Detailed technical explanations for architectural patterns to enable replication in future development cycles.
 Development approach: Favor simple, minimal solutions over complex implementations. Avoid overengineering.
-
-## Recent Changes
-
-### 2025-11-10: Production Storage Path Fix (Cloud Run Compatibility)
-**Critical Fix**: Changed VTK file storage from `/app/uploads` to `/tmp/uploads` for Google Cloud Run compatibility.
-
-**Problem**: 
-- Simulation 241 failed with "Failed to copy results" error
-- Worker tried to save VTK files to `/app/uploads/`, which is read-only in Cloud Run
-- Google Cloud Run containers have read-only filesystem except for `/tmp`
-
-**Root Cause**:
-- Production code used `/app/uploads` assuming writable filesystem
-- Cloud Run containers only allow writes to `/tmp` directory
-- `os.makedirs()` failed with permission error when creating `/app/uploads/sim_X/`
-
-**Solution - Use /tmp for Ephemeral Storage**:
-```python
-# worker_monitor.py
-is_production = os.getenv('NODE_ENV') == 'production'
-if is_production:
-    public_path = os.path.join("/tmp/uploads", f"sim_{sim_id}")  # ✅ Writable
-else:
-    public_path = os.path.join(os.getcwd(), "public", "uploads", f"sim_{sim_id}")
-```
-
-```typescript
-// server/index.ts
-if (nodeEnv === 'production') {
-  app.use('/uploads', express.static('/tmp/uploads'));  // ✅ Serve from /tmp
-}
-```
-
-**Files Modified**:
-- `worker_monitor.py`: Changed production path to `/tmp/uploads`
-- `server/index.ts`: Express serves `/uploads` from `/tmp/uploads`
-- `server/routes.ts`: VTK file listing endpoint uses `/tmp/uploads`
-- `start-production.sh`: Workers receive `NODE_ENV=production` environment variable
-
-**Benefits**:
-- ✅ Workers can write VTK files successfully in Cloud Run
-- ✅ No permission errors
-- ✅ Simulations complete successfully
-- ⚠️ Note: `/tmp` storage is ephemeral and cleared on container restart (512 MB limit)
-
-### 2025-11-09: Memory Management Enhancement (OOM Prevention)
-**Critical Fix**: Prevent worker OOM kills by implementing strict memory management controls.
-
-**Problem**: 
-- Workers were being killed by OOM even with subprocess isolation
-- When multiple simulations completed simultaneously, worker processed all sequentially
-- Memory accumulated across simulations: Download (100MB) + VTK conversion (500MB) + Subprocess (2GB isolated)
-- Processing 3 simulations = ~8GB accumulated → OOM kill
-
-**Root Cause**:
-- Subprocess isolation worked correctly (PyVista memory freed after subprocess dies)
-- BUT worker_monitor accumulated memory from:
-  1. Downloaded result files (100-150 MB per simulation)
-  2. VTK file reading/conversion in `copy_results_to_public()`
-  3. Python objects not garbage collected between simulations
-  4. Multiple simulations processed in single loop without memory cleanup
-
-**Solution - Rate Limiting + Garbage Collection**:
-```python
-# Process maximum 1 simulation per cycle
-processed_count = 0
-for sim in sims:
-    if processed_count >= 1:
-        break  # Defer remaining to next cycle
-    
-    process_completed_simulation(sim)
-    processed_count += 1
-    
-    # Force garbage collection
-    gc.collect()
-    logger.info(f"Memory cleanup completed")
-```
-
-**Files Modified**:
-- `worker_monitor.py`: Added `import gc`, limited processing to 1 sim/cycle, forced gc after each
-- `step05_results2post.py`: Added proper error logging for subprocess visibility
-
-**Benefits**:
-- ✅ Worker memory never exceeds ~3GB (download + subprocess + overhead)
-- ✅ Each simulation starts with clean memory state
-- ✅ Multiple simulations queued = processed sequentially with cleanup between
-- ✅ No more OOM kills in production
-- ⏱️ Slight delay if multiple sims complete simultaneously (30s between each)
-
-### 2025-11-08: Post-Processing Recovery System
-**Feature**: Implemented orphaned simulation recovery to prevent stuck simulations.
-
-**Problem**: 
-- If worker restarts while a simulation is in "post_processing" state, it becomes orphaned
-- Worker only polled "cloud_execution" state, leaving "post_processing" sims abandoned
-- No visibility into worker activity due to lack of logging
-
-**Solution - Dual-State Polling + Logging**:
-- Added `get_post_processing_sims()` function in worker_monitor.py
-- Created `/api/external/simulations/post_processing` endpoint in backend
-- Modified main worker loop to check BOTH states:
-  1. "cloud_execution" → normal processing flow
-  2. "post_processing" → recovery flow for orphaned sims
-- Added comprehensive logging showing simulation counts and statuses every 30 seconds
-
-**Technical Implementation**:
-```python
-# Worker polls both states each cycle
-cloud_sims = get_cloud_execution_sims()
-logger.info(f"Polling: Found {len(cloud_sims)} simulation(s) in cloud_execution")
-
-post_sims = get_post_processing_sims()
-if post_sims:
-    logger.warning(f"Recovery: Found {len(post_sims)} orphaned simulation(s) in post_processing")
-    for sim in post_sims:
-        process_completed_simulation(sim)
-```
-
-**Files Modified**:
-- `worker_monitor.py`: Added post_processing polling and detailed logging
-- `server/routes.ts`: Added GET `/api/external/simulations/post_processing` endpoint
-
-**Benefits**:
-- ✅ Orphaned simulations automatically recovered on next worker cycle
-- ✅ Detailed logs for debugging (polling status, sim counts, task IDs)
-- ✅ No manual intervention required
-- ✅ Worker survives restarts without losing in-progress work
-
-### 2025-11-08: Worker Memory Isolation with Subprocess
-**Critical Fix**: Resolved worker_monitor OOM (Out of Memory) kills by isolating post-processing in subprocess.
-
-**Problem**: 
-- worker_monitor.py executed PyVista/VTK post-processing in the same process
-- Memory accumulated with each simulation (500MB-2GB per simulation)
-- Python's garbage collector didn't release PyVista memory quickly enough
-- After processing 2-3 simulations, OOM killer terminated the worker (PID 57 Killed)
-
-**Solution - Subprocess Isolation**:
-- Modified `step05_results2post.py` to accept CLI arguments (case_name)
-- Modified `worker_monitor.py` to execute post-processing in isolated subprocess
-- Process lifecycle: spawn → process → die → **automatic memory cleanup**
-- Worker process remains lightweight (~500MB) and never accumulates memory
-- Added timeout (10 minutes) and robust error handling for subprocess failures
-
-**Technical Implementation**:
-```python
-# Before: Direct call (memory accumulates)
-results2post(case_name)
-
-# After: Subprocess isolation (memory freed on completion)
-subprocess.run(["python3", "-u", "step05_results2post.py", case_name], 
-               timeout=600, check=True)
-```
-
-**Files Modified**:
-- `worker_monitor.py`: Replaced direct import with subprocess.run() call
-- `step05_results2post.py`: Added CLI argument parsing for case_name
-
-**Benefits**:
-- ✅ Worker process never killed by OOM
-- ✅ Can process unlimited simulations sequentially
-- ✅ If post-processing fails, worker survives
-- ✅ Better error isolation and logging
-- ✅ Zero additional costs (no need for more RAM)
-
-### 2025-11-08: Email Activation System for New Users
-**Feature**: Implemented email verification flow to prevent spam accounts and ensure valid email addresses.
-
-**Changes**:
-- **Database**: Added `pending_activations` table to store registration data before email verification
-- **Backend**:
-  - Modified `/api/auth/register` to create pending activation instead of immediate user creation
-  - Created `/api/auth/activate` endpoint to validate tokens and create users
-  - Added `sendActivationEmail()` function with branded email template
-  - Implemented 24-hour token expiration and cleanup logic
-- **Frontend**:
-  - Updated registration modal to show email confirmation screen after signup
-  - Created `/activate` page to handle activation links from emails
-  - User is automatically logged in after successful activation
-- **User Flow**: Register → Email sent → Click link → Account activated with 25€ credits → Auto-login
-
-**Files Modified**:
-- `shared/schema.ts`: Added pendingActivations table
-- `server/storage.ts`: Added CRUD methods for pending activations
-- `server/auth.ts`: Modified registration flow, added activation endpoint and email function
-- `client/src/components/auth/register-modal.tsx`: Added confirmation UI
-- `client/src/pages/activate.tsx`: New activation page
-- `client/src/App.tsx`: Registered /activate route
-
-### 2025-11-08: Post-Processing Optimization (Memory Crisis Fix)
-**Critical production issue resolved**: Server was experiencing OOM (Out of Memory) kills during CFD post-processing, causing complete site downtime.
-
-**Problem**: 
-- Post-processing generated 50+ off-screen renders (PyVista), PDFs (ReportLab), and residual plots (matplotlib)
-- Memory consumption exceeded available resources, triggering OOM killer
-- Simulations stuck at "Downloading results..." with no error handling
-
-**Solution - Simplified Post-Processing**:
-- **Removed**: All image rendering (PNG generation via PyVista off-screen)
-- **Removed**: PDF report generation (ReportLab)
-- **Removed**: Residual convergence plots (matplotlib)
-- **Kept**: VTK file generation for interactive 3D web viewer
-- **Result**: ~90% reduction in memory usage, ~80% faster processing
-
-**Files Modified**:
-- `step05_results2post.py`: Removed PDF and residuals steps
-- `src/components/post/objects.py`: Removed off-screen rendering loop
-- `worker_monitor.py`: Updated to only copy VTK files, added better logging
-
-**Benefits**:
-- No more OOM kills in production
-- Faster post-processing (seconds instead of minutes)
-- Interactive 3D visualization still fully functional
-- Reduced disk usage (no unnecessary PNG/PDF files)
 
 ## System Architecture
 
@@ -232,10 +16,10 @@ The platform features a consistent design with an interactive 3D preview, config
 ### Technical Implementations
 The frontend is built with React 18, TypeScript, and Vite, utilizing Tailwind CSS, Radix UI, and shadcn/ui for the user interface. Three.js and Canvas3D handle 3D graphics, while Zustand manages persistent global state. React Hook Form with Zod is used for form handling. The backend leverages Node.js with Express.js, a PostgreSQL database managed by Drizzle ORM, and Passport.js for session-based authentication.
 
-Key features include a 3D design engine for multi-floor layouts and object placement, dynamic furniture loading with custom STL import, detailed air flow configuration, and real-time data synchronization between 2D/3D views. Comprehensive CFD validation, including Insufficient Boundary Conditions (IBC) checks, is performed. The application supports robust JSON import/export for design data.
+Key features include a 3D design engine for multi-floor layouts and object placement, dynamic furniture loading with custom STL import, detailed air flow configuration, and real-time data synchronization between 2D/3D views. Comprehensive CFD validation, including Insufficient Boundary Conditions (IBC) checks, is performed. The application supports robust JSON import/export for design data. An email verification system ensures valid user registrations, integrating with a `pending_activations` table and a `sendActivationEmail()` function. Memory management enhancements and subprocess isolation prevent Out of Memory (OOM) kills during post-processing by limiting simultaneous simulation processing and enforcing garbage collection. Production deployment utilizes `/tmp/uploads` for ephemeral storage in Google Cloud Run. Automatic cleanup of old VTK files in `/tmp/uploads` prevents disk space exhaustion.
 
 ### System Design Choices
-The application is designed for containerized deployment on Google Cloud Run. It incorporates an end-to-end CFD simulation pipeline that converts user designs into OpenFOAM CFD simulations executed on the Inductiva cloud. This pipeline utilizes a dual-worker system for geometry, meshing, CFD setup, submission, monitoring, result retrieval, and post-processing. The primary meshing strategy uses `hvac_pro` (an optimized snappyHexMesh configuration) with parametric quality levels and is compliant with OpenFOAM v2406. CFD simulations use `buoyantSimpleFoam` with a Boussinesq approximation and hConst thermo model, employing `zeroGradient` for enthalpy/temperature on pressure boundaries to ensure numerical stability. Configurable simulation types with dynamic iteration control and conservative relaxation factors ensure stable startup and convergence.
+The application is designed for containerized deployment on Google Cloud Run. It incorporates an end-to-end CFD simulation pipeline that converts user designs into OpenFOAM CFD simulations executed on the Inductiva cloud. This pipeline utilizes a dual-worker system for geometry, meshing, CFD setup, submission, monitoring, result retrieval, and post-processing. The primary meshing strategy uses `hvac_pro` (an optimized snappyHexMesh configuration) with parametric quality levels and is compliant with OpenFOAM v2406. CFD simulations use `buoyantSimpleFoam` with a Boussinesq approximation and hConst thermo model, employing `zeroGradient` for enthalpy/temperature on pressure boundaries to ensure numerical stability. Configurable simulation types with dynamic iteration control and conservative relaxation factors ensure stable startup and convergence. An orphaned simulation recovery system ensures that simulations stuck in "post_processing" are automatically resumed. Post-processing has been optimized by removing image rendering, PDF report generation, and residual convergence plots to reduce memory usage, focusing instead on VTK file generation for interactive 3D web viewing.
 
 A transactional email system for the landing page contact form is integrated using the Resend API, featuring real-time submission, validation, and notifications. The admin panel includes SHA-256 hashed password authentication for security.
 
@@ -250,7 +34,6 @@ A transactional email system for the landing page contact form is integrated usi
 - **foamlib**: OpenFOAM Python library.
 - **pymeshlab**: Mesh processing.
 - **pyvista**: 3D visualization.
-- **matplotlib**, **pandas**, **reportlab**, **numpy**: For post-processing and report generation.
 - **Resend**: Transactional email service.
 
 ### UI and Styling

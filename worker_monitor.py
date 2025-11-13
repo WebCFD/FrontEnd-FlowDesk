@@ -317,6 +317,54 @@ def process_completed_simulation(sim):
         except Exception as cleanup_error:
             logger.warning(f"[Sim {sim_id}] ⚠️ Cleanup warning (non-critical): {cleanup_error}")
 
+def cleanup_old_uploads(keep_last_n=5):
+    """
+    Clean up old simulation uploads from /tmp/uploads to free disk space.
+    Keeps only the last N simulations in production.
+    
+    Cloud Run has a 512 MB limit on /tmp storage, so we need to clean up
+    old files regularly to prevent disk space errors.
+    """
+    try:
+        is_production = os.getenv('NODE_ENV') == 'production'
+        if not is_production:
+            return  # Only cleanup in production
+        
+        uploads_dir = "/tmp/uploads"
+        if not os.path.exists(uploads_dir):
+            return
+        
+        # Get all sim_X directories
+        sim_dirs = []
+        for item in os.listdir(uploads_dir):
+            item_path = os.path.join(uploads_dir, item)
+            if os.path.isdir(item_path) and item.startswith('sim_'):
+                try:
+                    # Extract sim ID from directory name
+                    sim_id = int(item.replace('sim_', ''))
+                    sim_dirs.append((sim_id, item_path))
+                except ValueError:
+                    continue
+        
+        # Sort by sim ID (newest first)
+        sim_dirs.sort(key=lambda x: x[0], reverse=True)
+        
+        # Delete all except the last N
+        deleted_count = 0
+        for sim_id, dir_path in sim_dirs[keep_last_n:]:
+            try:
+                shutil.rmtree(dir_path)
+                logger.info(f"🧹 Deleted old upload: sim_{sim_id} (freeing disk space)")
+                deleted_count += 1
+            except Exception as e:
+                logger.warning(f"⚠️ Failed to delete {dir_path}: {e}")
+        
+        if deleted_count > 0:
+            logger.info(f"✅ Cleaned up {deleted_count} old simulation(s) from /tmp/uploads")
+        
+    except Exception as e:
+        logger.warning(f"⚠️ Upload cleanup warning (non-critical): {e}")
+
 def main():
     logger.info("=" * 80)
     logger.info("🚀 WORKER MONITOR STARTED - PRODUCTION MODE")
@@ -334,6 +382,10 @@ def main():
             logger.info(f"\n{'='*80}")
             logger.info(f"🔄 POLLING CYCLE #{cycle_count}")
             logger.info(f"{'='*80}")
+            
+            # Clean up old uploads to prevent disk space issues (only every 10 cycles)
+            if cycle_count % 10 == 1:
+                cleanup_old_uploads(keep_last_n=5)
             
             # 1️⃣ Buscar sims en cloud_execution
             sims = get_cloud_execution_sims()
