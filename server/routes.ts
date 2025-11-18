@@ -10,6 +10,7 @@ import path from "path";
 import JSZip from "jszip";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
+import { ObjectStorageService } from "./objectStorage";
 // ========== TEMPORARY PASSWORD PROTECTION - TO BE REMOVED SOON ==========
 // Importar crypto para validación de contraseña con hash SHA-256
 // Esta funcionalidad será eliminada próximamente
@@ -588,6 +589,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error: any) {
       res.status(500).json({ message: "Failed to list VTK files", error: error.message });
+    }
+  });
+
+  // Endpoint for Python workers to get presigned URL for uploading VTK files
+  app.post("/api/simulations/:id/vtk/upload-url", async (req, res) => {
+    try {
+      const simulationId = parseInt(req.params.id);
+      const { filename } = req.body;
+
+      if (!filename) {
+        return res.status(400).json({ message: "filename is required" });
+      }
+
+      const objectStorageService = new ObjectStorageService();
+      const uploadUrl = await objectStorageService.getVtkUploadUrl(simulationId, filename);
+
+      res.json({ uploadUrl });
+    } catch (error: any) {
+      console.error('[VTK-UPLOAD-URL] Error generating upload URL:', error);
+      res.status(500).json({ message: "Failed to generate upload URL", error: error.message });
     }
   });
 
