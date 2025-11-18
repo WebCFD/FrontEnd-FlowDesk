@@ -278,6 +278,34 @@ def process_completed_simulation(sim):
         
         logger.info(f"[Sim {sim_id}] ✅ VTK files copied successfully ({len(result_paths.get('vtk', []))} files)")
         
+        # Upload VTK files to object storage (persistent storage)
+        logger.info(f"[Sim {sim_id}] Step 5/5: Uploading VTK files to object storage...")
+        is_production = os.getenv('NODE_ENV') == 'production'
+        vtk_dir = f'/tmp/uploads/sim_{sim_id}/vtk' if is_production else f'public/uploads/sim_{sim_id}/vtk'
+        
+        try:
+            upload_result = subprocess.run(
+                ["python3", "upload_vtk_to_storage.py", str(sim_id), vtk_dir],
+                capture_output=True,
+                text=True,
+                timeout=600,  # 10 minute timeout for upload
+                check=True
+            )
+            
+            if upload_result.stdout:
+                logger.info(f"[Sim {sim_id}] Upload output:\n{upload_result.stdout}")
+            if upload_result.stderr:
+                logger.warning(f"[Sim {sim_id}] Upload stderr:\n{upload_result.stderr}")
+            
+            logger.info(f"[Sim {sim_id}] ✅ VTK files uploaded to object storage successfully")
+            
+        except subprocess.TimeoutExpired:
+            logger.error(f"[Sim {sim_id}] ⚠️ VTK upload timeout (non-critical, files still in /tmp)")
+        except subprocess.CalledProcessError as e:
+            logger.error(f"[Sim {sim_id}] ⚠️ VTK upload failed (non-critical, files still in /tmp): {e.stderr}")
+        except Exception as e:
+            logger.error(f"[Sim {sim_id}] ⚠️ VTK upload error (non-critical, files still in /tmp): {e}")
+        
         # Update: completed
         update_simulation(sim_id, {
             'status': 'completed',
