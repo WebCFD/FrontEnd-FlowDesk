@@ -32,6 +32,10 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
+localPort = 36041
+externalPort = 3001
+
+[[ports]]
 localPort = 36643
 externalPort = 3000
 
@@ -63,4 +67,4 @@ args = "npm run dev"
 waitForPort = 5000
 
 [agent]
-integrations = ["resend:1.0.0"]
+integrations = ["resend:1.0.0", "javascript_object_storage:1.0.0"]
