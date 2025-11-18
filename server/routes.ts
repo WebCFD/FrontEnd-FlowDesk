@@ -498,25 +498,94 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const simulationId = parseInt(req.params.id);
       
-      // Use production path if NODE_ENV=production, otherwise use public folder
-      const isProduction = process.env.NODE_ENV === 'production';
-      const vtkDir = isProduction 
-        ? path.join('/tmp/uploads', `sim_${simulationId}`, 'vtk')
-        : path.join(process.cwd(), 'public', 'uploads', `sim_${simulationId}`, 'vtk');
+      // Try to read from object storage first
+      const objectStorageService = new ObjectStorageService();
+      let files: any[] = [];
+      let source = 'object_storage';
       
-      console.log('[VTK-FILES] Looking for files in:', vtkDir);
-      
-      // Check if directory exists
-      if (!fsSync.existsSync(vtkDir)) {
-        console.log('[VTK-FILES] Directory not found:', vtkDir);
-        return res.json({ files: [] });
+      try {
+        const fileList = await objectStorageService.listVtkFiles(simulationId);
+        console.log('[VTK-FILES] Found files in object storage:', fileList.length);
+        
+        if (fileList.length > 0) {
+          // Convert filenames to file objects
+          files = fileList.map(filename => {
+            // Parse OpenFOAM files to extract timestep and type
+            let timestep = null;
+            let type = 'slice';
+            
+            // Detect file type and priority
+            if (filename === 'internal_mesh_complete.vtkjs') {
+              type = 'volume_complete';
+              timestep = 0;
+            } else if (filename.startsWith('openfoam_')) {
+              if (filename.includes('boundary_')) {
+                type = 'boundary';
+              } else if (filename.includes('internal')) {
+                type = 'volume_internal';
+              } else {
+                type = 'volume';
+              }
+              
+              const match = filename.match(/artifacts_(\d+)/);
+              if (match) {
+                timestep = parseFloat(match[1]);
+              }
+            }
+            
+            return {
+              filename,
+              path: `/api/simulations/${simulationId}/vtk/${filename}`,
+              type,
+              timestep,
+              size: 0, // Size not available from listing
+              modified: new Date()
+            };
+          })
+          .sort((a, b) => {
+            // Sort: volume_complete > boundary > volume > volume_internal > slices, then by timestep
+            const typeOrder: Record<string, number> = { 
+              volume_complete: 0, 
+              boundary: 1, 
+              volume: 2, 
+              volume_internal: 3, 
+              slice: 4 
+            };
+            const orderDiff = (typeOrder[a.type] || 99) - (typeOrder[b.type] || 99);
+            if (orderDiff !== 0) return orderDiff;
+            
+            // Within same type, sort by timestep (descending)
+            if (a.timestep !== null && b.timestep !== null) {
+              return b.timestep - a.timestep;
+            }
+            return a.filename.localeCompare(b.filename);
+          });
+        }
+      } catch (storageError) {
+        console.log('[VTK-FILES] Object storage read failed, falling back to filesystem:', storageError);
+        source = 'filesystem';
       }
       
-      // List all .vtkjs files
-      const files = fsSync.readdirSync(vtkDir)
-        .filter(f => f.endsWith('.vtkjs'))
-        .map(filename => {
-          const stats = fsSync.statSync(path.join(vtkDir, filename));
+      // Fallback to filesystem if object storage is empty or failed
+      if (files.length === 0) {
+        const isProduction = process.env.NODE_ENV === 'production';
+        const vtkDir = isProduction 
+          ? path.join('/tmp/uploads', `sim_${simulationId}`, 'vtk')
+          : path.join(process.cwd(), 'public', 'uploads', `sim_${simulationId}`, 'vtk');
+        
+        console.log('[VTK-FILES] Looking for files in filesystem:', vtkDir);
+        
+        // Check if directory exists
+        if (!fsSync.existsSync(vtkDir)) {
+          console.log('[VTK-FILES] Directory not found:', vtkDir);
+          return res.json({ files: [] });
+        }
+        
+        // List all .vtkjs files
+        files = fsSync.readdirSync(vtkDir)
+          .filter(f => f.endsWith('.vtkjs'))
+          .map(filename => {
+            const stats = fsSync.statSync(path.join(vtkDir, filename));
           
           // Parse OpenFOAM files to extract timestep and type
           let timestep = null;
@@ -609,6 +678,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error('[VTK-UPLOAD-URL] Error generating upload URL:', error);
       res.status(500).json({ message: "Failed to generate upload URL", error: error.message });
+    }
+  });
+
+  // Endpoint to download VTK files from object storage
+  app.get("/api/simulations/:id/vtk/:filename", async (req, res) => {
+    try {
+      const simulationId = parseInt(req.params.id);
+      const filename = req.params.filename;
+
+      console.log(`[VTK-DOWNLOAD] Requesting ${filename} for simulation ${simulationId}`);
+
+      const objectStorageService = new ObjectStorageService();
+      
+      try {
+        // Try to get file from object storage first
+        const file = await objectStorageService.getVtkFile(simulationId, filename);
+        console.log(`[VTK-DOWNLOAD] Found in object storage: ${filename}`);
+        await objectStorageService.downloadObject(file, res);
+        return;
+      } catch (storageError: any) {
+        // Fallback to filesystem if object storage fails
+        console.log(`[VTK-DOWNLOAD] Not in object storage, trying filesystem: ${storageError.message}`);
+        
+        const isProduction = process.env.NODE_ENV === 'production';
+        const filePath = isProduction
+          ? path.join('/tmp/uploads', `sim_${simulationId}`, 'vtk', filename)
+          : path.join(process.cwd(), 'public', 'uploads', `sim_${simulationId}`, 'vtk', filename);
+
+        if (!fsSync.existsSync(filePath)) {
+          return res.status(404).json({ message: "VTK file not found" });
+        }
+
+        console.log(`[VTK-DOWNLOAD] Serving from filesystem: ${filePath}`);
+        res.setHeader('Content-Type', 'application/zip');
+        res.setHeader('Cache-Control', 'private, max-age=3600');
+        res.sendFile(filePath);
+      }
+    } catch (error: any) {
+      console.error('[VTK-DOWNLOAD] Error:', error);
+      res.status(500).json({ message: "Failed to download VTK file", error: error.message });
     }
   });
 
