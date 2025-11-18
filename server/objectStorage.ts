@@ -1,28 +1,11 @@
 // Referenced from blueprint:javascript_object_storage
-// Simplified version for VTK file storage (no ACL, no user uploads)
+// Simplified version for VTK file storage using Application Default Credentials
 import { Storage, File } from "@google-cloud/storage";
 import { Response } from "express";
 
-const REPLIT_SIDECAR_ENDPOINT = "http://127.0.0.1:1106";
-
-// The object storage client is used to interact with the object storage service.
-export const objectStorageClient = new Storage({
-  credentials: {
-    audience: "replit",
-    subject_token_type: "access_token",
-    token_url: `${REPLIT_SIDECAR_ENDPOINT}/token`,
-    type: "external_account",
-    credential_source: {
-      url: `${REPLIT_SIDECAR_ENDPOINT}/credential`,
-      format: {
-        type: "json",
-        subject_token_field_name: "access_token",
-      },
-    },
-    universe_domain: "googleapis.com",
-  },
-  projectId: "",
-});
+// Use Application Default Credentials (ADC) for authentication
+// In Replit Publishing + Cloud Run, this automatically authenticates with GCS
+export const objectStorageClient = new Storage();
 
 export class ObjectNotFoundError extends Error {
   constructor() {
@@ -54,44 +37,6 @@ function parseObjectPath(path: string): {
   };
 }
 
-// Sign a URL for object access
-async function signObjectURL({
-  bucketName,
-  objectName,
-  method,
-  ttlSec,
-}: {
-  bucketName: string;
-  objectName: string;
-  method: "GET" | "PUT" | "DELETE" | "HEAD";
-  ttlSec: number;
-}): Promise<string> {
-  const request = {
-    bucket_name: bucketName,
-    object_name: objectName,
-    method,
-    expires_at: new Date(Date.now() + ttlSec * 1000).toISOString(),
-  };
-  const response = await fetch(
-    `${REPLIT_SIDECAR_ENDPOINT}/object-storage/signed-object-url`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(request),
-    }
-  );
-  if (!response.ok) {
-    throw new Error(
-      `Failed to sign object URL, errorcode: ${response.status}, ` +
-        `make sure you're running on Replit`
-    );
-  }
-
-  const { signed_url: signedURL } = await response.json();
-  return signedURL;
-}
 
 // The object storage service for VTK files
 export class ObjectStorageService {
@@ -158,12 +103,19 @@ export class ObjectStorageService {
     const objectPath = `${privateDir}/vtk/${simulationId}/${filename}`;
     const { bucketName, objectName } = parseObjectPath(objectPath);
 
-    return signObjectURL({
-      bucketName,
-      objectName,
-      method: "PUT",
-      ttlSec: 3600, // 1 hour for upload
+    const bucket = objectStorageClient.bucket(bucketName);
+    const file = bucket.file(objectName);
+
+    // Generate signed URL using native GCS SDK (v4 signature)
+    // contentType must match the Content-Type header sent by upload_vtk_to_storage.py
+    const [url] = await file.getSignedUrl({
+      version: 'v4',
+      action: 'write',
+      expires: Date.now() + 3600 * 1000, // 1 hour for upload
+      contentType: 'application/octet-stream',
     });
+
+    return url;
   }
 
   // Get VTK file for a simulation
