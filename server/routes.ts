@@ -773,7 +773,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       vtkjsPath = path.join(process.cwd(), 'client', 'public', 'cfd-data.vtkjs');
     } else {
       const uploadsPath = process.env.NODE_ENV === 'production' 
-        ? path.join('/app', 'uploads', `sim_${id}`, 'vtk')
+        ? path.join('/tmp', 'uploads', `sim_${id}`, 'vtk')
         : path.join(process.cwd(), 'client', 'public', 'uploads', `sim_${id}`, 'vtk');
       vtkjsPath = path.join(uploadsPath, `${filename}.vtkjs`);
     }
@@ -961,7 +961,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     // Build correct path based on environment (including sim_ID/vtk/ prefix)
     const uploadsPath = process.env.NODE_ENV === 'production' 
-      ? path.join('/app', 'uploads', `sim_${id}`, 'vtk')
+      ? path.join('/tmp', 'uploads', `sim_${id}`, 'vtk')
       : path.join(process.cwd(), 'client', 'public', 'uploads', `sim_${id}`, 'vtk');
       
     // Map specific files for testing
