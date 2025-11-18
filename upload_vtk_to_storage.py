@@ -56,7 +56,10 @@ def upload_vtk_files(simulation_id: int, vtk_dir: str) -> dict:
     Returns:
         dict with 'success' (bool) and 'uploaded_files' (list)
     """
-    vtk_files = glob.glob(os.path.join(vtk_dir, "*.vtk"))
+    # Match all VTK-related files: .vtkjs (converted), .vtk, .vtu (if any remain)
+    vtk_files = glob.glob(os.path.join(vtk_dir, "*.vtkjs"))
+    vtk_files.extend(glob.glob(os.path.join(vtk_dir, "*.vtk")))
+    vtk_files.extend(glob.glob(os.path.join(vtk_dir, "*.vtu")))
     
     if not vtk_files:
         print(f"⚠️  No VTK files found in {vtk_dir}", file=sys.stderr)

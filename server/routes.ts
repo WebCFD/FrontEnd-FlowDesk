@@ -640,6 +640,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
           return a.filename.localeCompare(b.filename);
         });
+      }
       
       // Get latest volume file (prioritize volume_complete from post-processing)
       // Since files are already sorted by priority, just find first volume
