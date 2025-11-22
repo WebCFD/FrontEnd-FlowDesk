@@ -52,17 +52,16 @@ def solve_inductiva(sim_path, machine_type, wait=True):
     logger.info("    * Allocating cloud machine on Google Cloud Platform")
     cloud_machine = inductiva.resources.MachineGroup(provider="GCP", machine_type="c2d-highcpu-16", spot=True)
 
-    # Initialize the Simulator with custom cfMesh image
-    logger.info("    * Initializing OpenFOAM simulator with cfMesh (v2412)")
-    OpenFOAM = inductiva.simulators.OpenFOAM()
+    # Initialize custom cfMesh image
+    logger.info("    * Initializing custom cfMesh image (OpenFOAM v2412)")
+    cf_mesh = inductiva.simulators.CustomImage("inductiva/kutu:openfoam-cfmesh_v2412_dev")
 
-    # Run simulation with custom container image
-    logger.info("    * Submitting CFD simulation task to cloud using inductiva/kutu:openfoam-cfmesh_v2412_dev")
-    task = OpenFOAM.run(
-        input_dir=sim_path, 
-        shell_script="./Allrun", 
+    # Run simulation with Allrun script
+    logger.info("    * Submitting CFD simulation task to cloud")
+    task = cf_mesh.run(
         on=cloud_machine,
-        container_image="docker://inductiva/kutu:openfoam-cfmesh_v2412_dev"
+        input_dir=sim_path,
+        commands=["./Allrun"]
     )
     
     task_id = task.id
