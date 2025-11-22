@@ -577,7 +577,6 @@ def process_cfd_simulation_with_pipeline(simulation):
         
         from step01_json2geo import run as json2geo
         from step02_geo2mesh import run as geo2mesh
-        from step02b_run_mesh_inductiva import run as run_mesh_inductiva
         from step03_mesh2cfd import run as mesh2cfd
         from step04_cfd2result import run as cfd2result
         from mesher_config import get_default_mesher, get_default_quality_level
@@ -587,21 +586,18 @@ def process_cfd_simulation_with_pipeline(simulation):
         # Step 4: Execute pipeline
         case_name = f"sim_{sim_id}"
         
-        log(f"Step 1/5: Converting JSON to geometry...")
+        log(f"Step 1/4: Converting JSON to geometry...")
         final_geometry_mesh, boundary_conditions_df = json2geo(json_payload, case_name)
         
         mesher_type = get_default_mesher()
         quality_level = get_default_quality_level()
-        log(f"Step 2/5: Preparing mesh configuration ({mesher_type}, quality level {quality_level})...")
+        log(f"Step 2/4: Preparing mesh configuration ({mesher_type}, quality level {quality_level})...")
         mesh_script = geo2mesh(case_name, final_geometry_mesh, boundary_conditions_df, type=mesher_type, quality_level=quality_level)
         
-        log(f"Step 3/5: Generating mesh on Inductiva cloud (cfMesh)...")
-        run_mesh_inductiva(case_name, machine_type="c2d-standard-8", wait=True)
-        
-        log(f"Step 4/5: Setting up CFD case...")
+        log(f"Step 3/4: Setting up CFD case...")
         mesh2cfd(case_name, type="hvac", mesh_script=mesh_script)
         
-        log(f"Step 5/5: Running CFD simulation on Inductiva...")
+        log(f"Step 4/4: Running mesh generation + CFD simulation on Inductiva...")
         cfd2result(case_name, type="inductiva")
         
         log(f"CFD simulation completed successfully")
