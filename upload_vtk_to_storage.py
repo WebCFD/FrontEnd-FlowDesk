@@ -12,8 +12,14 @@ from pathlib import Path
 
 def get_upload_url(simulation_id: int, filename: str) -> str:
     """Get presigned upload URL from Express backend."""
-    # In production, Express runs on port 5000
-    base_url = os.getenv("BASE_URL", "http://localhost:5000")
+    # In production on Cloud Run, use the public URL
+    # In development, use localhost
+    node_env = os.getenv("NODE_ENV", "development")
+    if node_env == "production":
+        base_url = os.getenv("BASE_URL", "https://flowdesk.es")
+    else:
+        base_url = os.getenv("BASE_URL", "http://localhost:5000")
+    
     url = f"{base_url}/api/simulations/{simulation_id}/vtk/upload-url"
     
     try:
