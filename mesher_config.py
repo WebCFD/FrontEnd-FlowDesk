@@ -7,7 +7,7 @@ Change DEFAULT_MESHER to switch between meshing strategies globally.
 # =============================================================================
 # MESHER CONFIGURATION
 # =============================================================================
-DEFAULT_MESHER = "hvac_pro"  # Options: "hvac_pro" (recommended), "snappy", "cfmesh"
+DEFAULT_MESHER = "cfmesh"  # Options: "cfmesh" (recommended), "hvac_pro", "snappy"
 
 # MESH QUALITY LEVEL (only for hvac_pro)
 # Level 1: Coarse (~50k cells)   - Fast validation, ~2 min meshing ⭐ DEBUG MODE
@@ -17,9 +17,9 @@ DEFAULT_QUALITY_LEVEL = 1
 
 # =============================================================================
 # NOTE: 
-#   - "hvac_pro" is the recommended professional configuration for HVAC
+#   - "cfmesh" is now the recommended fast automatic mesher (available on Inductiva: inductiva/kutu:openfoam-cfmesh_v2412_dev)
+#   - "hvac_pro" is professional HVAC configuration using snappyHexMesh
 #   - "snappy" is the basic snappyHexMesh configuration
-#   - "cfmesh" requires OpenFOAM ESI with cfMesh module compiled (not available on Inductiva)
 
 # Mesher descriptions for documentation
 MESHER_INFO = {
@@ -37,15 +37,17 @@ MESHER_INFO = {
         "best_for": "All HVAC applications - designed from scratch for thermal comfort"
     },
     "cfmesh": {
-        "name": "cfMesh",
-        "description": "Fast automatic mesher (NOT available on Inductiva)",
+        "name": "cfMesh (OpenFOAM ESI v2412)",
+        "description": "⭐ RECOMMENDED - Fast automatic mesher (available on Inductiva: kutu:openfoam-cfmesh_v2412_dev)",
         "advantages": [
-            "Automatic boundary layers (>90% coverage)",
+            "Automatic robust boundary layers (>90% coverage)",
             "Differentiated refinement (pressure boundaries 2x finer)",
-            "2-5x faster meshing",
-            "Single-command workflow (cartesianMesh)"
+            "2-5x faster meshing than snappyHexMesh",
+            "Single-command workflow (cartesianMesh)",
+            "Simpler configuration and setup",
+            "Better suited for HVAC with pressure boundaries (windows/doors/vents)"
         ],
-        "best_for": "Single-zone rooms with windows/doors/vents (if available)"
+        "best_for": "All HVAC applications - fast, robust, and production-quality"
     },
     "snappy": {
         "name": "snappyHexMesh (basic)",
