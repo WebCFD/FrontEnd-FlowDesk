@@ -23,14 +23,13 @@ Key features include a 3D design engine for multi-floor layouts and object place
 ### System Design Choices
 The application is designed for containerized deployment on Google Cloud Run. It incorporates an end-to-end CFD simulation pipeline that converts user designs into OpenFOAM CFD simulations executed on the Inductiva cloud.
 
-**Pipeline Architecture (5 steps):**
+**Pipeline Architecture (4 steps):**
 1. **JSON → Geometry** (`step01_json2geo.py`): Local conversion of design data to 3D geometry
-2. **Geometry → Mesh Config** (`step02_geo2mesh.py`): Local preparation of mesh configuration files
-3. **Mesh Generation on Inductiva** (`step02b_run_mesh_inductiva.py`): Cloud execution of cfMesh meshing using `inductiva/kutu:openfoam-cfmesh_v2412_dev`
-4. **Mesh → CFD Setup** (`step03_mesh2cfd.py`): Local CFD case configuration
-5. **CFD Execution on Inductiva** (`step04_cfd2result.py`): Cloud CFD simulation with `buoyantSimpleFoam`
+2. **Geometry → Mesh Config** (`step02_geo2mesh.py`): Local preparation of mesh configuration files (generates Allmesh script)
+3. **Mesh Config → CFD Setup** (`step03_mesh2cfd.py`): Local CFD case configuration (generates Allrun script)
+4. **Inductiva Execution** (`step04_cfd2result.py`): Upload case to Inductiva → Execute Allmesh (mesh generation) + Allrun (CFD solve) → Download results
 
-The system utilizes a dual-worker architecture for parallel processing of geometry preparation (local) and simulation execution (Inductiva cloud). The primary meshing strategy uses **cfMesh** (OpenFOAM ESI v2412 with cartesianMesh automatic meshing) executed exclusively on Inductiva, providing 2-5x faster mesh generation with automatic robust boundary layers (>90% coverage) and differentiated refinement for pressure boundaries. Alternative meshing strategies include `hvac_pro` (optimized snappyHexMesh configuration) and `snappy` (basic snappyHexMesh), both compliant with OpenFOAM v2406. 
+The system utilizes a dual-worker architecture for parallel processing of geometry preparation (local) and simulation execution (Inductiva cloud). The primary meshing strategy uses **cfMesh** (OpenFOAM ESI v2412 with cartesianMesh automatic meshing) executed on Inductiva via `inductiva/kutu:openfoam-cfmesh_v2412_dev`, providing 2-5x faster mesh generation with automatic robust boundary layers (>90% coverage) and differentiated refinement for pressure boundaries. cfMesh does not require blockMesh as cartesianMesh generates the base mesh automatically. Alternative meshing strategies include `hvac_pro` (optimized snappyHexMesh configuration) and `snappy` (basic snappyHexMesh), both compliant with OpenFOAM v2406. 
 
 CFD simulations use `buoyantSimpleFoam` with a Boussinesq approximation and hConst thermo model, employing `zeroGradient` for enthalpy/temperature on pressure boundaries to ensure numerical stability. Configurable simulation types with dynamic iteration control and conservative relaxation factors ensure stable startup and convergence. An orphaned simulation recovery system ensures that simulations stuck in "post_processing" are automatically resumed. Post-processing has been optimized by removing image rendering, PDF report generation, and residual convergence plots to reduce memory usage, focusing instead on VTK file generation for interactive 3D web viewing.
 
