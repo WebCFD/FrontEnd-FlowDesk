@@ -42,15 +42,21 @@ function parseObjectPath(path: string): {
 export class ObjectStorageService {
   constructor() {}
 
-  // Gets the private object directory from env var
-  getPrivateObjectDir(): string {
-    const dir = process.env.PRIVATE_OBJECT_DIR || "";
-    if (!dir) {
+  // Gets the bucket name from env var
+  getBucketName(): string {
+    const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID || "";
+    if (!bucketId) {
       throw new Error(
-        "PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' " +
-          "tool and set PRIVATE_OBJECT_DIR env var."
+        "DEFAULT_OBJECT_STORAGE_BUCKET_ID not set. Create a bucket in 'Object Storage' " +
+          "tool and ensure the environment variable is set."
       );
     }
+    return bucketId;
+  }
+
+  // Gets the private object directory from env var (path within bucket, e.g., "/.private")
+  getPrivateObjectDir(): string {
+    const dir = process.env.PRIVATE_OBJECT_DIR || "/.private";
     return dir;
   }
 
@@ -99,9 +105,9 @@ export class ObjectStorageService {
 
   // Get presigned PUT URL for uploading VTK files from Python workers
   async getVtkUploadUrl(simulationId: number, filename: string): Promise<string> {
+    const bucketName = this.getBucketName();
     const privateDir = this.getPrivateObjectDir();
-    const objectPath = `${privateDir}/vtk/${simulationId}/${filename}`;
-    const { bucketName, objectName } = parseObjectPath(objectPath);
+    const objectName = `${privateDir}/vtk/${simulationId}/${filename}`.replace(/^\//, '');
 
     const bucket = objectStorageClient.bucket(bucketName);
     const file = bucket.file(objectName);
@@ -120,19 +126,29 @@ export class ObjectStorageService {
 
   // Get VTK file for a simulation
   async getVtkFile(simulationId: number, filename: string): Promise<File> {
+    const bucketName = this.getBucketName();
     const privateDir = this.getPrivateObjectDir();
-    const objectPath = `${privateDir}/vtk/${simulationId}/${filename}`;
-    return this.getFile(objectPath);
+    const objectName = `${privateDir}/vtk/${simulationId}/${filename}`.replace(/^\//, '');
+    
+    const bucket = objectStorageClient.bucket(bucketName);
+    const file = bucket.file(objectName);
+    
+    const [exists] = await file.exists();
+    if (!exists) {
+      throw new ObjectNotFoundError();
+    }
+    
+    return file;
   }
 
   // List all VTK files for a simulation
   async listVtkFiles(simulationId: number): Promise<string[]> {
+    const bucketName = this.getBucketName();
     const privateDir = this.getPrivateObjectDir();
-    const prefix = `${privateDir}/vtk/${simulationId}/`;
-    const { bucketName, objectName: prefixPath } = parseObjectPath(prefix);
+    const prefix = `${privateDir}/vtk/${simulationId}/`.replace(/^\//, '');
     
     const bucket = objectStorageClient.bucket(bucketName);
-    const [files] = await bucket.getFiles({ prefix: prefixPath });
+    const [files] = await bucket.getFiles({ prefix });
     
     return files.map(file => file.name.split('/').pop()!).filter(Boolean);
   }

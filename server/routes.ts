@@ -505,9 +505,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       try {
         const fileList = await objectStorageService.listVtkFiles(simulationId);
-        console.log('[VTK-FILES] Found files in object storage:', fileList.length);
+        console.log('[VTK-FILES] Successfully listed files from object storage:', fileList.length);
         
-        if (fileList.length > 0) {
+        if (fileList && fileList.length > 0) {
+          console.log('[VTK-FILES] File list:', fileList);
           // Convert filenames to file objects
           files = fileList.map(filename => {
             // Parse OpenFOAM files to extract timestep and type
@@ -561,9 +562,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
             return a.filename.localeCompare(b.filename);
           });
         }
-      } catch (storageError) {
-        console.log('[VTK-FILES] Object storage read failed, falling back to filesystem:', storageError);
+      } catch (storageError: any) {
+        console.error('[VTK-FILES] Object storage read failed:', storageError.message);
         source = 'filesystem';
+        
+        // In production, object storage is the only persistent storage
+        // If it fails, we should report the error clearly
+        if (process.env.NODE_ENV === 'production') {
+          console.error('[VTK-FILES] ⚠️ PRODUCTION: Object storage unavailable. This is critical - VTK files cannot be served persistently.');
+          console.error('[VTK-FILES] Storage error details:', {
+            name: storageError.name,
+            message: storageError.message,
+            stack: storageError.stack?.substring(0, 200)
+          });
+        }
       }
       
       // Fallback to filesystem if object storage is empty or failed
@@ -578,6 +590,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Check if directory exists
         if (!fsSync.existsSync(vtkDir)) {
           console.log('[VTK-FILES] Directory not found:', vtkDir);
+          if (isProduction) {
+            console.warn('[VTK-FILES] ⚠️ PRODUCTION: No files found in /tmp/uploads (ephemeral filesystem). Object storage should be used.');
+          }
           return res.json({ files: [] });
         }
         
@@ -615,7 +630,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           return {
             filename,
-            path: `/uploads/sim_${simulationId}/vtk/${filename}`,
+            path: `/api/simulations/${simulationId}/vtk/${filename}`,
             type,
             timestep,
             size: stats.size,
