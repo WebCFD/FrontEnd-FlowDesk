@@ -91,7 +91,33 @@ def solve_inductiva(sim_path, machine_type, wait=True):
         logger.warning(f"    * Machine group termination skipped (already terminated): {e}")
 
     logger.info("    * Downloading simulation results")
-    task.download_outputs(output_dir=sim_path, rm_remote_files=True)
+    
+    try:
+        task.download_outputs(output_dir=sim_path, rm_remote_files=True)
+        logger.info("    * Download completed, checking for results.foam")
+        
+        # Verify that results.foam exists
+        results_foam = os.path.join(sim_path, "results.foam")
+        if os.path.exists(results_foam):
+            file_size = os.path.getsize(results_foam)
+            logger.info(f"    * ✅ results.foam found ({file_size} bytes)")
+        else:
+            logger.error(f"    * ❌ results.foam NOT FOUND at {results_foam}")
+            logger.info(f"    * Available files in {sim_path}:")
+            try:
+                for root, dirs, files in os.walk(sim_path):
+                    for file in files:
+                        file_path = os.path.join(root, file)
+                        rel_path = os.path.relpath(file_path, sim_path)
+                        size = os.path.getsize(file_path)
+                        logger.info(f"       - {rel_path} ({size} bytes)")
+            except Exception as e:
+                logger.warning(f"    * Could not list files: {e}")
+            raise FileNotFoundError(f"results.foam not found in {sim_path}")
+        
+    except Exception as e:
+        logger.error(f"    * ❌ Download failed: {e}")
+        raise
     
     logger.info("    * Printing simulation summary")
     task.print_summary()
