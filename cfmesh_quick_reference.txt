@@ -1,0 +1,95 @@
+cfMesh v1.1 - Quick Reference Guide
+====================================
+
+WORKFLOWS AVAILABLE
+-------------------
+1. cartesianMesh    - 3D hexahedral mesh (our choice for HVAC)
+2. cartesian2DMesh  - 2D cartesian mesh
+3. tetMesh          - Tetrahedral mesh
+4. pMesh            - Polyhedral mesh
+
+CARTESIAN WORKFLOW (Section 2.1)
+---------------------------------
+- Command: cartesianMesh
+- Generates: Hexahedral cells + polyhedra in transition regions
+- Default: Generates 1 boundary layer (can be refined)
+- Supports: MPI parallelization for large meshes
+- No blockMesh required - creates own mesh template
+
+INPUT GEOMETRY (Section 3)
+---------------------------
+Supported formats: fms, ftr, stl
+- Preferred: fms (stores patches, subsets, feature edges in one file)
+- STL supported: Only stores patches, not feature edges
+
+Geometry entities:
+- Points: All points in surface triangulation
+- Triangles: All triangles in surface mesh
+- Patches: Transferred to volume mesh (for BCs)
+- Facet subsets: Used for meshing settings (NOT transferred)
+- Feature edges: Treated as constraints
+
+Feature edge extraction:
+- Use surfaceFeatureExtract utility before meshing
+- Required to define sharp features
+
+REQUIRED DICTIONARIES (Section 4)
+----------------------------------
+meshDict location: system/meshDict
+
+MANDATORY SETTINGS (Section 4.2):
+1. surfaceFile - path to geometry file
+2. maxCellSize - maximum cell size
+
+OPTIONAL SETTINGS:
+- localRefinement - patch-specific refinement
+- boundaryLayers - boundary layer configuration
+- meshQualitySettings - quality controls
+
+BOUNDARY LAYERS (Section 4.5):
+- Default: 1 layer generated automatically
+- Configuration: patchBoundaryLayers section
+- Settings: nLayers, thicknessRatio, maxFirstLayerThickness
+- Optimization: optimiseLayer, untangleLayers
+
+LOCAL REFINEMENT (Section 4.3):
+- Define per-patch cell sizes
+- Syntax:
+  localRefinement
+  {
+      patchName
+      {
+          cellSize 0.05;
+      }
+  }
+
+MESH QUALITY SETTINGS (Section 4.7):
+- maxNonOrthogonality: max angle (65° acceptable for CFD)
+- maxBoundarySkewness: boundary skewness limit
+- maxInternalSkewness: internal skewness limit
+- minCellVolume: minimum cell volume
+- minFaceArea: minimum face area
+
+KEY POINTS FOR OUR IMPLEMENTATION
+----------------------------------
+✓ cartesianMesh creates template automatically (no blockMesh)
+✓ STL format is officially supported
+✓ Use surfaceFeatureExtract for feature edges
+✓ Boundary layers generated automatically
+✓ localRefinement allows differentiated mesh sizing
+✓ Runs on Inductiva with inductiva/kutu:openfoam-cfmesh_v2412_dev
+
+TYPICAL WORKFLOW
+----------------
+1. Prepare STL geometry with patches
+2. Run surfaceFeatureExtract (extract sharp features)
+3. Run cartesianMesh (generates mesh template + fits to geometry)
+4. Run checkMesh (verify quality)
+5. Proceed with CFD simulation
+
+NOTES
+-----
+- cfMesh tolerant to poor quality input (doesn't need watertight)
+- Parallelized for shared memory (uses OMP_NUM_THREADS)
+- Memory efficient design
+- All sharp features must be defined before meshing
