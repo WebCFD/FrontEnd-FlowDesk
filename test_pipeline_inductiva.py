@@ -23,6 +23,7 @@ sys.path.append('.')
 # Import pipeline steps
 from step01_json2geo import run as json2geo
 from step02_geo2mesh import run as geo2mesh
+from step02b_run_mesh_inductiva import run as run_mesh_inductiva
 from step03_mesh2cfd import run as mesh2cfd
 from mesher_config import get_default_mesher
 from step04_cfd2result import run as cfd2result
@@ -68,22 +69,29 @@ def test_pipeline_inductiva():
         # STEP 2: Geometry → Mesh Configuration
         mesher_type = get_default_mesher()
         logger.info("\n" + "="*60)
-        logger.info(f"STEP 2: Generating Mesh Configuration ({mesher_type})")
+        logger.info(f"STEP 2: Preparing Mesh Configuration ({mesher_type})")
         logger.info("="*60)
         mesh_script = geo2mesh(case_name, final_geometry_mesh, boundary_conditions_df, type=mesher_type)
         logger.info(f"✓ Mesh configuration created")
         logger.info(f"✓ Generated {len(mesh_script)} mesh script commands")
         
-        # STEP 3: Setup CFD Case
+        # STEP 3: Generate Mesh on Inductiva
         logger.info("\n" + "="*60)
-        logger.info("STEP 3: Setting up CFD Case")
+        logger.info("STEP 3: Generating Mesh on Inductiva Cloud (cfMesh)")
+        logger.info("="*60)
+        run_mesh_inductiva(case_name, machine_type="c2d-standard-8", wait=True)
+        logger.info(f"✓ Mesh generated on Inductiva cloud")
+        
+        # STEP 4: Setup CFD Case
+        logger.info("\n" + "="*60)
+        logger.info("STEP 4: Setting up CFD Case")
         logger.info("="*60)
         mesh2cfd(case_name, type="hvac", mesh_script=mesh_script)
         logger.info(f"✓ CFD case configured")
         
-        # Confirm before running on Inductiva
+        # Confirm before running CFD on Inductiva (mesh already ran)
         logger.info("\n" + "="*60)
-        logger.info("READY TO EXECUTE ON INDUCTIVA CLOUD")
+        logger.info("READY TO EXECUTE CFD ON INDUCTIVA CLOUD")
         logger.info("="*60)
         logger.info("\nSimulation details:")
         logger.info(f"  - Case: {case_name}")
@@ -92,6 +100,7 @@ def test_pipeline_inductiva():
         logger.info(f"  - Iterations: 5 (test mode)")
         logger.info(f"  - Estimated time: 5-10 minutes")
         logger.info(f"  - Estimated cost: $0.10-0.20")
+        logger.info(f"\nNote: Mesh was already generated on Inductiva in Step 3")
         
         # Ask for confirmation (auto-confirm if --yes flag)
         import sys
@@ -101,22 +110,22 @@ def test_pipeline_inductiva():
             response = 'yes'
             logger.info("Auto-confirming execution (--yes flag detected)")
         else:
-            response = input("\nProceed with Inductiva execution? (yes/no): ").strip().lower()
+            response = input("\nProceed with CFD execution on Inductiva? (yes/no): ").strip().lower()
         
         if response != 'yes':
             logger.info("❌ Execution cancelled by user")
             return False
         
-        # STEP 4: Execute on Inductiva
+        # STEP 5: Execute CFD on Inductiva
         logger.info("\n" + "="*60)
-        logger.info("STEP 4: Executing CFD Simulation on Inductiva Cloud")
+        logger.info("STEP 5: Executing CFD Simulation on Inductiva Cloud")
         logger.info("="*60)
         cfd2result(case_name, type="inductiva")
-        logger.info(f"✓ Inductiva simulation completed")
+        logger.info(f"✓ Inductiva CFD simulation completed")
         
-        # STEP 5: Post-process results
+        # STEP 6: Post-process results
         logger.info("\n" + "="*60)
-        logger.info("STEP 5: Post-Processing Results")
+        logger.info("STEP 6: Post-Processing Results")
         logger.info("="*60)
         results2post(case_name)
         logger.info(f"✓ Post-processing completed")
