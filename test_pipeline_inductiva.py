@@ -97,7 +97,7 @@ def test_pipeline_inductiva():
         logger.info("="*60)
         logger.info("\nSimulation details:")
         logger.info(f"  - Case: {case_name}")
-        logger.info(f"  - Machine type: c2d-highcpu-16 (GCP spot instance)")
+        logger.info(f"  - Machine type: c2d-standard-8")
         logger.info(f"  - Mesher: {mesher_type} (cartesianMesh)")
         logger.info(f"  - Solver: buoyantSimpleFoam")
         logger.info(f"  - Iterations: 5 (test mode)")

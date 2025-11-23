@@ -111,7 +111,7 @@ def submit_to_inductiva(case_name: str, sim_path: str) -> str:
     """Submit a Inductiva y retorna task_id"""
     try:
         from src.components.solve.inductiva import solve_inductiva
-        task_id = solve_inductiva(sim_path, machine_type="c2d-highcpu-16", wait=False)
+        task_id = solve_inductiva(sim_path, machine_type="c2d-standard-8", wait=False)
         return task_id
     except Exception as e:
         raise SubmissionError(f"Failed to submit to Inductiva: {str(e)}", {

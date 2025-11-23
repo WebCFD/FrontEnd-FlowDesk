@@ -10,11 +10,16 @@ def create_decomposeParDict(template_path, sim_path, machine_type):
     input_path = os.path.join(template_path, "system", "decomposeParDict") 
     output_path = os.path.join(sim_path, "system", "decomposeParDict") 
 
-    # TODO: When running using inductiva, this needs to be done with
-    if(machine_type == "c2d-highcpu-16"):
-        n_cpu = 16
-    else:
-        raise BaseException("This type of machine is unkwown.")
+    # Map machine types to CPU count
+    machine_cpu_map = {
+        "c2d-standard-8": 8,
+        "c2d-highcpu-16": 16
+    }
+    
+    if machine_type not in machine_cpu_map:
+        raise BaseException(f"Unknown machine type: {machine_type}. Supported: {list(machine_cpu_map.keys())}")
+    
+    n_cpu = machine_cpu_map[machine_type]
     n_cpu_available, (n_x, n_y, n_z) = best_cpu_partition(n_cpu)
 
     str_replace_dict = dict()
@@ -48,9 +53,9 @@ def solve_inductiva(sim_path, machine_type, wait=True):
     logger.info(f"    * Setting up parallel decomposition from template: {template_path}")
     create_decomposeParDict(template_path, sim_path, machine_type)
 
-    #  Allocate cloud machine on Google Cloud Platform
-    logger.info("    * Allocating cloud machine on Google Cloud Platform")
-    cloud_machine = inductiva.resources.MachineGroup(provider="GCP", machine_type="c2d-highcpu-16", spot=True)
+    # Allocate cloud machine (using Inductiva recommended config)
+    logger.info(f"    * Allocating cloud machine: {machine_type}")
+    cloud_machine = inductiva.resources.MachineGroup(machine_type)
 
     # Initialize custom cfMesh image
     logger.info("    * Initializing custom cfMesh image (OpenFOAM v2412)")
