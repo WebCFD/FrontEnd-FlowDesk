@@ -79,11 +79,12 @@ def solve_inductiva(sim_path, machine_type, wait=True):
                     logger.info(f"    *   {i}: {line.rstrip()}")
 
     # Run simulation with Allrun script
+    # Note: Use 'sh Allrun' instead of './Allrun' to avoid permission issues
     logger.info("    * Submitting CFD simulation task to cloud")
     task = cf_mesh.run(
         on=cloud_machine,
         input_dir=sim_path,
-        commands=["./Allrun"]
+        commands=["sh Allrun"]
     )
     
     task_id = task.id
