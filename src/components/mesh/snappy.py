@@ -632,8 +632,14 @@ def prepare_snappy(geo_mesh, sim_path, geo_df, stl_filename = "geometry.stl"):
     expected_patches_str = ", ".join(expected_patches)
     
     script_commands = [
-        '#!/bin/sh', 
+        '#!/bin/bash',
         'cd "${0%/*}" || exit',
+        '',
+        '# Source OpenFOAM environment (for Inductiva cloud execution)',
+        'if [ -f "/opt/openfoam/openfoam2412/etc/bashrc" ]; then',
+        '    . /opt/openfoam/openfoam2412/etc/bashrc',
+        'fi',
+        '',
         '. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions',
 
         'decompDict="-decomposeParDict system/decomposeParDict"',
