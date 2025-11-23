@@ -12,14 +12,8 @@ echo "🔍 WORKER STATUS CHECK"
 echo "=========================================="
 echo ""
 
-# Detect available worker files
-WORKER_FILES=(worker.py worker_monitor.py worker_submit.py)
-AVAILABLE_WORKERS=()
-for wf in "${WORKER_FILES[@]}"; do
-    if [ -f "$wf" ]; then
-        AVAILABLE_WORKERS+=("$wf")
-    fi
-done
+# Active workers (worker.py is obsolete and removed)
+WORKER_FILES=(worker_submit.py worker_monitor.py)
 
 # Check if workers are running
 echo -e "${BLUE}[1] Worker Processes:${NC}"
@@ -36,12 +30,30 @@ echo ""
 
 # Check each worker file and its log
 echo -e "${BLUE}[2] Worker Files & Logs:${NC}"
-for worker_file in "${AVAILABLE_WORKERS[@]}"; do
+
+for worker_file in "${WORKER_FILES[@]}"; do
     worker_name="${worker_file%.py}"
     log_file="${worker_name}.log"
     
+    # Determine worker purpose
+    case "$worker_file" in
+        worker_submit.py)
+            purpose="Prepares and submits simulations to Inductiva"
+            ;;
+        worker_monitor.py)
+            purpose="Monitors cloud execution and downloads results"
+            ;;
+    esac
+    
     echo ""
     echo -e "${YELLOW}  $worker_file:${NC}"
+    echo "    Purpose: $purpose"
+    
+    # Check if worker file exists
+    if [ ! -f "$worker_file" ]; then
+        echo -e "    File: ${RED}MISSING${NC}"
+        continue
+    fi
     
     # Check if worker is running
     RUNNING=$(pgrep -f "python.*$worker_file" || true)
@@ -147,7 +159,7 @@ echo "=========================================="
 echo -e "${BLUE}Summary:${NC}"
 
 RUNNING_COUNT=$(pgrep -f "python.*worker" | wc -l)
-TOTAL_WORKERS=${#AVAILABLE_WORKERS[@]}
+TOTAL_WORKERS=2  # Only 2 active workers
 
 if [ "$RUNNING_COUNT" -eq "$TOTAL_WORKERS" ]; then
     echo -e "${GREEN}✓ All workers running ($RUNNING_COUNT/$TOTAL_WORKERS)${NC}"
@@ -162,6 +174,9 @@ echo ""
 echo "Commands:"
 echo "  Start/Restart: ./startWorkers.sh"
 echo "  Stop workers:  pkill -f 'python.*worker'"
-echo "  Monitor logs:  tail -f worker.log worker_monitor.log worker_submit.log"
+echo "  Monitor logs:  tail -f worker_submit.log worker_monitor.log"
+echo ""
+echo "Pipeline architecture:"
+echo "  pending → worker_submit → cloud_execution → worker_monitor → completed"
 echo "=========================================="
 echo ""

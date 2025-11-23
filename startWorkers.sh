@@ -26,21 +26,21 @@ print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
-# Detect which workers to manage
-WORKER_FILES=(worker.py worker_monitor.py worker_submit.py)
+# Active workers (worker.py is obsolete and removed)
+WORKER_FILES=(worker_submit.py worker_monitor.py)
 AVAILABLE_WORKERS=()
+
+print_info "Active workers: worker_submit.py (submission) + worker_monitor.py (monitoring)"
+
 for wf in "${WORKER_FILES[@]}"; do
     if [ -f "$wf" ]; then
         AVAILABLE_WORKERS+=("$wf")
+    else
+        print_error "Required worker file not found: $wf"
+        exit 1
     fi
 done
 
-if [ ${#AVAILABLE_WORKERS[@]} -eq 0 ]; then
-    print_error "No worker files found (worker.py, worker_monitor.py, worker_submit.py)"
-    exit 1
-fi
-
-print_info "Found worker files: ${AVAILABLE_WORKERS[*]}"
 echo ""
 
 # 1. Stop all worker processes
@@ -87,28 +87,16 @@ echo ""
 # 2. Clean Python cache files
 print_info "Cleaning Python cache files..."
 
-# Remove __pycache__ directories
-PYCACHE_COUNT=$(find . -type d -name "__pycache__" 2>/dev/null | wc -l)
-if [ "$PYCACHE_COUNT" -gt 0 ]; then
-    print_info "Removing $PYCACHE_COUNT __pycache__ directories..."
+# Clean cache with timeout to prevent hanging
+print_info "Removing Python cache (this may take a moment)..."
+timeout 60 bash -c '
+    # Remove __pycache__ directories (most important)
     find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
-fi
-
-# Remove .pyc files
-PYC_COUNT=$(find . -type f -name "*.pyc" 2>/dev/null | wc -l)
-if [ "$PYC_COUNT" -gt 0 ]; then
-    print_info "Removing $PYC_COUNT .pyc files..."
+    # Remove .pyc files
     find . -type f -name "*.pyc" -delete 2>/dev/null || true
-fi
-
-# Remove .pyo files (optimized bytecode)
-PYO_COUNT=$(find . -type f -name "*.pyo" 2>/dev/null | wc -l)
-if [ "$PYO_COUNT" -gt 0 ]; then
-    print_info "Removing $PYO_COUNT .pyo files..."
+    # Remove .pyo files
     find . -type f -name "*.pyo" -delete 2>/dev/null || true
-fi
-
-print_info "✓ Python cache cleaned"
+' && print_info "✓ Python cache cleaned" || print_warn "Cache cleaning timed out (non-critical)"
 
 echo ""
 
@@ -121,7 +109,7 @@ if [ -f "mesher_config.py" ]; then
     print_info "  DEFAULT_MESHER = \"$DEFAULT_MESHER\""
     print_info "  DEFAULT_QUALITY_LEVEL = $QUALITY_LEVEL"
 else
-    print_warn "mesher_config.py not found (may not be needed for all workers)"
+    print_warn "mesher_config.py not found"
 fi
 
 echo ""
@@ -133,31 +121,39 @@ echo ""
 STARTED_WORKERS=()
 FAILED_WORKERS=()
 
-for worker_file in "${AVAILABLE_WORKERS[@]}"; do
-    worker_name="${worker_file%.py}"
-    log_file="${worker_name}.log"
-    
-    print_info "Starting $worker_file..."
-    
-    # Start worker in background with nohup for persistence
-    nohup python3 "$worker_file" > "$log_file" 2>&1 &
-    WORKER_PID=$!
-    
-    # Wait a moment for process to start
-    sleep 1
-    
-    # Verify worker started successfully
-    if ps -p $WORKER_PID > /dev/null 2>&1; then
-        print_info "  ✓ $worker_file started (PID: $WORKER_PID, Log: $log_file)"
-        STARTED_WORKERS+=("$worker_file")
-    else
-        print_error "  ✗ Failed to start $worker_file"
-        print_info "  Check $log_file for errors:"
-        tail -10 "$log_file" 2>/dev/null | sed 's/^/    /' || echo "    No log file found"
-        FAILED_WORKERS+=("$worker_file")
-    fi
-    echo ""
-done
+# Start worker_submit.py (preparation & submission)
+print_info "Starting worker_submit.py (preparation & submission)..."
+nohup python3 worker_submit.py > worker_submit.log 2>&1 &
+SUBMIT_PID=$!
+sleep 1
+
+if ps -p $SUBMIT_PID > /dev/null 2>&1; then
+    print_info "  ✓ worker_submit.py started (PID: $SUBMIT_PID, Log: worker_submit.log)"
+    STARTED_WORKERS+=("worker_submit.py")
+else
+    print_error "  ✗ Failed to start worker_submit.py"
+    print_info "  Check worker_submit.log for errors:"
+    tail -10 worker_submit.log 2>/dev/null | sed 's/^/    /' || echo "    No log file found"
+    FAILED_WORKERS+=("worker_submit.py")
+fi
+echo ""
+
+# Start worker_monitor.py (monitoring & post-processing)
+print_info "Starting worker_monitor.py (monitoring & post-processing)..."
+nohup python3 worker_monitor.py > worker_monitor.log 2>&1 &
+MONITOR_PID=$!
+sleep 1
+
+if ps -p $MONITOR_PID > /dev/null 2>&1; then
+    print_info "  ✓ worker_monitor.py started (PID: $MONITOR_PID, Log: worker_monitor.log)"
+    STARTED_WORKERS+=("worker_monitor.py")
+else
+    print_error "  ✗ Failed to start worker_monitor.py"
+    print_info "  Check worker_monitor.log for errors:"
+    tail -10 worker_monitor.log 2>/dev/null | sed 's/^/    /' || echo "    No log file found"
+    FAILED_WORKERS+=("worker_monitor.py")
+fi
+echo ""
 
 # 5. Display final status
 echo "=========================================="
@@ -179,9 +175,8 @@ else
     echo "=========================================="
     echo ""
     echo "Running workers:"
-    for w in "${STARTED_WORKERS[@]}"; do
-        echo "  ✓ $w"
-    done
+    echo "  ✓ worker_submit.py   - Prepares and submits simulations to Inductiva"
+    echo "  ✓ worker_monitor.py  - Monitors cloud execution and downloads results"
 fi
 
 echo ""
@@ -190,7 +185,10 @@ ps aux | grep "python.*worker" | grep -v grep | awk '{printf "  PID %-6s CPU %-5
 
 echo ""
 echo "Commands:"
-echo "  • Monitor logs:   tail -f worker.log worker_monitor.log worker_submit.log"
+echo "  • Monitor logs:   tail -f worker_submit.log worker_monitor.log"
 echo "  • Check status:   ./checkWorkers.sh"
 echo "  • Stop workers:   pkill -f 'python.*worker'"
+echo ""
+echo "Pipeline architecture:"
+echo "  pending → worker_submit → cloud_execution → worker_monitor → completed"
 echo ""
