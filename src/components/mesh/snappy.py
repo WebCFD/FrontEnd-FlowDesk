@@ -695,7 +695,7 @@ def prepare_snappy(geo_mesh, sim_path, geo_df, stl_filename = "geometry.stl"):
         "    print('='*80 + '\\n')",
         "    exit(1)",
         "",
-        "print('✅ Mesh validation passed - no background patches found')",
+        "print('[OK] Mesh validation passed - no background patches found')",
         "print(f'Valid patches: {\", \".join(patches.keys())}')",
         "VALIDATION_EOF",
         'echo "==================== MESH VALIDATION PASSED ===================="',
