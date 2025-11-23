@@ -105,8 +105,12 @@ def create_meshDict(template_path, sim_path, stl_filename, geo_mesh, geo_df):
     patch_refinement = generate_patch_refinement_block(geo_df)
     boundary_layers = generate_boundary_layer_block(geo_df)
     
+    # cfMesh needs full path relative to case directory
+    # Template already includes quotes, so don't add them here
+    stl_path = f"constant/triSurface/{stl_filename}"
+    
     str_replace_dict = dict()
-    str_replace_dict["$STL_FILENAME"] = stl_filename
+    str_replace_dict["$STL_FILENAME"] = stl_path
     str_replace_dict["$MAX_CELL_SIZE"] = max_cell_size
     str_replace_dict["$PATCH_REFINEMENT"] = patch_refinement
     str_replace_dict["$BOUNDARY_LAYERS"] = boundary_layers
