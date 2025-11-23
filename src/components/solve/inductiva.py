@@ -61,7 +61,7 @@ def solve_inductiva(sim_path, machine_type, wait=True):
     task = cf_mesh.run(
         on=cloud_machine,
         input_dir=sim_path,
-        commands=["./Allrun"]
+        commands=["bash Allrun"]
     )
     
     task_id = task.id
