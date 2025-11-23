@@ -74,11 +74,12 @@ def solve_inductiva(sim_path, machine_type, wait=True):
                     logger.info(f"    *   {i}: {line.rstrip()}")
 
     # Run simulation with Allrun script
+    # Note: Source OpenFOAM environment before running Allrun
     logger.info("    * Submitting CFD simulation task to cloud")
     task = cf_mesh.run(
         on=cloud_machine,
         input_dir=sim_path,
-        commands=["bash ./Allrun"]
+        commands=["bash -c 'source /opt/openfoam/openfoam2412/etc/bashrc && ./Allrun'"]
     )
     
     task_id = task.id
