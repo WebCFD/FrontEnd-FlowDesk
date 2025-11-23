@@ -227,8 +227,14 @@ def prepare_cfmesh(geo_mesh, sim_path, geo_df, fms_filename="geometry.fms"):
     logger.info(f"    * Boundary layers will be generated automatically on all surfaces")
     
     script_commands = [
-        '#!/bin/sh',
+        '#!/bin/bash',
         'cd "${0%/*}" || exit',
+        '',
+        '# Source OpenFOAM environment (for Inductiva cloud execution)',
+        'if [ -f "/opt/openfoam/openfoam2412/etc/bashrc" ]; then',
+        '    . /opt/openfoam/openfoam2412/etc/bashrc',
+        'fi',
+        '',
         '. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions',
         
         'decompDict="-decomposeParDict system/decomposeParDict"',
