@@ -72,3 +72,8 @@ waitForPort = 5000
 
 [agent]
 integrations = ["resend:1.0.0", "javascript_object_storage:1.0.0"]
+
+[userenv]
+
+[userenv.shared]
+DEBUG_COPY_ALLRUN = "1"

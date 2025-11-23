@@ -56,6 +56,23 @@ def solve_inductiva(sim_path, machine_type, wait=True):
     logger.info("    * Initializing custom cfMesh image (OpenFOAM v2412)")
     cf_mesh = inductiva.simulators.CustomImage("inductiva/kutu:openfoam-cfmesh_v2412_dev")
 
+    # DEBUG: Copy Allrun before upload to compare local vs Inductiva (set DEBUG_COPY_ALLRUN=1 to enable)
+    if os.getenv('DEBUG_COPY_ALLRUN', '0') == '1':
+        import shutil
+        from datetime import datetime
+        allrun_path = os.path.join(sim_path, "Allrun")
+        if os.path.exists(allrun_path):
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            backup_path = os.path.join(sim_path, f"Allrun_LOCAL_{timestamp}")
+            shutil.copy2(allrun_path, backup_path)
+            logger.info(f"    * [DEBUG] Allrun copied to: {backup_path}")
+            # Log first 20 lines
+            with open(allrun_path, 'r') as f:
+                lines = f.readlines()[:20]
+                logger.info(f"    * [DEBUG] Allrun content (first 20 lines):")
+                for i, line in enumerate(lines, 1):
+                    logger.info(f"    *   {i}: {line.rstrip()}")
+
     # Run simulation with Allrun script
     logger.info("    * Submitting CFD simulation task to cloud")
     task = cf_mesh.run(
