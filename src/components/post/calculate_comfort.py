@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #!/usr/bin/env python3
 """
 Calculate PMV/PPD thermal comfort fields from OpenFOAM T and U fields.
@@ -30,8 +31,8 @@ def calculate_pmv_fanger(tdb, tr, vel, rh, met, clo):
     Calculate PMV (Predicted Mean Vote) using Fanger's equation (ISO 7730).
     
     Args:
-        tdb: Dry bulb air temperature [°C]
-        tr: Mean radiant temperature [°C]
+        tdb: Dry bulb air temperature [degC]
+        tr: Mean radiant temperature [degC]
         vel: Relative air velocity [m/s]
         rh: Relative humidity [%]
         met: Metabolic rate [met]
@@ -169,8 +170,8 @@ def main(case_path):
     
     # Calculate PMV and PPD for each cell
     # Apply valid range limits for PMV/PPD calculation (Fanger model is valid for thermal comfort zones)
-    VALID_TEMP_MIN = 10.0  # °C
-    VALID_TEMP_MAX = 40.0  # °C  
+    VALID_TEMP_MIN = 10.0  # degC
+    VALID_TEMP_MAX = 40.0  # degC  
     VALID_VEL_MAX = 5.0    # m/s
     INVALID_VALUE = -1000.0  # Sentinel value for invalid/out-of-range cells
     

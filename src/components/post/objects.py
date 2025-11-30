@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import logging
 import numpy as np
@@ -8,7 +9,7 @@ from src.components.tools.export_debug import load_foam_results
 
 # Visualization settings per variable
 VAR_SETTINGS = {
-    "T_degC":  {"clim": (15, 30), "cmap": "plasma",    "label": "Temperature [°C]"},
+    "T_degC":  {"clim": (15, 30), "cmap": "plasma",    "label": "Temperature [degC]"},
     "PMV":     {"clim": (-3, 3),  "cmap": "coolwarm",  "label": "PMV"},
     "PPD":     {"clim": (0, 100), "cmap": "inferno_r", "label": "PPD [%]"},
     "U_mag":   {"clim": None,     "cmap": "turbo",     "label": "Velocity Magnitude [m/s]"},
@@ -31,7 +32,7 @@ def post_objects(sim_path, post_path):
         f"and {surfaces_mesh.GetNumberOfCells():,} surface cells"
     )
 
-    # Ensure temperature in °C
+    # Ensure temperature in degC
     if "T" in internal_mesh.point_data:
         internal_mesh.point_data["T_degC"] = internal_mesh.point_data["T"] - 273.15
         del internal_mesh.point_data["T"]

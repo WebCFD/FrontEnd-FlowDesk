@@ -1,3 +1,19 @@
+# -*- coding: utf-8 -*-
+"""
+Post-processing script for CFD simulation results.
+IMPORTANT: This script forces UTF-8 encoding at startup to handle
+special characters in OpenFOAM output files across different environments.
+"""
+import sys
+import io
+
+# Force UTF-8 encoding BEFORE any other imports
+# This is critical for Cloud Run where locale may default to ASCII
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+if sys.stderr.encoding != 'utf-8':
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+
 import os
 import logging
 
