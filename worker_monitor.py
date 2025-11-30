@@ -309,12 +309,21 @@ def process_completed_simulation(sim):
         # Execute post-processing in a separate process to ensure memory cleanup
         # This prevents PyVista/VTK memory accumulation in the worker process
         try:
+            # Create environment with explicit UTF-8 encoding for Cloud Run compatibility
+            env = os.environ.copy()
+            env['PYTHONIOENCODING'] = 'utf-8'
+            env['LC_ALL'] = 'C.UTF-8'
+            env['LANG'] = 'C.UTF-8'
+            
             result = subprocess.run(
                 ["python3", "-u", "step05_results2post.py", case_name],
                 capture_output=True,
                 text=True,
                 timeout=600,  # 10 minute timeout for post-processing
-                check=True
+                check=True,
+                env=env,
+                encoding='utf-8',
+                errors='replace'  # Replace undecodable chars instead of crashing
             )
             
             # Log subprocess output for debugging
@@ -371,12 +380,21 @@ def process_completed_simulation(sim):
         else:
             r2_upload_success = False
             try:
+                # Use same UTF-8 environment for R2 upload subprocess
+                env = os.environ.copy()
+                env['PYTHONIOENCODING'] = 'utf-8'
+                env['LC_ALL'] = 'C.UTF-8'
+                env['LANG'] = 'C.UTF-8'
+                
                 upload_result = subprocess.run(
                     ["python3", "upload_vtk_to_r2.py", str(sim_id), vtk_dir],
                     capture_output=True,
                     text=True,
                     timeout=600,  # 10 minute timeout for upload
-                    check=True
+                    check=True,
+                    env=env,
+                    encoding='utf-8',
+                    errors='replace'
                 )
                 
                 if upload_result.stdout:
