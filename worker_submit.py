@@ -37,6 +37,60 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Inductiva configuration
+INDUCTIVA_API_KEY = os.getenv('INDUCTIVA_API_KEY')
+
+def log_startup_configuration():
+    """Log environment and configuration at startup for debugging."""
+    is_production = os.getenv('NODE_ENV') == 'production'
+    env_label = "PRODUCTION" if is_production else "DEVELOPMENT"
+    
+    logger.info("=" * 60)
+    logger.info(f"🚀 WORKER_SUBMIT STARTING")
+    logger.info("=" * 60)
+    logger.info(f"Environment: {env_label}")
+    logger.info(f"NODE_ENV: {os.getenv('NODE_ENV', 'not set')}")
+    logger.info(f"API_BASE: {API_BASE}")
+    
+    # Cases directory
+    cases_dir = os.path.join(os.getcwd(), 'cases')
+    logger.info(f"Cases Directory: {cases_dir}")
+    
+    # Inductiva configuration
+    inductiva_configured = bool(INDUCTIVA_API_KEY)
+    inductiva_status = "✓ CONFIGURED" if inductiva_configured else "❌ NOT CONFIGURED"
+    logger.info(f"Inductiva API: {inductiva_status}")
+    if inductiva_configured:
+        key_preview = INDUCTIVA_API_KEY[:8] + "..." if len(INDUCTIVA_API_KEY) > 8 else "***"
+        logger.info(f"Inductiva Key: {key_preview}")
+        
+        # Try to get machine group info
+        try:
+            import inductiva
+            machine_group = os.getenv('INDUCTIVA_MACHINE_GROUP', 'default')
+            logger.info(f"Machine Group: {machine_group}")
+        except Exception:
+            pass
+    else:
+        logger.error("⚠️ Inductiva API key not set - job submission will fail!")
+    
+    # Default mesher
+    try:
+        default_mesher = get_default_mesher()
+        logger.info(f"Default Mesher: {default_mesher}")
+    except Exception:
+        logger.info("Default Mesher: cfmesh (fallback)")
+    
+    # Production notes
+    if is_production:
+        logger.info("-" * 60)
+        logger.info("PRODUCTION MODE NOTES:")
+        logger.info("  - Jobs submitted to Inductiva cloud")
+        logger.info("  - Results monitored by worker_monitor")
+        logger.info("-" * 60)
+    
+    logger.info("=" * 60)
+
 
 def get_pending_simulations():
     """Obtiene sims con status='pending'"""
@@ -336,7 +390,8 @@ def process_simulation(sim: Dict[str, Any]):
 
 
 def main():
-    logger.info("Worker Submit started")
+    # Log startup configuration for debugging
+    log_startup_configuration()
     
     while True:
         try:

@@ -29,6 +29,64 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+def log_startup_configuration():
+    """Log environment and configuration at startup for debugging."""
+    is_production = os.getenv('NODE_ENV') == 'production'
+    env_label = "PRODUCTION" if is_production else "DEVELOPMENT"
+    
+    logger.info("=" * 60)
+    logger.info(f"🚀 WORKER_MONITOR STARTING")
+    logger.info("=" * 60)
+    logger.info(f"Environment: {env_label}")
+    logger.info(f"NODE_ENV: {os.getenv('NODE_ENV', 'not set')}")
+    logger.info(f"API_BASE: {API_BASE}")
+    
+    # VTK upload paths
+    vtk_base = '/tmp/uploads' if is_production else 'public/uploads'
+    logger.info(f"VTK Upload Path: {vtk_base}/sim_*/vtk/")
+    
+    # R2 configuration
+    r2_configured = all([
+        os.getenv('R2_ENDPOINT'),
+        os.getenv('R2_ACCESS_KEY_ID'),
+        os.getenv('R2_SECRET_ACCESS_KEY')
+    ])
+    r2_status = "✓ CONFIGURED" if r2_configured else "❌ NOT CONFIGURED"
+    logger.info(f"Cloudflare R2: {r2_status}")
+    if r2_configured:
+        # Log endpoint without full credentials
+        endpoint = os.getenv('R2_ENDPOINT', '')
+        logger.info(f"R2 Endpoint: {endpoint}")
+        logger.info(f"R2 Bucket: {os.getenv('R2_BUCKET_NAME', 'flowdesk-vtk-storage')}")
+    else:
+        if is_production:
+            logger.critical("⚠️ CRITICAL: R2 not configured in PRODUCTION!")
+            logger.critical("⚠️ VTK files will NOT persist after container restart!")
+        else:
+            logger.warning("R2 not configured - VTK files will only be stored locally")
+    
+    # Inductiva configuration
+    inductiva_configured = bool(INDUCTIVA_API_KEY)
+    inductiva_status = "✓ CONFIGURED" if inductiva_configured else "❌ NOT CONFIGURED"
+    logger.info(f"Inductiva API: {inductiva_status}")
+    if inductiva_configured:
+        # Show partial key for verification (first 8 chars)
+        key_preview = INDUCTIVA_API_KEY[:8] + "..." if len(INDUCTIVA_API_KEY) > 8 else "***"
+        logger.info(f"Inductiva Key: {key_preview}")
+    else:
+        logger.error("⚠️ Inductiva API key not set - simulations will fail!")
+    
+    # Persistence warning for production
+    if is_production:
+        logger.info("-" * 60)
+        logger.info("PRODUCTION MODE NOTES:")
+        logger.info("  - Filesystem is EPHEMERAL (/tmp)")
+        logger.info("  - VTK files MUST be uploaded to R2 for persistence")
+        logger.info("  - Container may restart at any time")
+        logger.info("-" * 60)
+    
+    logger.info("=" * 60)
+
 def get_cloud_execution_sims():
     """Obtiene sims con status='cloud_execution'"""
     try:
@@ -439,11 +497,11 @@ def cleanup_old_uploads(keep_last_n=5):
         logger.warning(f"⚠️ Upload cleanup warning (non-critical): {e}")
 
 def main():
-    logger.info("=" * 80)
-    logger.info("🚀 WORKER MONITOR STARTED - PRODUCTION MODE")
+    # Log startup configuration for debugging
+    log_startup_configuration()
+    
     logger.info("⚡ Memory Management: ENABLED (1 simulation per 30s cycle)")
     logger.info("🔒 OOM Protection: ACTIVE (subprocess isolation + garbage collection)")
-    logger.info("=" * 80)
     
     cycle_count = 0
     
