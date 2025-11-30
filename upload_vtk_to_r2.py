@@ -94,12 +94,37 @@ def upload_vtk_files(simulation_id: int, vtk_directory: str) -> dict:
                     ExtraArgs={"ContentType": "application/octet-stream"}
                 )
             
+            # Verify upload by checking object exists and size matches
+            try:
+                head_response = client.head_object(Bucket=R2_BUCKET_NAME, Key=key)
+                r2_size = head_response.get("ContentLength", 0)
+                
+                if r2_size != file_size:
+                    print(f"[R2] ⚠️ SIZE MISMATCH for {filename}: local={file_size}, R2={r2_size}")
+                    failed.append({
+                        "filename": filename,
+                        "error": f"Size mismatch: local={file_size}, R2={r2_size}"
+                    })
+                    continue
+                
+                print(f"[R2] ✓ Verified {filename}: {r2_size} bytes in R2 (matches local)")
+                
+            except Exception as verify_error:
+                print(f"[R2] ⚠️ VERIFICATION FAILED for {filename}: {verify_error}")
+                print(f"[R2] ⚠️ File may not be fully uploaded - check R2 bucket manually")
+                failed.append({
+                    "filename": filename,
+                    "error": f"Verification failed: {verify_error}"
+                })
+                continue
+            
             uploaded.append({
                 "filename": filename,
                 "key": key,
-                "size": file_size
+                "size": file_size,
+                "verified": True
             })
-            print(f"[R2] ✓ Successfully uploaded {filename}")
+            print(f"[R2] ✓ Successfully uploaded and verified {filename}")
             
         except Exception as e:
             error_msg = str(e)

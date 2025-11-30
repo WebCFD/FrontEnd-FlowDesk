@@ -43,24 +43,44 @@ function getR2Client(): S3Client {
 export class R2StorageService {
   private client: S3Client | null = null;
   private lastClientError: Date | null = null;
+  private lastClientErrorMessage: string | null = null;
   private readonly CLIENT_RETRY_INTERVAL_MS = 30000; // Retry after 30 seconds on error
+  private clientCreationCount: number = 0;
 
   private getClient(): S3Client {
+    const isProduction = process.env.NODE_ENV === 'production';
+    const envLabel = isProduction ? 'PRODUCTION' : 'DEVELOPMENT';
+
     // If we had an error, check if enough time has passed to retry
-    if (this.lastClientError && this.client) {
+    if (this.lastClientError) {
       const timeSinceError = Date.now() - this.lastClientError.getTime();
+      const remainingMs = this.CLIENT_RETRY_INTERVAL_MS - timeSinceError;
+      
       if (timeSinceError > this.CLIENT_RETRY_INTERVAL_MS) {
-        console.log('[R2] Retrying client creation after previous error');
-        this.client = null;
+        // Cooldown passed - allow retry
+        console.log(`[R2] [${envLabel}] Retry interval passed - attempting to create new client`);
+        console.log(`[R2] [${envLabel}] Previous error was: ${this.lastClientErrorMessage}`);
         this.lastClientError = null;
+        this.lastClientErrorMessage = null;
+        // Continue to client creation below
+      } else {
+        // Still in cooldown - throw without retry
+        console.log(`[R2] [${envLabel}] Client in error state - retry in ${Math.ceil(remainingMs / 1000)}s`);
+        throw new Error(`R2 client unavailable - last error: ${this.lastClientErrorMessage}. Retry in ${Math.ceil(remainingMs / 1000)}s`);
       }
     }
 
     if (!this.client) {
       try {
+        this.clientCreationCount++;
+        console.log(`[R2] [${envLabel}] Creating S3 client (attempt #${this.clientCreationCount})`);
         this.client = getR2Client();
-      } catch (error) {
+        console.log(`[R2] [${envLabel}] ✓ S3 client created successfully`);
+      } catch (error: any) {
         this.lastClientError = new Date();
+        this.lastClientErrorMessage = error.message || String(error);
+        console.error(`[R2] [${envLabel}] ❌ Failed to create S3 client: ${this.lastClientErrorMessage}`);
+        console.error(`[R2] [${envLabel}] Will retry after ${this.CLIENT_RETRY_INTERVAL_MS / 1000}s`);
         throw error;
       }
     }
@@ -68,9 +88,11 @@ export class R2StorageService {
   }
 
   resetClient(): void {
+    const wasConfigured = this.client !== null;
     this.client = null;
     this.lastClientError = null;
-    console.log('[R2] Client reset - will reinitialize on next request');
+    this.lastClientErrorMessage = null;
+    console.log(`[R2] Client reset (was configured: ${wasConfigured}) - will reinitialize on next request`);
   }
 
   getBucketName(): string {

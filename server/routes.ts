@@ -698,42 +698,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const simulationId = parseInt(req.params.id);
       const filename = req.params.filename;
+      const isProduction = process.env.NODE_ENV === 'production';
+      const envLabel = isProduction ? 'PROD' : 'DEV';
 
-      console.log(`[VTK-DOWNLOAD] Requesting ${filename} for simulation ${simulationId}`);
+      console.log(`[VTK-DOWNLOAD] [${envLabel}] Request: sim=${simulationId}, file=${filename}`);
       
       // Try R2 first (persistent external storage)
+      let r2Available = false;
+      let r2Error: Error | null = null;
+      
       try {
+        console.log(`[VTK-DOWNLOAD] [${envLabel}] Checking R2 for file...`);
         const exists = await r2Storage.fileExists(simulationId, filename);
         if (exists) {
-          console.log(`[VTK-DOWNLOAD] Found in R2: ${filename}`);
+          console.log(`[VTK-DOWNLOAD] [${envLabel}] ✓ Found in R2, streaming to client`);
+          console.log(`[VTK-DOWNLOAD] [${envLabel}] Source: Cloudflare R2 (PERSISTENT)`);
           await r2Storage.downloadToResponse(simulationId, filename, res);
           return;
         }
-        console.log(`[VTK-DOWNLOAD] Not in R2, trying filesystem`);
-      } catch (r2Error: any) {
-        // Log R2 error but continue to filesystem fallback
-        if (r2Error instanceof R2NotFoundError) {
-          console.log(`[VTK-DOWNLOAD] File not found in R2: ${filename}`);
+        console.log(`[VTK-DOWNLOAD] [${envLabel}] Not found in R2`);
+        r2Available = true; // R2 is working, just file not found
+      } catch (err: any) {
+        r2Error = err;
+        if (err instanceof R2NotFoundError) {
+          console.log(`[VTK-DOWNLOAD] [${envLabel}] R2 returned 404 for: ${filename}`);
+          r2Available = true;
         } else {
-          console.warn(`[VTK-DOWNLOAD] R2 error (falling back to filesystem): ${r2Error.message}`);
+          console.warn(`[VTK-DOWNLOAD] [${envLabel}] ⚠️ R2 ERROR: ${err.message}`);
+          console.warn(`[VTK-DOWNLOAD] [${envLabel}] R2 may be misconfigured or unavailable`);
+          r2Available = false;
         }
       }
       
       // Fallback to local filesystem
-      const isProduction = process.env.NODE_ENV === 'production';
       const filePath = isProduction
         ? path.join('/tmp/uploads', `sim_${simulationId}`, 'vtk', filename)
         : path.join(process.cwd(), 'public', 'uploads', `sim_${simulationId}`, 'vtk', filename);
 
+      console.log(`[VTK-DOWNLOAD] [${envLabel}] Checking filesystem: ${filePath}`);
+
       if (!fsSync.existsSync(filePath)) {
-        console.log(`[VTK-DOWNLOAD] File not found in filesystem: ${filePath}`);
+        console.log(`[VTK-DOWNLOAD] [${envLabel}] ❌ NOT FOUND in filesystem`);
+        console.log(`[VTK-DOWNLOAD] [${envLabel}] Summary: R2=${r2Available ? 'available but no file' : 'unavailable'}, Filesystem=not found`);
+        
+        if (isProduction && !r2Available) {
+          console.warn(`[VTK-DOWNLOAD] [${envLabel}] ⚠️ PRODUCTION: File may have been lost due to container restart`);
+          console.warn(`[VTK-DOWNLOAD] [${envLabel}] ⚠️ R2 upload may have failed during post-processing`);
+        }
+        
         return res.status(404).json({ 
           message: "VTK file not found",
-          checked: ["R2 storage", isProduction ? "/tmp/uploads" : "public/uploads"]
+          environment: envLabel,
+          checked: {
+            r2: r2Available ? "checked, not found" : `error: ${r2Error?.message || 'unknown'}`,
+            filesystem: filePath
+          },
+          hint: isProduction 
+            ? "File may have been lost if R2 upload failed and container restarted"
+            : "Check if simulation completed successfully"
         });
       }
 
-      console.log(`[VTK-DOWNLOAD] Serving from filesystem: ${filePath}`);
+      const fileStats = fsSync.statSync(filePath);
+      console.log(`[VTK-DOWNLOAD] [${envLabel}] ✓ Found in filesystem: ${fileStats.size} bytes`);
+      console.log(`[VTK-DOWNLOAD] [${envLabel}] Source: Local filesystem (${isProduction ? 'EPHEMERAL /tmp' : 'PERSISTENT public/uploads'})`);
+      
+      if (isProduction) {
+        console.warn(`[VTK-DOWNLOAD] [${envLabel}] ⚠️ Serving from /tmp - file is EPHEMERAL and may disappear on restart`);
+      }
+
       res.setHeader('Content-Type', 'application/zip');
       res.setHeader('Cache-Control', 'private, max-age=3600');
       res.sendFile(filePath);

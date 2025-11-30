@@ -279,39 +279,77 @@ def process_completed_simulation(sim):
         logger.info(f"[Sim {sim_id}] ✅ VTK files copied successfully ({len(result_paths.get('vtk', []))} files)")
         
         # Upload VTK files to Cloudflare R2 (persistent external storage)
-        logger.info(f"[Sim {sim_id}] Step 5/5: Uploading VTK files to Cloudflare R2...")
         is_production = os.getenv('NODE_ENV') == 'production'
+        env_label = "PRODUCTION" if is_production else "DEVELOPMENT"
         vtk_dir = f'/tmp/uploads/sim_{sim_id}/vtk' if is_production else f'public/uploads/sim_{sim_id}/vtk'
         
-        r2_upload_success = False
-        try:
-            upload_result = subprocess.run(
-                ["python3", "upload_vtk_to_r2.py", str(sim_id), vtk_dir],
-                capture_output=True,
-                text=True,
-                timeout=600,  # 10 minute timeout for upload
-                check=True
-            )
-            
-            if upload_result.stdout:
-                logger.info(f"[Sim {sim_id}] R2 Upload output:\n{upload_result.stdout}")
-            if upload_result.stderr:
-                logger.warning(f"[Sim {sim_id}] R2 Upload stderr:\n{upload_result.stderr}")
-            
-            logger.info(f"[Sim {sim_id}] ✅ VTK files uploaded to Cloudflare R2 successfully")
-            r2_upload_success = True
-            
-        except subprocess.TimeoutExpired:
-            logger.error(f"[Sim {sim_id}] ⚠️ R2 upload timeout - files available in local filesystem")
-        except subprocess.CalledProcessError as e:
-            logger.error(f"[Sim {sim_id}] ⚠️ R2 upload failed: {e.stderr} - files available in local filesystem")
-        except Exception as e:
-            logger.error(f"[Sim {sim_id}] ⚠️ R2 upload error: {e} - files available in local filesystem")
+        logger.info(f"[Sim {sim_id}] Step 5/5: Uploading VTK files to Cloudflare R2...")
+        logger.info(f"[Sim {sim_id}] Environment: {env_label}")
+        logger.info(f"[Sim {sim_id}] Local VTK directory: {vtk_dir}")
         
-        # Log fallback status for debugging
+        # Check R2 credentials before attempting upload
+        r2_configured = all([
+            os.getenv('R2_ENDPOINT'),
+            os.getenv('R2_ACCESS_KEY_ID'),
+            os.getenv('R2_SECRET_ACCESS_KEY')
+        ])
+        
+        if not r2_configured:
+            logger.error(f"[Sim {sim_id}] ❌ R2 CREDENTIALS MISSING - Cannot upload to persistent storage")
+            logger.error(f"[Sim {sim_id}] Required secrets: R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY")
+            if is_production:
+                logger.critical(f"[Sim {sim_id}] ⚠️ CRITICAL: VTK files in {vtk_dir} will be LOST when container restarts!")
+                logger.critical(f"[Sim {sim_id}] ⚠️ ACTION REQUIRED: Configure R2 credentials in Replit Secrets")
+            else:
+                logger.warning(f"[Sim {sim_id}] Development mode: Files persist in {vtk_dir}")
+            r2_upload_success = False
+        else:
+            r2_upload_success = False
+            try:
+                upload_result = subprocess.run(
+                    ["python3", "upload_vtk_to_r2.py", str(sim_id), vtk_dir],
+                    capture_output=True,
+                    text=True,
+                    timeout=600,  # 10 minute timeout for upload
+                    check=True
+                )
+                
+                if upload_result.stdout:
+                    logger.info(f"[Sim {sim_id}] R2 Upload output:\n{upload_result.stdout}")
+                if upload_result.stderr:
+                    logger.warning(f"[Sim {sim_id}] R2 Upload stderr:\n{upload_result.stderr}")
+                
+                logger.info(f"[Sim {sim_id}] ✅ VTK files uploaded to Cloudflare R2 successfully")
+                logger.info(f"[Sim {sim_id}] ✅ Files are now PERSISTENT and available after container restart")
+                r2_upload_success = True
+                
+            except subprocess.TimeoutExpired:
+                logger.error(f"[Sim {sim_id}] ❌ R2 UPLOAD TIMEOUT after 10 minutes")
+                logger.error(f"[Sim {sim_id}] Possible causes: Large files, slow network, R2 service issue")
+            except subprocess.CalledProcessError as e:
+                logger.error(f"[Sim {sim_id}] ❌ R2 UPLOAD FAILED with exit code {e.returncode}")
+                if e.stdout:
+                    logger.error(f"[Sim {sim_id}] stdout: {e.stdout}")
+                if e.stderr:
+                    logger.error(f"[Sim {sim_id}] stderr: {e.stderr}")
+            except Exception as e:
+                logger.error(f"[Sim {sim_id}] ❌ R2 UPLOAD ERROR: {type(e).__name__}: {e}")
+        
+        # Clear status summary for debugging
         if not r2_upload_success:
-            logger.warning(f"[Sim {sim_id}] ⚠️ R2 upload failed. VTK files still available locally at: {vtk_dir}")
-            logger.warning(f"[Sim {sim_id}] ⚠️ In production, local files may be lost on restart. Check R2 credentials.")
+            logger.warning(f"[Sim {sim_id}] " + "=" * 50)
+            logger.warning(f"[Sim {sim_id}] ⚠️ VTK PERSISTENCE STATUS: NOT GUARANTEED")
+            logger.warning(f"[Sim {sim_id}] Local files available at: {vtk_dir}")
+            if is_production:
+                logger.warning(f"[Sim {sim_id}] ⚠️ PRODUCTION WARNING: Files in /tmp are EPHEMERAL")
+                logger.warning(f"[Sim {sim_id}] ⚠️ Files will be LOST on container restart/scale")
+                logger.warning(f"[Sim {sim_id}] ⚠️ User may not be able to view VTK after some time")
+            else:
+                logger.info(f"[Sim {sim_id}] Development mode: Files in public/uploads are persistent")
+            logger.warning(f"[Sim {sim_id}] " + "=" * 50)
+        else:
+            logger.info(f"[Sim {sim_id}] ✅ VTK PERSISTENCE STATUS: GUARANTEED (R2)")
+            logger.info(f"[Sim {sim_id}] Files stored in Cloudflare R2 bucket: flowdesk-vtk-storage")
         
         # Update: completed
         update_simulation(sim_id, {
