@@ -8,6 +8,11 @@ set -e
 # ✅ CRITICAL: Export NODE_ENV globally so ALL processes see it
 export NODE_ENV=production
 
+# ✅ CRITICAL: Force Python to use UTF-8 encoding (fixes Cloud Run locale issues)
+export PYTHONIOENCODING=utf-8
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+
 LOG_DIR="production_logs"
 HEARTBEAT_DIR="/tmp/worker_heartbeats"
 CHECK_INTERVAL=60  # Verificar cada 60 segundos (1 minuto)

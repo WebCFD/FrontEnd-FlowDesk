@@ -24,7 +24,7 @@ def analyse_residuals(logfile_path, post_path):
     residual_pattern_temp = re.compile(
         r"Solving for (\w+), Initial residual = ([\deE\.\-]+)"
     )
-    with open(logfile_path, "r") as f:
+    with open(logfile_path, "r", encoding='utf-8') as f:
         for line in f:
             match = residual_pattern_temp.search(line)
             if match:
@@ -55,7 +55,7 @@ def analyse_residuals(logfile_path, post_path):
 
     # === PARSE LOG FILE ===
     logger.info("    * Parsing simulation log file for residual data")
-    with open(logfile_path, "r") as f:
+    with open(logfile_path, "r", encoding='utf-8') as f:
         for line in f:
             match = residual_pattern.search(line)
             if match:

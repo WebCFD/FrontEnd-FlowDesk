@@ -159,7 +159,7 @@ def export_to_fms(geo_mesh_dict, sim_path, fms_filename):
         f.write("    endloop\n")
         f.write("  endfacet\n")
     
-    with open(stl_path, 'w') as f:
+    with open(stl_path, 'w', encoding='utf-8') as f:
         for solid_name, mesh in geo_mesh_dict.items():
             f.write(f"solid {solid_name}\n")
             

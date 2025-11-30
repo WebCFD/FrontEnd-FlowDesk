@@ -72,7 +72,7 @@ def solve_inductiva(sim_path, machine_type, wait=True):
             shutil.copy2(allrun_path, backup_path)
             logger.info(f"    * [DEBUG] Allrun copied to: {backup_path}")
             # Log first 20 lines
-            with open(allrun_path, 'r') as f:
+            with open(allrun_path, 'r', encoding='utf-8') as f:
                 lines = f.readlines()[:20]
                 logger.info(f"    * [DEBUG] Allrun content (first 20 lines):")
                 for i, line in enumerate(lines, 1):

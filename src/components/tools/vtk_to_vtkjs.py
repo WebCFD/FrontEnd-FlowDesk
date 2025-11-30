@@ -149,8 +149,8 @@ def vtk_to_vtkjs(vtk_path: str, output_path: str) -> None:
         if len(vtkjs_data["pointData"]["arrays"]) > 0:
             vtkjs_data["pointData"]["activeScalars"] = 0
         
-        # Write JSON file
-        with open(output_path, 'w') as f:
+        # Write JSON file with explicit UTF-8 encoding
+        with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(vtkjs_data, f)
         
         logger.info(f"    * Converted VTK to vtkjs: {output_path}")
