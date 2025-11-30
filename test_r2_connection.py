@@ -7,6 +7,7 @@ Run with: python test_r2_connection.py
 import os
 import boto3
 from botocore.config import Config
+from botocore.exceptions import ClientError
 
 R2_BUCKET_NAME = os.environ.get("R2_BUCKET_NAME", "flowdesk-vtk-storage")
 
@@ -35,13 +36,15 @@ def test_r2_connection():
     print(f"\n2. Creating R2 client...")
     print(f"   Endpoint: {endpoint}")
     try:
-        # Cloudflare R2 requires specific configuration
+        # Cloudflare R2 requires specific configuration per official docs
+        # https://developers.cloudflare.com/r2/examples/aws/boto3/
         client = boto3.client(
-            "s3",
+            service_name="s3",
             endpoint_url=endpoint,
             aws_access_key_id=access_key,
             aws_secret_access_key=secret_key,
-            region_name="auto"
+            region_name="auto",
+            config=Config(signature_version="s3v4")
         )
         print("   ✓ Client created successfully")
     except Exception as e:
