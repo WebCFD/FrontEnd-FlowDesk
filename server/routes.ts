@@ -1715,14 +1715,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Validate request body
       const { status, result, completedAt, taskId, progress, currentStep, errorMessage, startedAt } = req.body;
       const validStatuses = ['pending', 'processing', 'geometry', 'meshing', 'cfd_setup', 'cloud_execution', 'post_processing', 'completed', 'failed'];
-      if (!status || !validStatuses.includes(status)) {
+      
+      // Status is optional for progress-only updates
+      if (status && !validStatuses.includes(status)) {
         return res.status(400).json({ 
           message: `Invalid status. Must be one of: ${validStatuses.join(', ')}` 
         });
       }
 
-      // Prepare status update
-      const statusUpdate: any = { status };
+      // Prepare status update (status is optional for progress updates)
+      const statusUpdate: any = {};
+      if (status) {
+        statusUpdate.status = status;
+      }
       if (result !== undefined) {
         statusUpdate.result = result; // Store result from external processing (e.g., Inductiva)
       }
@@ -1747,7 +1752,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         statusUpdate.completedAt = new Date(); // Auto-set completion time
       }
       
-      console.log('[EXPRESS] Updating simulation status:', { id, status, hasResult: !!result });
+      console.log('[EXPRESS] Updating simulation:', { id, status: status || '(progress only)', hasResult: !!result });
       const simulation = await storage.updateSimulationStatus(id, statusUpdate);
       
       if (!simulation) {
@@ -1756,7 +1761,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json({ 
         success: true, 
-        message: `Simulation ${id} status updated to ${status}`,
+        message: status ? `Simulation ${id} status updated to ${status}` : `Simulation ${id} progress updated`,
         simulation: {
           id: simulation.id,
           name: simulation.name,

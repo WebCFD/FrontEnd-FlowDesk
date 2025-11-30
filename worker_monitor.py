@@ -126,13 +126,20 @@ def get_post_processing_sims():
 def update_simulation(sim_id, data):
     """Actualiza status/progress de simulación"""
     try:
-        requests.patch(
+        response = requests.patch(
             f"{API_BASE}/api/external/simulations/{sim_id}/status",
             json=data,
             headers={'x-api-key': API_KEY}
         )
+        if not response.ok:
+            logger.error(f"[Sim {sim_id}] ❌ API rejected status update: HTTP {response.status_code}")
+            logger.error(f"[Sim {sim_id}] Response: {response.text}")
+            logger.error(f"[Sim {sim_id}] Payload sent: {data}")
+            return False
+        return True
     except Exception as e:
         logger.error(f"Failed to update sim {sim_id}: {e}")
+        return False
 
 def check_task_status(task_id):
     """Chequea status de task en Inductiva"""
