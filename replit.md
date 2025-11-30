@@ -59,3 +59,34 @@ A transactional email system for the landing page contact form is integrated usi
 ### Development Tools
 - **TypeScript**: Static type checking.
 - **Vite**: Build tool and development server.
+
+## Recent Changes (November 2025)
+
+### Production Encoding Fix (2025-11-30)
+**Problem**: Cloud Run container rebuild changed default locale from UTF-8 to ASCII, breaking Python imports of files containing degree symbols (°C). Simulations failed during post-processing with `'ascii' codec can't decode byte 0xc2` errors.
+
+**Solution**: Multi-layered UTF-8 enforcement:
+1. Added `# -*- coding: utf-8 -*-` headers to all Python files in post-processing pipeline
+2. Configured `TextIOWrapper` with `errors='replace'` for stdout/stderr in `step05_results2post.py`
+3. Set `PYTHONIOENCODING=utf-8`, `LC_ALL=C.UTF-8`, `LANG=C.UTF-8` in subprocess environment
+4. Replaced special characters (°C → degC) in data labels for ASCII safety
+
+**Files Modified**: `step05_results2post.py`, `src/components/post/objects.py`, `src/components/post/calculate_comfort.py`, `src/components/tools/export_debug.py`
+
+### OOM Prevention in Post-Processing (2025-11-30)
+**Problem**: PyVista loading full OpenFOAM cases caused silent OOM kills on Cloud Run (SIGKILL -9/137) during mesh loading.
+
+**Solution**: 
+1. **Memory-efficient loading**: Modified `load_foam_results()` to first attempt loading pre-generated VTK files from `sim/VTK/` directory (created by foamToVTK on Inductiva), falling back to FOAM reader only if VTK files unavailable
+2. **OOM detection**: Added SIGKILL detection in `worker_monitor.py` to display clear "Out of Memory" error message instead of cryptic failures
+3. **Memory monitoring**: Added psutil-based memory tracking to log RAM usage during mesh loading for diagnostics
+
+**Files Modified**: `src/components/tools/export_debug.py`, `worker_monitor.py`
+
+### MVP Status
+The HVAC simulation platform is now fully functional with:
+- End-to-end CFD simulation pipeline (JSON → Geometry → Mesh → CFD → Results)
+- cfMesh integration for fast automatic meshing
+- PMV/PPD thermal comfort calculations
+- VTK visualization with R2 persistent storage
+- Production-ready deployment on Cloud Run
