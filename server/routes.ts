@@ -11,6 +11,7 @@ import JSZip from "jszip";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import { ObjectStorageService } from "./objectStorage";
+import { r2Storage, R2NotFoundError } from "./r2Storage";
 // ========== TEMPORARY PASSWORD PROTECTION - TO BE REMOVED SOON ==========
 // Importar crypto para validación de contraseña con hash SHA-256
 // Esta funcionalidad será eliminada próximamente
@@ -498,17 +499,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const simulationId = parseInt(req.params.id);
       
-      // Try to read from object storage first
-      const objectStorageService = new ObjectStorageService();
       let files: any[] = [];
-      let source = 'object_storage';
+      let source = 'r2';
       
+      // Try to read from Cloudflare R2 first (persistent external storage)
       try {
-        const fileList = await objectStorageService.listVtkFiles(simulationId);
-        console.log('[VTK-FILES] Successfully listed files from object storage:', fileList.length);
+        const fileList = await r2Storage.listVtkFiles(simulationId);
+        console.log('[VTK-FILES] Successfully listed files from R2:', fileList.length);
         
         if (fileList && fileList.length > 0) {
-          console.log('[VTK-FILES] File list:', fileList);
+          console.log('[VTK-FILES] R2 File list:', fileList);
           // Convert filenames to file objects
           files = fileList.map(filename => {
             // Parse OpenFOAM files to extract timestep and type
@@ -562,20 +562,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
             return a.filename.localeCompare(b.filename);
           });
         }
-      } catch (storageError: any) {
-        console.error('[VTK-FILES] Object storage read failed:', storageError.message);
+      } catch (r2Error: any) {
+        console.error('[VTK-FILES] R2 storage read failed:', r2Error.message);
         source = 'filesystem';
         
-        // In production, object storage is the only persistent storage
-        // If it fails, we should report the error clearly
-        if (process.env.NODE_ENV === 'production') {
-          console.error('[VTK-FILES] ⚠️ PRODUCTION: Object storage unavailable. This is critical - VTK files cannot be served persistently.');
-          console.error('[VTK-FILES] Storage error details:', {
-            name: storageError.name,
-            message: storageError.message,
-            stack: storageError.stack?.substring(0, 200)
-          });
-        }
+        // Log R2 error details for debugging
+        console.error('[VTK-FILES] R2 error details:', {
+          name: r2Error.name,
+          message: r2Error.message
+        });
       }
       
       // Fallback to filesystem if object storage is empty or failed
@@ -591,7 +586,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (!fsSync.existsSync(vtkDir)) {
           console.log('[VTK-FILES] Directory not found:', vtkDir);
           if (isProduction) {
-            console.warn('[VTK-FILES] ⚠️ PRODUCTION: No files found in /tmp/uploads (ephemeral filesystem). Object storage should be used.');
+            console.warn('[VTK-FILES] ⚠️ PRODUCTION: No files found. Check R2 storage configuration.');
           }
           return res.json({ files: [] });
         }
@@ -677,7 +672,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Endpoint for Python workers to get presigned URL for uploading VTK files
+  // Endpoint for Python workers to get presigned URL for uploading VTK files to R2
   app.post("/api/simulations/:id/vtk/upload-url", async (req, res) => {
     try {
       const simulationId = parseInt(req.params.id);
@@ -687,50 +682,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "filename is required" });
       }
 
-      const objectStorageService = new ObjectStorageService();
-      const uploadUrl = await objectStorageService.getVtkUploadUrl(simulationId, filename);
+      // Generate presigned URL for R2 upload
+      const uploadUrl = await r2Storage.getUploadUrl(simulationId, filename);
+      console.log(`[VTK-UPLOAD-URL] Generated R2 upload URL for sim ${simulationId}, file: ${filename}`);
 
       res.json({ uploadUrl });
     } catch (error: any) {
-      console.error('[VTK-UPLOAD-URL] Error generating upload URL:', error);
+      console.error('[VTK-UPLOAD-URL] Error generating R2 upload URL:', error);
       res.status(500).json({ message: "Failed to generate upload URL", error: error.message });
     }
   });
 
-  // Endpoint to download VTK files from object storage
+  // Endpoint to download VTK files from Cloudflare R2
   app.get("/api/simulations/:id/vtk/:filename", async (req, res) => {
     try {
       const simulationId = parseInt(req.params.id);
       const filename = req.params.filename;
 
       console.log(`[VTK-DOWNLOAD] Requesting ${filename} for simulation ${simulationId}`);
-
-      const objectStorageService = new ObjectStorageService();
       
       try {
-        // Try to get file from object storage first
-        const file = await objectStorageService.getVtkFile(simulationId, filename);
-        console.log(`[VTK-DOWNLOAD] Found in object storage: ${filename}`);
-        await objectStorageService.downloadObject(file, res);
-        return;
-      } catch (storageError: any) {
-        // Fallback to filesystem if object storage fails
-        console.log(`[VTK-DOWNLOAD] Not in object storage, trying filesystem: ${storageError.message}`);
-        
-        const isProduction = process.env.NODE_ENV === 'production';
-        const filePath = isProduction
-          ? path.join('/tmp/uploads', `sim_${simulationId}`, 'vtk', filename)
-          : path.join(process.cwd(), 'public', 'uploads', `sim_${simulationId}`, 'vtk', filename);
-
-        if (!fsSync.existsSync(filePath)) {
-          return res.status(404).json({ message: "VTK file not found" });
+        // Try to get file from R2 first (persistent external storage)
+        const exists = await r2Storage.fileExists(simulationId, filename);
+        if (exists) {
+          console.log(`[VTK-DOWNLOAD] Found in R2: ${filename}`);
+          await r2Storage.downloadToResponse(simulationId, filename, res);
+          return;
         }
-
-        console.log(`[VTK-DOWNLOAD] Serving from filesystem: ${filePath}`);
-        res.setHeader('Content-Type', 'application/zip');
-        res.setHeader('Cache-Control', 'private, max-age=3600');
-        res.sendFile(filePath);
+        console.log(`[VTK-DOWNLOAD] Not in R2, trying filesystem`);
+      } catch (r2Error: any) {
+        // Fallback to filesystem if R2 fails
+        console.log(`[VTK-DOWNLOAD] R2 error, trying filesystem: ${r2Error.message}`);
       }
+      
+      // Fallback to filesystem
+      const isProduction = process.env.NODE_ENV === 'production';
+      const filePath = isProduction
+        ? path.join('/tmp/uploads', `sim_${simulationId}`, 'vtk', filename)
+        : path.join(process.cwd(), 'public', 'uploads', `sim_${simulationId}`, 'vtk', filename);
+
+      if (!fsSync.existsSync(filePath)) {
+        return res.status(404).json({ message: "VTK file not found" });
+      }
+
+      console.log(`[VTK-DOWNLOAD] Serving from filesystem: ${filePath}`);
+      res.setHeader('Content-Type', 'application/zip');
+      res.setHeader('Cache-Control', 'private, max-age=3600');
+      res.sendFile(filePath);
     } catch (error: any) {
       console.error('[VTK-DOWNLOAD] Error:', error);
       res.status(500).json({ message: "Failed to download VTK file", error: error.message });
