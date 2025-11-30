@@ -18,4 +18,5 @@ dependencies = [
     "pillow>=11.3.0",
     "reportlab>=4.4.4",
     "matplotlib>=3.10.7",
+    "boto3>=1.41.5",
 ]
