@@ -19,6 +19,14 @@ def load_foam_results(sim_path: str):
         raise FileNotFoundError(f"results.foam not found at: {foam_path}")
     
     logger.info(f"    * Loading results from: {foam_path}")
+    logger.info(f"    * sim_path contents: {os.listdir(sim_path)[:20]}...")  # First 20 files
+    
+    # Log encoding info for debugging
+    import sys
+    import locale
+    logger.info(f"    * ENCODING CHECK in load_foam_results:")
+    logger.info(f"      - sys.getdefaultencoding(): {sys.getdefaultencoding()}")
+    logger.info(f"      - locale.getpreferredencoding(): {locale.getpreferredencoding(False)}")
     
     try:
         reader = pv.get_reader(foam_path)
@@ -57,6 +65,22 @@ def load_foam_results(sim_path: str):
         
         return internal_mesh, surfaces_mesh
     
+    except UnicodeDecodeError as e:
+        # Specific handling for encoding errors - log detailed info
+        logger.error(f"    * UNICODE DECODE ERROR:")
+        logger.error(f"      - encoding: {e.encoding}")
+        logger.error(f"      - reason: {e.reason}")
+        logger.error(f"      - position: {e.start}-{e.end}")
+        logger.error(f"      - problematic bytes: {repr(e.object[max(0,e.start-10):e.end+10])}")
+        logger.error(f"      - sim_path: {sim_path}")
+        # List files in sim_path that might contain the issue
+        for subdir in ['constant', 'system', '0']:
+            subpath = os.path.join(sim_path, subdir)
+            if os.path.exists(subpath):
+                logger.error(f"      - {subdir}/ contents: {os.listdir(subpath)[:10]}")
+        import traceback
+        logger.error(f"    * Full traceback: {traceback.format_exc()}")
+        raise
     except Exception as e:
         logger.error(f"    * ERROR loading results: {str(e)}")
         import traceback

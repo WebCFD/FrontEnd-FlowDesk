@@ -57,6 +57,7 @@ def run(case_name: str = "cases/cfd_case") -> None:
 
 if __name__ == "__main__":
     import sys
+    import locale
     
     # Configure logging to print to stderr for subprocess visibility
     logging.basicConfig(
@@ -64,6 +65,19 @@ if __name__ == "__main__":
         format='%(levelname)s - %(message)s',
         handlers=[logging.StreamHandler(sys.stderr)]
     )
+    
+    # Log encoding configuration for debugging Cloud Run issues
+    logger.info("=" * 60)
+    logger.info("ENCODING DIAGNOSTICS (Post-processing subprocess)")
+    logger.info(f"  sys.getdefaultencoding(): {sys.getdefaultencoding()}")
+    logger.info(f"  sys.stdout.encoding: {sys.stdout.encoding}")
+    logger.info(f"  sys.stderr.encoding: {sys.stderr.encoding}")
+    logger.info(f"  sys.getfilesystemencoding(): {sys.getfilesystemencoding()}")
+    logger.info(f"  locale.getpreferredencoding(): {locale.getpreferredencoding(False)}")
+    logger.info(f"  PYTHONIOENCODING: {os.environ.get('PYTHONIOENCODING', 'NOT SET')}")
+    logger.info(f"  LC_ALL: {os.environ.get('LC_ALL', 'NOT SET')}")
+    logger.info(f"  LANG: {os.environ.get('LANG', 'NOT SET')}")
+    logger.info("=" * 60)
     
     # Accept case_name as command-line argument
     if len(sys.argv) > 1:

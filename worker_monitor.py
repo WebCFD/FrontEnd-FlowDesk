@@ -315,6 +315,12 @@ def process_completed_simulation(sim):
             env['LC_ALL'] = 'C.UTF-8'
             env['LANG'] = 'C.UTF-8'
             
+            # Log encoding configuration for debugging
+            logger.info(f"[Sim {sim_id}] 🔧 Subprocess environment:")
+            logger.info(f"[Sim {sim_id}]   PYTHONIOENCODING={env.get('PYTHONIOENCODING')}")
+            logger.info(f"[Sim {sim_id}]   LC_ALL={env.get('LC_ALL')}")
+            logger.info(f"[Sim {sim_id}]   LANG={env.get('LANG')}")
+            
             result = subprocess.run(
                 ["python3", "-u", "step05_results2post.py", case_name],
                 capture_output=True,
@@ -322,8 +328,7 @@ def process_completed_simulation(sim):
                 timeout=600,  # 10 minute timeout for post-processing
                 check=True,
                 env=env,
-                encoding='utf-8',
-                errors='replace'  # Replace undecodable chars instead of crashing
+                encoding='utf-8'
             )
             
             # Log subprocess output for debugging
@@ -393,8 +398,7 @@ def process_completed_simulation(sim):
                     timeout=600,  # 10 minute timeout for upload
                     check=True,
                     env=env,
-                    encoding='utf-8',
-                    errors='replace'
+                    encoding='utf-8'
                 )
                 
                 if upload_result.stdout:
