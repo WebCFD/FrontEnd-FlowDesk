@@ -42,12 +42,35 @@ function getR2Client(): S3Client {
 
 export class R2StorageService {
   private client: S3Client | null = null;
+  private lastClientError: Date | null = null;
+  private readonly CLIENT_RETRY_INTERVAL_MS = 30000; // Retry after 30 seconds on error
 
   private getClient(): S3Client {
+    // If we had an error, check if enough time has passed to retry
+    if (this.lastClientError && this.client) {
+      const timeSinceError = Date.now() - this.lastClientError.getTime();
+      if (timeSinceError > this.CLIENT_RETRY_INTERVAL_MS) {
+        console.log('[R2] Retrying client creation after previous error');
+        this.client = null;
+        this.lastClientError = null;
+      }
+    }
+
     if (!this.client) {
-      this.client = getR2Client();
+      try {
+        this.client = getR2Client();
+      } catch (error) {
+        this.lastClientError = new Date();
+        throw error;
+      }
     }
     return this.client;
+  }
+
+  resetClient(): void {
+    this.client = null;
+    this.lastClientError = null;
+    console.log('[R2] Client reset - will reinitialize on next request');
   }
 
   getBucketName(): string {

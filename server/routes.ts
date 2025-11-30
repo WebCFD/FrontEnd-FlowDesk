@@ -693,7 +693,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Endpoint to download VTK files from Cloudflare R2
+  // Endpoint to download VTK files from Cloudflare R2 with filesystem fallback
   app.get("/api/simulations/:id/vtk/:filename", async (req, res) => {
     try {
       const simulationId = parseInt(req.params.id);
@@ -701,8 +701,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`[VTK-DOWNLOAD] Requesting ${filename} for simulation ${simulationId}`);
       
+      // Try R2 first (persistent external storage)
       try {
-        // Try to get file from R2 first (persistent external storage)
         const exists = await r2Storage.fileExists(simulationId, filename);
         if (exists) {
           console.log(`[VTK-DOWNLOAD] Found in R2: ${filename}`);
@@ -711,18 +711,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         console.log(`[VTK-DOWNLOAD] Not in R2, trying filesystem`);
       } catch (r2Error: any) {
-        // Fallback to filesystem if R2 fails
-        console.log(`[VTK-DOWNLOAD] R2 error, trying filesystem: ${r2Error.message}`);
+        // Log R2 error but continue to filesystem fallback
+        if (r2Error instanceof R2NotFoundError) {
+          console.log(`[VTK-DOWNLOAD] File not found in R2: ${filename}`);
+        } else {
+          console.warn(`[VTK-DOWNLOAD] R2 error (falling back to filesystem): ${r2Error.message}`);
+        }
       }
       
-      // Fallback to filesystem
+      // Fallback to local filesystem
       const isProduction = process.env.NODE_ENV === 'production';
       const filePath = isProduction
         ? path.join('/tmp/uploads', `sim_${simulationId}`, 'vtk', filename)
         : path.join(process.cwd(), 'public', 'uploads', `sim_${simulationId}`, 'vtk', filename);
 
       if (!fsSync.existsSync(filePath)) {
-        return res.status(404).json({ message: "VTK file not found" });
+        console.log(`[VTK-DOWNLOAD] File not found in filesystem: ${filePath}`);
+        return res.status(404).json({ 
+          message: "VTK file not found",
+          checked: ["R2 storage", isProduction ? "/tmp/uploads" : "public/uploads"]
+        });
       }
 
       console.log(`[VTK-DOWNLOAD] Serving from filesystem: ${filePath}`);
@@ -730,7 +738,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.setHeader('Cache-Control', 'private, max-age=3600');
       res.sendFile(filePath);
     } catch (error: any) {
-      console.error('[VTK-DOWNLOAD] Error:', error);
+      console.error('[VTK-DOWNLOAD] Unexpected error:', error);
       res.status(500).json({ message: "Failed to download VTK file", error: error.message });
     }
   });

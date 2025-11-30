@@ -283,6 +283,7 @@ def process_completed_simulation(sim):
         is_production = os.getenv('NODE_ENV') == 'production'
         vtk_dir = f'/tmp/uploads/sim_{sim_id}/vtk' if is_production else f'public/uploads/sim_{sim_id}/vtk'
         
+        r2_upload_success = False
         try:
             upload_result = subprocess.run(
                 ["python3", "upload_vtk_to_r2.py", str(sim_id), vtk_dir],
@@ -298,13 +299,19 @@ def process_completed_simulation(sim):
                 logger.warning(f"[Sim {sim_id}] R2 Upload stderr:\n{upload_result.stderr}")
             
             logger.info(f"[Sim {sim_id}] ✅ VTK files uploaded to Cloudflare R2 successfully")
+            r2_upload_success = True
             
         except subprocess.TimeoutExpired:
-            logger.error(f"[Sim {sim_id}] ⚠️ R2 upload timeout (non-critical)")
+            logger.error(f"[Sim {sim_id}] ⚠️ R2 upload timeout - files available in local filesystem")
         except subprocess.CalledProcessError as e:
-            logger.error(f"[Sim {sim_id}] ⚠️ R2 upload failed: {e.stderr}")
+            logger.error(f"[Sim {sim_id}] ⚠️ R2 upload failed: {e.stderr} - files available in local filesystem")
         except Exception as e:
-            logger.error(f"[Sim {sim_id}] ⚠️ R2 upload error: {e}")
+            logger.error(f"[Sim {sim_id}] ⚠️ R2 upload error: {e} - files available in local filesystem")
+        
+        # Log fallback status for debugging
+        if not r2_upload_success:
+            logger.warning(f"[Sim {sim_id}] ⚠️ R2 upload failed. VTK files still available locally at: {vtk_dir}")
+            logger.warning(f"[Sim {sim_id}] ⚠️ In production, local files may be lost on restart. Check R2 credentials.")
         
         # Update: completed
         update_simulation(sim_id, {

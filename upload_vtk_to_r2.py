@@ -22,16 +22,15 @@ def get_r2_client():
             "R2 credentials not configured. Required: R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY"
         )
     
+    # Cloudflare R2 configuration per official docs
+    # https://developers.cloudflare.com/r2/examples/aws/boto3/
     return boto3.client(
-        "s3",
+        service_name="s3",
         endpoint_url=endpoint,
         aws_access_key_id=access_key,
         aws_secret_access_key=secret_key,
-        config=Config(
-            signature_version="s3v4",
-            s3={"addressing_style": "path"}
-        ),
-        region_name="auto"
+        region_name="auto",
+        config=Config(signature_version="s3v4")
     )
 
 
