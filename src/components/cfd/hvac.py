@@ -42,6 +42,12 @@ G = 9.81        # Gravitational acceleration [m/s²]
 # This ensures p(z) = p_rgh - rho*g*z has the correct gradient
 P_RGH_APERTURE = P_ATM  # p_rgh at atmospheric pressure openings = 101325 Pa
 
+# Parallel processing configuration
+# IMPORTANT: Must match machine_type in src/components/solve/inductiva.py
+# c2d-standard-8 has 8 vCPUs, so N_CORES = 8
+# If you change machine_type, update this value accordingly
+N_CORES = 8
+
 
 def define_constant_files(template_path, sim_path):
     source_constant_path = os.path.join(template_path, 'constant')
@@ -398,11 +404,11 @@ def setup(case_path: str, simulation_type: str = 'comfortTest') -> list:
         
         # Initialize velocity and pressure fields with Laplacian solution for better stability
         'echo "==================== INITIALIZING FIELDS WITH potentialFoam ===================="',
-        'runParallel -np 16 potentialFoam -initialiseUBCs -parallel',
+        f'runParallel -np {N_CORES} potentialFoam -initialiseUBCs -parallel',
         'echo "==================== FIELD INITIALIZATION COMPLETED ===================="',
         
         # Run solver in parallel
-        'runParallel -np 16 buoyantSimpleFoam -parallel',
+        f'runParallel -np {N_CORES} buoyantSimpleFoam -parallel',
 
         # 3. Reconstruct ALL timesteps (not just latestTime) for complete iteration history
         'echo "==================== RECONSTRUCTING ALL ITERATIONS ===================="',
