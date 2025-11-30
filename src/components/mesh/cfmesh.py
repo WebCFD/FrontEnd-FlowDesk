@@ -84,6 +84,25 @@ def generate_boundary_layer_block(geo_df):
     return "\n".join(blocks)
 
 
+def generate_patch_names_block(geo_df):
+    """
+    Generate newPatchNames block for cfMesh to preserve STL region names.
+    This ensures cfMesh creates separate patches for each surface instead of
+    grouping everything under 'walls'.
+    """
+    blocks = []
+    
+    for _, row in geo_df.iterrows():
+        patch_name = row['id']
+        blocks.append(f"""        {patch_name}
+        {{
+            newName {patch_name};
+            type wall;
+        }}""")
+    
+    return "\n".join(blocks)
+
+
 def create_meshDict(template_path, sim_path, stl_filename, geo_mesh, geo_df):
     """
     Create meshDict for cfMesh cartesianMesh.
@@ -101,9 +120,10 @@ def create_meshDict(template_path, sim_path, stl_filename, geo_mesh, geo_df):
     # Base cell size: 10cm (adaptive refinement will make it finer near surfaces)
     max_cell_size = "0.10"
     
-    # Generate patch-specific refinement and boundary layers
+    # Generate patch-specific refinement, boundary layers, and patch names
     patch_refinement = generate_patch_refinement_block(geo_df)
     boundary_layers = generate_boundary_layer_block(geo_df)
+    patch_names = generate_patch_names_block(geo_df)
     
     # cfMesh needs full path relative to case directory
     # Template already includes quotes, so don't add them here
@@ -114,6 +134,7 @@ def create_meshDict(template_path, sim_path, stl_filename, geo_mesh, geo_df):
     str_replace_dict["$MAX_CELL_SIZE"] = max_cell_size
     str_replace_dict["$PATCH_REFINEMENT"] = patch_refinement
     str_replace_dict["$BOUNDARY_LAYERS"] = boundary_layers
+    str_replace_dict["$PATCH_NAMES"] = patch_names
     
     replace_in_file(input_path, output_path, str_replace_dict)
 

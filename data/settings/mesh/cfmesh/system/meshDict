@@ -51,9 +51,14 @@ $BOUNDARY_LAYERS
     untangleLayers 1;
 }
 
-// Reproject surface points for better geometry capture
+// Preserve STL region names as separate patches
+// This ensures each surface (wall_0F_2, window_0F_1, etc.) becomes its own patch
 renameBoundary
 {
+    newPatchNames
+    {
+$PATCH_NAMES
+    }
     defaultName        walls;
     defaultType        wall;
 }
