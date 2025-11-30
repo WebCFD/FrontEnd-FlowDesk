@@ -346,7 +346,18 @@ def process_completed_simulation(sim):
             logger.error(f"[Sim {sim_id}] ❌ Post-processing failed with exit code {e.returncode}")
             logger.error(f"[Sim {sim_id}] Subprocess stdout: {e.stdout}")
             logger.error(f"[Sim {sim_id}] Subprocess stderr: {e.stderr}")
-            raise Exception(f"Post-processing failed: {e.stderr}")
+            
+            # Detect OOM kill: SIGKILL (-9) or container exit code 137 (128 + 9)
+            if e.returncode == -9 or e.returncode == 137:
+                error_msg = (
+                    f"Out of Memory: Post-processing was killed by the system (SIGKILL). "
+                    f"The simulation mesh may be too large for available memory. "
+                    f"Try reducing mesh resolution or simplifying the geometry."
+                )
+                logger.error(f"[Sim {sim_id}] ⚠️ OOM DETECTED: Process killed with signal SIGKILL")
+                raise Exception(error_msg)
+            else:
+                raise Exception(f"Post-processing failed: {e.stderr}")
         
         # Copy to public folder
         logger.info(f"[Sim {sim_id}] Step 4/4: Copying VTK files to public folder...")
