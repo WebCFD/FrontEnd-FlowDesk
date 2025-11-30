@@ -33,16 +33,14 @@ def test_r2_connection():
     
     # Create client
     print(f"\n2. Creating R2 client...")
+    print(f"   Endpoint: {endpoint}")
     try:
+        # Cloudflare R2 requires specific configuration
         client = boto3.client(
             "s3",
             endpoint_url=endpoint,
             aws_access_key_id=access_key,
             aws_secret_access_key=secret_key,
-            config=Config(
-                signature_version="s3v4",
-                s3={"addressing_style": "path"}
-            ),
             region_name="auto"
         )
         print("   ✓ Client created successfully")
