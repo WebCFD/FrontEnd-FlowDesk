@@ -408,16 +408,31 @@ export function generateSimulationData(
       }
     });
     
+    // Crear mapa de wallId original -> pared sincronizada (por coordenadas)
+    const originalWallMap = new Map<string, Wall>();
+    (floorData.walls || []).forEach(originalWall => {
+      originalWallMap.set(originalWall.id, originalWall);
+    });
+    
     const walls: WallExport[] = synchronizedWalls.map((wall) => {
       // Encontrar air entries que pertenecen a esta pared
       const wallAirEntries: AirEntryExport[] = [];
       
       floorData.airEntries.forEach((entry, index) => {
-        // Usar wallId directo para asignación robusta (evita duplicados por proximidad geométrica)
+        // Usar wallId directo para asignación robusta
         const entryWallId = (entry as any).wallId;
         
+        // Buscar si el airEntry pertenece a esta pared sincronizada
+        // Comparar por coordenadas porque los IDs pueden cambiar durante sincronización
+        const originalWall = originalWallMap.get(entryWallId);
+        const matchesWall = originalWall && 
+          Math.abs(originalWall.startPoint.x - wall.startPoint.x) < 1 &&
+          Math.abs(originalWall.startPoint.y - wall.startPoint.y) < 1 &&
+          Math.abs(originalWall.endPoint.x - wall.endPoint.x) < 1 &&
+          Math.abs(originalWall.endPoint.y - wall.endPoint.y) < 1;
+        
         // Si el air entry pertenece a esta pared
-        if (entryWallId === wall.id) {
+        if (matchesWall) {
           // Determinar ID: usar existente o crear nuevo
           const anyEntry = entry as any;
           let airEntryId: string;
