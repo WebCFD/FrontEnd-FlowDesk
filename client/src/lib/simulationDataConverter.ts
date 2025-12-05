@@ -414,6 +414,14 @@ export function generateSimulationData(
       originalWallMap.set(originalWall.id, originalWall);
     });
     
+    // DEBUG: Log airEntries y sus wallIds
+    console.log(`[CONVERTER DEBUG] Floor ${floorName} - Total airEntries: ${floorData.airEntries.length}`);
+    console.log(`[CONVERTER DEBUG] Original walls map keys:`, Array.from(originalWallMap.keys()));
+    floorData.airEntries.forEach((entry, idx) => {
+      const entryWallId = (entry as any).wallId;
+      console.log(`[CONVERTER DEBUG] AirEntry[${idx}]: type=${entry.type}, wallId=${entryWallId}, hasWallInMap=${originalWallMap.has(entryWallId)}`);
+    });
+    
     const walls: WallExport[] = synchronizedWalls.map((wall) => {
       // Encontrar air entries que pertenecen a esta pared
       const wallAirEntries: AirEntryExport[] = [];
@@ -430,6 +438,12 @@ export function generateSimulationData(
           Math.abs(originalWall.startPoint.y - wall.startPoint.y) < 1 &&
           Math.abs(originalWall.endPoint.x - wall.endPoint.x) < 1 &&
           Math.abs(originalWall.endPoint.y - wall.endPoint.y) < 1;
+        
+        console.log(`[CONVERTER DEBUG] Checking entry[${index}] wallId=${entryWallId} against syncWall=${wall.id}:`, {
+          originalWall: originalWall ? { start: originalWall.startPoint, end: originalWall.endPoint } : null,
+          syncWall: { start: wall.startPoint, end: wall.endPoint },
+          matchesWall
+        });
         
         // Si el air entry pertenece a esta pared
         if (matchesWall) {
