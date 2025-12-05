@@ -1760,6 +1760,7 @@ export default function Canvas2D({
             },
             line: selectedLine,
             lineId: selectedLine.id,
+            wallId: wallId, // Direct reference to wall ID for robust JSON export
             properties: {
               state: 'closed',
               temperature: 20,
