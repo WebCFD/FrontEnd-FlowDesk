@@ -408,38 +408,6 @@ export function generateSimulationData(
       }
     });
     
-    // Pre-calcular asignación de pared para entries legacy sin wallId
-    // Esto garantiza que cada entry se asigne a exactamente una pared (la más cercana)
-    const legacyEntryWallMap = new Map<number, string>(); // entryIndex -> wallId
-    floorData.airEntries.forEach((entry, entryIndex) => {
-      const entryWallId = (entry as any).wallId;
-      if (!entryWallId) {
-        let closestWallId: string | null = null;
-        let minDistance = Infinity;
-        
-        synchronizedWalls.forEach((wall) => {
-          const distance = Math.abs(
-            ((wall.endPoint.y - wall.startPoint.y) * entry.position.x) -
-            ((wall.endPoint.x - wall.startPoint.x) * entry.position.y) +
-            (wall.endPoint.x * wall.startPoint.y) -
-            (wall.endPoint.y * wall.startPoint.x)
-          ) / Math.sqrt(
-            Math.pow(wall.endPoint.y - wall.startPoint.y, 2) +
-            Math.pow(wall.endPoint.x - wall.startPoint.x, 2)
-          );
-          
-          if (distance < minDistance && distance < 50) {
-            minDistance = distance;
-            closestWallId = wall.id;
-          }
-        });
-        
-        if (closestWallId) {
-          legacyEntryWallMap.set(entryIndex, closestWallId);
-        }
-      }
-    });
-    
     const walls: WallExport[] = synchronizedWalls.map((wall) => {
       // Encontrar air entries que pertenecen a esta pared
       const wallAirEntries: AirEntryExport[] = [];
@@ -447,15 +415,9 @@ export function generateSimulationData(
       floorData.airEntries.forEach((entry, index) => {
         // Usar wallId directo para asignación robusta (evita duplicados por proximidad geométrica)
         const entryWallId = (entry as any).wallId;
-        let matchesWall = entryWallId === wall.id;
-        
-        // Fallback para airEntries legacy sin wallId: usar pared pre-calculada más cercana
-        if (!entryWallId) {
-          matchesWall = legacyEntryWallMap.get(index) === wall.id;
-        }
         
         // Si el air entry pertenece a esta pared
-        if (matchesWall) {
+        if (entryWallId === wall.id) {
           // Determinar ID: usar existente o crear nuevo
           const anyEntry = entry as any;
           let airEntryId: string;
