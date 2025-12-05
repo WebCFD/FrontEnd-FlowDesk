@@ -44,6 +44,7 @@ interface AirEntry {
   properties?: SimulationProperties;
   line: Line;
   id?: string; // Optional for backward compatibility, required for new entries
+  wallId?: string; // Direct reference to wall ID (e.g., "wall_0F_1") for robust JSON export
 }
 
 interface Measurement {

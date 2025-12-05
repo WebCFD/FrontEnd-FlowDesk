@@ -20,6 +20,7 @@ export interface AirEntry {
   line: Line;
   lineId?: string; // Optional reference to the id of the line this entry is attached to
   id?: string; // Unique identifier for the air entry (e.g., "window_1", "door_2")
+  wallId?: string; // Direct reference to wall ID (e.g., "wall_0F_1") for robust JSON export
 }
 
 export interface StairPolygon {
