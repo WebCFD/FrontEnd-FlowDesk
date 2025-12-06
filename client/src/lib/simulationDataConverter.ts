@@ -422,15 +422,28 @@ export function generateSimulationData(
       floorData.airEntries.forEach((entry, index) => {
         // Usar wallId directo para asignación robusta
         const entryWallId = (entry as any).wallId;
+        const entryLine = (entry as any).line;
         
-        // Buscar si el airEntry pertenece a esta pared sincronizada
-        // Comparar por coordenadas porque los IDs pueden cambiar durante sincronización
-        const originalWall = originalWallMap.get(entryWallId);
-        const matchesWall = originalWall && 
-          Math.abs(originalWall.startPoint.x - wall.startPoint.x) < 1 &&
-          Math.abs(originalWall.startPoint.y - wall.startPoint.y) < 1 &&
-          Math.abs(originalWall.endPoint.x - wall.endPoint.x) < 1 &&
-          Math.abs(originalWall.endPoint.y - wall.endPoint.y) < 1;
+        let matchesWall = false;
+        
+        // Método 1: Buscar por wallId si existe
+        if (entryWallId) {
+          const originalWall = originalWallMap.get(entryWallId);
+          matchesWall = originalWall !== undefined && 
+            Math.abs(originalWall.startPoint.x - wall.startPoint.x) < 1 &&
+            Math.abs(originalWall.startPoint.y - wall.startPoint.y) < 1 &&
+            Math.abs(originalWall.endPoint.x - wall.endPoint.x) < 1 &&
+            Math.abs(originalWall.endPoint.y - wall.endPoint.y) < 1;
+        }
+        
+        // Método 2 (Fallback): Si no hay wallId, buscar por coordenadas de la línea asociada
+        if (!matchesWall && entryLine) {
+          matchesWall = 
+            Math.abs(entryLine.start.x - wall.startPoint.x) < 1 &&
+            Math.abs(entryLine.start.y - wall.startPoint.y) < 1 &&
+            Math.abs(entryLine.end.x - wall.endPoint.x) < 1 &&
+            Math.abs(entryLine.end.y - wall.endPoint.y) < 1;
+        }
         
         // Si el air entry pertenece a esta pared
         if (matchesWall) {
