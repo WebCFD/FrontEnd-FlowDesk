@@ -186,7 +186,7 @@ class SimulationPipeline:
         self.sim = sim
         self.sim_id = sim['id']
         self.case_name = f"sim_{self.sim_id}"
-        self.simulation_type = sim.get('simulationType', 'comfortTest')  # Default to TEST
+        self.simulation_type = sim.get('simulationType', 'SteadySim')  # Default to Steady
         
         # Parse jsonConfig if string
         if isinstance(sim.get('jsonConfig'), str):
@@ -397,8 +397,8 @@ def main():
         try:
             sims = get_pending_simulations()
             
-            # Filter only HVAC simulations (comfortTest/comfort30Iter)
-            sims = [s for s in sims if s.get('simulationType') in ['comfortTest', 'comfort30Iter']]
+            # Filter only HVAC simulations (SteadySim/TransientSim)
+            sims = [s for s in sims if s.get('simulationType') in ['SteadySim', 'TransientSim']]
             logger.info(f"Found {len(sims)} HVAC simulations to process")
             
             for sim in sims:

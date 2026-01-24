@@ -296,7 +296,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Validation 2: Check simulation type
-      const validTypes = ['comfortTest', 'comfort30Iter', 'test_calculation'];
+      const validTypes = ['SteadySim', 'TransientSim', 'test_calculation'];
       if (!validTypes.includes(simulationType)) {
         return res.status(400).json({ message: "Invalid simulation type" });
       }
@@ -314,7 +314,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         simulationCost = 0; // Free for testing
         console.log('[EXPRESS] Test calculation - no credit debit');
       } else {
-        simulationCost = simulationType === 'comfortTest' ? 9.99 : 12; // Thermal Comfort TEST: €9.99, 30 ITERATIONS: €12
+        simulationCost = simulationType === 'SteadySim' ? 9.99 : 12; // Steady Simulation TEST: €9.99, Transient: €12
         const hasEnoughCredits = await storage.debitUserCredits(req.user.id, simulationCost);
         
         if (!hasEnoughCredits) {
@@ -338,9 +338,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const filename = `${sanitizedName}_${timestamp}.json`;
       const filePath = path.join(userFolderPath, filename);
 
+      // Add simulationType to jsonConfig before saving
+      const enrichedJsonConfig = {
+        ...jsonConfig,
+        simulationType: simulationType
+      };
+
       // Save JSON file
       try {
-        await fs.writeFile(filePath, JSON.stringify(jsonConfig, null, 2));
+        await fs.writeFile(filePath, JSON.stringify(enrichedJsonConfig, null, 2));
       } catch (error) {
         console.error('Error saving simulation file:', error);
         return res.status(500).json({ message: "Error saving simulation file" });
@@ -356,7 +362,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         packageType: 'basic',
         cost: simulationCost,
         isPublic: false,
-        jsonConfig,
+        jsonConfig: enrichedJsonConfig,
         userId: req.user.id,
       });
 
@@ -428,7 +434,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name: sampleName,
         filePath: relativePath,
         status: 'completed', // Sample cases are always completed
-        simulationType: 'comfortTest',
+        simulationType: 'SteadySim',
         packageType: 'basic',
         cost: 0, // No cost for sample cases
         isPublic: false,

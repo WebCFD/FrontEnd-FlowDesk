@@ -72,20 +72,20 @@ def update_controldict_iterations(case_path, simulation_type):
     Update controlDict endTime, writeInterval, and purgeWrite based on simulation type.
     
     Maps simulation types to iteration counts:
-    - comfortTest: 3 iterations, write every iteration, keep all timesteps
-    - comfort30Iter: 500 iterations, write only last iteration, keep only last timestep
+    - SteadySim: 3 iterations, write every iteration, keep all timesteps
+    - TransientSim: 500 iterations, write only last iteration, keep only last timestep
     - test_calculation: 3 iterations (default)
     
     Args:
         case_path: Path to case directory
-        simulation_type: Type of simulation (comfortTest, comfort30Iter, test_calculation)
+        simulation_type: Type of simulation (SteadySim, TransientSim, test_calculation)
     """
     logger.info(f"    * Updating controlDict iterations for simulation type: {simulation_type}")
     
     # Map simulation types to (iterations, writeInterval, purgeWrite)
     config_map = {
-        'comfortTest': (3, 1, 0),      # 3 iter, write every iteration, keep all
-        'comfort30Iter': (500, 1, 1),  # 500 iter, write every iteration, keep only last
+        'SteadySim': (3, 1, 0),        # 3 iter, write every iteration, keep all
+        'TransientSim': (500, 1, 1),   # 500 iter, write every iteration, keep only last
         'test_calculation': (3, 1, 0)   # 3 iter, write every iteration, keep all
     }
     
@@ -324,13 +324,13 @@ def define_initial_files(sim_path, patch_df):
                 f.boundary_field[row['id']] = new_bc_data
 
 
-def setup(case_path: str, simulation_type: str = 'comfortTest') -> list:
+def setup(case_path: str, simulation_type: str = 'SteadySim') -> list:
     """
     Set up HVAC CFD simulation case with boundary conditions and solver configuration.
     
     Args:
         case_path: Path to the case directory
-        simulation_type: Simulation iteration type (comfortTest=3 iter, comfort30Iter=30 iter)
+        simulation_type: Simulation iteration type (SteadySim=3 iter, TransientSim=30 iter)
         
     Returns:
         List of script commands for CFD simulation

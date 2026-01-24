@@ -271,7 +271,7 @@ export default function WizardDesign() {
   const { viewportOffset, gridSize, canvasHeightPercentage, menuWidthPercentage, setGridSize } = useSketchStore();
   const [step, setStep] = useState(1);
   const [simulationName, setSimulationName] = useState("MySim");
-  const [simulationType, setSimulationType] = useState("comfortTest");
+  const [simulationType, setSimulationType] = useState("SteadySim");
   const [currentTool, setCurrentTool] = useState<
     "wall" | "eraser" | "measure" | "stairs" | null
   >("wall");
@@ -317,7 +317,7 @@ export default function WizardDesign() {
 
   // Estados para el diálogo de tipo de simulación
   const [showSimulationTypeDialog, setShowSimulationTypeDialog] = useState(false);
-  const [selectedSimulationType, setSelectedSimulationType] = useState<'comfortTest' | 'comfort30Iter'>('comfortTest');
+  const [selectedSimulationType, setSelectedSimulationType] = useState<'SteadySim' | 'TransientSim'>('SteadySim');
   
   // ========== TEMPORARY PASSWORD PROTECTION - TO BE REMOVED SOON ==========
   // Estado para la contraseña de lanzamiento de simulaciones
@@ -2761,7 +2761,7 @@ export default function WizardDesign() {
         },
         credentials: "include",
         body: JSON.stringify({
-          name: `HVAC ${selectedSimulationType === 'comfortTest' ? 'Comfort TEST' : 'Comfort 30 ITERATIONS'} - ${simulationData.case_name}`,
+          name: `HVAC ${selectedSimulationType === 'SteadySim' ? 'Steady TEST' : 'Transient'} - ${simulationData.case_name}`,
           simulationType: selectedSimulationType,
           status: "pending",
           jsonConfig: simulationData,
@@ -2782,7 +2782,7 @@ export default function WizardDesign() {
 
       toast({
         title: "Simulación HVAC Creada",
-        description: `Type: ${selectedSimulationType === 'comfortTest' ? 'Comfort TEST (3 iter)' : 'Comfort 30 ITERATIONS'}. The worker will process this simulation shortly.`,
+        description: `Type: ${selectedSimulationType === 'SteadySim' ? 'Steady Simulation TEST (3 iter)' : 'Transient Simulation'}. The worker will process this simulation shortly.`,
       });
 
       // Redirect to dashboard
@@ -2807,7 +2807,7 @@ export default function WizardDesign() {
 
   // Function to get simulation cost
   const getSimulationCost = (type: string) => {
-    return type === 'comfortTest' ? 10 : 12; // Thermal Comfort TEST: €10, 30 ITERATIONS: €12
+    return type === 'SteadySim' ? 10 : 12; // Steady Simulation TEST: €10, Transient: €12
   };
 
   // Función para calcular las dimensiones del diseño (coordenadas min/max)
@@ -3959,9 +3959,9 @@ export default function WizardDesign() {
               hasClosedContour={hasClosedContour} // NEW: Pass hasClosedContour to show warning
               simulationName={simulationName}
               simulationType={
-                simulationType === "comfortTest"
-                  ? "Thermal Comfort TEST (3 iterations)"
-                  : "Thermal Comfort 30 ITERATIONS (full simulation)"
+                simulationType === "SteadySim"
+                  ? "Steady Simulation TEST (3 iterations)"
+                  : "Transient Simulation (full simulation)"
               }
               onUpdateAirEntry={handleUpdateAirEntryFrom3D}
               onDeleteAirEntry={handleDeleteAirEntryFrom3D}
@@ -4112,7 +4112,7 @@ export default function WizardDesign() {
                 You are about to create simulation: <strong>"{simulationName}"</strong>
               </p>
               <p className="text-sm text-gray-600">
-                Type: <strong>{simulationType === "comfortTest" ? "Thermal Comfort TEST" : "Thermal Comfort 30 ITERATIONS"}</strong>
+                Type: <strong>{simulationType === "SteadySim" ? "Steady Simulation TEST" : "Transient Simulation"}</strong>
               </p>
             </div>
             
@@ -4190,24 +4190,24 @@ export default function WizardDesign() {
           </DialogHeader>
           <div className="space-y-3 mt-4">
             <Button
-              variant={selectedSimulationType === 'comfortTest' ? 'default' : 'outline'}
+              variant={selectedSimulationType === 'SteadySim' ? 'default' : 'outline'}
               className="w-full justify-start"
-              onClick={() => setSelectedSimulationType('comfortTest')}
+              onClick={() => setSelectedSimulationType('SteadySim')}
               data-testid="button-select-comfort"
             >
               <div className="text-left">
-                <div className="font-semibold">Thermal Comfort TEST</div>
+                <div className="font-semibold">Steady Simulation TEST</div>
                 <div className="text-sm opacity-80">Temperature and airflow analysis (3 iterations)</div>
               </div>
             </Button>
             <Button
-              variant={selectedSimulationType === 'comfort30Iter' ? 'default' : 'outline'}
+              variant={selectedSimulationType === 'TransientSim' ? 'default' : 'outline'}
               className="w-full justify-start"
-              onClick={() => setSelectedSimulationType('comfort30Iter')}
+              onClick={() => setSelectedSimulationType('TransientSim')}
               data-testid="button-select-renovation"
             >
               <div className="text-left">
-                <div className="font-semibold">Thermal Comfort 30 ITERATIONS</div>
+                <div className="font-semibold">Transient Simulation Test</div>
                 <div className="text-sm opacity-80">Temperature and airflow analysis (30 iterations)</div>
               </div>
             </Button>
