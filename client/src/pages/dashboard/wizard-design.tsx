@@ -2722,10 +2722,13 @@ export default function WizardDesign() {
       simulationName || undefined
     );
     
-    // Añadir el tipo de simulación al JSON exportado
+    // Añadir el tipo de simulación al JSON exportado, justo después de case_name
+    const { case_name, version, ...restData } = baseData;
     return {
-      ...baseData,
-      simulationType: simulationType
+      case_name,
+      simulationType: simulationType,
+      version,
+      ...restData
     };
   };
 
