@@ -315,9 +315,8 @@ export default function WizardDesign() {
   const [closedContourCache, setClosedContourCache] = useState(new Map());
   const [lastLinesHash, setLastLinesHash] = useState('');
 
-  // Estados para el diálogo de tipo de simulación
+  // Estados para el diálogo de confirmación de simulación
   const [showSimulationTypeDialog, setShowSimulationTypeDialog] = useState(false);
-  const [selectedSimulationType, setSelectedSimulationType] = useState<'SteadySim' | 'TransientSim'>('SteadySim');
   
   // ========== TEMPORARY PASSWORD PROTECTION - TO BE REMOVED SOON ==========
   // Estado para la contraseña de lanzamiento de simulaciones
@@ -2715,13 +2714,19 @@ export default function WizardDesign() {
 
     // Generar los datos de simulación completos
     // CRITICAL FIX: Use rawFloors for simulation data generation to preserve original scale values
-    return generateSimulationData(
+    const baseData = generateSimulationData(
       rawFloors,
       furnitureObjects,
       getCurrentCeilingHeight() / 100,
       floorParameters,
       simulationName || undefined
     );
+    
+    // Añadir el tipo de simulación al JSON exportado
+    return {
+      ...baseData,
+      simulationType: simulationType
+    };
   };
 
   // Estado para el diálogo de confirmación de simulación
@@ -2749,7 +2754,7 @@ export default function WizardDesign() {
       // Generar datos de simulación completos desde el diseño actual
       const simulationData = generateSimulationDataForExport();
       
-      console.log('[FRONTEND] Creating HVAC simulation with type:', selectedSimulationType);
+      console.log('[FRONTEND] Creating HVAC simulation with type:', simulationType);
       
       // ========== TEMPORARY PASSWORD PROTECTION - TO BE REMOVED SOON ==========
       // Incluir contraseña en el body de la petición
@@ -2761,8 +2766,8 @@ export default function WizardDesign() {
         },
         credentials: "include",
         body: JSON.stringify({
-          name: `HVAC ${selectedSimulationType === 'SteadySim' ? 'Steady TEST' : 'Transient'} - ${simulationData.case_name}`,
-          simulationType: selectedSimulationType,
+          name: `HVAC ${simulationType === 'SteadySim' ? 'Steady TEST' : 'Transient'} - ${simulationData.case_name}`,
+          simulationType: simulationType,
           status: "pending",
           jsonConfig: simulationData,
           password: simulationPassword, // TEMPORARY: contraseña de lanzamiento
@@ -2782,7 +2787,7 @@ export default function WizardDesign() {
 
       toast({
         title: "Simulación HVAC Creada",
-        description: `Type: ${selectedSimulationType === 'SteadySim' ? 'Steady Simulation TEST (3 iter)' : 'Transient Simulation'}. The worker will process this simulation shortly.`,
+        description: `Type: ${simulationType === 'SteadySim' ? 'Steady Simulation TEST (3 iter)' : 'Transient Simulation'}. The worker will process this simulation shortly.`,
       });
 
       // Redirect to dashboard
@@ -3996,6 +4001,21 @@ export default function WizardDesign() {
           placeholder="Enter simulation name"
         />
       </div>
+      <div>
+        <Label htmlFor="simulation-type">Simulation type</Label>
+        <select
+          id="simulation-type"
+          value={simulationType}
+          onChange={(e) => setSimulationType(e.target.value)}
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          <option value="SteadySim">Steady Simulation (3 iterations - Test)</option>
+          <option value="TransientSim">Transient Simulation (500 iterations)</option>
+        </select>
+        <p className="text-xs text-muted-foreground mt-1">
+          {simulationType === 'SteadySim' ? 'Quick test run - €9.99' : 'Full simulation - €12.00'}
+        </p>
+      </div>
     </div>
   );
 
@@ -4177,40 +4197,30 @@ export default function WizardDesign() {
         </div>
       )}
 
-      {/* Dialog to select HVAC simulation type */}
+      {/* Dialog to confirm HVAC simulation creation */}
       {/* ========== TEMPORARY PASSWORD PROTECTION - TO BE REMOVED SOON ========== */}
       {/* Este diálogo incluye un campo de contraseña temporal que será eliminado próximamente */}
       <Dialog open={showSimulationTypeDialog} onOpenChange={setShowSimulationTypeDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>HVAC Simulation Type</DialogTitle>
+            <DialogTitle>Confirm Simulation</DialogTitle>
             <p className="text-sm text-muted-foreground mt-2">
-              Select the type of analysis you want to perform
+              You are about to create the following simulation:
             </p>
           </DialogHeader>
-          <div className="space-y-3 mt-4">
-            <Button
-              variant={selectedSimulationType === 'SteadySim' ? 'default' : 'outline'}
-              className="w-full justify-start"
-              onClick={() => setSelectedSimulationType('SteadySim')}
-              data-testid="button-select-comfort"
-            >
-              <div className="text-left">
-                <div className="font-semibold">Steady Simulation TEST</div>
-                <div className="text-sm opacity-80">Temperature and airflow analysis (3 iterations)</div>
-              </div>
-            </Button>
-            <Button
-              variant={selectedSimulationType === 'TransientSim' ? 'default' : 'outline'}
-              className="w-full justify-start"
-              onClick={() => setSelectedSimulationType('TransientSim')}
-              data-testid="button-select-renovation"
-            >
-              <div className="text-left">
-                <div className="font-semibold">Transient Simulation Test</div>
-                <div className="text-sm opacity-80">Temperature and airflow analysis (30 iterations)</div>
-              </div>
-            </Button>
+          <div className="space-y-2 mt-4 p-4 bg-muted rounded-lg">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Name:</span>
+              <span className="font-medium">{simulationName}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Type:</span>
+              <span className="font-medium">{simulationType === 'SteadySim' ? 'Steady Simulation (3 iter)' : 'Transient Simulation (500 iter)'}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Price:</span>
+              <span className="font-medium">{simulationType === 'SteadySim' ? '€9.99' : '€12.00'}</span>
+            </div>
           </div>
           
           {/* TEMPORARY: Campo de contraseña - será eliminado próximamente */}
