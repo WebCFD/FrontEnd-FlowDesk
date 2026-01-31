@@ -1384,20 +1384,20 @@ export default function Canvas2D({
   };
 
   // Handle wall properties save
-  const handleWallPropertiesSave = (wallId: string, temperature: number) => {
+  const handleWallPropertiesSave = (wallId: string, temperature: number, material?: string, emissivity?: number) => {
 
     
     if (onWallsUpdate) {
       const updatedWalls = walls.map(wall => 
         wall.id === wallId 
-          ? { ...wall, properties: { ...wall.properties, temperature } }
+          ? { ...wall, properties: { ...wall.properties, temperature, material, emissivity } }
           : wall
       );
       onWallsUpdate(updatedWalls);
       
-      // CRITICAL FIX: Update editingWall to reflect the new temperature
+      // CRITICAL FIX: Update editingWall to reflect the new properties
       if (editingWall && editingWall.id === wallId) {
-        const updatedEditingWall = { ...editingWall, properties: { ...editingWall.properties, temperature } };
+        const updatedEditingWall = { ...editingWall, properties: { ...editingWall.properties, temperature, material, emissivity } };
 
         setEditingWall(updatedEditingWall);
       }
@@ -3705,9 +3705,13 @@ export default function Canvas2D({
             setWallPropertiesDialogOpen(false);
             setEditingWall(null);
           }}
-          onConfirm={(temperature) => handleWallPropertiesSave(editingWall.id, temperature)}
+          onConfirm={(temperature, material, emissivity) => handleWallPropertiesSave(editingWall.id, temperature, material, emissivity)}
           isEditing={true}
-          initialValues={{ temperature: editingWall.properties.temperature }}
+          initialValues={{ 
+            temperature: editingWall.properties.temperature,
+            material: editingWall.properties.material || 'default',
+            emissivity: editingWall.properties.emissivity || 0.90
+          }}
         />
       )}
 

@@ -103,10 +103,12 @@ interface WallPropertiesDialogProps {
   type: 'wall';
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (temperature: number) => void;
+  onConfirm: (temperature: number, material: string, emissivity: number) => void;
   isEditing?: boolean;
   initialValues?: {
     temperature: number;
+    material?: string;
+    emissivity?: number;
   };
 }
 
@@ -131,7 +133,22 @@ const ventDefaults = {
 };
 
 const wallDefaults = {
-  temperature: 20
+  temperature: 20,
+  material: 'default',
+  emissivity: 0.90
+};
+
+// Material definitions for wall properties (same as WallPropertiesDialog)
+const wallMaterialDefinitions = {
+  default: { name: "Default", emissivity: 0.90 },
+  wood: { name: "Wood", emissivity: 0.90 },
+  metal: { name: "Metal (Steel)", emissivity: 0.25 },
+  glass: { name: "Glass", emissivity: 0.92 },
+  fabric: { name: "Fabric/Textile", emissivity: 0.90 },
+  plastic: { name: "Plastic", emissivity: 0.90 },
+  ceramic: { name: "Ceramic/Tile", emissivity: 0.90 },
+  concrete: { name: "Concrete", emissivity: 0.90 },
+  custom: { name: "Custom", emissivity: 0.90 }
 };
 
 export default function AirEntryDialog(props: PropertyDialogProps) {
@@ -687,7 +704,12 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     
     e.preventDefault();
     if (props.type === 'wall') {
-      props.onConfirm((values as { temperature: number }).temperature);
+      const wallValues = values as { temperature: number; material: string; emissivity: number };
+      const currentMaterial = wallValues.material || 'default';
+      const currentEmissivity = currentMaterial === 'custom' 
+        ? wallValues.emissivity 
+        : (wallMaterialDefinitions[currentMaterial as keyof typeof wallMaterialDefinitions]?.emissivity || 0.90);
+      props.onConfirm(wallValues.temperature, currentMaterial, currentEmissivity);
     } else {
 
       
@@ -937,6 +959,69 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                     className="col-span-3"
                   />
                   <span className="text-sm">°C</span>
+                </div>
+                
+                {/* Material Selector */}
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="wall-material" className="text-right">
+                    Material
+                  </Label>
+                  <div className="col-span-3">
+                    <Select 
+                      value={(values as { material?: string }).material || 'default'} 
+                      onValueChange={(value) => setValues(prev => ({ ...prev, material: value }))}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select material" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(wallMaterialDefinitions).map(([key, { name, emissivity }]) => (
+                          <SelectItem key={key} value={key}>
+                            {name} {key !== 'custom' && `(ε = ${emissivity})`}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                {/* Custom Emissivity Input - only shown when 'custom' is selected */}
+                {(values as { material?: string }).material === 'custom' && (
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="custom-emissivity" className="text-right">
+                      Custom ε
+                    </Label>
+                    <Input
+                      id="custom-emissivity"
+                      type="number"
+                      value={(values as { emissivity?: number }).emissivity || 0.90}
+                      onChange={(e) => {
+                        const value = parseFloat(e.target.value);
+                        if (!isNaN(value) && value >= 0 && value <= 1) {
+                          setValues(prev => ({ ...prev, emissivity: value }));
+                        }
+                      }}
+                      className="col-span-3"
+                      min={0}
+                      max={1}
+                      step={0.01}
+                      placeholder="0.90"
+                    />
+                  </div>
+                )}
+                
+                {/* Display current emissivity */}
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <span className="text-right text-sm text-gray-500">Current ε</span>
+                  <div className="col-span-3 text-sm text-blue-600 font-medium">
+                    {(() => {
+                      const mat = (values as { material?: string }).material || 'default';
+                      if (mat === 'custom') {
+                        return ((values as { emissivity?: number }).emissivity || 0.90).toFixed(2);
+                      }
+                      return (wallMaterialDefinitions[mat as keyof typeof wallMaterialDefinitions]?.emissivity || 0.90).toFixed(2);
+                    })()}
+                  </div>
                 </div>
               </div>
             ) : (
