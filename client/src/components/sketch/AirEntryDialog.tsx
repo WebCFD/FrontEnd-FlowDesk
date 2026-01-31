@@ -142,8 +142,8 @@ const wallDefaults = {
   emissivity: 0.90
 };
 
-// Material definitions for wall properties (same as WallPropertiesDialog)
-const wallMaterialDefinitions = {
+// Material definitions for closed elements (solid surfaces)
+const closedMaterialDefinitions = {
   default: { name: "Default", emissivity: 0.90 },
   wood: { name: "Wood", emissivity: 0.90 },
   metal: { name: "Metal (Steel)", emissivity: 0.25 },
@@ -154,6 +154,17 @@ const wallMaterialDefinitions = {
   concrete: { name: "Concrete", emissivity: 0.90 },
   custom: { name: "Custom", emissivity: 0.90 }
 };
+
+// Material definitions for open elements (air/gas flow - very low emissivity)
+const openMaterialDefinitions = {
+  air: { name: "Air (Standard)", emissivity: 0.05 },
+  air_humid: { name: "Air (Humid)", emissivity: 0.08 },
+  air_hot: { name: "Hot Air", emissivity: 0.10 },
+  custom: { name: "Custom", emissivity: 0.05 }
+};
+
+// Legacy alias for compatibility
+const wallMaterialDefinitions = closedMaterialDefinitions;
 
 export default function AirEntryDialog(props: PropertyDialogProps) {
   const { type, isOpen: dialogOpen, onClose, isEditing = false } = props;
@@ -336,12 +347,30 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     const newState = newStatus ? 'open' : 'closed';
     setElementState(newState);
     
-    // Update form values for persistence
-    setValues(prev => ({ ...prev, state: newState }));
+    // Update material and emissivity based on state change
+    // Open elements use low emissivity (air), closed use surface material defaults
+    let newMaterial: string;
+    let newEmissivity: number;
     
-    // Trigger real-time properties update
+    if (newState === 'open') {
+      // Switch to air material with low emissivity
+      newMaterial = 'air';
+      newEmissivity = openMaterialDefinitions.air.emissivity;
+    } else {
+      // Switch to default surface material based on element type
+      newMaterial = type === 'window' ? 'glass' : type === 'door' ? 'wood' : 'default';
+      newEmissivity = closedMaterialDefinitions[newMaterial as keyof typeof closedMaterialDefinitions]?.emissivity || 0.90;
+    }
+    
+    setElementMaterial(newMaterial);
+    setElementEmissivity(newEmissivity);
+    
+    // Update form values for persistence (include material and emissivity)
+    setValues(prev => ({ ...prev, state: newState, material: newMaterial, emissivity: newEmissivity }));
+    
+    // Trigger real-time properties update with material and emissivity
     if (props.type !== 'wall' && 'onPropertiesUpdate' in props && props.onPropertiesUpdate) {
-      props.onPropertiesUpdate({ state: newState });
+      props.onPropertiesUpdate({ state: newState, material: newMaterial, emissivity: newEmissivity });
     }
   };
 
@@ -1641,10 +1670,12 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
                     {/* Material and Emissivity selector - always visible (required for P1 radiation model in OpenFOAM) */}
                     <div className="space-y-3 border-t pt-3">
-                      {/* Material Selector */}
+                      {/* Material Selector - different options based on element state */}
                       <div className="space-y-2">
                         <div className="flex items-center space-x-1">
-                          <Label className="text-xs text-slate-600">Surface Material</Label>
+                          <Label className="text-xs text-slate-600">
+                            {elementState === 'open' ? 'Air Type' : 'Surface Material'}
+                          </Label>
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
@@ -1652,7 +1683,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               </TooltipTrigger>
                               <TooltipContent side="right" sideOffset={5}>
                                 <p className="text-xs max-w-48">
-                                  Material determines emissivity for thermal radiation calculations. Grey body assumption: emissivity equals absorptivity.
+                                  {elementState === 'open' 
+                                    ? "Air/gas type for the inlet boundary. Open elements have very low emissivity (ε ≈ 0.05-0.10)."
+                                    : "Material determines emissivity for thermal radiation calculations. Grey body assumption: emissivity equals absorptivity."
+                                  }
                                 </p>
                               </TooltipContent>
                             </Tooltip>
@@ -1663,7 +1697,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           onValueChange={(value) => {
                             setElementMaterial(value);
                             if (value !== 'custom') {
-                              const matDef = wallMaterialDefinitions[value as keyof typeof wallMaterialDefinitions];
+                              const materialDefs = elementState === 'open' ? openMaterialDefinitions : closedMaterialDefinitions;
+                              const matDef = materialDefs[value as keyof typeof materialDefs];
                               if (matDef) {
                                 setElementEmissivity(matDef.emissivity);
                               }
@@ -1671,10 +1706,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           }}
                         >
                           <SelectTrigger className="h-8 text-sm">
-                            <SelectValue placeholder="Select material" />
+                            <SelectValue placeholder={elementState === 'open' ? "Select air type" : "Select material"} />
                           </SelectTrigger>
                           <SelectContent>
-                            {Object.entries(wallMaterialDefinitions).map(([key, { name, emissivity }]) => (
+                            {Object.entries(elementState === 'open' ? openMaterialDefinitions : closedMaterialDefinitions).map(([key, { name, emissivity }]) => (
                               <SelectItem key={key} value={key}>
                                 <div className="flex justify-between items-center w-full">
                                   <span>{name}</span>
