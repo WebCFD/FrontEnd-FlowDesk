@@ -271,6 +271,8 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
         const mappedProperties = {
           state: newProperties.state,
           temperature: newProperties.temperature,
+          material: newProperties.material,
+          emissivity: newProperties.emissivity,
           airOrientation: newProperties.airOrientation,
           flowIntensity: newProperties.flowIntensity,
           flowType: newProperties.flowType,
