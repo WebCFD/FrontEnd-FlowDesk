@@ -166,6 +166,8 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
       properties: {
         state: simProps?.state || 'open',
         temperature: simProps?.airTemperature || 20,
+        material: simProps?.material || (simProps?.state === 'open' ? 'air' : 'default'),
+        emissivity: simProps?.emissivity ?? (simProps?.state === 'open' ? 0.05 : 0.90),
         flowType: simProps?.flowType || 'Air Mass Flow',
         flowIntensity: simProps?.flowIntensity || 'medium',
         airOrientation: simProps?.airOrientation || 'inflow',
@@ -193,7 +195,9 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
         z: props.initialValues?.scale?.z || 1  // Keep Z scale unchanged (depth)
       },
       properties: {
-        temperature: airEntryData.properties?.temperature || 20
+        temperature: airEntryData.properties?.temperature || 20,
+        material: airEntryData.properties?.material || 'default',
+        emissivity: airEntryData.properties?.emissivity ?? 0.90
       },
       simulationProperties: {
         flowType: airEntryData.properties?.flowType || 'Air Mass Flow',
@@ -201,6 +205,8 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
         flowIntensity: airEntryData.properties?.flowIntensity || 'medium',
         airOrientation: airEntryData.properties?.airOrientation || 'inflow',
         state: airEntryData.properties?.state || 'open',
+        material: airEntryData.properties?.material || (airEntryData.properties?.state === 'open' ? 'air' : 'default'),
+        emissivity: airEntryData.properties?.emissivity ?? (airEntryData.properties?.state === 'open' ? 0.05 : 0.90),
         customIntensityValue: airEntryData.properties?.customIntensityValue || 0.5,
         verticalAngle: airEntryData.properties?.verticalAngle || 0,
         horizontalAngle: airEntryData.properties?.horizontalAngle || 0,
