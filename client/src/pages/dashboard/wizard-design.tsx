@@ -3390,8 +3390,10 @@ export default function WizardDesign() {
           return { start, end };
         });
 
-        // Extraer temperaturas de las paredes del JSON para preservarlas
+        // Extraer temperaturas, materiales y emisividades de las paredes del JSON para preservarlas
         const wallTemperatures = new Map<string, number>();
+        const wallMaterials = new Map<string, string>();
+        const wallEmissivities = new Map<string, number>();
         (floorData.walls || []).forEach((wall: any) => {
           const startInCm = { x: wall.start.x * 100, y: wall.start.y * 100 };
           const endInCm = { x: wall.end.x * 100, y: wall.end.y * 100 };
@@ -3402,6 +3404,8 @@ export default function WizardDesign() {
           // Crear clave única para la línea basada en coordenadas
           const lineKey = `${start.x.toFixed(2)},${start.y.toFixed(2)}-${end.x.toFixed(2)},${end.y.toFixed(2)}`;
           wallTemperatures.set(lineKey, wall.temp || 20);
+          wallMaterials.set(lineKey, wall.material || 'default');
+          wallEmissivities.set(lineKey, wall.emissivity ?? 0.90);
         });
         
         // Procesar air entries tanto del formato antiguo como nuevo
@@ -3739,6 +3743,8 @@ export default function WizardDesign() {
           name: floorName,
           stairPolygons: convertedStairs,
           wallTemperatures: wallTemperatures, // Preservar las temperaturas para uso posterior
+          wallMaterials: wallMaterials, // Preservar los materiales para uso posterior
+          wallEmissivities: wallEmissivities, // Preservar las emisividades para uso posterior
           horizontalVents: horizontalVents, // Agregar vents horizontales
           furnitureItems: furnitureItems    // Agregar furniture 3D elements
         };
@@ -3807,17 +3813,21 @@ export default function WizardDesign() {
             const currentWalls = floors[floorName]?.walls || [];
             
             if (currentWalls.length > 0) {
-              // Aplicar temperaturas directamente usando el store state actual
+              // Aplicar temperaturas, materiales y emisividades directamente usando el store state actual
               const updatedWalls = currentWalls.map(wall => {
                 const lineKey = `${wall.startPoint.x.toFixed(2)},${wall.startPoint.y.toFixed(2)}-${wall.endPoint.x.toFixed(2)},${wall.endPoint.y.toFixed(2)}`;
-                const temperature = floorData.wallTemperatures.get(lineKey);
+                const temperature = floorData.wallTemperatures?.get(lineKey);
+                const material = floorData.wallMaterials?.get(lineKey);
+                const emissivity = floorData.wallEmissivities?.get(lineKey);
                 
-                if (temperature !== undefined) {
+                if (temperature !== undefined || material !== undefined || emissivity !== undefined) {
                   return {
                     ...wall,
                     properties: {
                       ...wall.properties,
-                      temperature: temperature
+                      temperature: temperature ?? wall.properties.temperature,
+                      material: material ?? wall.properties.material ?? 'default',
+                      emissivity: emissivity ?? wall.properties.emissivity ?? 0.90
                     }
                   };
                 }

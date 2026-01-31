@@ -609,6 +609,8 @@ export function generateSimulationData(
           y: parseFloat(cmToM(endCoords.y).toFixed(5)) 
         },
         temp: wall.properties.temperature,
+        material: wall.properties.material || 'default',
+        emissivity: wall.properties.emissivity ?? 0.90,
         airEntries: wallAirEntries
       };
     });
