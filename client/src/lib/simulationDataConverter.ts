@@ -53,6 +53,8 @@ interface Wall {
   endPoint: Point2D;
   properties: {
     temperature: number; // En grados Celsius
+    material?: string; // Material type (default, wood, metal, etc.)
+    emissivity?: number; // Emissivity/absorptivity value (0-1)
   };
 }
 
@@ -950,7 +952,9 @@ export function createWallFromLine(
   line: Line, 
   floorName: string, 
   existingWalls: Wall[], 
-  temperature: number = 20.0
+  temperature: number = 20.0,
+  material: string = 'default',
+  emissivity: number = 0.90
 ): Wall {
   const floorPrefix = getFloorPrefix(floorName);
   const wallNumber = getNextWallNumber(existingWalls, floorPrefix);
@@ -963,7 +967,9 @@ export function createWallFromLine(
     startPoint: { x: line.start.x, y: line.start.y },
     endPoint: { x: line.end.x, y: line.end.y },
     properties: {
-      temperature: temperature
+      temperature: temperature,
+      material: material,
+      emissivity: emissivity
     }
   };
 }

@@ -71,6 +71,8 @@ interface Wall {
   endPoint: Point;
   properties: {
     temperature: number;
+    material?: string;
+    emissivity?: number;
   };
 }
 

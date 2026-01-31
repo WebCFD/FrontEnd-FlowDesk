@@ -63,5 +63,7 @@ export interface Wall {
   endPoint: Point;
   properties: {
     temperature: number; // En grados Celsius
+    material?: string; // Material type (default, wood, metal, etc.)
+    emissivity?: number; // Emissivity/absorptivity value (0-1)
   };
 }

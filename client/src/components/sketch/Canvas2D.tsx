@@ -253,7 +253,7 @@ const getPointAtRelativePosition = (line: Line, relativePos: number): Point => {
   };
 };
 
-// Add Wall interface for temperature properties
+// Add Wall interface for temperature and material properties
 interface Wall {
   id: string;
   uuid: string;
@@ -263,6 +263,8 @@ interface Wall {
   endPoint: Point;
   properties: {
     temperature: number;
+    material?: string;
+    emissivity?: number;
   };
 }
 
@@ -280,6 +282,8 @@ interface Canvas2DProps {
   isMultifloor: boolean;
   ceilingHeight?: number;
   defaultWallTemperature?: number;
+  defaultWallMaterial?: string;
+  defaultWallEmissivity?: number;
   defaultStairTemperature?: number;
   onLinesUpdate?: (lines: Line[]) => void;
   onWallsUpdate?: (walls: Wall[]) => void;
@@ -326,6 +330,8 @@ export default function Canvas2D({
   isMultifloor,
   ceilingHeight = 2.4,
   defaultWallTemperature = 20,
+  defaultWallMaterial = 'default',
+  defaultWallEmissivity = 0.90,
   defaultStairTemperature = 20,
   onLinesUpdate,
   onWallsUpdate,
@@ -1931,7 +1937,7 @@ export default function Canvas2D({
 
         // Create wall automatically when line is completed
         if (onWallsUpdate) {
-          const newWall = createWallFromLine(lineWithId, floorText, walls, defaultWallTemperature);
+          const newWall = createWallFromLine(lineWithId, floorText, walls, defaultWallTemperature, defaultWallMaterial, defaultWallEmissivity);
           const newWalls = [...(walls || []), newWall];
           onWallsUpdate(newWalls);
         }

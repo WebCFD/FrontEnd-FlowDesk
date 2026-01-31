@@ -156,6 +156,8 @@ interface Wall {
   endPoint: Point;
   properties: {
     temperature: number;
+    material?: string;
+    emissivity?: number;
   };
 }
 
@@ -295,6 +297,28 @@ export default function WizardDesign() {
   const [floorDeckThickness, setFloorDeckThickness] = useState(35); // Default 35cm - deprecated, usar floorParameters
   const [defaultWallTemperature, setDefaultWallTemperature] = useState(20); // Default wall temperature in °C
   const [defaultStairTemperature, setDefaultStairTemperature] = useState(20); // Default stair temperature in °C
+  const [defaultWallMaterial, setDefaultWallMaterial] = useState("default"); // Default wall material type
+  const [defaultWallCustomEmissivity, setDefaultWallCustomEmissivity] = useState(0.90); // Custom emissivity when material is 'custom'
+  
+  // Material definitions with emissivity values (same as FurnitureDialog)
+  const wallMaterialDefinitions = {
+    default: { name: "Default", emissivity: 0.90 },
+    wood: { name: "Wood", emissivity: 0.90 },
+    metal: { name: "Metal (Steel)", emissivity: 0.25 },
+    glass: { name: "Glass", emissivity: 0.92 },
+    fabric: { name: "Fabric/Textile", emissivity: 0.90 },
+    plastic: { name: "Plastic", emissivity: 0.90 },
+    ceramic: { name: "Ceramic/Tile", emissivity: 0.90 },
+    concrete: { name: "Concrete", emissivity: 0.90 },
+    custom: { name: "Custom", emissivity: 0.90 }
+  };
+  
+  // Get current wall emissivity based on selected material
+  const getDefaultWallEmissivity = () => {
+    return defaultWallMaterial === 'custom' 
+      ? defaultWallCustomEmissivity 
+      : wallMaterialDefinitions[defaultWallMaterial as keyof typeof wallMaterialDefinitions]?.emissivity || 0.90;
+  };
   const [canvas3DKey, setCanvas3DKey] = useState(0); // Force re-render of Canvas3D
   const [canvasHeight, setCanvasHeight] = useState(700); // Dynamic canvas height (configurable % of viewport)
   const [menuWidth, setMenuWidth] = useState(300); // Dynamic menu width (configurable % of canvas width)
@@ -1694,6 +1718,90 @@ export default function WizardDesign() {
                           placeholder="20"
                         />
                         <span className="text-sm text-gray-500">°C</span>
+                      </div>
+                      
+                      {/* Wall Material / Emissivity Selector */}
+                      <div className="mt-3 space-y-2">
+                        <TooltipProvider>
+                          <div className="flex items-center gap-1">
+                            <Label htmlFor="default-wall-material" className="text-sm font-medium">
+                              Material
+                            </Label>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <Info className="w-3 h-3 text-gray-400" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="max-w-64">
+                                  Default material assigned to new walls. Each material has a specific emissivity/absorptivity value (grey body assumption).
+                                  You can change individual wall materials by double-clicking on any wall.
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                        </TooltipProvider>
+                        <Select 
+                          value={defaultWallMaterial} 
+                          onValueChange={(value) => setDefaultWallMaterial(value)}
+                        >
+                          <SelectTrigger className="w-full h-8 text-xs">
+                            <SelectValue placeholder="Select material" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Object.entries(wallMaterialDefinitions).map(([key, { name, emissivity }]) => (
+                              <SelectItem key={key} value={key} className="text-xs">
+                                {name} {key !== 'custom' && `(ε = ${emissivity})`}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        
+                        {/* Custom Emissivity Input - only shown when 'custom' is selected */}
+                        {defaultWallMaterial === 'custom' && (
+                          <div className="mt-2">
+                            <TooltipProvider>
+                              <div className="flex items-center gap-1">
+                                <Label htmlFor="wall-custom-emissivity" className="text-sm font-medium">
+                                  Custom Emissivity (ε)
+                                </Label>
+                                <Tooltip>
+                                  <TooltipTrigger>
+                                    <Info className="w-3 h-3 text-gray-400" />
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p className="max-w-64">
+                                      Enter a custom emissivity value between 0 and 1.
+                                      For grey bodies, emissivity equals absorptivity.
+                                    </p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </div>
+                            </TooltipProvider>
+                            <div className="flex items-center gap-2 mt-1">
+                              <Input
+                                id="wall-custom-emissivity"
+                                type="number"
+                                value={defaultWallCustomEmissivity}
+                                onChange={(e) => {
+                                  const value = parseFloat(e.target.value);
+                                  if (!isNaN(value) && value >= 0 && value <= 1) {
+                                    setDefaultWallCustomEmissivity(value);
+                                  }
+                                }}
+                                className="w-full h-8 text-xs"
+                                min={0}
+                                max={1}
+                                step={0.01}
+                                placeholder="0.90"
+                              />
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Display current emissivity value */}
+                        <div className="text-xs text-gray-500 mt-1">
+                          Current emissivity: ε = {getDefaultWallEmissivity().toFixed(2)}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -3919,6 +4027,8 @@ export default function WizardDesign() {
               isMultifloor={isMultifloor}
               ceilingHeight={isMultifloor ? (floorParameters[currentFloor]?.ceilingHeight || 220) / 100 : ceilingHeight / 100}
               defaultWallTemperature={defaultWallTemperature}
+              defaultWallMaterial={defaultWallMaterial}
+              defaultWallEmissivity={getDefaultWallEmissivity()}
               defaultStairTemperature={defaultStairTemperature}
               onLinesUpdate={(newLines) => {
                 setLines(newLines);
