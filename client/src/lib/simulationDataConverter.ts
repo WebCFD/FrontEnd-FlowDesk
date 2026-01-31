@@ -17,6 +17,8 @@ interface Line {
 interface BaseSimulationProperties {
   state?: 'open' | 'closed';
   temperature?: number;
+  material?: string;
+  emissivity?: number;
 }
 
 // Propiedades específicas para vents
@@ -136,6 +138,8 @@ interface AirEntryExport {
     // Propiedades comunes para todos los tipos
     state?: "open" | "closed";
     temperature?: number;
+    material?: string;
+    emissivity?: number;
     flowIntensity?: "low" | "medium" | "high" | "custom";
     airDirection?: "inflow" | "outflow";
     customValue?: number;
@@ -538,9 +542,15 @@ export function generateSimulationData(
           const entryProps = (entry as any).properties;
           
           if (entry.type === "window" || entry.type === "door") {
+            // Default materials: glass for windows, wood for doors
+            const defaultMaterial = entry.type === "window" ? "glass" : "wood";
+            const defaultEmissivity = entry.type === "window" ? 0.92 : 0.90;
+            
             airEntryBase.simulation = {
               state: (entryProps?.state as "open" | "closed") || "closed",
               temperature: entryProps?.temperature || 20,
+              material: entryProps?.material || defaultMaterial,
+              emissivity: entryProps?.emissivity ?? defaultEmissivity,
               airDirection: (entryProps?.airOrientation as "inflow" | "outflow") || "inflow",
               flowIntensity: entryProps?.flowIntensity || "low"
             };
@@ -562,6 +572,10 @@ export function generateSimulationData(
               
               // 2. Air Inflow Temperature (same as windows/doors)
               temperature: entryProps?.temperature || 20,
+              
+              // 2b. Material and Emissivity (default for vents)
+              material: entryProps?.material || "default",
+              emissivity: entryProps?.emissivity ?? 0.90,
               
               // 3. Air Direction 
               airDirection: (entryProps?.airOrientation as "inflow" | "outflow") || "inflow",
@@ -784,6 +798,8 @@ export function generateSimulationData(
         simulation: {
           state: (ventObj.userData?.simulationProperties?.state as "open" | "closed") || "closed",
           temperature: ventObj.userData?.simulationProperties?.airTemperature || 20,
+          material: ventObj.userData?.simulationProperties?.material || "default",
+          emissivity: ventObj.userData?.simulationProperties?.emissivity ?? 0.90,
           airDirection: (ventObj.userData?.simulationProperties?.airOrientation as "inflow" | "outflow") || "inflow",
           
           // Air Orientation (FurnVent-specific, matching AirEntry format exactly)

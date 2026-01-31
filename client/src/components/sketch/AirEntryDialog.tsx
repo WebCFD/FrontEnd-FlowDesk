@@ -37,6 +37,8 @@ interface AirEntryDialogProps {
     properties?: {
       state?: 'open' | 'closed';
       temperature?: number;
+      material?: string;
+      emissivity?: number;
       flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
       flowValue?: number;
       flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
@@ -53,6 +55,8 @@ interface AirEntryDialogProps {
     properties?: {
       state?: 'open' | 'closed';
       temperature?: number;
+      material?: string;
+      emissivity?: number;
       flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
       flowValue?: number;
       flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
@@ -216,6 +220,17 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   // Estados para condiciones de simulación
   const [elementState, setElementState] = useState<'open' | 'closed'>('closed');
   const [elementTemperature, setElementTemperature] = useState(20);
+  // Material and emissivity - defaults depend on element type: glass for windows, wood for doors, default for vents
+  const getDefaultMaterial = () => {
+    if (type === 'window') return 'glass';
+    if (type === 'door') return 'wood';
+    return 'default';
+  };
+  const [elementMaterial, setElementMaterial] = useState(getDefaultMaterial());
+  const [elementEmissivity, setElementEmissivity] = useState(() => {
+    const mat = getDefaultMaterial();
+    return wallMaterialDefinitions[mat as keyof typeof wallMaterialDefinitions]?.emissivity || 0.90;
+  });
   const [airDirection, setAirDirection] = useState<'inflow' | 'outflow'>('inflow');
   const [intensityLevel, setIntensityLevel] = useState<'high' | 'medium' | 'low' | 'custom'>('medium');
   const [customIntensity, setCustomIntensity] = useState(0.5);
@@ -657,6 +672,13 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         if (savedProps.temperature !== undefined) {
           setElementTemperature(savedProps.temperature);
         }
+        // Load material and emissivity
+        if (savedProps.material !== undefined) {
+          setElementMaterial(savedProps.material);
+        }
+        if (savedProps.emissivity !== undefined) {
+          setElementEmissivity(savedProps.emissivity);
+        }
         
         // Load flow properties for all types
         if (savedProps.flowIntensity) {
@@ -725,6 +747,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         shape: shapeType,
         isOpen: elementState === 'open',
         temperature: elementTemperature,
+        material: elementMaterial,
+        emissivity: elementEmissivity,
         airDirection: airDirection,
         flowIntensity: intensityLevel,
         customIntensityValue: intensityLevel === 'custom' ? customIntensity : null,
@@ -748,6 +772,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         // Common properties for ALL types (replicando patrón de temperature)
         simulationProperties.state = elementState;
         simulationProperties.temperature = elementTemperature;
+        simulationProperties.material = elementMaterial;
+        simulationProperties.emissivity = elementEmissivity;
         
         // Type-specific properties for vents  
         if (props.type === 'vent') {
@@ -795,6 +821,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         properties: {
           state: elementState,
           temperature: elementTemperature,
+          material: elementMaterial,
+          emissivity: elementEmissivity,
           flowIntensity: intensityLevel as 'low' | 'medium' | 'high' | 'custom',
           airOrientation: airDirection as 'inflow' | 'outflow',
           ...(intensityLevel === 'custom' && {
@@ -1610,6 +1638,86 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                         }
                       </p>
                     </div>
+
+                    {/* Material and Emissivity selector - only show when element is closed (surface properties) */}
+                    {elementState === 'closed' && (
+                      <div className="space-y-3 border-t pt-3">
+                        {/* Material Selector */}
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-1">
+                            <Label className="text-xs text-slate-600">Surface Material</Label>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <HelpCircle className="h-3 w-3 text-slate-400 hover:text-slate-600 cursor-help" />
+                                </TooltipTrigger>
+                                <TooltipContent side="right" sideOffset={5}>
+                                  <p className="text-xs max-w-48">
+                                    Material determines emissivity for thermal radiation calculations. Grey body assumption: emissivity equals absorptivity.
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
+                          <Select 
+                            value={elementMaterial} 
+                            onValueChange={(value) => {
+                              setElementMaterial(value);
+                              if (value !== 'custom') {
+                                const matDef = wallMaterialDefinitions[value as keyof typeof wallMaterialDefinitions];
+                                if (matDef) {
+                                  setElementEmissivity(matDef.emissivity);
+                                }
+                              }
+                            }}
+                          >
+                            <SelectTrigger className="h-8 text-sm">
+                              <SelectValue placeholder="Select material" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {Object.entries(wallMaterialDefinitions).map(([key, { name, emissivity }]) => (
+                                <SelectItem key={key} value={key}>
+                                  <div className="flex justify-between items-center w-full">
+                                    <span>{name}</span>
+                                    <span className="text-xs text-gray-500 ml-2">ε={emissivity.toFixed(2)}</span>
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Custom Emissivity Input - only for custom material */}
+                        {elementMaterial === 'custom' && (
+                          <div className="space-y-2">
+                            <Label className="text-xs text-slate-600">Custom Emissivity</Label>
+                            <div className="flex items-center space-x-2">
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                max="1"
+                                value={elementEmissivity}
+                                onChange={(e) => {
+                                  const value = parseFloat(e.target.value);
+                                  if (!isNaN(value) && value >= 0 && value <= 1) {
+                                    setElementEmissivity(value);
+                                  }
+                                }}
+                                className="h-8 text-sm"
+                                placeholder="0.90"
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Display current emissivity */}
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="text-slate-500">Current Emissivity (ε)</span>
+                          <span className="text-blue-600 font-medium">{elementEmissivity.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    )}
 
                     {/* Campos condicionales que aparecen solo cuando está abierto */}
                     {elementState === 'open' && (

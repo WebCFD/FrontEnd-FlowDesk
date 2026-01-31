@@ -3521,6 +3521,8 @@ export default function WizardDesign() {
                   properties: { // Mapear correctamente las propiedades de simulación
                     state: entry.simulation?.state || 'closed',
                     temperature: entry.simulation?.temperature || 20,
+                    material: entry.simulation?.material || (entry.type === 'window' ? 'glass' : entry.type === 'door' ? 'wood' : 'default'),
+                    emissivity: entry.simulation?.emissivity ?? (entry.type === 'window' ? 0.92 : 0.90),
                     flowIntensity: entry.simulation?.flowIntensity || 'medium',
                     airOrientation: entry.simulation?.airDirection || 'inflow',
                     flowType: entry.simulation?.flowType || 'airMassFlow',
@@ -3587,6 +3589,8 @@ export default function WizardDesign() {
               properties: { // Mapear correctamente las propiedades de simulación
                 state: entry.simulation?.state || 'closed',
                 temperature: entry.simulation?.temperature || 20,
+                material: entry.simulation?.material || (entry.type === 'window' ? 'glass' : entry.type === 'door' ? 'wood' : 'default'),
+                emissivity: entry.simulation?.emissivity ?? (entry.type === 'window' ? 0.92 : 0.90),
                 flowIntensity: entry.simulation?.flowIntensity || 'medium',
                 airOrientation: entry.simulation?.airDirection || 'inflow',
                 flowType: entry.simulation?.flowType || 'airMassFlow',
@@ -3682,13 +3686,15 @@ export default function WizardDesign() {
                 },
                 surfaceType: 'ceiling' as const,
                 properties: {
-                  material: 'aluminum',
-                  emissivity: 0.9,
-                  temperature: 20
+                  material: entry.simulation?.material || 'default',
+                  emissivity: entry.simulation?.emissivity ?? 0.90,
+                  temperature: entry.simulation?.temperature || 20
                 },
                 simulationProperties: {
                   state: entry.simulation?.state || 'closed',
                   airTemperature: entry.simulation?.temperature || 20,
+                  material: entry.simulation?.material || 'default',
+                  emissivity: entry.simulation?.emissivity ?? 0.90,
                   airOrientation: entry.simulation?.airDirection || 'inflow',
                   flowType: entry.simulation?.flowType || 'airMassFlow',
                   flowIntensity: entry.simulation?.flowIntensity || 'medium',
@@ -3737,13 +3743,15 @@ export default function WizardDesign() {
                 },
                 surfaceType: 'floor' as const,
                 properties: {
-                  material: 'aluminum',
-                  emissivity: 0.9,
-                  temperature: 20
+                  material: entry.simulation?.material || 'default',
+                  emissivity: entry.simulation?.emissivity ?? 0.90,
+                  temperature: entry.simulation?.temperature || 20
                 },
                 simulationProperties: {
                   state: entry.simulation?.state || 'closed',
                   airTemperature: entry.simulation?.temperature || 20,
+                  material: entry.simulation?.material || 'default',
+                  emissivity: entry.simulation?.emissivity ?? 0.90,
                   airOrientation: entry.simulation?.airDirection || 'inflow',
                   flowType: entry.simulation?.flowType || 'airMassFlow',
                   flowIntensity: entry.simulation?.flowIntensity || 'medium',
