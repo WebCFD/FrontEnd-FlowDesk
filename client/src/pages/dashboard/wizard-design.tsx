@@ -145,6 +145,8 @@ interface StairPolygon {
   direction?: "up" | "down";
   connectsTo?: string;
   isImported?: boolean;
+  temperature?: number;
+  emissivity?: number;
 }
 
 interface Wall {
@@ -297,6 +299,7 @@ export default function WizardDesign() {
   const [floorDeckThickness, setFloorDeckThickness] = useState(35); // Default 35cm - deprecated, usar floorParameters
   const [defaultWallTemperature, setDefaultWallTemperature] = useState(20); // Default wall temperature in °C
   const [defaultStairTemperature, setDefaultStairTemperature] = useState(20); // Default stair temperature in °C
+  const [defaultStairEmissivity, setDefaultStairEmissivity] = useState(0.90); // Default stair emissivity
   const [defaultWallMaterial, setDefaultWallMaterial] = useState("default"); // Default wall material type
   const [defaultWallCustomEmissivity, setDefaultWallCustomEmissivity] = useState(0.90); // Custom emissivity when material is 'custom'
   
@@ -326,8 +329,8 @@ export default function WizardDesign() {
 
   
   // Nuevos estados para parámetros por planta
-  const [floorParameters, setFloorParameters] = useState<Record<string, { ceilingHeight: number; floorDeck: number; ceilingTemperature?: number; floorTemperature?: number }>>({
-    ground: { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20 }
+  const [floorParameters, setFloorParameters] = useState<Record<string, { ceilingHeight: number; floorDeck: number; ceilingTemperature?: number; floorTemperature?: number; ceilingEmissivity?: number; floorEmissivity?: number }>>({
+    ground: { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20, ceilingEmissivity: 0.90, floorEmissivity: 0.90 }
   });
 
   // Wall Line restriction state variables
@@ -349,14 +352,14 @@ export default function WizardDesign() {
 
   // Funciones auxiliares para manejo de parámetros por planta
   const getCurrentFloorParameters = () => {
-    return floorParameters[selectedFloor] || { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20 };
+    return floorParameters[selectedFloor] || { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20, ceilingEmissivity: 0.90, floorEmissivity: 0.90 };
   };
 
-  const updateFloorParameter = (floor: string, parameter: 'ceilingHeight' | 'floorDeck' | 'ceilingTemperature' | 'floorTemperature', value: number) => {
+  const updateFloorParameter = (floor: string, parameter: 'ceilingHeight' | 'floorDeck' | 'ceilingTemperature' | 'floorTemperature' | 'ceilingEmissivity' | 'floorEmissivity', value: number) => {
     setFloorParameters(prev => ({
       ...prev,
       [floor]: {
-        ...prev[floor] || { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20 },
+        ...prev[floor] || { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20, ceilingEmissivity: 0.90, floorEmissivity: 0.90 },
         [parameter]: value
       }
     }));
@@ -839,7 +842,9 @@ export default function WizardDesign() {
           ceilingHeight: sourceFloorParams.ceilingHeight,
           floorDeck: sourceFloorParams.floorDeck,
           ceilingTemperature: sourceFloorParams.ceilingTemperature || 20,
-          floorTemperature: sourceFloorParams.floorTemperature || 20
+          floorTemperature: sourceFloorParams.floorTemperature || 20,
+          ceilingEmissivity: sourceFloorParams.ceilingEmissivity ?? 0.90,
+          floorEmissivity: sourceFloorParams.floorEmissivity ?? 0.90
         }
       }));
     }
@@ -1902,6 +1907,45 @@ export default function WizardDesign() {
                           <span className="text-sm text-gray-500">°C</span>
                         </div>
                       </div>
+                      
+                      {/* Stair Emissivity */}
+                      <div className="space-y-2 flex-1">
+                        <TooltipProvider>
+                          <div className="flex items-center gap-1">
+                            <Label htmlFor="default-stair-emissivity" className="text-sm font-medium">
+                              Stair Emissivity (ε)
+                            </Label>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <Info className="w-3 h-3 text-gray-400" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="max-w-64">
+                                  Emissivity value for stair surfaces (grey body assumption: absorptivity = emissivity).
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                        </TooltipProvider>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            id="default-stair-emissivity"
+                            type="number"
+                            value={defaultStairEmissivity}
+                            onChange={(e) => {
+                              const value = parseFloat(e.target.value);
+                              if (!isNaN(value) && value >= 0 && value <= 1) {
+                                setDefaultStairEmissivity(value);
+                              }
+                            }}
+                            className="w-full h-8 text-xs"
+                            min={0}
+                            max={1}
+                            step={0.01}
+                            placeholder="0.90"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -2180,7 +2224,7 @@ export default function WizardDesign() {
                     // Modo multifloor: controles por planta
                     <div className="space-y-4">
                       {Object.keys(floors).filter(floorName => floors[floorName]?.hasClosedContour).map((floorName) => {
-                        const floorParams = floorParameters[floorName] || { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20 };
+                        const floorParams = floorParameters[floorName] || { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20, ceilingEmissivity: 0.90, floorEmissivity: 0.90 };
                         const isCurrentFloor = floorName === currentFloor;
                         
                         return (
@@ -2273,6 +2317,25 @@ export default function WizardDesign() {
                                 </div>
                               </div>
                               <div className="space-y-1">
+                                <Label className="text-xs">Ceiling Emissivity (ε)</Label>
+                                <div className="flex items-center gap-1">
+                                  <Input
+                                    type="number"
+                                    value={floorParams.ceilingEmissivity ?? 0.90}
+                                    min={0}
+                                    max={1}
+                                    step={0.01}
+                                    onChange={(e) => {
+                                      const value = parseFloat(e.target.value);
+                                      if (!isNaN(value) && value >= 0 && value <= 1) {
+                                        updateFloorParameter(floorName, 'ceilingEmissivity', value);
+                                      }
+                                    }}
+                                    className="w-16 h-8 text-xs"
+                                  />
+                                </div>
+                              </div>
+                              <div className="space-y-1">
                                 <Label className="text-xs">Floor Temperature</Label>
                                 <div className="flex items-center gap-1">
                                   <Input
@@ -2290,6 +2353,25 @@ export default function WizardDesign() {
                                     className="w-16 h-8 text-xs"
                                   />
                                   <span className="text-xs text-gray-500">°C</span>
+                                </div>
+                              </div>
+                              <div className="space-y-1">
+                                <Label className="text-xs">Floor Emissivity (ε)</Label>
+                                <div className="flex items-center gap-1">
+                                  <Input
+                                    type="number"
+                                    value={floorParams.floorEmissivity ?? 0.90}
+                                    min={0}
+                                    max={1}
+                                    step={0.01}
+                                    onChange={(e) => {
+                                      const value = parseFloat(e.target.value);
+                                      if (!isNaN(value) && value >= 0 && value <= 1) {
+                                        updateFloorParameter(floorName, 'floorEmissivity', value);
+                                      }
+                                    }}
+                                    className="w-16 h-8 text-xs"
+                                  />
                                 </div>
                               </div>
                             </div>
@@ -3251,7 +3333,7 @@ export default function WizardDesign() {
   const handleEraseDesign = () => {
     // PASO 1: LIMPIAR PRIMERO floorParameters para evitar recreación de plantas
     setFloorParameters({
-      ground: { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20 }
+      ground: { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20, ceilingEmissivity: 0.90, floorEmissivity: 0.90 }
     });
     
     // Clear all furniture from 3D scene BEFORE resetting store to avoid useEffect interference
@@ -3564,7 +3646,8 @@ export default function WizardDesign() {
             direction: stair.direction || 'up',
             connectsTo: stair.connectsTo,
             isImported: !!stair.connectsTo,
-            temperature: stair.temp || 20
+            temperature: stair.temp || 20,
+            emissivity: stair.emissivity ?? 0.90
           };
         });
         
@@ -3760,7 +3843,9 @@ export default function WizardDesign() {
           ceilingHeight: (floorData.height || 2.2) * 100, // Convertir metros a cm
           floorDeck: (deckValue || 0) * 100, // Convertir metros a cm - soporte nuevo y antiguo formato
           ceilingTemperature: floorData.ceiling?.temp || floorData.ceilingTemperature || 20, // Leer de ceiling.temp o default
-          floorTemperature: floorTempValue || floorData.floorTemperature || 20 // Leer de floor.temp/floor_surf.temp o default
+          floorTemperature: floorTempValue || floorData.floorTemperature || 20, // Leer de floor.temp/floor_surf.temp o default
+          ceilingEmissivity: floorData.ceiling?.emissivity ?? 0.90, // Leer de ceiling.emissivity o default
+          floorEmissivity: (floorData.floor || floorData.floor_surf)?.emissivity ?? 0.90 // Leer de floor.emissivity o default
         };
       });
       
@@ -4040,6 +4125,7 @@ export default function WizardDesign() {
               defaultWallMaterial={defaultWallMaterial}
               defaultWallEmissivity={getDefaultWallEmissivity()}
               defaultStairTemperature={defaultStairTemperature}
+              defaultStairEmissivity={defaultStairEmissivity}
               onLinesUpdate={(newLines) => {
                 setLines(newLines);
                 const hasClosedContour =

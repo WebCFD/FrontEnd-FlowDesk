@@ -285,6 +285,7 @@ interface Canvas2DProps {
   defaultWallMaterial?: string;
   defaultWallEmissivity?: number;
   defaultStairTemperature?: number;
+  defaultStairEmissivity?: number;
   onLinesUpdate?: (lines: Line[]) => void;
   onWallsUpdate?: (walls: Wall[]) => void;
   onAirEntriesUpdate?: (airEntries: AirEntry[]) => void;
@@ -333,6 +334,7 @@ export default function Canvas2D({
   defaultWallMaterial = 'default',
   defaultWallEmissivity = 0.90,
   defaultStairTemperature = 20,
+  defaultStairEmissivity = 0.90,
   onLinesUpdate,
   onWallsUpdate,
   onAirEntriesUpdate,
@@ -1871,6 +1873,7 @@ export default function Canvas2D({
           points: [...currentStairPoints],
           floor: floorText,
           temperature: defaultStairTemperature,
+          emissivity: defaultStairEmissivity,
         };
 
 

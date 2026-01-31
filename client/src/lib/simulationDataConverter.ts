@@ -162,6 +162,7 @@ interface StairExportNew {
   lines: StairLineExport[];
   connectsTo?: string;
   temp?: number;
+  emissivity?: number;
 }
 
 interface WallExport {
@@ -169,6 +170,8 @@ interface WallExport {
   start: PointXY;
   end: PointXY;
   temp: number;
+  material: string;
+  emissivity: number;
   airEntries: AirEntryExport[];
 }
 
@@ -211,10 +214,12 @@ interface FloorExport {
   deck: number;
   ceiling: {
     temp: number;
+    emissivity: number;
     airEntries: AirEntryExport[];
   };
   floor: {
     temp: number;
+    emissivity: number;
     airEntries: AirEntryExport[];
   };
   walls: WallExport[];
@@ -352,7 +357,7 @@ export function generateSimulationData(
   floors: Record<string, FloorData>,
   furniture: THREE.Object3D[] = [],
   roomHeight: number = 2.5,
-  floorParameters?: Record<string, { ceilingHeight: number; floorDeck: number; ceilingTemperature?: number; floorTemperature?: number }>,
+  floorParameters?: Record<string, { ceilingHeight: number; floorDeck: number; ceilingTemperature?: number; floorTemperature?: number; ceilingEmissivity?: number; floorEmissivity?: number }>,
   caseName?: string
 ): SimulationExport {
   // Reset global stair line counter for each export
@@ -808,9 +813,11 @@ export function generateSimulationData(
       }
     });
     
-    // Obtener temperaturas de techo y suelo de los parámetros del wizard
+    // Obtener temperaturas y emisividades de techo y suelo de los parámetros del wizard
     const ceilingTemp = currentFloorParams.ceilingTemperature ?? 20; // Valor por defecto 20°C
     const floorTemp = currentFloorParams.floorTemperature ?? 20; // Valor por defecto 20°C
+    const ceilingEmissivity = currentFloorParams.ceilingEmissivity ?? 0.90; // Valor por defecto 0.90
+    const floorEmissivity = currentFloorParams.floorEmissivity ?? 0.90; // Valor por defecto 0.90
     
     // Agregar los datos del piso al objeto de exportación usando número
     exportData.levels[floorNumber] = {
@@ -818,10 +825,12 @@ export function generateSimulationData(
       deck: floorDeckValue,
       ceiling: {
         temp: ceilingTemp,
+        emissivity: ceilingEmissivity,
         airEntries: ceilingAirEntries
       },
       floor: {
         temp: floorTemp,
+        emissivity: floorEmissivity,
         airEntries: floorSurfAirEntries
       },
       walls: walls,
@@ -1225,7 +1234,8 @@ export function convertStairPolygonToExport(
     id: stairId,
     lines: lines,
     connectsTo: stairPolygon.connectsTo,
-    temp: stairPolygon.temperature
+    temp: stairPolygon.temperature,
+    emissivity: stairPolygon.emissivity ?? 0.90
   };
 }
 

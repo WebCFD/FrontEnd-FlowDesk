@@ -31,6 +31,7 @@ export interface StairPolygon {
   sourceFloor?: string; // Track where the stair was originally defined
   isImported?: boolean; // Flag to identify if this stair was imported from another floor
   temperature?: number; // Temperature property for thermal simulation
+  emissivity?: number; // Emissivity/absorptivity value (0-1) for thermal simulation
 }
 
 // New export types for improved JSON structure
@@ -45,6 +46,7 @@ export interface StairExportNew {
   lines: StairLineExport[];
   connectsTo?: string;
   temp?: number;
+  emissivity?: number;
 }
 
 export interface Measurement {
