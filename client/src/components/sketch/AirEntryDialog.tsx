@@ -1707,6 +1707,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           </TooltipProvider>
                         </div>
                         <Select 
+                          key={`material-select-${elementState}`}
                           value={elementMaterial} 
                           onValueChange={(value) => {
                             setElementMaterial(value);
