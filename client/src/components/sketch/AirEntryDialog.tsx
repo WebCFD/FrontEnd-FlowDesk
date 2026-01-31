@@ -231,17 +231,22 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   // Estados para condiciones de simulación
   const [elementState, setElementState] = useState<'open' | 'closed'>('closed');
   const [elementTemperature, setElementTemperature] = useState(20);
-  // Material and emissivity - defaults depend on element type: glass for windows, wood for doors, default for vents
-  const getDefaultMaterial = () => {
+  // Material and emissivity - defaults depend on element type and state
+  // For closed: glass for windows, wood for doors, default for vents
+  // For open: air (very low emissivity)
+  const getDefaultMaterial = (state: 'open' | 'closed' = 'closed') => {
+    if (state === 'open') return 'air';
     if (type === 'window') return 'glass';
     if (type === 'door') return 'wood';
     return 'default';
   };
-  const [elementMaterial, setElementMaterial] = useState(getDefaultMaterial());
-  const [elementEmissivity, setElementEmissivity] = useState(() => {
-    const mat = getDefaultMaterial();
-    return wallMaterialDefinitions[mat as keyof typeof wallMaterialDefinitions]?.emissivity || 0.90;
-  });
+  const getDefaultEmissivity = (state: 'open' | 'closed' = 'closed') => {
+    if (state === 'open') return openMaterialDefinitions.air.emissivity;
+    const mat = getDefaultMaterial('closed');
+    return closedMaterialDefinitions[mat as keyof typeof closedMaterialDefinitions]?.emissivity || 0.90;
+  };
+  const [elementMaterial, setElementMaterial] = useState(getDefaultMaterial('closed'));
+  const [elementEmissivity, setElementEmissivity] = useState(getDefaultEmissivity('closed'));
   const [airDirection, setAirDirection] = useState<'inflow' | 'outflow'>('inflow');
   const [intensityLevel, setIntensityLevel] = useState<'high' | 'medium' | 'low' | 'custom'>('medium');
   const [customIntensity, setCustomIntensity] = useState(0.5);
@@ -695,18 +700,27 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         }
         
         // Load common properties
+        const loadedState = savedProps.state || 'closed';
         if (savedProps.state !== undefined) {
           setElementState(savedProps.state);
         }
         if (savedProps.temperature !== undefined) {
           setElementTemperature(savedProps.temperature);
         }
-        // Load material and emissivity
-        if (savedProps.material !== undefined) {
+        // Load material and emissivity - validate against correct material list for the state
+        const materialDefs = loadedState === 'open' ? openMaterialDefinitions : closedMaterialDefinitions;
+        if (savedProps.material !== undefined && savedProps.material in materialDefs) {
+          // Material is valid for current state
           setElementMaterial(savedProps.material);
-        }
-        if (savedProps.emissivity !== undefined) {
-          setElementEmissivity(savedProps.emissivity);
+          if (savedProps.emissivity !== undefined) {
+            setElementEmissivity(savedProps.emissivity);
+          }
+        } else {
+          // Material not valid for state - use appropriate default
+          const defaultMat = getDefaultMaterial(loadedState);
+          const defaultEmis = getDefaultEmissivity(loadedState);
+          setElementMaterial(defaultMat);
+          setElementEmissivity(defaultEmis);
         }
         
         // Load flow properties for all types
