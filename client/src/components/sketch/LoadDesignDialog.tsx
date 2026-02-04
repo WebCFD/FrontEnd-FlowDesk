@@ -36,6 +36,63 @@ interface ValidationResult {
   };
 }
 
+/**
+ * Convierte el formato de polígonos de Flowdesk.es-JSON al formato interno de flowdesk
+ * @param data - JSON con metadata.format === "Flowdesk.es-JSON"
+ * @returns JSON convertido al formato floors/walls
+ */
+function convertPolygonToFlowdesk(data: any): any {
+  const pixelsPerMeter = data.metadata?.scale?.pixelsPerMeter || 100;
+  const polygon = data.polygons?.[0];
+  
+  if (!polygon || !polygon.points || polygon.points.length < 3) {
+    throw new Error("Polígono inválido: se requieren al menos 3 puntos");
+  }
+  
+  const points = polygon.points;
+  const walls: any[] = [];
+  
+  for (let i = 0; i < points.length; i++) {
+    const currentPoint = points[i];
+    const nextPoint = points[(i + 1) % points.length];
+    
+    const startX = currentPoint.x / pixelsPerMeter;
+    const startY = currentPoint.y / pixelsPerMeter;
+    const endX = nextPoint.x / pixelsPerMeter;
+    const endY = nextPoint.y / pixelsPerMeter;
+    
+    walls.push({
+      id: `wall_0F_${i + 1}`,
+      start: { x: startX, y: startY },
+      end: { x: endX, y: endY },
+      temp: 20,
+      airEntries: []
+    });
+  }
+  
+  return {
+    version: data.metadata?.version || "1.0",
+    floors: {
+      "0": {
+        height: 2.2,
+        floorDeck: 0.35,
+        ceiling: { temp: 20, airEntries: [] },
+        floor_surf: { temp: 20, airEntries: [] },
+        walls: walls,
+        stairs: [],
+        furniture: []
+      }
+    }
+  };
+}
+
+/**
+ * Detecta si el JSON es formato de polígonos de Flowdesk.es-JSON
+ */
+function isPolygonFormat(data: any): boolean {
+  return data?.metadata?.format === "Flowdesk.es-JSON" && Array.isArray(data?.polygons);
+}
+
 export default function LoadDesignDialog({
   isOpen,
   onClose,
@@ -45,6 +102,7 @@ export default function LoadDesignDialog({
   const [parsedData, setParsedData] = useState<any>(null);
   const [validation, setValidation] = useState<ValidationResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isConvertedFromPolygon, setIsConvertedFromPolygon] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -182,7 +240,19 @@ export default function LoadDesignDialog({
 
     try {
       const text = await file.text();
-      const data = JSON.parse(text);
+      let data = JSON.parse(text);
+      
+      if (isPolygonFormat(data)) {
+        data = convertPolygonToFlowdesk(data);
+        setIsConvertedFromPolygon(true);
+        toast({
+          title: "Formato de polígono detectado",
+          description: "Convertido automáticamente al formato de Flowdesk",
+        });
+      } else {
+        setIsConvertedFromPolygon(false);
+      }
+      
       setParsedData(data);
       
       const validationResult = validateDesignData(data);
@@ -194,17 +264,18 @@ export default function LoadDesignDialog({
           description: `Diseño con ${validationResult.preview?.floorCount} plantas`,
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Error al leer el archivo",
-        description: "El archivo JSON no es válido",
+        description: error?.message || "El archivo JSON no es válido",
         variant: "destructive",
       });
       setValidation({
         isValid: false,
-        errors: ["El archivo JSON no es válido o está corrupto"],
+        errors: [error?.message || "El archivo JSON no es válido o está corrupto"],
         warnings: []
       });
+      setIsConvertedFromPolygon(false);
     } finally {
       setIsLoading(false);
     }
@@ -227,6 +298,7 @@ export default function LoadDesignDialog({
     setParsedData(null);
     setValidation(null);
     setIsLoading(false);
+    setIsConvertedFromPolygon(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -268,6 +340,19 @@ export default function LoadDesignDialog({
           {/* Validation Results */}
           {validation && (
             <div className="space-y-3">
+              {/* Polygon format converted indicator */}
+              {isConvertedFromPolygon && (
+                <Alert className="border-blue-200 bg-blue-50">
+                  <CheckCircle className="h-4 w-4 text-blue-600" />
+                  <AlertDescription>
+                    <div className="text-blue-800">
+                      <span className="font-medium">Formato de polígono detectado</span>
+                      <span className="text-sm ml-2">- Convertido automáticamente al formato Flowdesk</span>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
+
               {/* Success */}
               {validation.isValid && validation.preview && (
                 <Alert>
