@@ -1095,22 +1095,29 @@ export default function Canvas2D({
       { point: line.end, line, isStart: false },
     ]);
 
-    const groupedPoints: Record<
-      string,
-      { point: Point; lines: Line[]; isStart: boolean[] }
-    > = {};
+    // Use tolerance-based grouping instead of Math.round() to handle
+    // vertices that are very close but have slightly different coordinates
+    const TOLERANCE = 1; // 1 pixel tolerance for grouping shared vertices
+    const groupedPoints: Array<{ point: Point; lines: Line[]; isStart: boolean[] }> = [];
 
     endpoints.forEach(({ point, line, isStart }) => {
-      const key = `${Math.round(point.x)},${Math.round(point.y)}`;
-      if (!groupedPoints[key]) {
-        groupedPoints[key] = { point, lines: [], isStart: [] };
+      // Find existing group within tolerance
+      const existingGroup = groupedPoints.find((group) => {
+        const dx = group.point.x - point.x;
+        const dy = group.point.y - point.y;
+        return Math.sqrt(dx * dx + dy * dy) < TOLERANCE;
+      });
+
+      if (existingGroup) {
+        existingGroup.lines.push(line);
+        existingGroup.isStart.push(isStart);
+      } else {
+        groupedPoints.push({ point, lines: [line], isStart: [isStart] });
       }
-      groupedPoints[key].lines.push(line);
-      groupedPoints[key].isStart.push(isStart);
     });
 
-    for (const key in groupedPoints) {
-      const { point, lines, isStart } = groupedPoints[key];
+    for (const group of groupedPoints) {
+      const { point, lines, isStart } = group;
       const dx = clickPoint.x - point.x;
       const dy = clickPoint.y - point.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
