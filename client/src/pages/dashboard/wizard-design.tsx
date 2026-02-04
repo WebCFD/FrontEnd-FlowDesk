@@ -3461,7 +3461,7 @@ export default function WizardDesign() {
         
         // Convertir coordenadas del JSON de vuelta al sistema interno
         // JSON está en S.I. units (metros), convertir a centímetros primero
-        const convertedLines = (floorData.walls || []).map((wall: any) => {
+        const convertedLines = (floorData.walls || []).map((wall: any, wallIndex: number) => {
           // Convertir metros a centímetros (* 100), luego aplicar denormalizeCoordinates
           const startInCm = { x: wall.start.x * 100, y: wall.start.y * 100 };
           const endInCm = { x: wall.end.x * 100, y: wall.end.y * 100 };
@@ -3469,7 +3469,9 @@ export default function WizardDesign() {
           const start = denormalizeCoordinates(startInCm);
           const end = denormalizeCoordinates(endInCm);
 
-          return { start, end };
+          // Assign unique ID to each line for proper vertex editing/dragging
+          const id = wall.id || `line_${floorNumber}_${wallIndex}_${Date.now()}`;
+          return { start, end, id };
         });
 
         // Extraer temperaturas, materiales y emisividades de las paredes del JSON para preservarlas
