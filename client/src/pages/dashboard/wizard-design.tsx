@@ -297,7 +297,7 @@ export default function WizardDesign() {
   const [selectedFloor, setSelectedFloor] = useState("ground");
   const [loadFromFloor, setLoadFromFloor] = useState("ground");
   const [floorDeckThickness, setFloorDeckThickness] = useState(35); // Default 35cm - deprecated, usar floorParameters
-  const [defaultWallTemperature, setDefaultWallTemperature] = useState(20); // Default wall temperature in °C
+  const [defaultWallTemperature, setDefaultWallTemperature] = useState(24); // Default wall temperature in °C
   const [defaultStairTemperature, setDefaultStairTemperature] = useState(20); // Default stair temperature in °C
   const [defaultStairEmissivity, setDefaultStairEmissivity] = useState(0.90); // Default stair emissivity
   const [defaultWallMaterial, setDefaultWallMaterial] = useState("default"); // Default wall material type
@@ -1720,10 +1720,41 @@ export default function WizardDesign() {
                           min={-50}
                           max={100}
                           step={0.5}
-                          placeholder="20"
+                          placeholder="24"
                         />
                         <span className="text-sm text-gray-500">°C</span>
                       </div>
+                      
+                      {/* Apply to all walls button */}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full h-7 text-xs mt-1"
+                        onClick={() => {
+                          if (walls && walls.length > 0) {
+                            const updatedWalls = walls.map(wall => ({
+                              ...wall,
+                              properties: {
+                                ...wall.properties,
+                                temperature: defaultWallTemperature
+                              }
+                            }));
+                            setWalls(updatedWalls);
+                            toast({
+                              title: "Temperature Applied",
+                              description: `Set ${walls.length} wall(s) to ${defaultWallTemperature}°C`,
+                            });
+                          } else {
+                            toast({
+                              title: "No walls found",
+                              description: "Draw some walls first to apply temperature",
+                              variant: "destructive",
+                            });
+                          }
+                        }}
+                      >
+                        Apply to all Walls
+                      </Button>
                       
                       {/* Wall Material / Emissivity Selector */}
                       <div className="mt-3 space-y-2">
