@@ -77,6 +77,18 @@ export default function Dashboard() {
     }
   }, [user, pendingAction]);
 
+  // Auto-open CFD selector when navigated from sidebar or triggered via event
+  useEffect(() => {
+    const flag = sessionStorage.getItem('openCFDSelector');
+    if (flag === 'true') {
+      sessionStorage.removeItem('openCFDSelector');
+      setShowCFDSelector(true);
+    }
+    const handleOpenEvent = () => setShowCFDSelector(true);
+    window.addEventListener('openCFDSelector', handleOpenEvent);
+    return () => window.removeEventListener('openCFDSelector', handleOpenEvent);
+  }, []);
+
   // Close CFD selector on ESC key
   useEffect(() => {
     if (!showCFDSelector) return;
