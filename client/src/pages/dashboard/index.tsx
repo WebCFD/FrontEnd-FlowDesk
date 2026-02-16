@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import DashboardLayout from "@/components/layout/dashboard-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Play, Mail, MoreHorizontal, ExternalLink, Trash2, FolderOpen } from "lucide-react";
+import { PlusCircle, Play, Mail, MoreHorizontal, ExternalLink, Trash2, FolderOpen, Server, Home, Flame, Snowflake, X } from "lucide-react";
 import LoginModal from "@/components/auth/login-modal";
 import RegisterModal from "@/components/auth/register-modal";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -63,6 +63,7 @@ export default function Dashboard() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
+  const [showCFDSelector, setShowCFDSelector] = useState(false);
   const { reset } = useRoomStore();
   const { user } = useAuth();
   const { toast } = useToast();
@@ -75,6 +76,16 @@ export default function Dashboard() {
       setPendingAction(null);
     }
   }, [user, pendingAction]);
+
+  // Close CFD selector on ESC key
+  useEffect(() => {
+    if (!showCFDSelector) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowCFDSelector(false);
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [showCFDSelector]);
 
   // Fetch user simulations
   const { data: simulations = [], isLoading, error } = useQuery<Simulation[]>({
@@ -139,11 +150,54 @@ export default function Dashboard() {
   };
 
   const handleStartSimulation = () => {
-    // Borrar los datos del diseño (igual que hace "Erase Design")
+    setShowCFDSelector(true);
+  };
+
+  const handleCFDTypeSelect = (cfdType: string) => {
+    sessionStorage.setItem('selectedCFDType', cfdType);
     reset();
-    // Abrir el Run Case Wizard para que el usuario pueda empezar un nuevo diseño
+    setShowCFDSelector(false);
     setLocation("/dashboard/wizard-design");
   };
+
+  const cfdSimulationTypes = [
+    {
+      id: "data-centers",
+      title: "Data Centers",
+      description: "Server rooms, network closets, telecom facilities, cooling optimization...",
+      icon: Server,
+      color: "from-blue-500 to-cyan-500",
+      bgHover: "hover:border-blue-400",
+      iconBg: "bg-blue-50 text-blue-600",
+    },
+    {
+      id: "indoor-spaces",
+      title: "Indoor Spaces",
+      description: "Offices, homes, waiting rooms, hospitals, ventilation & comfort analysis...",
+      icon: Home,
+      color: "from-emerald-500 to-teal-500",
+      bgHover: "hover:border-emerald-400",
+      iconBg: "bg-emerald-50 text-emerald-600",
+    },
+    {
+      id: "fire-smoke",
+      title: "Fire & Smoke",
+      description: "Smoke propagation, fire containment, evacuation routes, safety compliance...",
+      icon: Flame,
+      color: "from-orange-500 to-red-500",
+      bgHover: "hover:border-orange-400",
+      iconBg: "bg-orange-50 text-orange-600",
+    },
+    {
+      id: "industrial-cooling",
+      title: "Industrial Cooling",
+      description: "Refrigeration systems, cold rooms, food storage, industrial freezers...",
+      icon: Snowflake,
+      color: "from-violet-500 to-indigo-500",
+      bgHover: "hover:border-violet-400",
+      iconBg: "bg-violet-50 text-violet-600",
+    },
+  ];
 
   const handleHowItWorks = () => {
     setIsVideoOpen(true);
@@ -546,6 +600,61 @@ export default function Dashboard() {
         isOpen={isRegisterOpen}
         onClose={() => setIsRegisterOpen(false)}
       />
+
+      {showCFDSelector && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ animation: 'fadeIn 0.25s ease-out' }}
+        >
+          <div 
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setShowCFDSelector(false)}
+          />
+          <div className="relative z-10 w-full max-w-3xl mx-4">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-white">Select Simulation Type</h2>
+                <p className="text-sm text-white/70 mt-1">Choose the type of CFD analysis for your project</p>
+              </div>
+              <button
+                onClick={() => setShowCFDSelector(false)}
+                className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {cfdSimulationTypes.map((type) => {
+                const IconComponent = type.icon;
+                return (
+                  <button
+                    key={type.id}
+                    onClick={() => handleCFDTypeSelect(type.id)}
+                    className={`group relative bg-white rounded-xl border-2 border-transparent ${type.bgHover} p-6 text-left transition-all duration-200 hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2`}
+                  >
+                    <div className="flex flex-col items-center text-center gap-4">
+                      <h3 className="text-lg font-semibold text-gray-900">{type.title}</h3>
+                      <div className={`w-20 h-20 rounded-2xl ${type.iconBg} flex items-center justify-center transition-transform duration-200 group-hover:scale-110`}>
+                        <IconComponent className="h-10 w-10" />
+                      </div>
+                      <p className="text-sm text-gray-500 line-clamp-2">{type.description}</p>
+                    </div>
+                    <div className={`absolute bottom-0 left-0 right-0 h-1 rounded-b-xl bg-gradient-to-r ${type.color} opacity-0 group-hover:opacity-100 transition-opacity duration-200`} />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+      `}</style>
     </DashboardLayout>
   );
 }

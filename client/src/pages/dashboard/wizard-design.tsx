@@ -276,6 +276,11 @@ export default function WizardDesign() {
   const [step, setStep] = useState(1);
   const [simulationName, setSimulationName] = useState("MySim");
   const [simulationType, setSimulationType] = useState("SteadySim");
+  const [cfdType, setCfdType] = useState(() => {
+    const stored = sessionStorage.getItem('selectedCFDType');
+    if (stored) sessionStorage.removeItem('selectedCFDType');
+    return stored || 'indoor-spaces';
+  });
   const [currentTool, setCurrentTool] = useState<
     "wall" | "eraser" | "measure" | "stairs" | null
   >("wall");
@@ -2550,6 +2555,12 @@ export default function WizardDesign() {
                 <span className="font-medium">{simulationName || "MySim"}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
+                <span className="text-gray-600">CFD Category:</span>
+                <span className="font-medium">
+                  {cfdType === 'data-centers' ? 'Data Centers' : cfdType === 'indoor-spaces' ? 'Indoor Spaces' : cfdType === 'fire-smoke' ? 'Fire & Smoke' : 'Industrial Cooling'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
                 <span className="text-gray-600">Type:</span>
                 <span className="font-medium">
                   {simulationType === "comfort" ? "Steady" : "Air Renovation"}
@@ -2994,7 +3005,7 @@ export default function WizardDesign() {
           simulationType: simulationType,
           status: "pending",
           jsonConfig: simulationData,
-          password: simulationPassword, // TEMPORARY: contraseña de lanzamiento
+          password: simulationPassword,
         }),
       });
 
