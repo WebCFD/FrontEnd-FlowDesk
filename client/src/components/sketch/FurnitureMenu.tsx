@@ -90,6 +90,20 @@ const furnitureItems: FurnitureItem[] = [
       </svg>
     `,
     defaultDimensions: { width: 50, height: 50, depth: 10 }
+  },
+  {
+    id: 'nozzle',
+    name: 'Nozzle',
+    icon: `
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="14" width="34" height="12" rx="6" fill="#94a3b8" stroke="#64748b" stroke-width="1.5"/>
+        <rect x="11" y="26" width="5" height="6" fill="#64748b" rx="1"/>
+        <rect x="24" y="26" width="5" height="6" fill="#64748b" rx="1"/>
+        <line x1="13" y1="32" x2="13" y2="37" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="2 1"/>
+        <line x1="27" y1="32" x2="27" y2="37" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="2 1"/>
+      </svg>
+    `,
+    defaultDimensions: { width: 200, height: 50, depth: 50 }
   }
 ];
 
@@ -127,7 +141,7 @@ export function FurnitureMenu({ onDragStart, floorContext, onToggleFurnitureEras
   const furnitureItems_category = furnitureItems.filter(item => ['table', 'armchair'].includes(item.id));
   const charactersItems = furnitureItems.filter(item => item.id === 'person');
   const objectsItems = furnitureItems.filter(item => ['car', 'block'].includes(item.id));
-  const airEntriesItems = furnitureItems.filter(item => item.id === 'vent');
+  const hvacItems = furnitureItems.filter(item => ['vent', 'nozzle'].includes(item.id));
   
   // Custom furniture goes with furniture category
   const allFurnitureItems = [...furnitureItems_category, ...customItems];
@@ -222,8 +236,8 @@ export function FurnitureMenu({ onDragStart, floorContext, onToggleFurnitureEras
       {/* Objects Category */}
       {renderCategory("Objects", objectsItems)}
       
-      {/* Floor/Ceiling Air Entries Category */}
-      {renderCategory("Floor/Ceiling Air Entries", airEntriesItems)}
+      {/* HVAC Elements Category */}
+      {renderCategory("HVAC Elements", hvacItems)}
 
       <div className="space-y-4">
         <h3 className="font-semibold">Load Custom Object</h3>

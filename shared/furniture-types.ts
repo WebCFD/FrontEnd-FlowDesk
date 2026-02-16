@@ -5,17 +5,16 @@
 
 export interface FurnitureItem {
   id: string;
-  type: 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent' | 'custom';
-  name: string; // Computed property that returns id - kept for backward compatibility
+  type: 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent' | 'nozzle' | 'custom';
+  name: string;
   floorName: string;
   position: { x: number; y: number; z: number };
   rotation: { x: number; y: number; z: number };
   scale?: { x: number; y: number; z: number };
   dimensions: { width: number; height: number; depth: number };
-  surfaceType?: 'floor' | 'ceiling'; // Surface where the item was placed (for vents)
-  filePath?: string; // STL file path for custom objects
+  surfaceType?: 'floor' | 'ceiling';
+  filePath?: string;
   
-  // Fields for furniture dialog
   information?: string;
   properties?: {
     material?: string;
@@ -26,7 +25,6 @@ export interface FurnitureItem {
     emissivity?: number;
   };
   
-  // Simulation properties for vent furniture (matches AirEntry simulation capabilities)
   simulationProperties?: {
     flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
     flowValue?: number;
@@ -40,8 +38,17 @@ export interface FurnitureItem {
     normalVector?: { x: number; y: number; z: number };
   };
   
-  // Internal tracking
-  meshId?: string; // THREE.js mesh UUID for scene identification
+  nozzleProperties?: {
+    ductLength: number;
+    ductDiameter: number;
+    outletCount: number;
+    outletShape: 'circular' | 'rectangular';
+    outletDiameter?: number;
+    outletWidth?: number;
+    outletHeight?: number;
+  };
+  
+  meshId?: string;
   createdAt?: number;
   updatedAt?: number;
 }

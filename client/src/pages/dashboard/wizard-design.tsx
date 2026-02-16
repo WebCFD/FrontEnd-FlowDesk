@@ -32,7 +32,7 @@ import { generateSimulationData, denormalizeCoordinates } from "@/lib/simulation
 import * as THREE from "three";
 
 // Helper function for default dimensions (matching Canvas3D)
-const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent' | 'custom') => {
+const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent' | 'nozzle' | 'custom') => {
   switch (type) {
     case 'table':
       return { width: 120, height: 75, depth: 80 };
@@ -46,6 +46,8 @@ const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car' | 'b
       return { width: 80, height: 80, depth: 80 };
     case 'vent':
       return { width: 50, height: 50, depth: 10 };
+    case 'nozzle':
+      return { width: 200, height: 50, depth: 50 };
     case 'custom':
       return { width: 100, height: 100, depth: 100 };
     default:
@@ -3392,8 +3394,8 @@ export default function WizardDesign() {
       // Remove each furniture object with proper cleanup
       furnitureObjectsToRemove.forEach((furnitureGroup) => {
         
-        // Special cleanup for vents with special rendering properties
-        if (furnitureGroup.userData.furnitureType === 'vent') {
+        // Special cleanup for vents/nozzles with special rendering properties
+        if (furnitureGroup.userData.furnitureType === 'vent' || furnitureGroup.userData.furnitureType === 'nozzle') {
           furnitureGroup.traverse((child) => {
             if (child instanceof THREE.Mesh) {
               // Dispose geometry and material to clear WebGL state

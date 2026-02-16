@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { X, Move } from "lucide-react";
 import type { FurnitureItem } from "@shared/furniture-types";
 
-type FurnitureType = 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent' | 'custom';
+type FurnitureType = 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent' | 'nozzle' | 'custom';
 
 interface FurnitureDialogProps {
   type: FurnitureType;
@@ -39,6 +39,15 @@ interface FurnitureDialogProps {
       horizontalAngle?: number;
       normalVector?: { x: number; y: number; z: number };
     };
+    nozzleProperties?: {
+      ductLength: number;
+      ductDiameter: number;
+      outletCount: number;
+      outletShape: 'circular' | 'rectangular';
+      outletDiameter?: number;
+      outletWidth?: number;
+      outletHeight?: number;
+    };
   }) => void;
   onCancel?: () => void; // New prop for cancel handling
   isEditing?: boolean;
@@ -67,6 +76,15 @@ interface FurnitureDialogProps {
       horizontalAngle?: number;
       airTemperature?: number;
       normalVector?: { x: number; y: number; z: number };
+    };
+    nozzleProperties?: {
+      ductLength: number;
+      ductDiameter: number;
+      outletCount: number;
+      outletShape: 'circular' | 'rectangular';
+      outletDiameter?: number;
+      outletWidth?: number;
+      outletHeight?: number;
     };
   };
   floorContext?: {
@@ -152,6 +170,30 @@ const furnitureDefaults = {
   },
   vent: {
     name: "Vent",
+    position: { x: 0, y: 0, z: 0 },
+    rotation: { x: 0, y: 0, z: 0 },
+    scale: { x: 1, y: 1, z: 1 },
+    properties: {
+      material: "metal",
+      temperature: 20,
+      thermalConductivity: 45,
+      density: 2700,
+      heatCapacity: 900
+    },
+    simulationProperties: {
+      flowType: "Air Mass Flow" as const,
+      flowValue: 0.5,
+      flowIntensity: "medium" as const,
+      airOrientation: "inflow" as const,
+      state: "open" as const,
+      customIntensityValue: 0.5,
+      verticalAngle: 0,
+      horizontalAngle: 0,
+      airTemperature: 20
+    }
+  },
+  nozzle: {
+    name: "Nozzle",
     position: { x: 0, y: 0, z: 0 },
     rotation: { x: 0, y: 0, z: 0 },
     scale: { x: 1, y: 1, z: 1 },
@@ -263,7 +305,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
 
   // Get current emissivity value (only for non-vent furniture)
   const getCurrentEmissivity = () => {
-    if (type === 'vent') return undefined;
+    if (type === 'vent' || type === 'nozzle') return undefined;
     return materialType === 'custom' ? customEmissivity : materialDefinitions[materialType as keyof typeof materialDefinitions]?.emissivity || 0.85;
   };
   
@@ -274,12 +316,22 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
     depth: 100
   });
 
+  const [nozzleProps, setNozzleProps] = useState({
+    ductLength: 200,
+    ductDiameter: 50,
+    outletCount: 2,
+    outletShape: 'rectangular' as 'circular' | 'rectangular',
+    outletDiameter: 15,
+    outletWidth: 20,
+    outletHeight: 15
+  });
+
   function getDefaultValues() {
     const baseDefaults = (furnitureDefaults as any)[type] || furnitureDefaults.table;
     
     if (props.initialValues) {
       // For vent types, ensure simulationProperties exist by merging with defaults
-      if (type === 'vent' && !props.initialValues.simulationProperties) {
+      if ((type === 'vent' || type === 'nozzle') && !props.initialValues.simulationProperties) {
         return {
           ...props.initialValues,
           simulationProperties: baseDefaults.simulationProperties
@@ -297,18 +349,18 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       const defaults = getDefaultValues();
       setValues(defaults);
       setFurnitureName(defaults.name);
-      if (type !== 'vent') {
+      if (type !== 'vent' && type !== 'nozzle') {
         setMaterialType(defaults.properties?.material || "default");
       }
       setTemperature(defaults.properties?.temperature || 20);
       
       // Initialize emissivity for non-vent furniture
-      if (type !== 'vent' && defaults.properties?.emissivity !== undefined) {
+      if (type !== 'vent' && type !== 'nozzle' && defaults.properties?.emissivity !== undefined) {
         setCustomEmissivity(defaults.properties.emissivity);
       }
       
       // Initialize simulation properties for vent furniture
-      if (type === 'vent') {
+      if (type === 'vent' || type === 'nozzle') {
         const simProps = (defaults as any).simulationProperties;
         
         const newSimulationProperties = {
@@ -324,6 +376,10 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
         };
         
         setSimulationProperties(newSimulationProperties);
+      }
+      
+      if (type === 'nozzle' && (defaults as any).nozzleProperties) {
+        setNozzleProps((defaults as any).nozzleProperties);
       }
       
       // Initialize dimensions for custom objects
@@ -369,9 +425,9 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
     e.preventDefault();
     
     // Build properties object based on furniture type
-    const properties = type === 'vent' 
+    const properties = (type === 'vent' || type === 'nozzle') 
       ? {
-          // Vent furniture: Only temperature needed
+          // Vent/Nozzle furniture: Only temperature needed
           temperature: temperature
         }
       : {
@@ -388,7 +444,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       scale: elementScale,
       ...(type === 'custom' && { dimensions: dimensions }),
       properties,
-      ...(type === 'vent' && { 
+      ...((type === 'vent' || type === 'nozzle') && { 
         simulationProperties: {
           ...simulationProperties,
           // Only include angles if vent is open and airOrientation is inflow (mimicking AirEntry logic)
@@ -400,7 +456,8 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
             horizontalAngle: 0
           })
         }
-      })
+      }),
+      ...(type === 'nozzle' && { nozzleProperties: nozzleProps }),
     };
 
     console.log('[SCALE DEBUG 2] Dialog Submission - Type:', type);
@@ -598,8 +655,8 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                             onPositionUpdate(newPosition);
                           }
                         }}
-                        disabled={type !== 'block' && type !== 'vent'}
-                        className={`text-sm ${type !== 'block' && type !== 'vent' ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
+                        disabled={type !== 'block' && type !== 'vent' && type !== 'nozzle'}
+                        className={`text-sm ${type !== 'block' && type !== 'vent' && type !== 'nozzle' ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
                       />
                     </div>
                   </div>
@@ -801,7 +858,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
               
               <div className="space-y-4">
                 {/* Temperature - Only for non-vent furniture */}
-                {type !== 'vent' && (
+                {type !== 'vent' && type !== 'nozzle' && (
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="temperature" className="text-right">
                       Temperature
@@ -818,7 +875,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                 )}
 
                 {/* Material/Emissivity system for non-vent furniture */}
-                {type !== 'vent' && (
+                {type !== 'vent' && type !== 'nozzle' && (
                   <>
                     <div className="grid grid-cols-4 items-center gap-4">
                       <div className="text-right flex items-center gap-2">
@@ -900,8 +957,87 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                   </>
                 )}
 
+                {type === 'nozzle' && (
+                  <>
+                    <div className="border-t border-slate-300 pt-4 mt-4">
+                      <h5 className="font-medium text-sm mb-3 text-slate-600">Duct Configuration</h5>
+                    </div>
+
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="duct-length" className="text-right">Duct Length</Label>
+                      <Input id="duct-length" type="number" min="50" step="10"
+                        value={nozzleProps.ductLength}
+                        onChange={(e) => setNozzleProps(prev => ({...prev, ductLength: Number(e.target.value)}))}
+                        className="col-span-2" />
+                      <span className="text-sm">cm</span>
+                    </div>
+
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="duct-diameter" className="text-right">Duct Diameter</Label>
+                      <Input id="duct-diameter" type="number" min="10" step="5"
+                        value={nozzleProps.ductDiameter}
+                        onChange={(e) => setNozzleProps(prev => ({...prev, ductDiameter: Number(e.target.value)}))}
+                        className="col-span-2" />
+                      <span className="text-sm">cm</span>
+                    </div>
+
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="outlet-count" className="text-right">Outlets</Label>
+                      <Input id="outlet-count" type="number" min="1" max="10" step="1"
+                        value={nozzleProps.outletCount}
+                        onChange={(e) => setNozzleProps(prev => ({...prev, outletCount: Math.max(1, Math.min(10, Number(e.target.value)))}))}
+                        className="col-span-2" />
+                      <span className="text-sm">units</span>
+                    </div>
+
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="outlet-shape" className="text-right">Outlet Shape</Label>
+                      <Select value={nozzleProps.outletShape} onValueChange={(value: 'circular' | 'rectangular') => 
+                        setNozzleProps(prev => ({...prev, outletShape: value}))}>
+                        <SelectTrigger className="col-span-3">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="rectangular">Rectangular</SelectItem>
+                          <SelectItem value="circular">Circular</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {nozzleProps.outletShape === 'circular' ? (
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="outlet-diameter" className="text-right">Outlet Diameter</Label>
+                        <Input id="outlet-diameter" type="number" min="5" step="1"
+                          value={nozzleProps.outletDiameter}
+                          onChange={(e) => setNozzleProps(prev => ({...prev, outletDiameter: Number(e.target.value)}))}
+                          className="col-span-2" />
+                        <span className="text-sm">cm</span>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="outlet-width" className="text-right">Outlet Width</Label>
+                          <Input id="outlet-width" type="number" min="5" step="1"
+                            value={nozzleProps.outletWidth}
+                            onChange={(e) => setNozzleProps(prev => ({...prev, outletWidth: Number(e.target.value)}))}
+                            className="col-span-2" />
+                          <span className="text-sm">cm</span>
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="outlet-height" className="text-right">Outlet Height</Label>
+                          <Input id="outlet-height" type="number" min="5" step="1"
+                            value={nozzleProps.outletHeight}
+                            onChange={(e) => setNozzleProps(prev => ({...prev, outletHeight: Number(e.target.value)}))}
+                            className="col-span-2" />
+                          <span className="text-sm">cm</span>
+                        </div>
+                      </>
+                    )}
+                  </>
+                )}
+
                 {/* Vent-specific simulation properties only */}
-                {type === 'vent' && (
+                {(type === 'vent' || type === 'nozzle') && (
                   <>
                     {/* Simulation Conditions section header */}
                     <div className="border-t border-slate-300 pt-4 mt-4">

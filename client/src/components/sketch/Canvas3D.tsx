@@ -744,6 +744,99 @@ const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
   return group;
 };
 
+const createNozzleModel = (furnitureItem: FurnitureItem): THREE.Group => {
+  const group = new THREE.Group();
+  
+  const np = furnitureItem.nozzleProperties || {
+    ductLength: 200,
+    ductDiameter: 50,
+    outletCount: 2,
+    outletShape: 'rectangular' as const,
+    outletDiameter: 15,
+    outletWidth: 20,
+    outletHeight: 15
+  };
+  
+  const ductRadius = np.ductDiameter / 2;
+  const ductGeometry = new THREE.CylinderGeometry(ductRadius, ductRadius, np.ductLength, 24);
+  ductGeometry.rotateZ(Math.PI / 2);
+  
+  const ductMaterial = new THREE.MeshPhongMaterial({
+    color: 0xA8B4C0,
+    metalness: 0.7,
+    shininess: 80,
+    side: THREE.DoubleSide,
+  });
+  
+  const ductMesh = new THREE.Mesh(ductGeometry, ductMaterial);
+  ductMesh.userData = {
+    type: 'furniture',
+    furnitureType: 'nozzle',
+    furnitureId: furnitureItem.id,
+    floorName: furnitureItem.floorName,
+    furnitureName: furnitureItem.name,
+    isSelectable: true,
+  };
+  group.add(ductMesh);
+  
+  const capMaterial = new THREE.MeshPhongMaterial({
+    color: 0x8899AA,
+    shininess: 60,
+    side: THREE.DoubleSide,
+  });
+  
+  const capGeometryL = new THREE.CircleGeometry(ductRadius, 24);
+  const capL = new THREE.Mesh(capGeometryL, capMaterial);
+  capL.position.set(-np.ductLength / 2, 0, 0);
+  capL.rotation.set(0, -Math.PI / 2, 0);
+  group.add(capL);
+  
+  const capGeometryR = new THREE.CircleGeometry(ductRadius, 24);
+  const capR = new THREE.Mesh(capGeometryR, capMaterial);
+  capR.position.set(np.ductLength / 2, 0, 0);
+  capR.rotation.set(0, Math.PI / 2, 0);
+  group.add(capR);
+  
+  const outletMaterial = new THREE.MeshPhongMaterial({
+    color: 0x607080,
+    shininess: 40,
+    side: THREE.DoubleSide,
+  });
+  
+  const spacing = np.ductLength / (np.outletCount + 1);
+  const outletDropLength = ductRadius * 0.6;
+  
+  for (let i = 0; i < np.outletCount; i++) {
+    const xPos = -np.ductLength / 2 + spacing * (i + 1);
+    
+    if (np.outletShape === 'circular') {
+      const outletRadius = (np.outletDiameter || 15) / 2;
+      const outletGeo = new THREE.CylinderGeometry(outletRadius, outletRadius, outletDropLength, 16);
+      const outlet = new THREE.Mesh(outletGeo, outletMaterial);
+      outlet.position.set(xPos, -(ductRadius + outletDropLength / 2), 0);
+      group.add(outlet);
+    } else {
+      const ow = np.outletWidth || 20;
+      const oh = np.outletHeight || 15;
+      const outletGeo = new THREE.BoxGeometry(ow, outletDropLength, oh);
+      const outlet = new THREE.Mesh(outletGeo, outletMaterial);
+      outlet.position.set(xPos, -(ductRadius + outletDropLength / 2), 0);
+      group.add(outlet);
+    }
+  }
+  
+  group.userData = {
+    type: 'furniture',
+    furnitureType: 'nozzle',
+    furnitureId: furnitureItem.id,
+    floorName: furnitureItem.floorName,
+    furnitureName: furnitureItem.name,
+    isSelectable: true,
+  };
+  
+  return group;
+};
+
 // PHASE 3: Function to create and add furniture models to the scene
 const createFurnitureModel = (
   furnitureItem: FurnitureItem,
@@ -771,6 +864,9 @@ const createFurnitureModel = (
       break;
     case 'vent':
       model = createVentPlaneModel(furnitureItem);
+      break;
+    case 'nozzle':
+      model = createNozzleModel(furnitureItem);
       break;
     case 'custom':
       // Handle custom STL objects
@@ -903,7 +999,7 @@ const createFurnitureModel = (
 };
 
 // Helper function to get default dimensions for furniture types
-const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent' | 'custom') => {
+const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent' | 'nozzle' | 'custom') => {
   switch (type) {
     case 'table':
       return { width: 120, height: 75, depth: 80 };
@@ -917,6 +1013,8 @@ const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car' | 'b
       return { width: 80, height: 80, depth: 80 };
     case 'vent':
       return { width: 50, height: 50, depth: 10 };
+    case 'nozzle':
+      return { width: 200, height: 50, depth: 50 };
     case 'custom':
       return { width: 100, height: 100, depth: 100 };
     default:
@@ -1146,12 +1244,12 @@ export default function Canvas3D({
         name: generatedId, // Name is same as ID
         floorName: surfaceDetection.floorName,
         position: calculatedPosition,
-        rotation: surfaceDetection.surfaceType === 'ceiling' && furnitureType !== 'vent' ? { x: Math.PI, y: 0, z: 0 } : { x: 0, y: 0, z: 0 },
+        rotation: surfaceDetection.surfaceType === 'ceiling' && furnitureType !== 'vent' && furnitureType !== 'nozzle' ? { x: Math.PI, y: 0, z: 0 } : { x: 0, y: 0, z: 0 },
         dimensions: dimensions,
         information: `${generatedId} placed on ${surfaceDetection.surfaceType} of ${surfaceDetection.floorName}`,
         surfaceType: surfaceDetection.surfaceType, // Store the surface type for export
         filePath: filePath, // Store STL file path for custom objects
-        properties: furnitureType === 'vent' ? {
+        properties: (furnitureType === 'vent' || furnitureType === 'nozzle') ? {
           // Vent type maintains original thermal properties system
           temperature: 20,
           thermalConductivity: 0.12,
@@ -1168,7 +1266,7 @@ export default function Canvas3D({
           heatCapacity: 1200
         },
         // Add simulation properties for vent furniture with automatic normal vector assignment
-        simulationProperties: furnitureType === 'vent' ? {
+        simulationProperties: (furnitureType === 'vent' || furnitureType === 'nozzle') ? {
           flowType: 'Air Mass Flow',
           flowValue: 0.5,
           flowIntensity: 'medium',
@@ -1182,6 +1280,17 @@ export default function Canvas3D({
             ? { x: 0, y: 0, z: -1 } // Ceiling: pointing down
             : { x: 0, y: 0, z: 1 }   // Floor: pointing up
         } : undefined,
+        ...(furnitureType === 'nozzle' && {
+          nozzleProperties: {
+            ductLength: 200,
+            ductDiameter: 50,
+            outletCount: 2,
+            outletShape: 'rectangular' as const,
+            outletDiameter: 15,
+            outletWidth: 20,
+            outletHeight: 15
+          }
+        }),
         meshId: `furniture_${Date.now()}`,
         createdAt: Date.now(),
         updatedAt: Date.now()
@@ -5784,7 +5893,7 @@ export default function Canvas3D({
             
             if (actualFurnitureItem) {
               // COORDINATE SYSTEM FIX: Use world coordinates for dialog consistency
-              if (actualFurnitureItem.type === 'vent') {
+              if (actualFurnitureItem.type === 'vent' || actualFurnitureItem.type === 'nozzle') {
                 // Get the actual visual position using world coordinates
                 const worldPosition = new THREE.Vector3();
                 furnitureGroup.getWorldPosition(worldPosition);
@@ -5805,7 +5914,7 @@ export default function Canvas3D({
                 z: furnitureGroup.rotation.z
               };
 
-              if (actualFurnitureItem.type === 'vent' || actualFurnitureItem.type === 'custom') {
+              if (actualFurnitureItem.type === 'vent' || actualFurnitureItem.type === 'nozzle' || actualFurnitureItem.type === 'custom') {
                 // For vents and custom objects, use world coordinates and rotation to match visual positioning
                 const worldPosition = new THREE.Vector3();
                 const worldQuaternion = new THREE.Quaternion();
@@ -5918,7 +6027,7 @@ export default function Canvas3D({
             const furnitureFloorName = furnitureGroup.userData.floorName || currentFloor;
             
             // Special cleanup for vents with special rendering properties
-            if (furnitureGroup.userData.furnitureType === 'vent') {
+            if (furnitureGroup.userData.furnitureType === 'vent' || furnitureGroup.userData.furnitureType === 'nozzle') {
               // Find and dispose mesh inside the vent group
               furnitureGroup.traverse((child) => {
                 if (child instanceof THREE.Mesh) {
@@ -6007,7 +6116,7 @@ export default function Canvas3D({
     if (furnitureGroup) {
       
       // COORDINATE SYSTEM FIX: Apply same conversion as confirm button
-      if (editingFurniture.item.type === 'vent' || editingFurniture.item.type === 'custom') {
+      if (editingFurniture.item.type === 'vent' || editingFurniture.item.type === 'nozzle' || editingFurniture.item.type === 'custom') {
         // For vents and custom objects: Convert world coordinates to local coordinates
         const parentPosition = new THREE.Vector3();
         
@@ -6050,7 +6159,7 @@ export default function Canvas3D({
 
     if (furnitureGroup) {
       // COORDINATE SYSTEM FIX: Apply same conversion as confirm button
-      if (editingFurniture.item.type === 'vent' || editingFurniture.item.type === 'custom') {
+      if (editingFurniture.item.type === 'vent' || editingFurniture.item.type === 'nozzle' || editingFurniture.item.type === 'custom') {
         // For vents and custom objects: Convert world rotation to local rotation
         const parentQuaternion = new THREE.Quaternion();
         const parentRotation = new THREE.Euler();
@@ -6164,6 +6273,16 @@ export default function Canvas3D({
         heatCapacity?: number;
         emissivity?: number;
       };
+      simulationProperties?: any;
+      nozzleProperties?: {
+        ductLength: number;
+        ductDiameter: number;
+        outletCount: number;
+        outletShape: 'circular' | 'rectangular';
+        outletDiameter?: number;
+        outletWidth?: number;
+        outletHeight?: number;
+      };
     }
   ) => {
     if (!editingFurniture || !sceneRef.current) return;
@@ -6184,7 +6303,7 @@ export default function Canvas3D({
 
     if (furnitureGroup) {
       // COORDINATE SYSTEM FIX: Handle vents and custom objects differently than tables
-      if (editingFurniture.item.type === 'vent' || editingFurniture.item.type === 'custom') {
+      if (editingFurniture.item.type === 'vent' || editingFurniture.item.type === 'nozzle' || editingFurniture.item.type === 'custom') {
         // For vents and custom objects: Convert world coordinates back to local coordinates
         const parentPosition = new THREE.Vector3();
         const parentQuaternion = new THREE.Quaternion();
@@ -6232,6 +6351,10 @@ export default function Canvas3D({
       if (data.simulationProperties) {
         furnitureGroup.userData.simulationProperties = data.simulationProperties;
       }
+      
+      if (data.nozzleProperties) {
+        furnitureGroup.userData.nozzleProperties = data.nozzleProperties;
+      }
 
       // Save data to persistent store
       if (onUpdateFurniture) {
@@ -6243,6 +6366,7 @@ export default function Canvas3D({
           scale: data.scale,
           properties: data.properties,
           simulationProperties: data.simulationProperties,
+          ...(data.nozzleProperties && { nozzleProperties: data.nozzleProperties }),
           updatedAt: Date.now()
         };
 
@@ -6531,7 +6655,7 @@ export default function Canvas3D({
               }
             })(),
             // CRITICAL FIX: Use actual furniture properties instead of hardcoded defaults
-            properties: editingFurniture.item.properties || (editingFurniture.item.type === 'vent' ? {
+            properties: editingFurniture.item.properties || ((editingFurniture.item.type === 'vent' || editingFurniture.item.type === 'nozzle') ? {
               temperature: 20,
               thermalConductivity: 0.12,
               density: 600,
@@ -6546,7 +6670,8 @@ export default function Canvas3D({
               heatCapacity: 1200
             }),
             // Use memoized simulation properties to prevent infinite loops
-            simulationProperties: currentSimulationProperties
+            simulationProperties: currentSimulationProperties,
+            ...(editingFurniture.item.nozzleProperties && { nozzleProperties: editingFurniture.item.nozzleProperties })
           }}
           isEditing={true}
           floorContext={{
