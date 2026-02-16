@@ -6367,6 +6367,50 @@ export default function Canvas3D({
       
       if (data.nozzleProperties) {
         furnitureGroup.userData.nozzleProperties = data.nozzleProperties;
+        
+        // Rebuild the 3D nozzle mesh to reflect updated duct configuration
+        if (editingFurniture.item.type === 'nozzle') {
+          const savedPosition = furnitureGroup.position.clone();
+          const savedRotation = furnitureGroup.rotation.clone();
+          const savedScale = furnitureGroup.scale.clone();
+          const savedUserData = { ...furnitureGroup.userData };
+          
+          // Remove old children
+          while (furnitureGroup.children.length > 0) {
+            const child = furnitureGroup.children[0];
+            if (child instanceof THREE.Mesh) {
+              child.geometry?.dispose();
+              if (Array.isArray(child.material)) {
+                child.material.forEach(m => m.dispose());
+              } else {
+                child.material?.dispose();
+              }
+            }
+            furnitureGroup.remove(child);
+          }
+          
+          // Build updated item with new nozzleProperties
+          const updatedItem: FurnitureItem = {
+            ...editingFurniture.item,
+            nozzleProperties: data.nozzleProperties
+          };
+          
+          // Create a fresh nozzle model
+          const freshModel = createNozzleModel(updatedItem);
+          
+          // Move children from fresh model into existing group
+          while (freshModel.children.length > 0) {
+            const child = freshModel.children[0];
+            freshModel.remove(child);
+            furnitureGroup.add(child);
+          }
+          
+          // Restore transforms
+          furnitureGroup.position.copy(savedPosition);
+          furnitureGroup.rotation.copy(savedRotation);
+          furnitureGroup.scale.copy(savedScale);
+          furnitureGroup.userData = savedUserData;
+        }
       }
 
       // Save data to persistent store
