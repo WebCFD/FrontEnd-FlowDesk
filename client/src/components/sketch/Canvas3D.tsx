@@ -770,12 +770,12 @@ const createNozzleModel = (furnitureItem: FurnitureItem): THREE.Group => {
   
   const ductMesh = new THREE.Mesh(ductGeometry, ductMaterial);
   ductMesh.userData = {
-    type: 'furniture',
+    type: 'furnitureChild',
     furnitureType: 'nozzle',
     furnitureId: furnitureItem.id,
     floorName: furnitureItem.floorName,
     furnitureName: furnitureItem.name,
-    isSelectable: true,
+    isNozzleChild: true,
   };
   group.add(ductMesh);
   
@@ -785,16 +785,27 @@ const createNozzleModel = (furnitureItem: FurnitureItem): THREE.Group => {
     side: THREE.DoubleSide,
   });
   
+  const childUserData = {
+    type: 'furnitureChild',
+    furnitureType: 'nozzle',
+    furnitureId: furnitureItem.id,
+    floorName: furnitureItem.floorName,
+    furnitureName: furnitureItem.name,
+    isNozzleChild: true,
+  };
+  
   const capGeometryL = new THREE.CircleGeometry(ductRadius, 24);
   const capL = new THREE.Mesh(capGeometryL, capMaterial);
   capL.position.set(-np.ductLength / 2, 0, 0);
   capL.rotation.set(0, -Math.PI / 2, 0);
+  capL.userData = { ...childUserData };
   group.add(capL);
   
   const capGeometryR = new THREE.CircleGeometry(ductRadius, 24);
   const capR = new THREE.Mesh(capGeometryR, capMaterial);
   capR.position.set(np.ductLength / 2, 0, 0);
   capR.rotation.set(0, Math.PI / 2, 0);
+  capR.userData = { ...childUserData };
   group.add(capR);
   
   const outletMaterial = new THREE.MeshPhongMaterial({
@@ -814,6 +825,7 @@ const createNozzleModel = (furnitureItem: FurnitureItem): THREE.Group => {
       const outletGeo = new THREE.CylinderGeometry(outletRadius, outletRadius, outletDropLength, 16);
       const outlet = new THREE.Mesh(outletGeo, outletMaterial);
       outlet.position.set(xPos, -(ductRadius + outletDropLength / 2), 0);
+      outlet.userData = { ...childUserData };
       group.add(outlet);
     } else {
       const ow = np.outletWidth || 20;
@@ -821,6 +833,7 @@ const createNozzleModel = (furnitureItem: FurnitureItem): THREE.Group => {
       const outletGeo = new THREE.BoxGeometry(ow, outletDropLength, oh);
       const outlet = new THREE.Mesh(outletGeo, outletMaterial);
       outlet.position.set(xPos, -(ductRadius + outletDropLength / 2), 0);
+      outlet.userData = { ...childUserData };
       group.add(outlet);
     }
   }
