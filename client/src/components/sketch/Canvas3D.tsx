@@ -6010,6 +6010,9 @@ export default function Canvas3D({
         if (object.userData.type === 'furniture') {
           furnitureObjects.push(object);
         }
+        else if (object instanceof THREE.Mesh && (object.userData.type === 'furnitureChild' || object.parent?.userData.type === 'furniture')) {
+          furnitureObjects.push(object);
+        }
       });
       
       // Check for intersections
@@ -6039,25 +6042,21 @@ export default function Canvas3D({
             // Find the furniture floor for the callback
             const furnitureFloorName = furnitureGroup.userData.floorName || currentFloor;
             
-            // Special cleanup for vents with special rendering properties
+            // Special cleanup for vents/nozzles with special rendering properties
             if (furnitureGroup.userData.furnitureType === 'vent' || furnitureGroup.userData.furnitureType === 'nozzle') {
-              // Find and dispose mesh inside the vent group
+              const meshesToDispose: THREE.Mesh[] = [];
               furnitureGroup.traverse((child) => {
                 if (child instanceof THREE.Mesh) {
-                  // Dispose geometry and material to clear WebGL state
-                  if (child.geometry) {
-                    child.geometry.dispose();
-                  }
-                  if (child.material) {
-                    if (Array.isArray(child.material)) {
-                      child.material.forEach(material => material.dispose());
-                    } else {
-                      child.material.dispose();
-                    }
-                  }
-                  // Remove mesh from its parent first
-                  if (child.parent) {
-                    child.parent.remove(child);
+                  meshesToDispose.push(child);
+                }
+              });
+              meshesToDispose.forEach((mesh) => {
+                if (mesh.geometry) mesh.geometry.dispose();
+                if (mesh.material) {
+                  if (Array.isArray(mesh.material)) {
+                    mesh.material.forEach(material => material.dispose());
+                  } else {
+                    mesh.material.dispose();
                   }
                 }
               });
