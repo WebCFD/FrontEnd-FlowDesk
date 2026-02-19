@@ -118,15 +118,6 @@ export default function Navbar() {
             <NavigationMenuItem>
               <NavigationMenuLink 
                 className={`${navigationMenuTriggerStyle()} ${location !== '/' ? 'text-gray-300 cursor-not-allowed hover:text-gray-300' : ''}`}
-                onClick={location === '/' ? () => scrollToSection('hvac-solutions') : undefined}
-                style={{ cursor: location === '/' ? 'pointer' : 'not-allowed' }}
-              >
-                HVAC Solutions
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <NavigationMenuLink 
-                className={`${navigationMenuTriggerStyle()} ${location !== '/' ? 'text-gray-300 cursor-not-allowed hover:text-gray-300' : ''}`}
                 onClick={location === '/' ? () => scrollToSection('pricing') : undefined}
                 style={{ cursor: location === '/' ? 'pointer' : 'not-allowed' }}
               >

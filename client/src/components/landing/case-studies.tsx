@@ -4,6 +4,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 
+import hvacSystems from "@/assets/hvac-images/hvac-systems.png";
+import hvacInstallation from "@/assets/hvac-images/hvac-installation.png";
+
 const caseStudies = [
   {
     title: "Classroom Ventilation Design",
@@ -19,6 +22,16 @@ const caseStudies = [
     title: "Smoke Propagation & Fire Safety",
     description: "Simulate fire scenarios to predict smoke propagation, toxic gas concentration, and visibility conditions.",
     image: "/assets/smoke-propagation.png"
+  },
+  {
+    title: "System Flow Optimization",
+    description: "Visualize air renewal patterns, temperature distribution, and airflow establishment to select the best HVAC equipment for each specific space.",
+    image: hvacSystems
+  },
+  {
+    title: "Installation Support",
+    description: "Provide HVAC installers with data-driven insights for optimal equipment placement, ensuring superior performance and client satisfaction.",
+    image: hvacInstallation
   }
 ];
 
