@@ -38,6 +38,11 @@ const caseStudies = [
     title: "Digital Design Planning",
     description: "Optimize HVAC system placement and sizing through precise CFD simulations before installation, ensuring maximum efficiency and cost-effectiveness.",
     image: hvacDesign
+  },
+  {
+    title: "Train Station Climate Control",
+    description: "Validating HVAC distribution, thermal comfort and CO₂-based ventilation rates in a high-occupancy transit hall with variable passenger loads, multiple heat sources, and complex airflow patterns.",
+    image: "/assets/train-station-climate.png"
   }
 ];
 
