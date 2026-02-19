@@ -47,7 +47,7 @@ export default function About() {
               <Wind className="h-10 w-10 text-primary mb-4" />
               <h4 className="text-xl font-semibold mb-3">CFD Made Simple</h4>
               <p>
-                We've simplified the complex process of setting up and running OpenFOAM CFD simulations. Design your space in 3D, configure air flow parameters, and let our cloud platform handle the heavy computational work.
+                We've simplified CFD. Design or load your 3D case in minutes — not days — using our wizard tool. Choose simulation objects and elements from our pre-defined CFD library, and you're ready to run.
               </p>
             </div>
 
