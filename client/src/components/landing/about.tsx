@@ -27,7 +27,7 @@ export default function About() {
         >
           <h3 className="text-3xl font-semibold mb-6">Our Mission</h3>
           <p className="text-lg leading-relaxed mb-4">
-            At FlowDesk, we believe that advanced computational fluid dynamics (CFD) simulations shouldn't be reserved for large corporations with expensive infrastructure. Our mission is to democratize access to professional high-tech CFD analysis, making it accessible to engineers, architects, consultants, students, and enthusiasts worldwide.
+            At FlowDesk, we believe that advanced computational fluid dynamics (CFD) simulations shouldn't be reserved for large corporations with expensive infrastructure. Our mission is to democratize access to professional high-tech CFD analysis, making it accessible to engineers, architects, and consultants — from global firms to independent professionals.
           </p>
           <p className="text-lg leading-relaxed">
             By combining cutting-edge cloud computing with an intuitive web interface, we're breaking down the barriers that have traditionally made CFD simulation complex, expensive, and time-consuming.
