@@ -114,7 +114,7 @@ export default function About() {
               <strong>Transparent Pricing:</strong> No hidden fees, no surprise charges. Pay per simulation or choose a subscription that fits your needs. Your success is our success — we grow when you grow.
             </p>
             <p className="text-lg leading-relaxed">
-              <strong>Customer Support:</strong> Our team is here to help you succeed, whether you're running your first simulation or your thousandth.
+              <strong>Expert Support:</strong> Our support team is the CFD experts who make it all possible. Their goal is simple: leave you impressed, every single time.
             </p>
           </div>
         </motion.div>
