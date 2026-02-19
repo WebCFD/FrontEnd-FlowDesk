@@ -78,25 +78,6 @@ export default function About() {
         </motion.div>
 
         <motion.div
-          className="mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          viewport={{ once: true }}
-        >
-          <h3 className="text-3xl font-semibold mb-6">Our Story</h3>
-          <p className="text-lg leading-relaxed mb-4">
-            FlowDesk was born from a simple observation: while CFD technology has advanced tremendously, accessing it remains unnecessarily complicated. Traditional CFD workflows require extensive training, expensive software licenses, and powerful hardware infrastructure. We don't reinvent CFD. We reinvent how you experience it.
-          </p>
-          <p className="text-lg leading-relaxed mb-4">
-            We saw an opportunity to change this. By combining modern web technologies with cloud-based high-performance computing, we've created a platform that makes professional CFD analysis accessible to a broader audience without compromising on accuracy or capabilities.
-          </p>
-          <p className="text-lg leading-relaxed">
-            Today, FlowDesk serves engineers, architects, consultants, and researchers who need reliable CFD simulations without the traditional barriers to entry.
-          </p>
-        </motion.div>
-
-        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
