@@ -14,7 +14,7 @@ export default function About() {
         >
           <h2 className="text-4xl font-bold mb-4">About FlowDesk</h2>
           <p className="text-lg text-muted-foreground">
-            Making aerodynamics and thermal comfort accessible to everyone through cloud-based CFD simulations
+            Making CFD simulations accessible to everyone through pre-defined objects and cloud-based computing power
           </p>
         </motion.div>
 
