@@ -9,14 +9,19 @@ import hvacInstallation from "@/assets/hvac-images/hvac-installation.png";
 
 const caseStudies = [
   {
-    title: "Classroom Ventilation Design",
-    description: "Optimizing air flow patterns for improved comfort and safety in educational spaces",
-    image: "/assets/classroom-cfd.png"
+    title: "Passenger Terminal Climate Control",
+    description: "Validating HVAC distribution, thermal comfort and CO₂-based ventilation rates in a high-occupancy transit hall with variable passenger loads, multiple heat sources, and complex airflow patterns.",
+    image: "/assets/train-station-climate.png"
   },
   {
     title: "Data Center Thermal Management",
     description: "Simulating hot/cold aisle airflow, rack heat dissipation and cooling efficiency to prevent hotspots and optimize energy consumption. Validating HVAC sizing and redundancy against reference thermal guidelines.",
     image: "/assets/data-center-thermal.png"
+  },
+  {
+    title: "Classroom Ventilation Design",
+    description: "Optimizing air flow patterns for improved comfort and safety in educational spaces",
+    image: "/assets/classroom-cfd.png"
   },
   {
     title: "Smoke Propagation & Fire Safety",
@@ -32,11 +37,6 @@ const caseStudies = [
     title: "Installation Support",
     description: "Provide HVAC installers with data-driven insights for optimal equipment placement, ensuring superior performance and client satisfaction.",
     image: hvacInstallation
-  },
-  {
-    title: "Passenger Terminal Climate Control",
-    description: "Validating HVAC distribution, thermal comfort and CO₂-based ventilation rates in a high-occupancy transit hall with variable passenger loads, multiple heat sources, and complex airflow patterns.",
-    image: "/assets/train-station-climate.png"
   }
 ];
 

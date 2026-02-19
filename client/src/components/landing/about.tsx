@@ -63,7 +63,7 @@ export default function About() {
               <Users className="h-10 w-10 text-primary mb-4" />
               <h4 className="text-xl font-semibold mb-3">Built for professionals of any level</h4>
               <p>
-                Whether you're an architect optimizing building comfort, an engineer validating design decisions, or a student learning CFD fundamentals, FlowDesk offers the best trade-off between cost, time, and delivered results.
+                Whether you're an architect optimizing building comfort, an engineer validating design decisions, or a consultant exploring CFD for the first time, FlowDesk offers the best trade-off between cost, time, and delivered results.
               </p>
             </div>
 

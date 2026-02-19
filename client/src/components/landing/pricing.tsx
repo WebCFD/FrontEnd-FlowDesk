@@ -9,7 +9,7 @@ const plans = [
     name: "Pay as You Go",
     price: "9.99",
     description: "Perfect for occasional users and quick projects",
-    priceDetail: "€ per simulation",
+    priceDetail: "per simulation",
     subtitle: "No commitments, pay only when you need",
     features: [
       "Professional analysis tools",
@@ -24,7 +24,7 @@ const plans = [
     name: "Annual Subscription",
     price: "39.99",
     description: "Unlock unlimited potential with our most popular plan",
-    priceDetail: "€/month (billed annually at €479.88)",
+    priceDetail: "/month (billed annually at €479.88)",
     subtitle: "Save up to €480/year vs Pay as You Go",
     badge: "Most Popular",
     features: [
