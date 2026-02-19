@@ -111,7 +111,7 @@ export default function About() {
               <strong>Continuous Innovation:</strong> We constantly evolve our platform based on our customers' needs. In a fast-moving tech world, we make sure the latest developments are always working for you.
             </p>
             <p className="text-lg leading-relaxed mb-4">
-              <strong>Transparent Pricing:</strong> No hidden fees, no surprise charges. Pay per simulation or choose a subscription that fits your needs.
+              <strong>Transparent Pricing:</strong> No hidden fees, no surprise charges. Pay per simulation or choose a subscription that fits your needs. Your success is our success — we grow when you grow.
             </p>
             <p className="text-lg leading-relaxed">
               <strong>Customer Support:</strong> Our team is here to help you succeed, whether you're running your first simulation or your thousandth.
