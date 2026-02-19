@@ -73,8 +73,7 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            Enhance Comfort and Well-being Through Validated Design Decisions:
-            Transform your spaces with accessible Fluid Dynamic simulations - powerful, intuitive, and cost-free
+            Indoor CFD made accessible: validate thermal comfort, air quality and HVAC design in a fraction of the time and cost.
           </motion.p>
 
           <motion.div
