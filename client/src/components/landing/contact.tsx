@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Shield } from "lucide-react";
+import { Loader2, Shield, Linkedin } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 
@@ -248,6 +248,34 @@ export default function Contact() {
               </Button>
             </form>
           </Form>
+        </motion.div>
+
+        <motion.div
+          className="max-w-xl mx-auto mt-16 text-center"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          viewport={{ once: true }}
+        >
+          <h3 className="text-2xl font-semibold mb-4">Join Our Journey</h3>
+          <p className="text-lg leading-relaxed mb-6 text-muted-foreground">
+            We're on a mission to make CFD simulation as accessible as word processing. Whether you're optimizing a single room or analyzing an entire building complex, FlowDesk is here to help you make better decisions backed by computational science.
+          </p>
+          <div className="bg-slate-50 p-8 rounded-lg">
+            <p className="text-lg mb-6">
+              Want to learn more about our team and company updates?
+            </p>
+            <a 
+              href="https://www.linkedin.com/company/webcfd/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-[#0A66C2] hover:bg-[#004182] text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+              data-testid="link-linkedin"
+            >
+              <Linkedin className="h-5 w-5" />
+              Follow us on LinkedIn
+            </a>
+          </div>
         </motion.div>
       </div>
     </section>

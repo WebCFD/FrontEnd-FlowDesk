@@ -71,7 +71,15 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Company</h4>
             <ul className="space-y-2">
-              <li><Link href="/about">About</Link></li>
+              <li>
+                <button 
+                  onClick={() => scrollToSection('about')}
+                  className="hover:underline cursor-pointer"
+                  data-testid="link-about"
+                >
+                  About
+                </button>
+              </li>
               <li className="text-muted-foreground cursor-not-allowed">Careers</li>
               <li>
                 <button 
