@@ -92,7 +92,7 @@ export default function About() {
             We saw an opportunity to change this. By combining modern web technologies with cloud-based high-performance computing, we've created a platform that makes professional CFD analysis accessible to a broader audience without compromising on accuracy or capabilities.
           </p>
           <p className="text-lg leading-relaxed">
-            Today, FlowDesk serves engineers, architects, consultants, and researchers who need reliable thermal comfort simulations without the traditional barriers to entry.
+            Today, FlowDesk serves engineers, architects, consultants, and researchers who need reliable CFD simulations without the traditional barriers to entry.
           </p>
         </motion.div>
 
