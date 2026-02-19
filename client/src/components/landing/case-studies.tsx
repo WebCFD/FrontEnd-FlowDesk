@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 
 import hvacSystems from "@/assets/hvac-images/hvac-systems.png";
 import hvacInstallation from "@/assets/hvac-images/hvac-installation.png";
+import hvacDesign from "@/assets/hvac-images/hvac-design.png";
 
 const caseStudies = [
   {
@@ -32,6 +33,11 @@ const caseStudies = [
     title: "Installation Support",
     description: "Provide HVAC installers with data-driven insights for optimal equipment placement, ensuring superior performance and client satisfaction.",
     image: hvacInstallation
+  },
+  {
+    title: "Digital Design Planning",
+    description: "Optimize HVAC system placement and sizing through precise CFD simulations before installation, ensuring maximum efficiency and cost-effectiveness.",
+    image: hvacDesign
   }
 ];
 
