@@ -31,7 +31,7 @@ export default function Footer() {
           <div>
             <h3 className="font-bold text-lg mb-4">FlowDesk</h3>
             <p className="text-sm text-muted-foreground">
-              Making aerodynamics accessible through cloud-based CFD simulations
+              We don't reinvent CFD. We reinvent how you experience it
             </p>
           </div>
 
