@@ -105,7 +105,7 @@ export default function About() {
           <h3 className="text-3xl font-semibold mb-6">Our Commitment</h3>
           <div className="bg-primary/5 border-l-4 border-primary p-6 rounded-r-lg">
             <p className="text-lg leading-relaxed mb-4">
-              <strong>Quality First:</strong> We're committed to providing accurate, reliable simulations that meet professional engineering standards.
+              <strong>Quality First:</strong> We're committed to providing accurate, reliable simulations that meet professional engineering standards — built on validated methodologies compliant with ASHRAE 55 Appendix B and EN ISO 7730.
             </p>
             <p className="text-lg leading-relaxed mb-4">
               <strong>Continuous Innovation:</strong> We constantly improve our platform based on user feedback and the latest advances in CFD technology.
