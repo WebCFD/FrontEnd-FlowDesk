@@ -55,7 +55,7 @@ export default function About() {
               <Zap className="h-10 w-10 text-primary mb-4" />
               <h4 className="text-xl font-semibold mb-3">Cloud-Powered Speed</h4>
               <p>
-                Leveraging Inductiva's cloud infrastructure, we process simulations faster than traditional desktop setups. No expensive hardware required—just upload your design and get results in minutes.
+                Our cloud infrastructure runs simulations faster than any desktop setup — no expensive hardware, no commitments. Just pay for what you use.
               </p>
             </div>
 
