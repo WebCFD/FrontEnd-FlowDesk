@@ -17,7 +17,7 @@ const caseStudies = [
   },
   {
     title: "Smoke Propagation & Fire Safety",
-    description: "Simulate fire scenarios to predict smoke propagation, toxic gas concentration, and visibility conditions — empowering safer building designs before construction begins.",
+    description: "Simulate fire scenarios to predict smoke propagation, toxic gas concentration, and visibility conditions.",
     image: "/assets/smoke-propagation.png"
   }
 ];
