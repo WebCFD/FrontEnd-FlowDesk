@@ -64,7 +64,7 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            Streamlined Interior Designs
+            Simulate. Validate. Build.
           </motion.h1>
 
           <motion.p 
