@@ -17,7 +17,7 @@ const caseStudies = [
   },
   {
     title: "Smoke Propagation & Fire Safety",
-    description: "Our analyses predict smoke temperature, the concentration of toxic gases, and visibility.",
+    description: "Simulate fire scenarios to predict smoke propagation, toxic gas concentration, and visibility conditions — empowering safer building designs before construction begins.",
     image: "/assets/smoke-propagation.png"
   }
 ];
@@ -31,7 +31,7 @@ export default function CaseStudies() {
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-4">Case Studies</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Easily test your building designs for indoor thermal comfort, HVAC & ventilation strategies, and indoor air quality
+            Indoor CFD made accessible: validate thermal comfort, air quality and HVAC design in a fraction of the time and cost.
           </p>
         </div>
 
