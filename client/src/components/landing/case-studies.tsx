@@ -14,9 +14,9 @@ const caseStudies = [
     image: "/assets/classroom-cfd.png"
   },
   {
-    title: "Indoor Thermal Comfort",
-    description: "Visualize flow and heat transfer, evaluate temperature gradients and air distribution to ensure optimal thermal comfort for occupants through proper environmental design",
-    image: "/assets/thermal-comfort.png"
+    title: "Data Center Thermal Management",
+    description: "Simulating hot/cold aisle airflow, rack heat dissipation and cooling efficiency to prevent hotspots and optimize energy consumption. Validating HVAC sizing and redundancy against reference thermal guidelines.",
+    image: "/assets/data-center-thermal.png"
   },
   {
     title: "Smoke Propagation & Fire Safety",
