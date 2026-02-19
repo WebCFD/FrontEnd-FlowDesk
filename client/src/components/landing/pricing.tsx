@@ -40,19 +40,17 @@ const plans = [
   {
     name: "Tailored & Custom Solutions",
     price: "Custom",
-    description: "Your vision, our expertise. Let's build something extraordinary together",
+    description: "Your infrastructure, your rules. Enterprise-grade CFD adapted to your workflow.",
     subtitle: "Contact us for a personalized quote",
     features: [
-      "Custom FlowDesk development for your needs",
-      "Specialized CFD expertise for your industry",
-      "Bespoke user interface and workflow design",
-      "Custom CFD magnitudes and physics models",
-      "Advanced analysis and optimization tools",
-      "Full-stack development by specialists",
+      "On-premise deployment on your own servers",
+      "Direct IFC/BIM integration with your existing pipeline",
+      "Custom object libraries (manufacturer-specific HVAC equipment)",
+      "Pilot projects with NDA — test before you commit",
       "Dedicated technical support and training",
-      "Integration with your existing systems"
+      "Custom physics models (smoke propagation, fire safety, data centers)"
     ],
-    idealFor: "Enterprises, research institutions, and specialized industries"
+    idealFor: "Engineering firms, public institutions, and infrastructure companies"
   }
 ];
 
