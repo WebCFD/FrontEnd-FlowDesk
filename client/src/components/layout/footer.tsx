@@ -56,6 +56,15 @@ export default function Footer() {
                   Case Studies
                 </button>
               </li>
+              <li>
+                <button 
+                  onClick={() => scrollToSection('certifications')}
+                  className="hover:underline cursor-pointer"
+                  data-testid="link-certifications"
+                >
+                  Certifications
+                </button>
+              </li>
             </ul>
           </div>
 
