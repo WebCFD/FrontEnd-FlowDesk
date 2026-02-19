@@ -86,7 +86,7 @@ export default function About() {
         >
           <h3 className="text-3xl font-semibold mb-6">Our Story</h3>
           <p className="text-lg leading-relaxed mb-4">
-            FlowDesk was born from a simple observation: while CFD technology has advanced tremendously, accessing it remains unnecessarily complicated. Traditional CFD workflows require extensive training, expensive software licenses, and powerful hardware infrastructure.
+            FlowDesk was born from a simple observation: while CFD technology has advanced tremendously, accessing it remains unnecessarily complicated. Traditional CFD workflows require extensive training, expensive software licenses, and powerful hardware infrastructure. We don't reinvent CFD. We reinvent how you experience it.
           </p>
           <p className="text-lg leading-relaxed mb-4">
             We saw an opportunity to change this. By combining modern web technologies with cloud-based high-performance computing, we've created a platform that makes professional CFD analysis accessible to a broader audience without compromising on accuracy or capabilities.
