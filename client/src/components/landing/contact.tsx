@@ -257,10 +257,6 @@ export default function Contact() {
           transition={{ duration: 0.5, delay: 0.4 }}
           viewport={{ once: true }}
         >
-          <h3 className="text-2xl font-semibold mb-4">Join Our Journey</h3>
-          <p className="text-lg leading-relaxed mb-6 text-muted-foreground">
-            We're on a mission to make CFD simulation as accessible as word processing. Whether you're optimizing a single room or analyzing an entire building complex, FlowDesk is here to help you make better decisions backed by computational science.
-          </p>
           <div className="bg-slate-50 p-8 rounded-lg">
             <p className="text-lg mb-6">
               Want to learn more about our team and company updates?
