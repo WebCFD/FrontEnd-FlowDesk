@@ -100,6 +100,15 @@ export default function Navbar() {
             <NavigationMenuItem>
               <NavigationMenuLink 
                 className={`${navigationMenuTriggerStyle()} ${location !== '/' ? 'text-gray-300 cursor-not-allowed hover:text-gray-300' : ''}`}
+                onClick={location === '/' ? () => scrollToSection('about') : undefined}
+                style={{ cursor: location === '/' ? 'pointer' : 'not-allowed' }}
+              >
+                About Us
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink 
+                className={`${navigationMenuTriggerStyle()} ${location !== '/' ? 'text-gray-300 cursor-not-allowed hover:text-gray-300' : ''}`}
                 onClick={location === '/' ? () => scrollToSection('certifications') : undefined}
                 style={{ cursor: location === '/' ? 'pointer' : 'not-allowed' }}
               >

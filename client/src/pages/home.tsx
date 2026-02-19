@@ -1,5 +1,4 @@
 import Hero from "@/components/landing/hero";
-import Features from "@/components/landing/features";
 import CaseStudies from "@/components/landing/case-studies";
 import About from "@/components/landing/about";
 import Certifications from "@/components/landing/certifications";
@@ -18,7 +17,6 @@ export default function Home() {
       <About />
       <Certifications />
       <HvacSolutions />
-      <Features />
       <Pricing />
       <Contact />
     </div>

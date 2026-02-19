@@ -40,15 +40,6 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <button 
-                  onClick={() => scrollToSection('features')}
-                  className="hover:underline cursor-pointer"
-                  data-testid="link-features"
-                >
-                  Features
-                </button>
-              </li>
-              <li>
-                <button 
                   onClick={() => scrollToSection('pricing')}
                   className="hover:underline cursor-pointer"
                   data-testid="link-pricing"
