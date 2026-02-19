@@ -16,9 +16,9 @@ const caseStudies = [
     image: "/assets/thermal-comfort.png"
   },
   {
-    title: "Air Quality and Contamination Control",
-    description: "Develop intelligent ventilation strategies for efficient removal of CO2 and contaminants in spaces like offices, laboratories, and predict smoke propagation in underground facilities",
-    image: "/assets/air-quality-cfd.png"
+    title: "Smoke Propagation & Fire Safety",
+    description: "Our analyses predict smoke temperature, the concentration of toxic gases, and visibility.",
+    image: "/assets/smoke-propagation.png"
   }
 ];
 
