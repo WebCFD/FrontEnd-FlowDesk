@@ -108,7 +108,7 @@ export default function About() {
               <strong>Quality First:</strong> We're committed to providing accurate, reliable simulations that meet professional engineering standards — built on validated methodologies compliant with ASHRAE 55 Appendix B and EN ISO 7730.
             </p>
             <p className="text-lg leading-relaxed mb-4">
-              <strong>Continuous Innovation:</strong> We constantly improve our platform based on user feedback and the latest advances in CFD technology.
+              <strong>Continuous Innovation:</strong> We constantly evolve our platform based on our customers' needs. In a fast-moving tech world, we make sure the latest developments are always working for you.
             </p>
             <p className="text-lg leading-relaxed mb-4">
               <strong>Transparent Pricing:</strong> No hidden fees, no surprise charges. Pay per simulation or choose a subscription that fits your needs.
