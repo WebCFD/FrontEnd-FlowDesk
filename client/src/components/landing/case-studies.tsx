@@ -31,7 +31,7 @@ export default function CaseStudies() {
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-4">Case Studies</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Easily test your building designs for indoor thermal comfort, HVAC & ventilation strategies, and indoor air quality
+            Easily test your building designs for indoor thermal comfort, HVAC and fire safety
           </p>
         </div>
 
