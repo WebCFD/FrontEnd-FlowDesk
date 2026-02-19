@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 
 import hvacSystems from "@/assets/hvac-images/hvac-systems.png";
 import hvacInstallation from "@/assets/hvac-images/hvac-installation.png";
-import hvacDesign from "@/assets/hvac-images/hvac-design.png";
 
 const caseStudies = [
   {
@@ -35,12 +34,7 @@ const caseStudies = [
     image: hvacInstallation
   },
   {
-    title: "Digital Design Planning",
-    description: "Optimize HVAC system placement and sizing through precise CFD simulations before installation, ensuring maximum efficiency and cost-effectiveness.",
-    image: hvacDesign
-  },
-  {
-    title: "Train Station Climate Control",
+    title: "Passenger Terminal Climate Control",
     description: "Validating HVAC distribution, thermal comfort and CO₂-based ventilation rates in a high-occupancy transit hall with variable passenger loads, multiple heat sources, and complex airflow patterns.",
     image: "/assets/train-station-climate.png"
   }
