@@ -7,7 +7,10 @@ import { Button } from "@/components/ui/button";
 import { PlusCircle, Play, Mail, MoreHorizontal, ExternalLink, Trash2, FolderOpen, Server, Home, Flame, Snowflake, X, BarChart3 } from "lucide-react";
 import LoginModal from "@/components/auth/login-modal";
 import RegisterModal from "@/components/auth/register-modal";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { useRoomStore } from "@/lib/store/room-store";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
@@ -64,10 +67,27 @@ export default function Dashboard() {
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
   const [showCFDSelector, setShowCFDSelector] = useState(false);
+  const [showExpertDialog, setShowExpertDialog] = useState(false);
+  const [expertForm, setExpertForm] = useState({ name: "", email: "", message: "" });
   const { reset } = useRoomStore();
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const expertMutation = useMutation({
+    mutationFn: async (data: { name: string; email: string; message: string }) => {
+      const res = await apiRequest("POST", "/api/contact", data);
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Message sent!", description: "Our experts will get back to you soon." });
+      setShowExpertDialog(false);
+      setExpertForm({ name: "", email: "", message: "" });
+    },
+    onError: () => {
+      toast({ title: "Failed to send", description: "Please try again later.", variant: "destructive" });
+    },
+  });
 
   // Execute pending action when user logs in
   useEffect(() => {
@@ -215,9 +235,6 @@ export default function Dashboard() {
     setIsVideoOpen(true);
   };
 
-  const handleContactSupport = () => {
-    window.location.href = "mailto:support@flowdesk.com";
-  };
 
   // Load design mutation
   const loadDesignMutation = useMutation({
@@ -332,25 +349,17 @@ export default function Dashboard() {
               <Play className="h-4 w-4" />
               How it Works
             </Button>
-          </CardContent>
-        </Card>
-
-        {/* Expert Advice Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Ask Expert Advice</CardTitle>
-            <CardDescription>Want personal assistance by one of our experts?</CardDescription>
-          </CardHeader>
-          <CardContent>
             <Button 
-              onClick={handleContactSupport}
+              variant="outline" 
+              onClick={() => setShowExpertDialog(true)}
               className="flex items-center gap-2"
             >
               <Mail className="h-4 w-4" />
-              Get in Touch
+              Ask Expert Advice
             </Button>
           </CardContent>
         </Card>
+
 
         {/* Recent Simulations */}
         <Card>
@@ -673,6 +682,65 @@ export default function Dashboard() {
           </div>
         </div>
       )}
+
+      <Dialog open={showExpertDialog} onOpenChange={setShowExpertDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Ask Expert Advice</DialogTitle>
+            <DialogDescription>Send a message to our HVAC/CFD experts. We'll get back to you as soon as possible.</DialogDescription>
+          </DialogHeader>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              expertMutation.mutate(expertForm);
+            }}
+            className="space-y-4"
+          >
+            <div className="space-y-2">
+              <Label htmlFor="expert-name">Name</Label>
+              <Input
+                id="expert-name"
+                placeholder="Your name"
+                value={expertForm.name}
+                onChange={(e) => setExpertForm((prev) => ({ ...prev, name: e.target.value }))}
+                required
+                minLength={2}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="expert-email">Email</Label>
+              <Input
+                id="expert-email"
+                type="email"
+                placeholder="your@email.com"
+                value={expertForm.email}
+                onChange={(e) => setExpertForm((prev) => ({ ...prev, email: e.target.value }))}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="expert-message">Message</Label>
+              <Textarea
+                id="expert-message"
+                placeholder="Describe what you need help with..."
+                value={expertForm.message}
+                onChange={(e) => setExpertForm((prev) => ({ ...prev, message: e.target.value }))}
+                required
+                minLength={10}
+                rows={4}
+              />
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setShowExpertDialog(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={expertMutation.isPending}>
+                {expertMutation.isPending ? "Sending..." : "Send Message"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <style>{`
         @keyframes fadeIn {
