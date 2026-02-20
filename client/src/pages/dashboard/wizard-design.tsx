@@ -79,6 +79,10 @@ import {
   Box,
   Rocket,
   Lightbulb,
+  Server,
+  Home,
+  Flame,
+  Snowflake,
 } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
 import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
@@ -1572,8 +1576,23 @@ export default function WizardDesign() {
     });
   };
 
-  const renderStepIndicator = () => (
-    <div className="w-full">
+  const cfdTypeConfig: Record<string, { label: string; icon: typeof Server; bg: string; text: string; border: string }> = {
+    'data-centers': { label: 'Data Centers', icon: Server, bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' },
+    'indoor-spaces': { label: 'Indoor Spaces', icon: Home, bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' },
+    'fire-smoke': { label: 'Fire & Smoke', icon: Flame, bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200' },
+    'industrial-cooling': { label: 'Industrial Cooling', icon: Snowflake, bg: 'bg-violet-50', text: 'text-violet-700', border: 'border-violet-200' },
+  };
+
+  const renderStepIndicator = () => {
+    const config = cfdTypeConfig[cfdType] || cfdTypeConfig['indoor-spaces'];
+    const CfdIcon = config.icon;
+
+    return (
+    <div className="w-full space-y-2">
+      <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border ${config.bg} ${config.text} ${config.border}`}>
+        <CfdIcon className="h-4 w-4" />
+        <span className="text-sm font-medium">{config.label}</span>
+      </div>
       <div className="relative h-16 bg-muted/10 border rounded-lg">
         <div className="absolute inset-0 flex justify-between items-center px-4">
           <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-center gap-[16%]">
@@ -1623,6 +1642,7 @@ export default function WizardDesign() {
       </div>
     </div>
   );
+  };
 
   const renderStep0 = () => (
     <>
