@@ -1023,7 +1023,8 @@ export default function WizardDesign() {
     { id: 0, name: "Quick Guide" },
     { id: 1, name: "Contour Design" },
     { id: 2, name: "Add Elements" },
-    { id: 3, name: "Run Case" },
+    { id: 3, name: "Validate Case" },
+    { id: 4, name: "Launch" },
   ];
 
   const handleToolSelect = (tool: "wall" | "eraser" | "measure" | "stairs") => {
@@ -1574,26 +1575,50 @@ export default function WizardDesign() {
   const renderStepIndicator = () => (
     <div className="w-full">
       <div className="relative h-16 bg-muted/10 border rounded-lg">
-        <div className="absolute inset-0 flex justify-between items-center px-6">
-          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-center gap-[20%]">
-            <div className="w-16 h-px bg-border" />
-            <div className="w-16 h-px bg-border" />
-            <div className="w-16 h-px bg-border" />
+        <div className="absolute inset-0 flex justify-between items-center px-4">
+          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-center gap-[16%]">
+            <div className="w-12 h-px bg-border" />
+            <div className="w-12 h-px bg-border" />
+            <div className="w-12 h-px bg-border" />
+            <div className="w-12 h-px bg-border" />
           </div>
 
-          {steps.map((s, i) => (
-            <div
-              key={s.id}
-              className="flex items-center cursor-pointer relative z-10 bg-muted/10 px-2"
-              onClick={() => setStep(s.id)}
-            >
+          {steps.map((s) => {
+            if (s.id === 4) {
+              const canLaunch = isValidationPassing && !isCreatingSimulation;
+              return (
+                <div
+                  key={s.id}
+                  className={cn(
+                    "relative z-10 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-300",
+                    canLaunch
+                      ? "bg-green-500 text-white shadow-md hover:bg-green-600 cursor-pointer animate-pulse hover:animate-none"
+                      : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  )}
+                  onClick={() => {
+                    if (canLaunch) handleStartSimulation();
+                  }}
+                  title={canLaunch ? "Launch your simulation!" : "Resolve validation errors in Step 3 first"}
+                >
+                  {isCreatingSimulation ? "Launching..." : `Step ${s.id} | ${s.name}`}
+                </div>
+              );
+            }
+
+            return (
               <div
-                className={`text-sm ${step === s.id ? "text-primary font-medium" : "text-muted-foreground"}`}
+                key={s.id}
+                className="flex items-center cursor-pointer relative z-10 bg-muted/10 px-2"
+                onClick={() => setStep(s.id)}
               >
-                Step {s.id} | {s.name}
+                <div
+                  className={`text-sm ${step === s.id ? "text-primary font-medium" : "text-muted-foreground"}`}
+                >
+                  Step {s.id} | {s.name}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
@@ -3335,6 +3360,27 @@ export default function WizardDesign() {
     };
   };
 
+  const isValidationPassing = useMemo(() => {
+    try {
+      const conditions = calculateBoundaryConditions();
+      const totalInflow = conditions.airEntry.inflow + conditions.furnVent.inflow;
+      const totalOutflow = conditions.airEntry.outflow + conditions.furnVent.outflow;
+      const totalPressureBCs = conditions.pressureBCs;
+      const hasValidBoundary = totalInflow >= 1 && totalOutflow >= 1;
+      const hasValidPressure = totalPressureBCs >= 1;
+
+      const stats = calculateDesignStats();
+      const totalFloors = stats.floors;
+      const totalStairs = stats.stairs;
+      const requiredStairs = totalFloors > 1 ? totalFloors - 1 : 0;
+      const hasValidStairs = totalFloors <= 1 || totalStairs >= requiredStairs;
+
+      return hasValidBoundary && hasValidPressure && hasValidStairs;
+    } catch {
+      return false;
+    }
+  }, [rawFloors]);
+
   // Función para crear la simulación real
   const handleConfirmCreateSimulation = async () => {
     setIsCreatingSimulation(true);
@@ -4339,21 +4385,10 @@ export default function WizardDesign() {
               Back
             </Button>
           )}
-          {step < 3 ? (
+          {step < 3 && (
             <Button onClick={handleNext}>
               {step === 0 ? "Let's Start" : "Next"}
               <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          ) : (
-            <Button onClick={handleStartSimulation} disabled={isCreatingSimulation}>
-              {isCreatingSimulation ? (
-                <>
-                  <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                  Creating...
-                </>
-              ) : (
-                "Start Simulation"
-              )}
             </Button>
           )}
         </div>
