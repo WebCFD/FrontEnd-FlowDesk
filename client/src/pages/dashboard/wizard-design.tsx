@@ -74,6 +74,11 @@ import {
   ChevronDown,
   FileText,
   Info,
+  Play,
+  Pencil,
+  Box,
+  Rocket,
+  Lightbulb,
 } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
 import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
@@ -102,7 +107,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { PlusCircle, Play, Mail, FileEdit, Trash2 } from "lucide-react";
+import { PlusCircle, Mail, FileEdit, Trash2 } from "lucide-react";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import {
   Dialog,
@@ -273,7 +278,7 @@ export default function WizardDesign() {
   const [, setLocation] = useLocation();
   const { user, setReturnTo } = useAuth();
   const { viewportOffset, gridSize, canvasHeightPercentage, menuWidthPercentage, setGridSize } = useSketchStore();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
   const [simulationName, setSimulationName] = useState("MySim");
   const [simulationType, setSimulationType] = useState("SteadySim");
   const [cfdType, setCfdType] = useState(() => {
@@ -1015,6 +1020,7 @@ export default function WizardDesign() {
   };
 
   const steps = [
+    { id: 0, name: "Quick Guide" },
     { id: 1, name: "Contour Design" },
     { id: 2, name: "Add Elements" },
     { id: 3, name: "Run Case" },
@@ -1568,16 +1574,17 @@ export default function WizardDesign() {
   const renderStepIndicator = () => (
     <div className="w-full">
       <div className="relative h-16 bg-muted/10 border rounded-lg">
-        <div className="absolute inset-0 flex justify-between items-center px-8">
-          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-center gap-[33%]">
-            <div className="w-24 h-px bg-border" />
-            <div className="w-24 h-px bg-border" />
+        <div className="absolute inset-0 flex justify-between items-center px-6">
+          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-center gap-[20%]">
+            <div className="w-16 h-px bg-border" />
+            <div className="w-16 h-px bg-border" />
+            <div className="w-16 h-px bg-border" />
           </div>
 
           {steps.map((s, i) => (
             <div
               key={s.id}
-              className="flex items-center cursor-pointer relative z-10 bg-muted/10 px-3"
+              className="flex items-center cursor-pointer relative z-10 bg-muted/10 px-2"
               onClick={() => setStep(s.id)}
             >
               <div
@@ -1590,6 +1597,104 @@ export default function WizardDesign() {
         </div>
       </div>
     </div>
+  );
+
+  const renderStep0 = () => (
+    <>
+      <div className="mt-4 space-y-6">
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <Play className="h-5 w-5 text-primary" />
+              Welcome to the Simulation Wizard
+            </CardTitle>
+            <CardDescription>
+              Watch this short video to learn how FlowDesk works, then jump right in.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="aspect-video rounded-lg overflow-hidden border bg-black">
+              <iframe
+                width="100%"
+                height="100%"
+                src="https://www.youtube.com/embed/-cyPLRfry7k"
+                title="FlowDesk Tutorial"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <div>
+          <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-3">What you'll do in 3 steps</h3>
+          <div className="grid gap-4 md:grid-cols-3">
+            <Card className="border-l-4 border-l-primary/60 hover:shadow-md transition-shadow">
+              <CardContent className="pt-5 pb-4">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-lg bg-primary/10 text-primary shrink-0">
+                    <Pencil className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-sm">Step 1 — Draw Your Room</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Sketch the room contour, set dimensions, and configure walls and openings.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-l-4 border-l-primary/60 hover:shadow-md transition-shadow">
+              <CardContent className="pt-5 pb-4">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-lg bg-primary/10 text-primary shrink-0">
+                    <Box className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-sm">Step 2 — Place Elements</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Add furniture, people, equipment, and air entries to your layout.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-l-4 border-l-primary/60 hover:shadow-md transition-shadow">
+              <CardContent className="pt-5 pb-4">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-lg bg-primary/10 text-primary shrink-0">
+                    <Rocket className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-sm">Step 3 — Run Simulation</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Review your configuration, choose a package, and launch the CFD analysis.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        <Card className="bg-primary/5 border-primary/20">
+          <CardContent className="py-4">
+            <div className="flex items-center gap-3">
+              <Lightbulb className="h-5 w-5 text-primary shrink-0" />
+              <div>
+                <p className="text-sm font-medium">Pro tip</p>
+                <p className="text-xs text-muted-foreground">
+                  You can save and load your designs at any point. Use the Files menu in Steps 1 & 2 to manage your work.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </>
   );
 
   const renderStep1 = () => (
@@ -3985,7 +4090,7 @@ export default function WizardDesign() {
   };
 
   const handleBack = () => {
-    if (step > 1) setStep(step - 1);
+    if (step > 0) setStep(step - 1);
   };
 
   const renderFilesMenu = () => (
@@ -4222,12 +4327,13 @@ export default function WizardDesign() {
       <div className="container mx-auto py-4 px-3 space-y-4">
         {renderStepIndicator()}
         <div className="min-h-[690px]">
+          {step === 0 && renderStep0()}
           {step === 1 && renderStep1()}
           {step === 2 && renderStep2()}
           {step === 3 && renderStep3()}
         </div>
         <div className="flex justify-end gap-2 pt-6 mt-6 border-t">
-          {step > 1 && (
+          {step > 0 && (
             <Button onClick={handleBack} variant="outline">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back
@@ -4235,7 +4341,7 @@ export default function WizardDesign() {
           )}
           {step < 3 ? (
             <Button onClick={handleNext}>
-              Next
+              {step === 0 ? "Let's Start" : "Next"}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           ) : (
