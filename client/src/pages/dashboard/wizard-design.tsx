@@ -1576,11 +1576,11 @@ export default function WizardDesign() {
     });
   };
 
-  const cfdTypeConfig: Record<string, { label: string; icon: typeof Server; text: string; borderLeft: string; iconText: string }> = {
-    'data-centers': { label: 'Data Centers', icon: Server, text: 'text-blue-600', borderLeft: 'border-l-blue-500', iconText: 'text-blue-500' },
-    'indoor-spaces': { label: 'Indoor Spaces', icon: Home, text: 'text-emerald-600', borderLeft: 'border-l-emerald-500', iconText: 'text-emerald-500' },
-    'fire-smoke': { label: 'Fire & Smoke', icon: Flame, text: 'text-orange-600', borderLeft: 'border-l-orange-500', iconText: 'text-orange-500' },
-    'industrial-cooling': { label: 'Industrial Cooling', icon: Snowflake, text: 'text-violet-600', borderLeft: 'border-l-violet-500', iconText: 'text-violet-500' },
+  const cfdTypeConfig: Record<string, { label: [string, string]; icon: typeof Server; text: string; borderLeft: string; activeStep: string; activeBg: string; activeLine: string }> = {
+    'data-centers': { label: ['Data', 'Centers'], icon: Server, text: 'text-blue-600', borderLeft: 'border-l-blue-500', activeStep: 'text-blue-700', activeBg: 'bg-blue-50', activeLine: 'bg-blue-500' },
+    'indoor-spaces': { label: ['Indoor', 'Spaces'], icon: Home, text: 'text-emerald-600', borderLeft: 'border-l-emerald-500', activeStep: 'text-emerald-700', activeBg: 'bg-emerald-50', activeLine: 'bg-emerald-500' },
+    'fire-smoke': { label: ['Fire &', 'Smoke'], icon: Flame, text: 'text-orange-600', borderLeft: 'border-l-orange-500', activeStep: 'text-orange-700', activeBg: 'bg-orange-50', activeLine: 'bg-orange-500' },
+    'industrial-cooling': { label: ['Industrial', 'Cooling'], icon: Snowflake, text: 'text-violet-600', borderLeft: 'border-l-violet-500', activeStep: 'text-violet-700', activeBg: 'bg-violet-50', activeLine: 'bg-violet-500' },
   };
 
   const renderStepIndicator = () => {
@@ -1589,38 +1589,37 @@ export default function WizardDesign() {
 
     return (
     <div className="w-full">
-      <div className={`relative h-16 bg-muted/10 border rounded-lg border-l-4 ${config.borderLeft}`}>
-        <div className="absolute inset-0 flex items-center px-4">
-          <div className={`flex items-center gap-1.5 pr-4 border-r border-border mr-4 ${config.text}`}>
-            <CfdIcon className={`h-4 w-4 ${config.iconText}`} />
-            <span className="text-xs font-semibold whitespace-nowrap">{config.label}</span>
-          </div>
-          <div className="flex-1 flex justify-between items-center relative">
-            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-center gap-[18%]">
-              <div className="w-10 h-px bg-border" />
-              <div className="w-10 h-px bg-border" />
-              <div className="w-10 h-px bg-border" />
-              <div className="w-10 h-px bg-border" />
-            </div>
+      <div className={`flex items-stretch bg-card border rounded-lg border-l-4 ${config.borderLeft} overflow-hidden`}>
+        <div className={`flex flex-col items-center justify-center px-4 py-2 border-r border-border min-w-[80px] ${config.text}`}>
+          <span className="text-[10px] font-bold uppercase leading-tight text-center">{config.label[0]}</span>
+          <span className="text-[10px] font-bold uppercase leading-tight text-center">{config.label[1]}</span>
+          <CfdIcon className="h-5 w-5 mt-1" />
+        </div>
 
-          {steps.map((s) => {
+        <div className="flex-1 flex items-stretch">
+          {steps.map((s, idx) => {
+            const isActive = step === s.id;
+            const isLast = idx === steps.length - 1;
+
             if (s.id === 4) {
               const canLaunch = isValidationPassing && !isCreatingSimulation;
               return (
                 <div
                   key={s.id}
                   className={cn(
-                    "relative z-10 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-300",
+                    "flex-1 flex flex-col items-center justify-center py-2 cursor-pointer transition-all duration-200",
                     canLaunch
-                      ? "bg-green-500 text-white shadow-md hover:bg-green-600 cursor-pointer"
-                      : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                      ? "bg-green-500 text-white hover:bg-green-600"
+                      : "bg-gray-100 text-gray-400 cursor-not-allowed"
                   )}
-                  onClick={() => {
-                    if (canLaunch) handleStartSimulation();
-                  }}
+                  onClick={() => { if (canLaunch) handleStartSimulation(); }}
                   title={canLaunch ? "Launch your simulation!" : "Resolve validation errors in Step 3 first"}
                 >
-                  {isCreatingSimulation ? "Launching..." : `Step ${s.id} | ${s.name}`}
+                  <span className="text-[11px] font-semibold">
+                    {isCreatingSimulation ? "Launching..." : `Step ${s.id}`}
+                  </span>
+                  <div className={`w-8 h-px my-0.5 ${canLaunch ? 'bg-white/40' : 'bg-gray-300'}`} />
+                  <span className="text-[10px]">{s.name}</span>
                 </div>
               );
             }
@@ -1628,18 +1627,21 @@ export default function WizardDesign() {
             return (
               <div
                 key={s.id}
-                className="flex items-center cursor-pointer relative z-10 bg-muted/10 px-2"
+                className={cn(
+                  "flex-1 flex flex-col items-center justify-center py-2 cursor-pointer transition-all duration-200",
+                  !isLast && "border-r border-border",
+                  isActive
+                    ? `${config.activeBg} ${config.activeStep} font-semibold`
+                    : "hover:bg-muted/50 text-muted-foreground"
+                )}
                 onClick={() => setStep(s.id)}
               >
-                <div
-                  className={`text-sm ${step === s.id ? "text-primary font-medium" : "text-muted-foreground"}`}
-                >
-                  Step {s.id} | {s.name}
-                </div>
+                <span className={cn("text-[11px]", isActive ? "font-semibold" : "font-medium")}>Step {s.id}</span>
+                <div className={cn("w-8 h-px my-0.5", isActive ? config.activeLine : "bg-border")} />
+                <span className="text-[10px]">{s.name}</span>
               </div>
             );
           })}
-          </div>
         </div>
       </div>
     </div>
