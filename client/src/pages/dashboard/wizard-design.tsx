@@ -8,8 +8,6 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { trackEvent } from "@/lib/analytics";
-import { AnalyticsCategories, AnalyticsActions } from "@/lib/analyticsEvents";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -1033,21 +1031,6 @@ export default function WizardDesign() {
       return;
     }
 
-    // Rastrear cambio de herramienta
-    trackEvent(
-      AnalyticsCategories.DESIGN,
-      tool === "wall"
-        ? AnalyticsActions.ADD_WALL
-        : tool === "eraser"
-          ? AnalyticsActions.DELETE_ELEMENT
-          : tool === "measure"
-            ? "measure_tool"
-            : tool === "stairs"
-              ? AnalyticsActions.ADD_STAIR
-              : "unknown_tool",
-      `select_${tool}_tool`,
-    );
-
     // Toggle behavior: if same tool clicked, deselect it
     if (currentTool === tool) {
       setCurrentTool(null);
@@ -1058,16 +1041,6 @@ export default function WizardDesign() {
   };
 
   const handleAirEntrySelect = (entry: "vent" | "door" | "window") => {
-    // Rastrear selección de tipo de air entry
-    trackEvent(
-      AnalyticsCategories.DESIGN,
-      entry === "window"
-        ? AnalyticsActions.ADD_WINDOW
-        : entry === "door"
-          ? AnalyticsActions.ADD_DOOR
-          : "add_vent",
-      `select_${entry}_tool`,
-    );
 
     if (currentAirEntry === entry) {
       setCurrentAirEntry(null);
@@ -1287,13 +1260,6 @@ export default function WizardDesign() {
   // This function is called by the dropdown menu items
   const changeViewDirection = (direction: ViewDirection) => {
     console.log(`Changing view to: ${direction}`);
-
-    // Rastrear cambios de dirección de vista
-    trackEvent(
-      AnalyticsCategories.UI,
-      AnalyticsActions.TOGGLE_VIEW,
-      `view_${direction}`,
-    );
 
     if (viewChangeFunction) {
       viewChangeFunction(direction);
@@ -3296,14 +3262,6 @@ export default function WizardDesign() {
         throw new Error(result.message || "Error creating simulation");
       }
 
-      // Rastrear evento de inicio de simulación
-      trackEvent(
-        AnalyticsCategories.SIMULATION,
-        AnalyticsActions.START_SIMULATION,
-        "wizard_created",
-        1,
-      );
-
       // Invalidate the simulations cache to refresh dashboard data
       await queryClient.invalidateQueries({ queryKey: ["/api/simulations"] });
       await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] }); // Update user credits
@@ -3339,14 +3297,6 @@ export default function WizardDesign() {
   // Función para guardar el diseño localmente como archivo JSON
   const handleSaveDesign = () => {
     const exportData = generateSimulationDataForExport();
-
-    // Rastrear evento de guardar simulación
-    trackEvent(
-      AnalyticsCategories.SIMULATION,
-      AnalyticsActions.SAVE_SIMULATION,
-      "file_download",
-      Object.keys(exportData).length,
-    );
 
     // Crear un nombre de archivo que incluya el nombre de la simulación seguido de "_FlowDeskModel"
     const baseName = simulationName
@@ -3459,13 +3409,6 @@ export default function WizardDesign() {
       description: "Se ha iniciado un nuevo diseño desde cero",
     });
 
-    // PASO 8: Rastrear evento de borrar diseño
-    trackEvent(
-      AnalyticsCategories.SIMULATION,
-      AnalyticsActions.SAVE_SIMULATION,
-      "design_erased",
-      1,
-    );
   };
 
   // Función para manejar la carga de un diseño desde JSON
@@ -4005,14 +3948,6 @@ export default function WizardDesign() {
         title: "Diseño cargado exitosamente",
         description: `Se cargaron ${Object.keys(convertedFloors).length} plantas`,
       });
-      
-      // Rastrear evento
-      trackEvent(
-        AnalyticsCategories.SIMULATION,
-        AnalyticsActions.START_SIMULATION,
-        "design_loaded",
-        Object.keys(convertedFloors).length,
-      );
       
     } catch (error) {
       console.error("Error cargando diseño:", error);

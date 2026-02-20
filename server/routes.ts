@@ -118,7 +118,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Endpoint para obtener configuración del cliente, incluyendo claves API
   app.get("/api/config", (req, res) => {
     res.json({
-      googleAnalyticsId: process.env.GOOGLE_ANALYTICS_ID || '',
       turnstileSiteKey: process.env.TURNSTILE_SITE_KEY || ''
     });
   });

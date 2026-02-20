@@ -24,12 +24,12 @@ const plans = [
     name: "Annual Subscription",
     price: "39.99",
     description: "Unlock unlimited potential with our most popular plan",
-    priceDetail: "/month (billed annually at €479.88)",
-    subtitle: "Save up to €480/year vs Pay as You Go",
+    priceDetail: "/month (billed annually at 479.88€)",
+    subtitle: "Save up to 480€/year vs Pay as You Go",
     badge: "Most Popular",
     features: [
       "10 FREE simulations every month included",
-      "Additional simulations at only €5.99 each",
+      "Additional simulations at only 5.99€ each",
       "40% savings vs Pay as You Go",
       "Store your last 20 simulation results",
       "Flexible cancellation with proportional refund",
@@ -87,7 +87,7 @@ export default function Pricing() {
                   </div>
                   <div className="mt-4">
                     <span className="text-4xl font-bold">
-                      {plan.price === "Custom" ? plan.price : `€${plan.price}`}
+                      {plan.price === "Custom" ? plan.price : `${plan.price}€`}
                     </span>
                     {plan.priceDetail && <span className="text-muted-foreground ml-1 text-sm">{plan.priceDetail}</span>}
                   </div>

@@ -69,7 +69,6 @@ export default function Privacy() {
               <li><strong>Communication:</strong> To send you service updates, technical notices, and support responses</li>
               <li><strong>Billing:</strong> To process payments and manage subscriptions</li>
               <li><strong>Security:</strong> To detect, prevent, and address technical issues and fraudulent activity</li>
-              <li><strong>Analytics:</strong> To understand usage patterns and optimize our Service</li>
               <li><strong>Compliance:</strong> To comply with legal obligations and enforce our Terms of Service</li>
             </ul>
           </section>
@@ -88,12 +87,7 @@ export default function Privacy() {
               Payment information is processed through secure third-party payment processors. We do not store complete credit card information on our servers.
             </p>
 
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.3 Analytics Services</h3>
-            <p className="mb-4">
-              We use Google Analytics to understand how users interact with our Service. You can opt out of Google Analytics by installing the Google Analytics Opt-out Browser Add-on.
-            </p>
-
-            <h3 className="text-xl font-semibold mb-3 mt-6">4.4 Email Service</h3>
+            <h3 className="text-xl font-semibold mb-3 mt-6">4.3 Email Service</h3>
             <p className="mb-4">
               We use Resend for transactional emails. Your email address is shared with this service solely for the purpose of delivering important notifications about your account and simulations.
             </p>
@@ -154,7 +148,6 @@ export default function Privacy() {
             </p>
             <ul className="list-disc pl-6 mb-4 space-y-2">
               <li><strong>Essential Cookies:</strong> Required for authentication and core functionality</li>
-              <li><strong>Analytics Cookies:</strong> Help us understand usage patterns and improve our Service</li>
               <li><strong>Preference Cookies:</strong> Remember your settings and preferences</li>
             </ul>
             <p className="mb-4">

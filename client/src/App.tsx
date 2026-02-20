@@ -19,7 +19,6 @@ import About from "@/pages/about";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { ProtectedRoute } from "@/lib/protected-route";
-import { AnalyticsProvider } from "./components/common/AnalyticsProvider";
 import { useAuth } from "@/hooks/use-auth";
 import { useEffect } from "react";
 
@@ -94,7 +93,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AnalyticsProvider debug={process.env.NODE_ENV === 'development'}>
+      <>
         <div className="min-h-screen flex flex-col">
           <Switch>
             <Route path="/dashboard*">
@@ -118,7 +117,7 @@ function App() {
           </Switch>
         </div>
         <Toaster />
-      </AnalyticsProvider>
+      </>
     </QueryClientProvider>
   );
 }

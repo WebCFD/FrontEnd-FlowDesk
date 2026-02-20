@@ -10,9 +10,6 @@ import {
 } from "@/components/ui/navigation-menu";
 import RegisterModal from "@/components/auth/register-modal";
 import LoginModal from "@/components/auth/login-modal";
-import { AnalyticsButton } from "@/components/common/AnalyticsButton";
-import { AnalyticsCategories, AnalyticsActions } from "@/lib/analyticsEvents";
-import { trackEvent } from "@/lib/analytics";
 import { useAuth } from "@/hooks/use-auth";
 import { User, LogOut } from "lucide-react";
 import {
@@ -42,13 +39,6 @@ export default function Navbar() {
   };
 
   const scrollToSection = (sectionId: string) => {
-    // Rastrear el clic en enlaces de navegación
-    trackEvent(
-      AnalyticsCategories.NAVIGATION,
-      'section_navigation',
-      `scroll_to_${sectionId}`
-    );
-    
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -56,12 +46,6 @@ export default function Navbar() {
   };
 
   const handleLogoClick = () => {
-    trackEvent(
-      AnalyticsCategories.NAVIGATION,
-      'logo_click',
-      location === '/' ? 'scroll_to_top' : 'redirect_to_home'
-    );
-
     if (location === '/') {
       // Si ya estamos en la landing page, hacer scroll al top
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -165,24 +149,20 @@ export default function Navbar() {
           ) : (
             // Usuario no logueado - mostrar botones de login y registro
             <>
-              <AnalyticsButton 
-                category={AnalyticsCategories.ACCOUNT} 
-                action={AnalyticsActions.LOGIN}
+              <Button 
                 variant="ghost" 
                 className="h-9 px-4 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100"
                 onClick={() => setIsLoginOpen(true)}
               >
                 Log in
-              </AnalyticsButton>
+              </Button>
               
-              <AnalyticsButton 
-                category={AnalyticsCategories.ACCOUNT} 
-                action={AnalyticsActions.SIGNUP}
+              <Button 
                 className="h-9 px-4 text-sm font-medium"
                 onClick={() => setIsRegisterOpen(true)}
               >
                 Sign Up
-              </AnalyticsButton>
+              </Button>
             </>
           )}
         </div>

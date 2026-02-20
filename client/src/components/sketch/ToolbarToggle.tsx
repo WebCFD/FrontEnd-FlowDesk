@@ -1,8 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Box, Square } from "lucide-react";
-import { trackEvent } from "@/lib/analytics";
-import { AnalyticsCategories, AnalyticsActions } from "@/lib/analyticsEvents";
 
 interface ToolbarToggleProps {
   mode: "2d-editor" | "3d-preview";
@@ -11,39 +9,11 @@ interface ToolbarToggleProps {
 }
 
 export function ToolbarToggle({ mode, onModeChange, hasClosedContour }: ToolbarToggleProps) {
-  // Manejador para el cambio a vista 2D
   const handle2DClick = () => {
-    // Si ya está en 2D, no enviamos evento
-    if (mode !== "2d-editor") {
-      trackEvent(
-        AnalyticsCategories.UI,
-        AnalyticsActions.CHANGE_TAB,
-        "view_2d_editor"
-      );
-    }
     onModeChange("2d-editor");
   };
   
-  // Manejador para el cambio a vista 3D
   const handle3DClick = () => {
-    // Siempre permitir el cambio a 3D
-    if (mode !== "3d-preview") {
-      trackEvent(
-        AnalyticsCategories.UI,
-        AnalyticsActions.CHANGE_TAB,
-        "view_3d_preview"
-      );
-    }
-    
-    // Rastrear si no hay contorno cerrado (para analytics)
-    if (!hasClosedContour) {
-      trackEvent(
-        AnalyticsCategories.UI,
-        "validation_warning",
-        "3d_view_without_closed_contour"
-      );
-    }
-    
     onModeChange("3d-preview");
   };
   

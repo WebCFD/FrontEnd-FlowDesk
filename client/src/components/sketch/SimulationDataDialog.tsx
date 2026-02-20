@@ -10,10 +10,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Copy, Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { trackEvent } from '../../lib/analytics';
-import { AnalyticsCategories, AnalyticsActions } from '../../lib/analyticsEvents';
-import { AnalyticsButton } from '@/components/common/AnalyticsButton';
-import { useTrackEvent } from '@/hooks/useTrackEvent';
 
 interface SimulationDataDialogProps {
   open: boolean;
@@ -27,11 +23,9 @@ const SimulationDataDialog: React.FC<SimulationDataDialogProps> = ({
   simulationData
 }) => {
   const { toast } = useToast();
-  const trackEvent = useTrackEvent();
   const jsonData = JSON.stringify(simulationData, null, 2);
 
   const handleCopy = () => {
-    // Ya no es necesario registrar el evento aquí, lo hace AnalyticsButton
     navigator.clipboard.writeText(jsonData)
       .then(() => {
         toast({
@@ -50,24 +44,11 @@ const SimulationDataDialog: React.FC<SimulationDataDialogProps> = ({
   };
 
   const handleRunSimulation = () => {
-    // Ya no es necesario registrar el evento aquí, lo hace AnalyticsButton    
-    // Este botón no hace nada por ahora, como solicitado
     toast({
       title: "Simulation",
       description: "Run Simulation functionality will be implemented in the future.",
     });
   };
-  
-  // Registrar el evento de apertura del diálogo cuando se muestra
-  React.useEffect(() => {
-    if (open) {
-      trackEvent(
-        AnalyticsCategories.UI,
-        AnalyticsActions.OPEN_PANEL,
-        'simulation_data_dialog'
-      );
-    }
-  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -85,40 +66,27 @@ const SimulationDataDialog: React.FC<SimulationDataDialogProps> = ({
         
         <DialogFooter className="flex justify-between">
           <Button variant="outline" onClick={() => {
-            // Rastrear evento de cierre
-            trackEvent(
-              AnalyticsCategories.UI,
-              AnalyticsActions.CLOSE_PANEL,
-              'simulation_data_dialog'
-            );
             onOpenChange(false);
           }}>
             Cancel
           </Button>
           <div className="flex gap-2">
-            <AnalyticsButton 
-              category={AnalyticsCategories.SIMULATION}
-              action={AnalyticsActions.EXPORT_SIMULATION}
-              label="copy_to_clipboard"
-              value={Object.keys(simulationData).length}
+            <Button 
               onClick={handleCopy}
               variant="secondary" 
               className="flex items-center gap-1"
             >
               <Copy className="h-4 w-4" />
               Copy
-            </AnalyticsButton>
+            </Button>
             
-            <AnalyticsButton
-              category={AnalyticsCategories.SIMULATION}
-              action={AnalyticsActions.START_SIMULATION}
-              label="dialog_button"
+            <Button
               onClick={handleRunSimulation}
               className="flex items-center gap-1"
             >
               <Play className="h-4 w-4" />
               Run Simulation
-            </AnalyticsButton>
+            </Button>
           </div>
         </DialogFooter>
       </DialogContent>
