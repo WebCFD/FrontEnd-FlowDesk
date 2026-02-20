@@ -1589,7 +1589,7 @@ export default function WizardDesign() {
 
     return (
     <div className="w-full">
-      <div className={`flex items-stretch bg-card border rounded-lg border-l-4 ${config.borderLeft} overflow-hidden`}>
+      <div className={`flex items-stretch bg-card border rounded-lg border-l-4 ${config.borderLeft} overflow-visible`}>
         <div className={`flex flex-col items-center justify-center px-5 py-2.5 border-r border-border min-w-[90px] ${config.text}`}>
           <span className="text-xs font-bold uppercase leading-tight text-center">{config.label[0]}</span>
           <span className="text-xs font-bold uppercase leading-tight text-center">{config.label[1]}</span>
@@ -1607,7 +1607,7 @@ export default function WizardDesign() {
                 <div
                   key={s.id}
                   className={cn(
-                    "group/launch relative flex-1 flex flex-col items-center justify-center py-2.5 transition-all duration-200",
+                    "group/launch relative flex-1 flex flex-col items-center justify-center py-2.5 transition-all duration-200 rounded-r-lg",
                     canLaunch
                       ? "bg-green-500 text-white hover:bg-green-600 cursor-pointer"
                       : "bg-gray-100 text-gray-400 cursor-not-allowed"
@@ -1620,9 +1620,9 @@ export default function WizardDesign() {
                   <div className={`w-10 h-px my-1 ${canLaunch ? 'bg-white/40' : 'bg-gray-300'}`} />
                   <span className="text-xs">{s.name}</span>
                   {!canLaunch && (
-                    <div className="pointer-events-none absolute -bottom-12 left-1/2 -translate-x-1/2 z-50 w-max max-w-[220px] rounded-md bg-gray-900 px-3 py-2 text-xs text-white text-center shadow-lg opacity-0 group-hover/launch:opacity-100 transition-opacity duration-200">
+                    <div className="pointer-events-none absolute -top-11 left-1/2 -translate-x-1/2 z-50 w-max max-w-[220px] rounded-md bg-gray-900 px-3 py-2 text-xs text-white text-center shadow-lg opacity-0 group-hover/launch:opacity-100 transition-opacity duration-200">
                       Pass all checks in Step 3 to unlock
-                      <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45" />
+                      <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45" />
                     </div>
                   )}
                 </div>
