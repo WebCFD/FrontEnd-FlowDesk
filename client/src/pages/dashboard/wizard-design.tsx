@@ -1590,10 +1590,10 @@ export default function WizardDesign() {
     return (
     <div className="w-full">
       <div className={`flex items-stretch bg-card border rounded-lg border-l-4 ${config.borderLeft} overflow-hidden`}>
-        <div className={`flex flex-col items-center justify-center px-4 py-2 border-r border-border min-w-[80px] ${config.text}`}>
-          <span className="text-[10px] font-bold uppercase leading-tight text-center">{config.label[0]}</span>
-          <span className="text-[10px] font-bold uppercase leading-tight text-center">{config.label[1]}</span>
-          <CfdIcon className="h-5 w-5 mt-1" />
+        <div className={`flex flex-col items-center justify-center px-5 py-2.5 border-r border-border min-w-[90px] ${config.text}`}>
+          <span className="text-xs font-bold uppercase leading-tight text-center">{config.label[0]}</span>
+          <span className="text-xs font-bold uppercase leading-tight text-center">{config.label[1]}</span>
+          <CfdIcon className="h-6 w-6 mt-1.5" />
         </div>
 
         <div className="flex-1 flex items-stretch">
@@ -1607,7 +1607,7 @@ export default function WizardDesign() {
                 <div
                   key={s.id}
                   className={cn(
-                    "flex-1 flex flex-col items-center justify-center py-2 cursor-pointer transition-all duration-200",
+                    "flex-1 flex flex-col items-center justify-center py-2.5 cursor-pointer transition-all duration-200",
                     canLaunch
                       ? "bg-green-500 text-white hover:bg-green-600"
                       : "bg-gray-100 text-gray-400 cursor-not-allowed"
@@ -1615,11 +1615,11 @@ export default function WizardDesign() {
                   onClick={() => { if (canLaunch) handleStartSimulation(); }}
                   title={canLaunch ? "Launch your simulation!" : "Resolve validation errors in Step 3 first"}
                 >
-                  <span className="text-[11px] font-semibold">
+                  <span className="text-sm font-semibold">
                     {isCreatingSimulation ? "Launching..." : `Step ${s.id}`}
                   </span>
-                  <div className={`w-8 h-px my-0.5 ${canLaunch ? 'bg-white/40' : 'bg-gray-300'}`} />
-                  <span className="text-[10px]">{s.name}</span>
+                  <div className={`w-10 h-px my-1 ${canLaunch ? 'bg-white/40' : 'bg-gray-300'}`} />
+                  <span className="text-xs">{s.name}</span>
                 </div>
               );
             }
@@ -1628,7 +1628,7 @@ export default function WizardDesign() {
               <div
                 key={s.id}
                 className={cn(
-                  "flex-1 flex flex-col items-center justify-center py-2 cursor-pointer transition-all duration-200",
+                  "flex-1 flex flex-col items-center justify-center py-2.5 cursor-pointer transition-all duration-200",
                   !isLast && "border-r border-border",
                   isActive
                     ? `${config.activeBg} ${config.activeStep} font-semibold`
@@ -1636,9 +1636,9 @@ export default function WizardDesign() {
                 )}
                 onClick={() => setStep(s.id)}
               >
-                <span className={cn("text-[11px]", isActive ? "font-semibold" : "font-medium")}>Step {s.id}</span>
-                <div className={cn("w-8 h-px my-0.5", isActive ? config.activeLine : "bg-border")} />
-                <span className="text-[10px]">{s.name}</span>
+                <span className={cn("text-sm", isActive ? "font-semibold" : "font-medium")}>Step {s.id}</span>
+                <div className={cn("w-10 h-px my-1", isActive ? config.activeLine : "bg-border")} />
+                <span className="text-xs">{s.name}</span>
               </div>
             );
           })}
