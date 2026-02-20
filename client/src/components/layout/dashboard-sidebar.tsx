@@ -31,7 +31,7 @@ const sidebarItems: SidebarItem[] = [
   },
   {
     icon: Wand2,
-    label: "Run Case Wizard",
+    label: "Build Model",
     href: "/dashboard/wizard-design",
   },
   {
@@ -125,7 +125,7 @@ export default function DashboardSidebar() {
             const Icon = item.icon;
             const isActive = location === item.href;
             const showSeparator = item.label === "Settings";
-            const isWizard = item.label === "Run Case Wizard";
+            const isWizard = item.label === "Build Model";
 
             return (
               <div key={item.href}>

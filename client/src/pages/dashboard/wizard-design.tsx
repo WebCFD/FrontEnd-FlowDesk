@@ -1629,7 +1629,7 @@ export default function WizardDesign() {
                 key={s.id}
                 className={cn(
                   "flex-1 flex flex-col items-center justify-center py-2.5 cursor-pointer transition-all duration-200",
-                  !isLast && "border-r border-border",
+                  s.id === 3 && "border-r border-border",
                   isActive
                     ? `${config.activeBg} ${config.activeStep} font-semibold`
                     : "hover:bg-muted/50 text-muted-foreground"
