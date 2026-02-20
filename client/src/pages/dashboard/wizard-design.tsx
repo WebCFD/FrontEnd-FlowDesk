@@ -1592,7 +1592,7 @@ export default function WizardDesign() {
                   className={cn(
                     "relative z-10 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-300",
                     canLaunch
-                      ? "bg-green-500 text-white shadow-md hover:bg-green-600 cursor-pointer animate-pulse hover:animate-none"
+                      ? "bg-green-500 text-white shadow-md hover:bg-green-600 cursor-pointer"
                       : "bg-gray-200 text-gray-400 cursor-not-allowed"
                   )}
                   onClick={() => {
@@ -2961,6 +2961,35 @@ export default function WizardDesign() {
         </div>
 
 
+      </div>
+
+      {/* Launch Simulation Button */}
+      <div className="flex justify-center pt-4">
+        <Button
+          size="lg"
+          className={cn(
+            "px-8 py-3 text-base font-semibold transition-all duration-300",
+            isValidationPassing
+              ? "bg-green-500 hover:bg-green-600 text-white shadow-md"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed hover:bg-gray-300"
+          )}
+          disabled={!isValidationPassing || isCreatingSimulation}
+          onClick={() => {
+            if (isValidationPassing) handleStartSimulation();
+          }}
+        >
+          {isCreatingSimulation ? (
+            <>
+              <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              Launching...
+            </>
+          ) : (
+            <>
+              <Rocket className="mr-2 h-5 w-5" />
+              Launch Simulation
+            </>
+          )}
+        </Button>
       </div>
 
       <AlertDialog
