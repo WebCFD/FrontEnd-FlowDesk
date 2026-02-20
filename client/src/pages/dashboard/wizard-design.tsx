@@ -1607,19 +1607,24 @@ export default function WizardDesign() {
                 <div
                   key={s.id}
                   className={cn(
-                    "flex-1 flex flex-col items-center justify-center py-2.5 cursor-pointer transition-all duration-200",
+                    "group/launch relative flex-1 flex flex-col items-center justify-center py-2.5 transition-all duration-200",
                     canLaunch
-                      ? "bg-green-500 text-white hover:bg-green-600"
+                      ? "bg-green-500 text-white hover:bg-green-600 cursor-pointer"
                       : "bg-gray-100 text-gray-400 cursor-not-allowed"
                   )}
                   onClick={() => { if (canLaunch) handleStartSimulation(); }}
-                  title={canLaunch ? "Launch your simulation!" : "Resolve validation errors in Step 3 first"}
                 >
                   <span className="text-sm font-semibold">
                     {isCreatingSimulation ? "Launching..." : `Step ${s.id}`}
                   </span>
                   <div className={`w-10 h-px my-1 ${canLaunch ? 'bg-white/40' : 'bg-gray-300'}`} />
                   <span className="text-xs">{s.name}</span>
+                  {!canLaunch && (
+                    <div className="pointer-events-none absolute -bottom-12 left-1/2 -translate-x-1/2 z-50 w-max max-w-[220px] rounded-md bg-gray-900 px-3 py-2 text-xs text-white text-center shadow-lg opacity-0 group-hover/launch:opacity-100 transition-opacity duration-200">
+                      Pass all checks in Step 3 to unlock
+                      <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45" />
+                    </div>
+                  )}
                 </div>
               );
             }
