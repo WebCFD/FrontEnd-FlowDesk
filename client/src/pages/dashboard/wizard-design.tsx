@@ -83,6 +83,7 @@ import {
   Home,
   Flame,
   Snowflake,
+  Check,
 } from "lucide-react";
 import Canvas2D from "@/components/sketch/Canvas2D";
 import { RoomSketchPro } from "@/components/sketch/RoomSketchPro";
@@ -290,6 +291,8 @@ export default function WizardDesign() {
     if (stored) sessionStorage.removeItem('selectedCFDType');
     return stored || 'indoor-spaces';
   });
+  const [showCfdMenu, setShowCfdMenu] = useState(false);
+  const cfdMenuRef = useRef<HTMLDivElement>(null);
   const [currentTool, setCurrentTool] = useState<
     "wall" | "eraser" | "measure" | "stairs" | null
   >("wall");
@@ -422,6 +425,16 @@ export default function WizardDesign() {
 
   // Estado para el diálogo de carga de diseño
   const [showLoadDesignDialog, setShowLoadDesignDialog] = useState(false);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (cfdMenuRef.current && !cfdMenuRef.current.contains(e.target as Node)) {
+        setShowCfdMenu(false);
+      }
+    };
+    if (showCfdMenu) document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showCfdMenu]);
 
   // Calculate canvas height as configurable percentage of viewport height
   useEffect(() => {
@@ -1590,10 +1603,42 @@ export default function WizardDesign() {
     return (
     <div className="w-full">
       <div className={`flex items-stretch bg-card border rounded-lg border-l-4 ${config.borderLeft} overflow-visible`}>
-        <div className={`flex flex-col items-center justify-center px-5 py-2.5 border-r border-border min-w-[90px] ${config.text}`}>
-          <span className="text-xs font-bold uppercase leading-tight text-center">{config.label[0]}</span>
-          <span className="text-xs font-bold uppercase leading-tight text-center">{config.label[1]}</span>
-          <CfdIcon className="h-6 w-6 mt-1.5" />
+        <div ref={cfdMenuRef} className="relative">
+          <div
+            className={`flex flex-col items-center justify-center px-5 py-2.5 border-r border-border min-w-[90px] h-full cursor-pointer hover:bg-muted/40 transition-colors duration-150 ${config.text}`}
+            onClick={() => setShowCfdMenu(!showCfdMenu)}
+          >
+            <span className="text-xs font-bold uppercase leading-tight text-center">{config.label[0]}</span>
+            <span className="text-xs font-bold uppercase leading-tight text-center">{config.label[1]}</span>
+            <CfdIcon className="h-6 w-6 mt-1.5" />
+            <ChevronDown className="h-3 w-3 mt-0.5 opacity-50" />
+          </div>
+
+          {showCfdMenu && (
+            <div className="absolute top-full left-0 mt-1 z-50 bg-card border rounded-lg shadow-xl py-1 min-w-[180px] animate-in fade-in slide-in-from-top-1 duration-150">
+              {Object.entries(cfdTypeConfig).map(([key, cfg]) => {
+                const ItemIcon = cfg.icon;
+                const isSelected = key === cfdType;
+                return (
+                  <div
+                    key={key}
+                    className={cn(
+                      "flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors duration-150",
+                      isSelected ? `${cfg.activeBg} ${cfg.text} font-semibold` : "hover:bg-muted/50 text-muted-foreground"
+                    )}
+                    onClick={() => {
+                      setCfdType(key);
+                      setShowCfdMenu(false);
+                    }}
+                  >
+                    <ItemIcon className={`h-5 w-5 ${cfg.text}`} />
+                    <span className="text-sm">{cfg.label[0]} {cfg.label[1]}</span>
+                    {isSelected && <Check className="h-4 w-4 ml-auto" />}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         <div className="flex-1 flex items-stretch">
