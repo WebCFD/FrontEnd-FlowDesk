@@ -1576,11 +1576,11 @@ export default function WizardDesign() {
     });
   };
 
-  const cfdTypeConfig: Record<string, { label: string; icon: typeof Server; bg: string; text: string; border: string }> = {
-    'data-centers': { label: 'Data Centers', icon: Server, bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' },
-    'indoor-spaces': { label: 'Indoor Spaces', icon: Home, bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' },
-    'fire-smoke': { label: 'Fire & Smoke', icon: Flame, bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200' },
-    'industrial-cooling': { label: 'Industrial Cooling', icon: Snowflake, bg: 'bg-violet-50', text: 'text-violet-700', border: 'border-violet-200' },
+  const cfdTypeConfig: Record<string, { label: string; icon: typeof Server; text: string; borderLeft: string; iconText: string }> = {
+    'data-centers': { label: 'Data Centers', icon: Server, text: 'text-blue-600', borderLeft: 'border-l-blue-500', iconText: 'text-blue-500' },
+    'indoor-spaces': { label: 'Indoor Spaces', icon: Home, text: 'text-emerald-600', borderLeft: 'border-l-emerald-500', iconText: 'text-emerald-500' },
+    'fire-smoke': { label: 'Fire & Smoke', icon: Flame, text: 'text-orange-600', borderLeft: 'border-l-orange-500', iconText: 'text-orange-500' },
+    'industrial-cooling': { label: 'Industrial Cooling', icon: Snowflake, text: 'text-violet-600', borderLeft: 'border-l-violet-500', iconText: 'text-violet-500' },
   };
 
   const renderStepIndicator = () => {
@@ -1588,19 +1588,20 @@ export default function WizardDesign() {
     const CfdIcon = config.icon;
 
     return (
-    <div className="w-full space-y-2">
-      <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border ${config.bg} ${config.text} ${config.border}`}>
-        <CfdIcon className="h-4 w-4" />
-        <span className="text-sm font-medium">{config.label}</span>
-      </div>
-      <div className="relative h-16 bg-muted/10 border rounded-lg">
-        <div className="absolute inset-0 flex justify-between items-center px-4">
-          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-center gap-[16%]">
-            <div className="w-12 h-px bg-border" />
-            <div className="w-12 h-px bg-border" />
-            <div className="w-12 h-px bg-border" />
-            <div className="w-12 h-px bg-border" />
+    <div className="w-full">
+      <div className={`relative h-16 bg-muted/10 border rounded-lg border-l-4 ${config.borderLeft}`}>
+        <div className="absolute inset-0 flex items-center px-4">
+          <div className={`flex items-center gap-1.5 pr-4 border-r border-border mr-4 ${config.text}`}>
+            <CfdIcon className={`h-4 w-4 ${config.iconText}`} />
+            <span className="text-xs font-semibold whitespace-nowrap">{config.label}</span>
           </div>
+          <div className="flex-1 flex justify-between items-center relative">
+            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-center gap-[18%]">
+              <div className="w-10 h-px bg-border" />
+              <div className="w-10 h-px bg-border" />
+              <div className="w-10 h-px bg-border" />
+              <div className="w-10 h-px bg-border" />
+            </div>
 
           {steps.map((s) => {
             if (s.id === 4) {
@@ -1638,6 +1639,7 @@ export default function WizardDesign() {
               </div>
             );
           })}
+          </div>
         </div>
       </div>
     </div>
