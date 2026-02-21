@@ -8,7 +8,7 @@ import UnifiedVentDialog from "./UnifiedVentDialog";
 import { ViewDirection } from "./Toolbar3D";
 import { useSceneContext } from "../../contexts/SceneContext";
 import { FurnitureItem, FurnitureCallbacks } from "@shared/furniture-types";
-import { createTableModel, createPersonModel, createArmchairModel, createCarModel, createBlockModel } from "./furniture-models";
+import { createTableModel, createPersonModel, createArmchairModel, createCarModel, createBlockModel, createRackModel } from "./furniture-models";
 import { STLProcessor } from "./STLProcessor";
 import { customFurnitureStore } from "@/lib/custom-furniture-store";
 import { useRoomStore } from "@/lib/store/room-store";
@@ -295,6 +295,7 @@ const generateFurnitureId = (
     'person': 'Person',
     'car': 'Car',
     'block': 'Block',
+    'rack': 'Rack',
     'vent': 'Vent',
     'custom': 'Obj'
   };
@@ -875,6 +876,9 @@ const createFurnitureModel = (
     case 'block':
       model = createBlockModel();
       break;
+    case 'rack':
+      model = createRackModel();
+      break;
     case 'vent':
       model = createVentPlaneModel(furnitureItem);
       break;
@@ -1012,7 +1016,7 @@ const createFurnitureModel = (
 };
 
 // Helper function to get default dimensions for furniture types
-const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent' | 'nozzle' | 'custom') => {
+const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car' | 'block' | 'rack' | 'vent' | 'nozzle' | 'custom') => {
   switch (type) {
     case 'table':
       return { width: 120, height: 75, depth: 80 };
@@ -1024,6 +1028,8 @@ const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car' | 'b
       return { width: 450, height: 150, depth: 180 };
     case 'block':
       return { width: 80, height: 80, depth: 80 };
+    case 'rack':
+      return { width: 60, height: 180, depth: 60 };
     case 'vent':
       return { width: 50, height: 50, depth: 10 };
     case 'nozzle':

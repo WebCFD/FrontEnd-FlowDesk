@@ -313,6 +313,102 @@ function createFallbackCar(group: THREE.Group): void {
   });
 }
 
+export const createRackModel = (): THREE.Group => {
+  const group = new THREE.Group();
+
+  const rackWidth = 60;
+  const rackDepth = 60;
+  const rackHeight = 180;
+
+  const rackMaterial = new THREE.MeshStandardMaterial({
+    color: 0x2d2d2d,
+    roughness: 0.6,
+    metalness: 0.4,
+  });
+
+  const rackGeometry = new THREE.BoxGeometry(rackWidth, rackDepth, rackHeight);
+  const rack = new THREE.Mesh(rackGeometry, rackMaterial);
+  rack.position.z = rackHeight / 2;
+  group.add(rack);
+
+  const slotMaterial = new THREE.MeshStandardMaterial({
+    color: 0x1a1a1a,
+    roughness: 0.8,
+    metalness: 0.2,
+  });
+
+  const slotCount = 8;
+  const slotSpacing = rackHeight / (slotCount + 1);
+  for (let i = 1; i <= slotCount; i++) {
+    const slotGeometry = new THREE.BoxGeometry(rackWidth * 0.85, 1, rackHeight * 0.06);
+    const slot = new THREE.Mesh(slotGeometry, slotMaterial);
+    slot.position.set(0, rackDepth / 2 + 0.5, i * slotSpacing);
+    group.add(slot);
+
+    const slotBack = new THREE.Mesh(slotGeometry, slotMaterial);
+    slotBack.position.set(0, -(rackDepth / 2 + 0.5), i * slotSpacing);
+    group.add(slotBack);
+  }
+
+  const createArrow = (color: number, direction: 'in' | 'out') => {
+    const arrowGroup = new THREE.Group();
+    const arrowMat = new THREE.MeshStandardMaterial({
+      color,
+      roughness: 0.3,
+      metalness: 0.1,
+      transparent: true,
+      opacity: 0.85,
+    });
+
+    const shaftLength = 18;
+    const coneHeight = 8;
+    const shaftGeometry = new THREE.CylinderGeometry(1.2, 1.2, shaftLength, 8);
+    const shaft = new THREE.Mesh(shaftGeometry, arrowMat);
+    shaft.rotation.x = Math.PI / 2;
+
+    const coneGeometry = new THREE.ConeGeometry(3, coneHeight, 8);
+    const cone = new THREE.Mesh(coneGeometry, arrowMat);
+
+    if (direction === 'in') {
+      shaft.position.y = shaftLength / 2;
+      cone.rotation.x = -Math.PI / 2;
+      cone.position.y = -coneHeight / 2;
+    } else {
+      shaft.position.y = -shaftLength / 2;
+      cone.rotation.x = Math.PI / 2;
+      cone.position.y = coneHeight / 2;
+    }
+
+    arrowGroup.add(shaft);
+    arrowGroup.add(cone);
+
+    return arrowGroup;
+  };
+
+  const arrowRows = 3;
+  const arrowCols = 2;
+  const xSpacing = rackWidth * 0.55 / arrowCols;
+  const zSpacing = rackHeight * 0.6 / arrowRows;
+  const zStart = rackHeight * 0.25;
+
+  for (let r = 0; r < arrowRows; r++) {
+    for (let c = 0; c < arrowCols; c++) {
+      const x = -xSpacing * (arrowCols - 1) / 2 + c * xSpacing;
+      const z = zStart + r * zSpacing;
+
+      const coldArrow = createArrow(0x3b82f6, 'in');
+      coldArrow.position.set(x, rackDepth / 2 + 18, z);
+      group.add(coldArrow);
+
+      const hotArrow = createArrow(0xef4444, 'out');
+      hotArrow.position.set(x, -(rackDepth / 2 + 18), z);
+      group.add(hotArrow);
+    }
+  }
+
+  return group;
+};
+
 export const createBlockModel = (): THREE.Group => {
   const group = new THREE.Group();
 
