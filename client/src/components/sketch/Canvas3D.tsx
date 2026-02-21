@@ -6347,6 +6347,52 @@ export default function Canvas3D({
     if (furnitureGroup) {
       furnitureGroup.scale.set(newScale.x, newScale.y, newScale.z);
     }
+
+    if (editingFurniture.item.type === 'rack') {
+      const oldDims: THREE.Object3D[] = [];
+      sceneRef.current.traverse((child) => {
+        if (child.userData?.type === 'rackDimensions' && child.userData?.furnitureId === furnitureId) {
+          oldDims.push(child);
+        }
+      });
+      oldDims.forEach((d) => sceneRef.current!.remove(d));
+
+      const widthCm = newScale.x * 60;
+      const heightCm = newScale.z * 200;
+      const depthCm = newScale.y * 100;
+      const widthMm = Math.round(widthCm * 10);
+      const heightMm = Math.round(heightCm * 10);
+      const depthMm = Math.round(depthCm * 10);
+
+      const dimOffset = 12;
+      const dimColor = 0x475569;
+      const dimGroup = new THREE.Group();
+      dimGroup.userData = { type: 'rackDimensions', furnitureId };
+      const item = editingFurniture.item;
+      dimGroup.position.set(item.position.x, item.position.y, item.position.z);
+      dimGroup.rotation.set(item.rotation.x, item.rotation.y, item.rotation.z);
+
+      const hw = widthCm / 2;
+      const hd = depthCm / 2;
+
+      dimGroup.add(createDimensionLine(
+        new THREE.Vector3(-hw, hd + dimOffset, 0),
+        new THREE.Vector3(hw, hd + dimOffset, 0),
+        `${widthMm} mm`, dimColor, new THREE.Vector3(0, 1, 0)
+      ));
+      dimGroup.add(createDimensionLine(
+        new THREE.Vector3(hw + dimOffset, 0, 0),
+        new THREE.Vector3(hw + dimOffset, 0, heightCm),
+        `${heightMm} mm`, dimColor, new THREE.Vector3(1, 0, 0)
+      ));
+      dimGroup.add(createDimensionLine(
+        new THREE.Vector3(-hw - dimOffset, -hd, 0),
+        new THREE.Vector3(-hw - dimOffset, hd, 0),
+        `${depthMm} mm`, dimColor, new THREE.Vector3(-1, 0, 0)
+      ));
+
+      sceneRef.current.add(dimGroup);
+    }
   };
 
   // Memoize simulation properties from 3D object to prevent infinite loops
