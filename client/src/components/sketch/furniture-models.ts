@@ -362,22 +362,16 @@ export const createRackModel = (): THREE.Group => {
 
     const shaftLength = 18;
     const coneHeight = 8;
+
     const shaftGeometry = new THREE.CylinderGeometry(1.2, 1.2, shaftLength, 8);
     const shaft = new THREE.Mesh(shaftGeometry, arrowMat);
-    shaft.rotation.x = Math.PI / 2;
 
     const coneGeometry = new THREE.ConeGeometry(3, coneHeight, 8);
     const cone = new THREE.Mesh(coneGeometry, arrowMat);
 
-    if (direction === 'in') {
-      shaft.position.y = shaftLength / 2;
-      cone.rotation.x = -Math.PI / 2;
-      cone.position.y = -coneHeight / 2;
-    } else {
-      shaft.position.y = -shaftLength / 2;
-      cone.rotation.x = Math.PI / 2;
-      cone.position.y = coneHeight / 2;
-    }
+    cone.rotation.z = Math.PI;
+    shaft.position.y = shaftLength / 2;
+    cone.position.y = -coneHeight / 2;
 
     arrowGroup.add(shaft);
     arrowGroup.add(cone);
@@ -397,11 +391,11 @@ export const createRackModel = (): THREE.Group => {
       const z = zStart + r * zSpacing;
 
       const coldArrow = createArrow(0x3b82f6, 'in');
-      coldArrow.position.set(x, rackDepth / 2 + 18, z);
+      coldArrow.position.set(x, rackDepth / 2 + 15, z);
       group.add(coldArrow);
 
       const hotArrow = createArrow(0xef4444, 'out');
-      hotArrow.position.set(x, -(rackDepth / 2 + 18), z);
+      hotArrow.position.set(x, -(rackDepth / 2 + 15), z);
       group.add(hotArrow);
     }
   }
