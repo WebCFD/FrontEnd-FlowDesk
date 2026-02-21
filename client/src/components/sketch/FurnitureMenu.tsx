@@ -103,6 +103,23 @@ const furnitureItems: FurnitureItem[] = [
     defaultDimensions: { width: 50, height: 150, depth: 50 }
   },
   {
+    id: 'sideVentBox',
+    name: 'Side Vent Box',
+    icon: `
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="5" y="15" width="30" height="18" rx="1" fill="#2d2d2d" stroke="#555" stroke-width="1.5"/>
+        <rect x="36" y="17" width="3" height="14" rx="0.5" fill="#22c55e" opacity="0.5"/>
+        <path d="M39 21 L42 21 L40.5 20 M42 21 L40.5 22" stroke="#22c55e" stroke-width="0.8"/>
+        <path d="M39 25 L42 25 L40.5 24 M42 25 L40.5 26" stroke="#22c55e" stroke-width="0.8"/>
+        <path d="M39 29 L42 29 L40.5 28 M42 29 L40.5 30" stroke="#22c55e" stroke-width="0.8"/>
+        <rect x="8" y="19" width="24" height="2.5" rx="0.5" fill="#1a1a1a"/>
+        <rect x="8" y="24" width="24" height="2.5" rx="0.5" fill="#1a1a1a"/>
+        <rect x="8" y="29" width="24" height="2.5" rx="0.5" fill="#1a1a1a"/>
+      </svg>
+    `,
+    defaultDimensions: { width: 150, height: 50, depth: 50 }
+  },
+  {
     id: 'vent',
     name: 'Vent',
     icon: `
@@ -163,7 +180,7 @@ export function FurnitureMenu({ onDragStart, floorContext, onToggleFurnitureEras
   // Separate items by categories
   const furnitureItems_category = furnitureItems.filter(item => ['table', 'armchair'].includes(item.id));
   const charactersItems = furnitureItems.filter(item => item.id === 'person');
-  const objectsItems = furnitureItems.filter(item => ['block', 'rack', 'topVentBox'].includes(item.id));
+  const objectsItems = furnitureItems.filter(item => ['block', 'rack', 'topVentBox', 'sideVentBox'].includes(item.id));
   const hvacItems = furnitureItems.filter(item => ['vent', 'nozzle'].includes(item.id));
   
   // Custom furniture goes with furniture category

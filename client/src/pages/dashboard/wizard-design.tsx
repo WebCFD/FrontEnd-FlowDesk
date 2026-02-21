@@ -30,7 +30,7 @@ import { generateSimulationData, denormalizeCoordinates } from "@/lib/simulation
 import * as THREE from "three";
 
 // Helper function for default dimensions (matching Canvas3D)
-const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'block' | 'rack' | 'topVentBox' | 'vent' | 'nozzle' | 'custom') => {
+const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'block' | 'rack' | 'topVentBox' | 'sideVentBox' | 'vent' | 'nozzle' | 'custom') => {
   switch (type) {
     case 'table':
       return { width: 120, height: 75, depth: 80 };
@@ -44,6 +44,8 @@ const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'block' | 
       return { width: 60, height: 200, depth: 100 };
     case 'topVentBox':
       return { width: 50, height: 150, depth: 50 };
+    case 'sideVentBox':
+      return { width: 150, height: 50, depth: 50 };
     case 'vent':
       return { width: 50, height: 50, depth: 10 };
     case 'nozzle':
@@ -4028,10 +4030,13 @@ export default function WizardDesign() {
             if (item.faces && !item.position) {
               const faceEntries = Object.values(item.faces) as any[];
               
-              // Determine type: if there's a 'vent' role face it's topVentBox, otherwise rack
+              // Determine type: vent role on top = topVentBox, vent role on front = sideVentBox, inlet = rack
               const hasVentFace = faceEntries.some((f: any) => f.role === 'vent');
               const hasInletFace = faceEntries.some((f: any) => f.role === 'inlet');
-              const furnitureBoxType = hasVentFace ? 'topVentBox' : (hasInletFace ? 'rack' : 'rack');
+              const ventOnFront = item.faces.front?.role === 'vent';
+              const furnitureBoxType = hasVentFace 
+                ? (ventOnFront ? 'sideVentBox' : 'topVentBox') 
+                : (hasInletFace ? 'rack' : 'rack');
               const defaultDims = getDefaultDimensions(furnitureBoxType);
               
               // Find faces by role (preferred) with fallback to named keys
@@ -4112,8 +4117,8 @@ export default function WizardDesign() {
                 };
               }
               
-              if (furnitureBoxType === 'topVentBox') {
-                const ventFace = faceEntries.find((f: any) => f.role === 'vent') || item.faces.top;
+              if (furnitureBoxType === 'topVentBox' || furnitureBoxType === 'sideVentBox') {
+                const ventFace = faceEntries.find((f: any) => f.role === 'vent') || item.faces.top || item.faces.front;
                 furnitureEntry.simulationProperties = {
                   state: ventFace?.state || 'open',
                   airOrientation: ventFace?.airDirection || 'outflow',

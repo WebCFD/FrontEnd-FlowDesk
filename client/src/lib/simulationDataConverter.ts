@@ -658,6 +658,7 @@ export function generateSimulationData(
       armchair: 0, 
       rack: 0, 
       topVentBox: 0,
+      sideVentBox: 0,
       block: 0, 
       vent_furniture: 0,
       custom: 0 
@@ -828,8 +829,8 @@ export function generateSimulationData(
         return { id: furnitureId, faces } as FurnitureExport;
       }
       
-      // For topVentBox: face-based export with top face as 'vent' role
-      if (obj.userData?.furnitureType === 'topVentBox') {
+      // For topVentBox/sideVentBox: face-based export with vent face
+      if (obj.userData?.furnitureType === 'topVentBox' || obj.userData?.furnitureType === 'sideVentBox') {
         const posM = {
           x: cmToM(obj.position.x),
           y: cmToM(obj.position.y),
@@ -894,12 +895,14 @@ export function generateSimulationData(
           airTemperature: ventSimProps.airTemperature || 20
         };
         
+        const isSideVent = obj.userData?.furnitureType === 'sideVentBox';
+        
         const faces: Record<string, RackFaceExport> = {
           front: {
-            role: 'wall',
+            role: isSideVent ? 'vent' : 'wall',
             vertices: [gc[0], gc[1], gc[5], gc[4]],
-            temperature: chassisTemp,
-            ...wallFaceProps
+            temperature: isSideVent ? ventFaceProps.airTemperature : chassisTemp,
+            ...(isSideVent ? ventFaceProps : wallFaceProps)
           },
           back: {
             role: 'wall',
@@ -920,10 +923,10 @@ export function generateSimulationData(
             ...wallFaceProps
           },
           top: {
-            role: 'vent',
+            role: isSideVent ? 'wall' : 'vent',
             vertices: [gc[4], gc[5], gc[6], gc[7]],
-            temperature: ventFaceProps.airTemperature,
-            ...ventFaceProps
+            temperature: isSideVent ? chassisTemp : ventFaceProps.airTemperature,
+            ...(isSideVent ? wallFaceProps : ventFaceProps)
           },
           bottom: {
             role: 'wall',
@@ -1377,6 +1380,7 @@ function getFurnitureTypeForId(furnitureType?: string): string {
     case 'armchair': return 'armchair';
     case 'rack': return 'rack';
     case 'topVentBox': return 'topVentBox';
+    case 'sideVentBox': return 'sideVentBox';
     case 'block': return 'block';
     case 'vent': return 'vent_furniture';
     case 'custom': return 'custom';

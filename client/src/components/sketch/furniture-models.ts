@@ -550,6 +550,140 @@ export const createTopVentBoxModel = (simulationProperties?: { state?: string; a
   return group;
 };
 
+export const createSideVentBoxModel = (simulationProperties?: { state?: string; airOrientation?: string }): THREE.Group => {
+  const group = new THREE.Group();
+
+  const boxWidth = 150;
+  const boxDepth = 50;
+  const boxHeight = 50;
+
+  const bodyMaterial = new THREE.MeshStandardMaterial({
+    color: 0x8a8a8a,
+    roughness: 0.4,
+    metalness: 0.6,
+  });
+
+  const bodyGeometry = new THREE.BoxGeometry(boxWidth, boxDepth, boxHeight);
+  const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+  body.position.z = boxHeight / 2;
+  group.add(body);
+
+  const edgeMaterial = new THREE.MeshStandardMaterial({
+    color: 0x6b6b6b,
+    roughness: 0.3,
+    metalness: 0.7,
+  });
+  const edgeThickness = 1.5;
+  const edges = [
+    { size: [boxWidth + edgeThickness, edgeThickness, edgeThickness], pos: [0, boxDepth / 2, 0] },
+    { size: [boxWidth + edgeThickness, edgeThickness, edgeThickness], pos: [0, -boxDepth / 2, 0] },
+    { size: [boxWidth + edgeThickness, edgeThickness, edgeThickness], pos: [0, boxDepth / 2, boxHeight] },
+    { size: [boxWidth + edgeThickness, edgeThickness, edgeThickness], pos: [0, -boxDepth / 2, boxHeight] },
+    { size: [edgeThickness, edgeThickness, boxHeight], pos: [boxWidth / 2, boxDepth / 2, boxHeight / 2] },
+    { size: [edgeThickness, edgeThickness, boxHeight], pos: [-boxWidth / 2, boxDepth / 2, boxHeight / 2] },
+    { size: [edgeThickness, edgeThickness, boxHeight], pos: [boxWidth / 2, -boxDepth / 2, boxHeight / 2] },
+    { size: [edgeThickness, edgeThickness, boxHeight], pos: [-boxWidth / 2, -boxDepth / 2, boxHeight / 2] },
+  ];
+  for (const edge of edges) {
+    const geo = new THREE.BoxGeometry(edge.size[0], edge.size[1], edge.size[2]);
+    const mesh = new THREE.Mesh(geo, edgeMaterial);
+    mesh.position.set(edge.pos[0], edge.pos[1], edge.pos[2]);
+    group.add(mesh);
+  }
+
+  const state = simulationProperties?.state || 'open';
+  const airOrientation = simulationProperties?.airOrientation || 'outflow';
+
+  const ventColor = state === 'open' ? 0x22c55e : 0x666666;
+  const ventOpacity = state === 'open' ? 0.4 : 0.6;
+
+  const grilleMaterial = new THREE.MeshStandardMaterial({
+    color: ventColor,
+    roughness: 0.3,
+    metalness: 0.5,
+    transparent: true,
+    opacity: ventOpacity,
+    side: THREE.DoubleSide,
+  });
+
+  const slotCount = 6;
+  const slotWidth = boxWidth * 0.8;
+  const slotHeightSize = boxHeight * 0.8 / (slotCount * 2 - 1);
+  const startZ = boxHeight * 0.1;
+  for (let i = 0; i < slotCount; i++) {
+    const slotGeo = new THREE.BoxGeometry(slotWidth, 1.5, slotHeightSize);
+    const slot = new THREE.Mesh(slotGeo, grilleMaterial);
+    slot.position.set(0, boxDepth / 2 + 0.5, startZ + slotHeightSize / 2 + i * slotHeightSize * 2);
+    group.add(slot);
+  }
+
+  const frameMaterial = new THREE.MeshStandardMaterial({
+    color: ventColor,
+    roughness: 0.3,
+    metalness: 0.6,
+  });
+  const frameThickness = 2;
+  const frameSegments = [
+    { size: [boxWidth * 0.9, frameThickness, frameThickness], pos: [0, boxDepth / 2 + 0.5, boxHeight * 0.08] },
+    { size: [boxWidth * 0.9, frameThickness, frameThickness], pos: [0, boxDepth / 2 + 0.5, boxHeight * 0.92] },
+    { size: [frameThickness, frameThickness, boxHeight * 0.84], pos: [boxWidth * 0.44, boxDepth / 2 + 0.5, boxHeight / 2] },
+    { size: [frameThickness, frameThickness, boxHeight * 0.84], pos: [-boxWidth * 0.44, boxDepth / 2 + 0.5, boxHeight / 2] },
+  ];
+  for (const seg of frameSegments) {
+    const geo = new THREE.BoxGeometry(seg.size[0], seg.size[1], seg.size[2]);
+    const mesh = new THREE.Mesh(geo, frameMaterial);
+    mesh.position.set(seg.pos[0], seg.pos[1], seg.pos[2]);
+    group.add(mesh);
+  }
+
+  if (state === 'open') {
+    const arrowColor = 0x22c55e;
+    const arrowMat = new THREE.MeshStandardMaterial({
+      color: arrowColor,
+      roughness: 0.3,
+      metalness: 0.1,
+      transparent: true,
+      opacity: 0.85,
+    });
+
+    const arrowPositions = [
+      [-30, boxHeight * 0.3],
+      [30, boxHeight * 0.3],
+      [-30, boxHeight * 0.7],
+      [30, boxHeight * 0.7],
+    ];
+
+    const isOutlet = airOrientation === 'outflow';
+    const direction = isOutlet ? 1 : -1;
+
+    for (const [x, z] of arrowPositions) {
+      const arrowGroup = new THREE.Group();
+
+      const shaftLength = 15;
+      const coneHeight = 8;
+
+      const shaftGeometry = new THREE.CylinderGeometry(1.2, 1.2, shaftLength, 8);
+      const shaft = new THREE.Mesh(shaftGeometry, arrowMat);
+      shaft.position.y = shaftLength / 2 * direction;
+
+      const coneGeometry = new THREE.ConeGeometry(3.5, coneHeight, 8);
+      const cone = new THREE.Mesh(coneGeometry, arrowMat);
+      if (!isOutlet) {
+        cone.rotation.z = Math.PI;
+      }
+      cone.position.y = (shaftLength + coneHeight / 2) * direction;
+
+      arrowGroup.add(shaft);
+      arrowGroup.add(cone);
+      arrowGroup.position.set(x, boxDepth / 2 + 3, z);
+      arrowGroup.userData = { type: 'sideVentArrow' };
+      group.add(arrowGroup);
+    }
+  }
+
+  return group;
+};
+
 export const createBlockModel = (): THREE.Group => {
   const group = new THREE.Group();
 
