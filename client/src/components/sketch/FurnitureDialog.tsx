@@ -546,7 +546,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       style={{ pointerEvents: 'none' }}
     >
       <div
-        className="relative bg-white rounded-lg shadow-lg border border-gray-200"
+        className="relative bg-white rounded-lg shadow-lg border border-blue-300/60"
         style={{
           left: position.x,
           top: position.y,
