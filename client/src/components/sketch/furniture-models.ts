@@ -363,7 +363,7 @@ export const createDimensionLabel = (text: string, fontSize: number = 28): THREE
   return sprite;
 };
 
-const createDimensionLine = (
+export const createDimensionLine = (
   start: THREE.Vector3,
   end: THREE.Vector3,
   label: string,
@@ -513,40 +513,6 @@ export const createRackModel = (): THREE.Group => {
       group.add(hotArrow);
     }
   }
-
-  const dimOffset = 12;
-  const dimColor = 0x475569;
-
-  const widthDim = createDimensionLine(
-    new THREE.Vector3(-rackWidth / 2, rackDepth / 2 + dimOffset, 0),
-    new THREE.Vector3(rackWidth / 2, rackDepth / 2 + dimOffset, 0),
-    '600 mm',
-    dimColor,
-    new THREE.Vector3(0, 1, 0)
-  );
-  widthDim.userData.dimensionType = 'width';
-  group.add(widthDim);
-
-  const heightDim = createDimensionLine(
-    new THREE.Vector3(rackWidth / 2 + dimOffset, 0, 0),
-    new THREE.Vector3(rackWidth / 2 + dimOffset, 0, rackHeight),
-    '2000 mm',
-    dimColor,
-    new THREE.Vector3(1, 0, 0)
-  );
-  heightDim.userData.dimensionType = 'height';
-  group.add(heightDim);
-
-  const depthDim = createDimensionLine(
-    new THREE.Vector3(-rackWidth / 2 - dimOffset, -rackDepth / 2, 0),
-    new THREE.Vector3(-rackWidth / 2 - dimOffset, rackDepth / 2, 0),
-    '1000 mm',
-    dimColor,
-    new THREE.Vector3(-1, 0, 0)
-  );
-  depthDim.userData.dimensionType = 'depth';
-  depthDim.userData.baseDepthCm = rackDepth;
-  group.add(depthDim);
 
   return group;
 };

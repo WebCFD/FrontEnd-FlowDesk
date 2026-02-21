@@ -309,12 +309,14 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
     return materialType === 'custom' ? customEmissivity : materialDefinitions[materialType as keyof typeof materialDefinitions]?.emissivity || 0.85;
   };
   
-  // Estado para dimensiones (especialmente para objetos custom)
   const [dimensions, setDimensions] = useState({
     width: 100,
     height: 100,
     depth: 100
   });
+
+  const RACK_BASE = { width: 600, height: 2000, depth: 1000 };
+  const [rackDimensions, setRackDimensions] = useState({ ...RACK_BASE });
 
   const [nozzleProps, setNozzleProps] = useState({
     ductLength: 200,
@@ -409,7 +411,6 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       }
       
       if (defaults.scale) {
-        // Apply decimal truncation to initial scale values
         const dialogScale = {
           x: truncateToTwoDecimals(defaults.scale.x),
           y: truncateToTwoDecimals(defaults.scale.y),
@@ -417,6 +418,16 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
         };
         
         setElementScale(dialogScale);
+
+        if (type === 'rack') {
+          setRackDimensions({
+            width: Math.round(dialogScale.x * RACK_BASE.width),
+            height: Math.round(dialogScale.z * RACK_BASE.height),
+            depth: Math.round(dialogScale.y * RACK_BASE.depth),
+          });
+        }
+      } else if (type === 'rack') {
+        setRackDimensions({ ...RACK_BASE });
       }
     }
   }, [dialogOpen, type, isEditing]);
@@ -753,10 +764,10 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           const newScaleX = Number(e.target.value);
                           const newScale = { ...elementScale, x: newScaleX };
                           setElementScale(newScale);
-                          // Real-time update
-                          if (onScaleUpdate) {
-                            onScaleUpdate(newScale);
+                          if (type === 'rack') {
+                            setRackDimensions(prev => ({ ...prev, width: Math.round(newScaleX * RACK_BASE.width) }));
                           }
+                          if (onScaleUpdate) onScaleUpdate(newScale);
                         }}
                         className="text-sm"
                       />
@@ -772,10 +783,10 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           const newScaleY = Number(e.target.value);
                           const newScale = { ...elementScale, y: newScaleY };
                           setElementScale(newScale);
-                          // Real-time update
-                          if (onScaleUpdate) {
-                            onScaleUpdate(newScale);
+                          if (type === 'rack') {
+                            setRackDimensions(prev => ({ ...prev, depth: Math.round(newScaleY * RACK_BASE.depth) }));
                           }
+                          if (onScaleUpdate) onScaleUpdate(newScale);
                         }}
                         className="text-sm"
                       />
@@ -791,10 +802,10 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           const newScaleZ = Number(e.target.value);
                           const newScale = { ...elementScale, z: newScaleZ };
                           setElementScale(newScale);
-                          // Real-time update
-                          if (onScaleUpdate) {
-                            onScaleUpdate(newScale);
+                          if (type === 'rack') {
+                            setRackDimensions(prev => ({ ...prev, height: Math.round(newScaleZ * RACK_BASE.height) }));
                           }
+                          if (onScaleUpdate) onScaleUpdate(newScale);
                         }}
                         className="text-sm"
                       />
@@ -802,30 +813,70 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                   </div>
                 </div>
                 
-                {/* Rack Depth Selector - Only for server rack */}
+                {/* Rack Dimensions - Editable fields in mm */}
                 {type === 'rack' && (
                   <div>
-                    <Label className="text-xs text-slate-600 mb-2 block">Rack Depth</Label>
-                    <Select
-                      value={String(Math.round(elementScale.y * 100))}
-                      onValueChange={(val) => {
-                        const depthPercent = Number(val);
-                        const newScale = { ...elementScale, y: depthPercent / 100 };
-                        setElementScale(newScale);
-                        if (onScaleUpdate) {
-                          onScaleUpdate(newScale);
-                        }
-                      }}
-                    >
-                      <SelectTrigger className="text-sm">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="60">600 mm (23.6")</SelectItem>
-                        <SelectItem value="80">800 mm (31.5")</SelectItem>
-                        <SelectItem value="100">1000 mm (39.4") - Standard</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Label className="text-xs text-slate-600 mb-2 block">Dimensions (mm)</Label>
+                    <div className="grid grid-cols-3 gap-2">
+                      <div>
+                        <Label htmlFor="rack-width" className="text-xs">Width</Label>
+                        <Input
+                          id="rack-width"
+                          type="number"
+                          step="10"
+                          min="100"
+                          value={rackDimensions.width}
+                          onChange={(e) => {
+                            const mm = Number(e.target.value);
+                            const newRackDims = { ...rackDimensions, width: mm };
+                            setRackDimensions(newRackDims);
+                            const newScale = { ...elementScale, x: mm / RACK_BASE.width };
+                            setElementScale(newScale);
+                            if (onScaleUpdate) onScaleUpdate(newScale);
+                          }}
+                          className="text-sm"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="rack-height" className="text-xs">Height</Label>
+                        <Input
+                          id="rack-height"
+                          type="number"
+                          step="10"
+                          min="100"
+                          value={rackDimensions.height}
+                          onChange={(e) => {
+                            const mm = Number(e.target.value);
+                            const newRackDims = { ...rackDimensions, height: mm };
+                            setRackDimensions(newRackDims);
+                            const newScale = { ...elementScale, z: mm / RACK_BASE.height };
+                            setElementScale(newScale);
+                            if (onScaleUpdate) onScaleUpdate(newScale);
+                          }}
+                          className="text-sm"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="rack-depth" className="text-xs">Depth</Label>
+                        <Input
+                          id="rack-depth"
+                          type="number"
+                          step="10"
+                          min="100"
+                          value={rackDimensions.depth}
+                          onChange={(e) => {
+                            const mm = Number(e.target.value);
+                            const newRackDims = { ...rackDimensions, depth: mm };
+                            setRackDimensions(newRackDims);
+                            const newScale = { ...elementScale, y: mm / RACK_BASE.depth };
+                            setElementScale(newScale);
+                            if (onScaleUpdate) onScaleUpdate(newScale);
+                          }}
+                          className="text-sm"
+                        />
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-slate-400 mt-1">Standard 42U: 600 × 2000 × 1000 mm</p>
                   </div>
                 )}
 

@@ -8,7 +8,7 @@ import UnifiedVentDialog from "./UnifiedVentDialog";
 import { ViewDirection } from "./Toolbar3D";
 import { useSceneContext } from "../../contexts/SceneContext";
 import { FurnitureItem, FurnitureCallbacks } from "@shared/furniture-types";
-import { createTableModel, createPersonModel, createArmchairModel, createCarModel, createBlockModel, createRackModel, createDimensionLabel } from "./furniture-models";
+import { createTableModel, createPersonModel, createArmchairModel, createCarModel, createBlockModel, createRackModel, createDimensionLabel, createDimensionLine } from "./furniture-models";
 import { STLProcessor } from "./STLProcessor";
 import { customFurnitureStore } from "@/lib/custom-furniture-store";
 import { useRoomStore } from "@/lib/store/room-store";
@@ -971,41 +971,60 @@ const createFurnitureModel = (
     const sx = model.scale.x;
     const sy = model.scale.y;
     const sz = model.scale.z;
-    const widthMm = Math.round(sx * 60 * 10);
-    const heightMm = Math.round(sz * 200 * 10);
-    const depthMm = Math.round(sy * 100 * 10);
+    const widthCm = sx * 60;
+    const heightCm = sz * 200;
+    const depthCm = sy * 100;
+    const widthMm = Math.round(widthCm * 10);
+    const heightMm = Math.round(heightCm * 10);
+    const depthMm = Math.round(depthCm * 10);
 
-    const replaceLabelInGroup = (group: THREE.Group, text: string) => {
-      const oldSprites: THREE.Sprite[] = [];
-      group.children.forEach((c) => {
-        if (c instanceof THREE.Sprite) oldSprites.push(c as THREE.Sprite);
-      });
-      let labelPos = new THREE.Vector3(0, 0, 0);
-      if (oldSprites.length > 0) {
-        labelPos = oldSprites[0].position.clone();
-      }
-      oldSprites.forEach((s) => {
-        s.material.dispose();
-        (s.material as THREE.SpriteMaterial).map?.dispose();
-        group.remove(s);
-      });
-      const newLabel = createDimensionLabel(text);
-      newLabel.position.copy(labelPos);
-      newLabel.scale.x /= sx;
-      newLabel.scale.y /= sy;
-      newLabel.scale.z /= sz;
-      group.add(newLabel);
-    };
+    const dimOffset = 12;
+    const dimColor = 0x475569;
+    const dimGroup = new THREE.Group();
+    dimGroup.userData = { type: 'rackDimensions', furnitureId: furnitureItem.id };
 
-    model.traverse((child) => {
-      if (child.userData.dimensionType === 'width') {
-        replaceLabelInGroup(child as THREE.Group, `${widthMm} mm`);
-      } else if (child.userData.dimensionType === 'height') {
-        replaceLabelInGroup(child as THREE.Group, `${heightMm} mm`);
-      } else if (child.userData.dimensionType === 'depth') {
-        replaceLabelInGroup(child as THREE.Group, `${depthMm} mm`);
-      }
-    });
+    dimGroup.position.set(
+      furnitureItem.position.x,
+      furnitureItem.position.y,
+      furnitureItem.position.z
+    );
+    dimGroup.rotation.set(
+      furnitureItem.rotation.x,
+      furnitureItem.rotation.y,
+      furnitureItem.rotation.z
+    );
+
+    const hw = widthCm / 2;
+    const hd = depthCm / 2;
+
+    const widthDim = createDimensionLine(
+      new THREE.Vector3(-hw, hd + dimOffset, 0),
+      new THREE.Vector3(hw, hd + dimOffset, 0),
+      `${widthMm} mm`,
+      dimColor,
+      new THREE.Vector3(0, 1, 0)
+    );
+    dimGroup.add(widthDim);
+
+    const heightDim = createDimensionLine(
+      new THREE.Vector3(hw + dimOffset, 0, 0),
+      new THREE.Vector3(hw + dimOffset, 0, heightCm),
+      `${heightMm} mm`,
+      dimColor,
+      new THREE.Vector3(1, 0, 0)
+    );
+    dimGroup.add(heightDim);
+
+    const depthDim = createDimensionLine(
+      new THREE.Vector3(-hw - dimOffset, -hd, 0),
+      new THREE.Vector3(-hw - dimOffset, hd, 0),
+      `${depthMm} mm`,
+      dimColor,
+      new THREE.Vector3(-1, 0, 0)
+    );
+    dimGroup.add(depthDim);
+
+    scene.add(dimGroup);
   }
 
   // Add metadata to the model for identification
@@ -5194,7 +5213,11 @@ export default function Canvas3D({
         return;
       }
       
-      // Remove all other meshes, sprites, and arrow helpers
+      if (object.userData?.type === 'rackDimensions') {
+        toRemove.push(object);
+        return;
+      }
+
       if (
         object instanceof THREE.Mesh ||
         object instanceof THREE.Sprite ||
