@@ -2379,6 +2379,7 @@ export default function Canvas3D({
   }, [currentFloor]);
 
   const isMeasureModeRef = useRef(false);
+  const lastRightClickTimeRef = useRef(0);
 
   // Store the positions and dimensions of air entries that have been updated
   // This is used to ensure they keep their properties when the scene is rebuilt
@@ -3741,37 +3742,80 @@ export default function Canvas3D({
     };
 
     const handleRightMouseDown = (event: MouseEvent) => {
-      // Disable right-click interactions in presentation mode
       if (presentationMode) return;
       
-      // Prevent the default context menu
       event.preventDefault();
 
-      // Use the ref for reliable measure mode status
-      console.log("RIGHT MOUSE DOWN - Checking measure mode:", {
-        isMeasureModeRef: isMeasureModeRef.current,
-        isMeasureMode: isMeasureMode
-      });
-
-      // Debug logging removed with drag functionality
-
-      // Use the ref to determine if we're in measure mode
       if (isMeasureModeRef.current) {
-        console.log("DIVERTING TO MEASUREMENT HANDLER");
         handleMeasurementMouseDown(event);
         return;
       }
 
-      console.log("Right mouse down detected"); // This should NOT print in measure mode
-
-      // If we're in measure mode, handle measurement instead of regular operations
       if (isMeasuring) {
         handleMeasurementMouseDown(event);
         return;
       }
 
-      // Only process right mouse button (button code 2) for normal operations
       if (event.button !== 2) return;
+
+      const now = Date.now();
+      const DOUBLE_CLICK_THRESHOLD = 500;
+      const timeSinceLastClick = now - lastRightClickTimeRef.current;
+      lastRightClickTimeRef.current = now;
+
+      if (timeSinceLastClick < DOUBLE_CLICK_THRESHOLD) {
+        const canvas = containerRef.current;
+        if (!canvas || !cameraRef.current || !sceneRef.current) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const mouse = new THREE.Vector2(
+          ((event.clientX - rect.left) / rect.width) * 2 - 1,
+          -((event.clientY - rect.top) / rect.height) * 2 + 1
+        );
+
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(mouse, cameraRef.current);
+
+        const furnitureObjects: THREE.Object3D[] = [];
+        sceneRef.current.traverse((object) => {
+          if (object.userData.type === 'furniture') {
+            furnitureObjects.push(object);
+          } else if (object instanceof THREE.Mesh && object.parent?.userData.type === 'furniture') {
+            furnitureObjects.push(object);
+          }
+        });
+
+        const intersects = raycaster.intersectObjects(furnitureObjects, true);
+        if (intersects.length > 0) {
+          let furnitureGroup = intersects[0].object as THREE.Object3D;
+          while (furnitureGroup && furnitureGroup.userData.type !== 'furniture') {
+            furnitureGroup = furnitureGroup.parent!;
+          }
+
+          if (furnitureGroup?.userData.type === 'furniture') {
+            const furnitureId = furnitureGroup.userData.furnitureId;
+            const floorName = furnitureGroup.userData.floorName || currentFloor;
+            const reactiveFloors = useRoomStore.getState().floors;
+            const floorData = reactiveFloors[floorName];
+            const actualItem = floorData?.furnitureItems?.find((item: any) => item.id === furnitureId);
+
+            if (actualItem) {
+              setFurnitureContextMenu({
+                x: event.clientX,
+                y: event.clientY,
+                item: { ...actualItem },
+                floorName,
+                meshScale: {
+                  x: furnitureGroup.scale.x,
+                  y: furnitureGroup.scale.y,
+                  z: furnitureGroup.scale.z,
+                },
+              });
+              return;
+            }
+          }
+        }
+      }
 
       // Get mouse position for raycasting
       const canvas = containerRef.current;
@@ -4677,10 +4721,7 @@ export default function Canvas3D({
 
     // Now add the event listeners
 
-    // Clear and specific event binding
-    canvas.addEventListener("contextmenu", (e) => {
-      e.preventDefault();
-    });
+    // contextmenu is handled by handleFurnitureContextMenu below
 
     // Handle eraser clicks
     const handleEraserClick = (event: MouseEvent) => {
@@ -6240,69 +6281,8 @@ export default function Canvas3D({
       }
     };
 
-    let lastRightClickTime = 0;
-    const DOUBLE_CLICK_THRESHOLD = 400;
-
-    const handleFurnitureDoubleRightClick = (event: MouseEvent) => {
-      if (event.button !== 2) return;
-      
-      const now = Date.now();
-      if (now - lastRightClickTime < DOUBLE_CLICK_THRESHOLD) {
-        if (presentationMode) return;
-        if (!sceneRef.current || !cameraRef.current) return;
-
-        const rect = container.getBoundingClientRect();
-        const mouse = new THREE.Vector2(
-          ((event.clientX - rect.left) / rect.width) * 2 - 1,
-          -((event.clientY - rect.top) / rect.height) * 2 + 1
-        );
-
-        const raycaster = new THREE.Raycaster();
-        raycaster.setFromCamera(mouse, cameraRef.current);
-
-        const furnitureObjects: THREE.Object3D[] = [];
-        sceneRef.current.traverse((object) => {
-          if (object.userData.type === 'furniture') {
-            furnitureObjects.push(object);
-          } else if (object instanceof THREE.Mesh && object.parent?.userData.type === 'furniture') {
-            furnitureObjects.push(object);
-          }
-        });
-
-        const intersects = raycaster.intersectObjects(furnitureObjects, true);
-        if (intersects.length > 0) {
-          event.preventDefault();
-          event.stopImmediatePropagation();
-
-          let furnitureGroup = intersects[0].object as THREE.Object3D;
-          while (furnitureGroup && furnitureGroup.userData.type !== 'furniture') {
-            furnitureGroup = furnitureGroup.parent!;
-          }
-
-          if (furnitureGroup?.userData.type === 'furniture') {
-            const furnitureId = furnitureGroup.userData.furnitureId;
-            const floorName = furnitureGroup.userData.floorName || currentFloor;
-            const reactiveFloors = useRoomStore.getState().floors;
-            const floorData = reactiveFloors[floorName];
-            const actualItem = floorData?.furnitureItems?.find((item: FurnitureItem) => item.id === furnitureId);
-
-            if (actualItem) {
-              setFurnitureContextMenu({
-                x: event.clientX,
-                y: event.clientY,
-                item: { ...actualItem },
-                floorName,
-                meshScale: {
-                  x: furnitureGroup.scale.x,
-                  y: furnitureGroup.scale.y,
-                  z: furnitureGroup.scale.z,
-                },
-              });
-            }
-          }
-        }
-      }
-      lastRightClickTime = now;
+    const handleContainerContextMenu = (event: MouseEvent) => {
+      event.preventDefault();
     };
 
     container.addEventListener("dragenter", handleDragEnter);
@@ -6311,7 +6291,7 @@ export default function Canvas3D({
     container.addEventListener("drop", handleDrop);
     container.addEventListener("dblclick", handleFurnitureDoubleClick);
     container.addEventListener("click", handleClick);
-    container.addEventListener("mouseup", handleFurnitureDoubleRightClick);
+    container.addEventListener("contextmenu", handleContainerContextMenu);
 
     return () => {
       container.removeEventListener("dragenter", handleDragEnter);
@@ -6320,7 +6300,7 @@ export default function Canvas3D({
       container.removeEventListener("drop", handleDrop);
       container.removeEventListener("dblclick", handleFurnitureDoubleClick);
       container.removeEventListener("click", handleClick);
-      container.removeEventListener("mouseup", handleFurnitureDoubleRightClick);
+      container.removeEventListener("contextmenu", handleContainerContextMenu);
     };
   }, [currentFloor, onFurnitureAdd, isMultifloor, floorParameters, isFurnitureEraserMode, onDeleteFurniture]);
 
