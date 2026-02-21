@@ -81,7 +81,7 @@ const furnitureItems: FurnitureItem[] = [
   },
   {
     id: 'rack',
-    name: 'Rack',
+    name: 'Server Rack',
     icon: `
       <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect x="10" y="3" width="20" height="34" rx="1" fill="#2d2d2d" stroke="#555" stroke-width="1.5"/>
@@ -95,7 +95,7 @@ const furnitureItems: FurnitureItem[] = [
         <path d="M35 26 L30 23 L30 29 Z" fill="#ef4444"/>
       </svg>
     `,
-    defaultDimensions: { width: 60, height: 180, depth: 60 }
+    defaultDimensions: { width: 60, height: 200, depth: 100 }
   },
   {
     id: 'vent',

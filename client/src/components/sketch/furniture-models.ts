@@ -317,8 +317,8 @@ export const createRackModel = (): THREE.Group => {
   const group = new THREE.Group();
 
   const rackWidth = 60;
-  const rackDepth = 60;
-  const rackHeight = 180;
+  const rackDepth = 100;
+  const rackHeight = 200;
 
   const rackMaterial = new THREE.MeshStandardMaterial({
     color: 0x2d2d2d,
@@ -337,10 +337,10 @@ export const createRackModel = (): THREE.Group => {
     metalness: 0.2,
   });
 
-  const slotCount = 8;
+  const slotCount = 10;
   const slotSpacing = rackHeight / (slotCount + 1);
   for (let i = 1; i <= slotCount; i++) {
-    const slotGeometry = new THREE.BoxGeometry(rackWidth * 0.85, 1, rackHeight * 0.06);
+    const slotGeometry = new THREE.BoxGeometry(rackWidth * 0.85, 1, rackHeight * 0.045);
     const slot = new THREE.Mesh(slotGeometry, slotMaterial);
     slot.position.set(0, rackDepth / 2 + 0.5, i * slotSpacing);
     group.add(slot);
@@ -350,7 +350,7 @@ export const createRackModel = (): THREE.Group => {
     group.add(slotBack);
   }
 
-  const createArrow = (color: number, direction: 'in' | 'out') => {
+  const createArrow = (color: number) => {
     const arrowGroup = new THREE.Group();
     const arrowMat = new THREE.MeshStandardMaterial({
       color,
@@ -360,13 +360,13 @@ export const createRackModel = (): THREE.Group => {
       opacity: 0.85,
     });
 
-    const shaftLength = 18;
-    const coneHeight = 8;
+    const shaftLength = 20;
+    const coneHeight = 10;
 
-    const shaftGeometry = new THREE.CylinderGeometry(1.2, 1.2, shaftLength, 8);
+    const shaftGeometry = new THREE.CylinderGeometry(1.5, 1.5, shaftLength, 8);
     const shaft = new THREE.Mesh(shaftGeometry, arrowMat);
 
-    const coneGeometry = new THREE.ConeGeometry(3, coneHeight, 8);
+    const coneGeometry = new THREE.ConeGeometry(4, coneHeight, 8);
     const cone = new THREE.Mesh(coneGeometry, arrowMat);
 
     cone.rotation.z = Math.PI;
@@ -379,23 +379,23 @@ export const createRackModel = (): THREE.Group => {
     return arrowGroup;
   };
 
-  const arrowRows = 3;
+  const arrowRows = 4;
   const arrowCols = 2;
-  const xSpacing = rackWidth * 0.55 / arrowCols;
+  const xSpacing = rackWidth * 0.5 / arrowCols;
   const zSpacing = rackHeight * 0.6 / arrowRows;
-  const zStart = rackHeight * 0.25;
+  const zStart = rackHeight * 0.2;
 
   for (let r = 0; r < arrowRows; r++) {
     for (let c = 0; c < arrowCols; c++) {
       const x = -xSpacing * (arrowCols - 1) / 2 + c * xSpacing;
       const z = zStart + r * zSpacing;
 
-      const coldArrow = createArrow(0x3b82f6, 'in');
-      coldArrow.position.set(x, rackDepth / 2 + 15, z);
+      const coldArrow = createArrow(0x3b82f6);
+      coldArrow.position.set(x, rackDepth / 2 + 20, z);
       group.add(coldArrow);
 
-      const hotArrow = createArrow(0xef4444, 'out');
-      hotArrow.position.set(x, -(rackDepth / 2 + 15), z);
+      const hotArrow = createArrow(0xef4444);
+      hotArrow.position.set(x, -(rackDepth / 2 + 20), z);
       group.add(hotArrow);
     }
   }

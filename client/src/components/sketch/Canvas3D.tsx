@@ -295,7 +295,7 @@ const generateFurnitureId = (
     'person': 'Person',
     'car': 'Car',
     'block': 'Block',
-    'rack': 'Rack',
+    'rack': 'Server Rack',
     'vent': 'Vent',
     'custom': 'Obj'
   };
@@ -1029,7 +1029,7 @@ const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car' | 'b
     case 'block':
       return { width: 80, height: 80, depth: 80 };
     case 'rack':
-      return { width: 60, height: 180, depth: 60 };
+      return { width: 60, height: 200, depth: 100 };
     case 'vent':
       return { width: 50, height: 50, depth: 10 };
     case 'nozzle':

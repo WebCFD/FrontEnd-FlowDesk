@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { X, Move } from "lucide-react";
 import type { FurnitureItem } from "@shared/furniture-types";
 
-type FurnitureType = 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent' | 'nozzle' | 'custom';
+type FurnitureType = 'table' | 'person' | 'armchair' | 'car' | 'block' | 'rack' | 'vent' | 'nozzle' | 'custom';
 
 interface FurnitureDialogProps {
   type: FurnitureType;
@@ -655,8 +655,8 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                             onPositionUpdate(newPosition);
                           }
                         }}
-                        disabled={type !== 'block' && type !== 'vent' && type !== 'nozzle'}
-                        className={`text-sm ${type !== 'block' && type !== 'vent' && type !== 'nozzle' ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
+                        disabled={type !== 'block' && type !== 'rack' && type !== 'vent' && type !== 'nozzle'}
+                        className={`text-sm ${type !== 'block' && type !== 'rack' && type !== 'vent' && type !== 'nozzle' ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
                       />
                     </div>
                   </div>
@@ -802,6 +802,33 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                   </div>
                 </div>
                 
+                {/* Rack Depth Selector - Only for server rack */}
+                {type === 'rack' && (
+                  <div>
+                    <Label className="text-xs text-slate-600 mb-2 block">Rack Depth</Label>
+                    <Select
+                      value={String(Math.round(elementScale.y * 100))}
+                      onValueChange={(val) => {
+                        const depthPercent = Number(val);
+                        const newScale = { ...elementScale, y: depthPercent / 100 };
+                        setElementScale(newScale);
+                        if (onScaleUpdate) {
+                          onScaleUpdate(newScale);
+                        }
+                      }}
+                    >
+                      <SelectTrigger className="text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="60">600 mm (23.6")</SelectItem>
+                        <SelectItem value="80">800 mm (31.5")</SelectItem>
+                        <SelectItem value="100">1000 mm (39.4") - Standard</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+
                 {/* Dimensions - Only for custom objects */}
                 {type === 'custom' && (
                   <div>
