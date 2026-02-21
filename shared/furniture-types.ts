@@ -5,7 +5,7 @@
 
 export interface FurnitureItem {
   id: string;
-  type: 'table' | 'person' | 'armchair' | 'car' | 'block' | 'rack' | 'vent' | 'nozzle' | 'custom';
+  type: 'table' | 'person' | 'armchair' | 'block' | 'rack' | 'vent' | 'nozzle' | 'custom';
   name: string;
   floorName: string;
   position: { x: number; y: number; z: number };
@@ -36,6 +36,12 @@ export interface FurnitureItem {
     horizontalAngle?: number;
     airTemperature?: number;
     normalVector?: { x: number; y: number; z: number };
+  };
+  
+  serverProperties?: {
+    rackDensity: 'low' | 'medium' | 'high' | 'custom';
+    thermalPower: number;
+    airFlow: number;
   };
   
   nozzleProperties?: {

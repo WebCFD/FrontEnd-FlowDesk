@@ -699,6 +699,13 @@ export function generateSimulationData(
         emissivity: properties.emissivity || 0.90
       };
       
+      // Add rack-specific server properties if this is a rack
+      const serverProperties = obj.userData?.furnitureType === 'rack' && obj.userData?.serverProperties ? {
+        rackDensity: obj.userData.serverProperties.rackDensity,
+        thermalPower: obj.userData.serverProperties.thermalPower,
+        airFlow: obj.userData.serverProperties.airFlow
+      } : {};
+      
       // Add vent-specific properties if this is a vent
       const ventSpecificProperties = obj.userData?.furnitureType === 'vent' ? {
         flowType: simulationProperties.flowType,
@@ -740,7 +747,8 @@ export function generateSimulationData(
         // Include simulation properties for ALL furniture types
         simulationProperties: {
           ...baseSimulationProperties,
-          ...ventSpecificProperties
+          ...ventSpecificProperties,
+          ...serverProperties
         }
       };
 
@@ -1143,7 +1151,7 @@ function getFurnitureTypeForId(furnitureType?: string): string {
     case 'table': return 'table';
     case 'person': return 'person';
     case 'armchair': return 'armchair';
-    case 'car': return 'car';
+    case 'rack': return 'rack';
     case 'block': return 'block';
     case 'vent': return 'vent_furniture';
     case 'custom': return 'custom';

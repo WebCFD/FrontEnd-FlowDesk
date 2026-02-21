@@ -30,7 +30,7 @@ import { generateSimulationData, denormalizeCoordinates } from "@/lib/simulation
 import * as THREE from "three";
 
 // Helper function for default dimensions (matching Canvas3D)
-const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent' | 'nozzle' | 'custom') => {
+const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'block' | 'rack' | 'vent' | 'nozzle' | 'custom') => {
   switch (type) {
     case 'table':
       return { width: 120, height: 75, depth: 80 };
@@ -38,10 +38,10 @@ const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car' | 'b
       return { width: 50, height: 170, depth: 30 };
     case 'armchair':
       return { width: 70, height: 85, depth: 70 };
-    case 'car':
-      return { width: 450, height: 150, depth: 180 };
     case 'block':
       return { width: 80, height: 80, depth: 80 };
+    case 'rack':
+      return { width: 60, height: 200, depth: 100 };
     case 'vent':
       return { width: 50, height: 50, depth: 10 };
     case 'nozzle':
@@ -3118,6 +3118,7 @@ export default function WizardDesign() {
               surfaceType: furnitureItem.surfaceType, // Include surface type for accurate export classification
               properties: furnitureItem.properties, // Include thermal properties for JSON export
               simulationProperties: furnitureItem.simulationProperties, // Include simulation properties for JSON export
+              serverProperties: furnitureItem.serverProperties, // Include server/rack properties for JSON export
               filePath: furnitureItem.filePath // Include STL file path for custom objects
             },
             position: {
@@ -4031,11 +4032,11 @@ export default function WizardDesign() {
             };
             
             // Mapear tipos conocidos o usar 'block' como fallback
-            const mappedType = ['table', 'person', 'armchair', 'car', 'block'].includes(furnitureType) 
+            const mappedType = ['table', 'person', 'armchair', 'block', 'rack'].includes(furnitureType) 
               ? furnitureType 
               : 'block';
             
-            furnitureItems.push({
+            const furnitureEntry: any = {
               id: item.id,
               type: mappedType as const,
               name: item.id,
@@ -4055,10 +4056,9 @@ export default function WizardDesign() {
                 y: item.scale?.y || 1, 
                 z: item.scale?.z || 1 
               },
-              // Usar dimensiones default SIN aplicar escala aquí (la escala se maneja por separado)
               dimensions: getDefaultDimensions(mappedType),
               properties: {
-                material: 'wood', // Default material
+                material: 'wood',
                 emissivity: item.simulationProperties?.emissivity || 0.9,
                 temperature: item.simulationProperties?.temperature || 20
               },
@@ -4066,7 +4066,17 @@ export default function WizardDesign() {
                 temperature: item.simulationProperties?.temperature || 20,
                 emissivity: item.simulationProperties?.emissivity || 0.9
               }
-            });
+            };
+            
+            if (mappedType === 'rack' && item.simulationProperties) {
+              furnitureEntry.serverProperties = {
+                rackDensity: item.simulationProperties.rackDensity || 'medium',
+                thermalPower: item.simulationProperties.thermalPower || 10,
+                airFlow: item.simulationProperties.airFlow || 2395
+              };
+            }
+            
+            furnitureItems.push(furnitureEntry);
           });
         }
 
