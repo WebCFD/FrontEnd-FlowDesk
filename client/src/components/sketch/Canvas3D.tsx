@@ -6240,82 +6240,69 @@ export default function Canvas3D({
       }
     };
 
-    let rightClickPending: { x: number; y: number; clientX: number; clientY: number } | null = null;
+    let lastRightClickTime = 0;
+    const DOUBLE_CLICK_THRESHOLD = 400;
 
-    const handleRightMouseDown = (event: MouseEvent) => {
+    const handleFurnitureDoubleRightClick = (event: MouseEvent) => {
       if (event.button !== 2) return;
-      if (presentationMode) return;
-      if (!sceneRef.current || !cameraRef.current) return;
+      
+      const now = Date.now();
+      if (now - lastRightClickTime < DOUBLE_CLICK_THRESHOLD) {
+        if (presentationMode) return;
+        if (!sceneRef.current || !cameraRef.current) return;
 
-      const canvasEl = rendererRef.current?.domElement || container.querySelector('canvas');
-      const rect = canvasEl ? canvasEl.getBoundingClientRect() : container.getBoundingClientRect();
-      const mouse = new THREE.Vector2(
-        ((event.clientX - rect.left) / rect.width) * 2 - 1,
-        -((event.clientY - rect.top) / rect.height) * 2 + 1
-      );
+        const rect = container.getBoundingClientRect();
+        const mouse = new THREE.Vector2(
+          ((event.clientX - rect.left) / rect.width) * 2 - 1,
+          -((event.clientY - rect.top) / rect.height) * 2 + 1
+        );
 
-      const raycaster = new THREE.Raycaster();
-      raycaster.setFromCamera(mouse, cameraRef.current);
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera(mouse, cameraRef.current);
 
-      const furnitureObjects: THREE.Object3D[] = [];
-      sceneRef.current.traverse((object) => {
-        if (object.userData.type === 'furniture') {
-          furnitureObjects.push(object);
-        } else if (object instanceof THREE.Mesh && object.parent?.userData.type === 'furniture') {
-          furnitureObjects.push(object);
-        }
-      });
+        const furnitureObjects: THREE.Object3D[] = [];
+        sceneRef.current.traverse((object) => {
+          if (object.userData.type === 'furniture') {
+            furnitureObjects.push(object);
+          } else if (object instanceof THREE.Mesh && object.parent?.userData.type === 'furniture') {
+            furnitureObjects.push(object);
+          }
+        });
 
-      const intersects = raycaster.intersectObjects(furnitureObjects, true);
-      if (intersects.length > 0) {
-        rightClickPending = { x: event.clientX, y: event.clientY, clientX: event.clientX, clientY: event.clientY };
+        const intersects = raycaster.intersectObjects(furnitureObjects, true);
+        if (intersects.length > 0) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
 
-        let furnitureGroup = intersects[0].object as THREE.Object3D;
-        while (furnitureGroup && furnitureGroup.userData.type !== 'furniture') {
-          furnitureGroup = furnitureGroup.parent!;
-        }
-
-        if (furnitureGroup?.userData.type === 'furniture') {
-          if (controlsRef.current) {
-            controlsRef.current.enabled = false;
+          let furnitureGroup = intersects[0].object as THREE.Object3D;
+          while (furnitureGroup && furnitureGroup.userData.type !== 'furniture') {
+            furnitureGroup = furnitureGroup.parent!;
           }
 
-          const furnitureId = furnitureGroup.userData.furnitureId;
-          const floorName = furnitureGroup.userData.floorName || currentFloor;
-          const reactiveFloors = useRoomStore.getState().floors;
-          const floorData = reactiveFloors[floorName];
-          const actualItem = floorData?.furnitureItems?.find((item: FurnitureItem) => item.id === furnitureId);
+          if (furnitureGroup?.userData.type === 'furniture') {
+            const furnitureId = furnitureGroup.userData.furnitureId;
+            const floorName = furnitureGroup.userData.floorName || currentFloor;
+            const reactiveFloors = useRoomStore.getState().floors;
+            const floorData = reactiveFloors[floorName];
+            const actualItem = floorData?.furnitureItems?.find((item: FurnitureItem) => item.id === furnitureId);
 
-          if (actualItem) {
-            setFurnitureContextMenu({
-              x: event.clientX,
-              y: event.clientY,
-              item: { ...actualItem },
-              floorName,
-              meshScale: {
-                x: furnitureGroup.scale.x,
-                y: furnitureGroup.scale.y,
-                z: furnitureGroup.scale.z,
-              },
-            });
+            if (actualItem) {
+              setFurnitureContextMenu({
+                x: event.clientX,
+                y: event.clientY,
+                item: { ...actualItem },
+                floorName,
+                meshScale: {
+                  x: furnitureGroup.scale.x,
+                  y: furnitureGroup.scale.y,
+                  z: furnitureGroup.scale.z,
+                },
+              });
+            }
           }
         }
-      } else {
-        rightClickPending = null;
       }
-    };
-
-    const handleFurnitureContextMenu = (event: MouseEvent) => {
-      if (rightClickPending) {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        rightClickPending = null;
-        setTimeout(() => {
-          if (controlsRef.current) {
-            controlsRef.current.enabled = true;
-          }
-        }, 100);
-      }
+      lastRightClickTime = now;
     };
 
     container.addEventListener("dragenter", handleDragEnter);
@@ -6324,8 +6311,7 @@ export default function Canvas3D({
     container.addEventListener("drop", handleDrop);
     container.addEventListener("dblclick", handleFurnitureDoubleClick);
     container.addEventListener("click", handleClick);
-    container.addEventListener("mousedown", handleRightMouseDown, true);
-    container.addEventListener("contextmenu", handleFurnitureContextMenu, true);
+    container.addEventListener("mouseup", handleFurnitureDoubleRightClick);
 
     return () => {
       container.removeEventListener("dragenter", handleDragEnter);
@@ -6334,8 +6320,7 @@ export default function Canvas3D({
       container.removeEventListener("drop", handleDrop);
       container.removeEventListener("dblclick", handleFurnitureDoubleClick);
       container.removeEventListener("click", handleClick);
-      container.removeEventListener("mousedown", handleRightMouseDown, true);
-      container.removeEventListener("contextmenu", handleFurnitureContextMenu, true);
+      container.removeEventListener("mouseup", handleFurnitureDoubleRightClick);
     };
   }, [currentFloor, onFurnitureAdd, isMultifloor, floorParameters, isFurnitureEraserMode, onDeleteFurniture]);
 
@@ -6516,7 +6501,6 @@ export default function Canvas3D({
     }
 
     setFurnitureContextMenu(null);
-    if (controlsRef.current) controlsRef.current.enabled = true;
   }, [furnitureContextMenu, finalFloors, onFurnitureAdd, onDeleteFurniture, onFurnitureAdded]);
 
   // Memoize simulation properties from 3D object to prevent infinite loops
@@ -6808,8 +6792,8 @@ export default function Canvas3D({
         {furnitureContextMenu && (
           <div
             className="fixed inset-0 z-50"
-            onClick={() => { setFurnitureContextMenu(null); if (controlsRef.current) controlsRef.current.enabled = true; }}
-            onContextMenu={(e) => { e.preventDefault(); setFurnitureContextMenu(null); if (controlsRef.current) controlsRef.current.enabled = true; }}
+            onClick={() => setFurnitureContextMenu(null)}
+            onContextMenu={(e) => { e.preventDefault(); setFurnitureContextMenu(null); }}
           >
             <div
               className="absolute bg-white rounded-lg shadow-xl border border-slate-200 py-1 min-w-[160px]"
@@ -6823,7 +6807,6 @@ export default function Canvas3D({
                 className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-2 transition-colors"
                 onClick={() => {
                   setFurnitureContextMenu(null);
-                  if (controlsRef.current) controlsRef.current.enabled = true;
                   const floorName = furnitureContextMenu.floorName;
                   const item = furnitureContextMenu.item;
                   const furnitureGroup = (() => {
@@ -6865,7 +6848,6 @@ export default function Canvas3D({
                     onDeleteFurniture(furnitureContextMenu.floorName, furnitureContextMenu.item.id);
                   }
                   setFurnitureContextMenu(null);
-                  if (controlsRef.current) controlsRef.current.enabled = true;
                 }}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
