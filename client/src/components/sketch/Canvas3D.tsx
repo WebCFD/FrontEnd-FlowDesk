@@ -6224,16 +6224,13 @@ export default function Canvas3D({
 
     const handleContainerContextMenu = (event: MouseEvent) => {
       event.preventDefault();
-      console.log("📋 [CONTEXT MENU] contextmenu event fired!", { clientX: event.clientX, clientY: event.clientY, target: (event.target as HTMLElement)?.tagName });
-      if (presentationMode) { console.log("📋 [CONTEXT MENU] Blocked: presentationMode"); return; }
-      if (!sceneRef.current || !cameraRef.current || !containerRef.current) { console.log("📋 [CONTEXT MENU] Blocked: missing refs", { scene: !!sceneRef.current, camera: !!cameraRef.current, container: !!containerRef.current }); return; }
+      if (!sceneRef.current || !cameraRef.current || !containerRef.current) return;
 
       const rect = containerRef.current.getBoundingClientRect();
       const mouse = new THREE.Vector2(
         ((event.clientX - rect.left) / rect.width) * 2 - 1,
         -((event.clientY - rect.top) / rect.height) * 2 + 1
       );
-      console.log("📋 [CONTEXT MENU] Mouse NDC:", { x: mouse.x, y: mouse.y });
 
       const raycaster = new THREE.Raycaster();
       raycaster.setFromCamera(mouse, cameraRef.current);
@@ -6246,27 +6243,22 @@ export default function Canvas3D({
           furnitureObjects.push(object);
         }
       });
-      console.log("📋 [CONTEXT MENU] Furniture objects found in scene:", furnitureObjects.length, furnitureObjects.map(o => ({ name: o.name, type: o.userData.type, id: o.userData.furnitureId })));
 
       const intersects = raycaster.intersectObjects(furnitureObjects, true);
-      console.log("📋 [CONTEXT MENU] Raycast intersections:", intersects.length, intersects.map(i => ({ name: i.object.name, type: i.object.userData?.type, distance: i.distance })));
       if (intersects.length > 0) {
         let furnitureGroup = intersects[0].object as THREE.Object3D;
         while (furnitureGroup && furnitureGroup.userData.type !== 'furniture') {
           furnitureGroup = furnitureGroup.parent!;
         }
 
-        console.log("📋 [CONTEXT MENU] Furniture group found:", { type: furnitureGroup?.userData.type, id: furnitureGroup?.userData.furnitureId, floorName: furnitureGroup?.userData.floorName });
         if (furnitureGroup?.userData.type === 'furniture') {
           const furnitureId = furnitureGroup.userData.furnitureId;
           const floorName = furnitureGroup.userData.floorName || currentFloor;
           const reactiveFloors = useRoomStore.getState().floors;
           const floorData = reactiveFloors[floorName];
           const actualItem = floorData?.furnitureItems?.find((item: any) => item.id === furnitureId);
-          console.log("📋 [CONTEXT MENU] Store lookup:", { furnitureId, floorName, hasFloorData: !!floorData, itemCount: floorData?.furnitureItems?.length, foundItem: !!actualItem });
 
           if (actualItem) {
-            console.log("📋 [CONTEXT MENU] ✅ Opening context menu!");
             setFurnitureContextMenu({
               x: event.clientX,
               y: event.clientY,
@@ -6280,8 +6272,6 @@ export default function Canvas3D({
             });
           }
         }
-      } else {
-        console.log("📋 [CONTEXT MENU] No furniture under cursor");
       }
     };
 
