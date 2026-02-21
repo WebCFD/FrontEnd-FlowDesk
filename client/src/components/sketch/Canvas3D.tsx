@@ -968,27 +968,42 @@ const createFurnitureModel = (
   }
 
   if (furnitureItem.type === 'rack') {
-    const totalScaleY = model.scale.y;
-    const baseDepthCm = 100;
-    const depthMm = Math.round(totalScaleY * baseDepthCm * 10);
+    const sx = model.scale.x;
+    const sy = model.scale.y;
+    const sz = model.scale.z;
+    const widthMm = Math.round(sx * 60 * 10);
+    const heightMm = Math.round(sz * 200 * 10);
+    const depthMm = Math.round(sy * 100 * 10);
+
+    const replaceLabelInGroup = (group: THREE.Group, text: string) => {
+      const oldSprites: THREE.Sprite[] = [];
+      group.children.forEach((c) => {
+        if (c instanceof THREE.Sprite) oldSprites.push(c as THREE.Sprite);
+      });
+      let labelPos = new THREE.Vector3(0, 0, 0);
+      if (oldSprites.length > 0) {
+        labelPos = oldSprites[0].position.clone();
+      }
+      oldSprites.forEach((s) => {
+        s.material.dispose();
+        (s.material as THREE.SpriteMaterial).map?.dispose();
+        group.remove(s);
+      });
+      const newLabel = createDimensionLabel(text);
+      newLabel.position.copy(labelPos);
+      newLabel.scale.x /= sx;
+      newLabel.scale.y /= sy;
+      newLabel.scale.z /= sz;
+      group.add(newLabel);
+    };
+
     model.traverse((child) => {
-      if (child.userData.dimensionType === 'depth') {
-        const depthGroup = child as THREE.Group;
-        const oldSprites: THREE.Sprite[] = [];
-        depthGroup.children.forEach((c) => {
-          if (c instanceof THREE.Sprite) {
-            oldSprites.push(c as THREE.Sprite);
-          }
-        });
-        oldSprites.forEach((s) => {
-          s.material.dispose();
-          (s.material as THREE.SpriteMaterial).map?.dispose();
-          depthGroup.remove(s);
-        });
-        const newLabel = createDimensionLabel(`${depthMm} mm`);
-        newLabel.position.set(-42, 0, 0);
-        newLabel.scale.y /= totalScaleY;
-        depthGroup.add(newLabel);
+      if (child.userData.dimensionType === 'width') {
+        replaceLabelInGroup(child as THREE.Group, `${widthMm} mm`);
+      } else if (child.userData.dimensionType === 'height') {
+        replaceLabelInGroup(child as THREE.Group, `${heightMm} mm`);
+      } else if (child.userData.dimensionType === 'depth') {
+        replaceLabelInGroup(child as THREE.Group, `${depthMm} mm`);
       }
     });
   }
