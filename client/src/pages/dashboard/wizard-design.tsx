@@ -4106,7 +4106,7 @@ export default function WizardDesign() {
               return;
             }
             
-            // Legacy format: position/rotation/dimensions/simulationProperties
+            // Position-based format for non-rack furniture (table, person, armchair, block)
             const furnitureType = item.id.split('_')[0];
             
             const positionInCm = { 
@@ -4115,7 +4115,7 @@ export default function WizardDesign() {
               z: item.position.z * 100 
             };
             
-            const mappedType = ['table', 'person', 'armchair', 'block', 'rack'].includes(furnitureType) 
+            const mappedType = ['table', 'person', 'armchair', 'block'].includes(furnitureType) 
               ? furnitureType 
               : 'block';
             
@@ -4154,14 +4154,6 @@ export default function WizardDesign() {
                 temperature: simProps.chassisTemperature || simProps.temperature || 20
               }
             };
-            
-            if (mappedType === 'rack') {
-              furnitureEntry.serverProperties = {
-                rackDensity: simProps.serverRackDensity || 'medium',
-                thermalPower_kW: simProps.serverThermalPower || 10,
-                airFlow: simProps.serverAirFlow || 2395
-              };
-            }
             
             furnitureItems.push(furnitureEntry);
           });
