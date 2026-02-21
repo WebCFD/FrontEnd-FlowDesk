@@ -538,14 +538,14 @@ export const createTopVentBoxModel = (simulationProperties?: { state?: string; a
       const cone = new THREE.Mesh(coneGeometry, arrowMat);
 
       if (isOutlet) {
+        cone.rotation.x = Math.PI / 2;
+        cone.position.z = coneHeight / 2;
+        shaft.position.z = coneHeight + shaftLength / 2;
+        arrowGroup.position.set(x, y, boxHeight + 3);
+      } else {
         shaft.position.z = shaftLength / 2;
         cone.rotation.x = -Math.PI / 2;
         cone.position.z = shaftLength + coneHeight / 2;
-        arrowGroup.position.set(x, y, boxHeight + 3);
-      } else {
-        shaft.position.z = coneHeight + shaftLength / 2;
-        cone.rotation.x = Math.PI / 2;
-        cone.position.z = coneHeight / 2;
         arrowGroup.position.set(x, y, boxHeight + 3);
       }
 
@@ -678,13 +678,13 @@ export const createSideVentBoxModel = (simulationProperties?: { state?: string; 
       const cone = new THREE.Mesh(coneGeometry, arrowMat);
 
       if (isOutlet) {
-        shaft.position.y = shaftLength / 2;
-        cone.position.y = shaftLength + coneHeight / 2;
+        cone.position.y = coneHeight / 2;
+        shaft.position.y = coneHeight + shaftLength / 2;
         arrowGroup.position.set(x, boxDepth / 2 + 3, z);
       } else {
         cone.rotation.z = Math.PI;
-        cone.position.y = coneHeight / 2;
-        shaft.position.y = coneHeight + shaftLength / 2;
+        shaft.position.y = shaftLength / 2;
+        cone.position.y = shaftLength + coneHeight / 2;
         arrowGroup.position.set(x, boxDepth / 2 + 3, z);
       }
 
