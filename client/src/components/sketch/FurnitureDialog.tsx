@@ -250,9 +250,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
   const [values, setValues] = useState(() => getDefaultValues());
   const [position, setPosition] = useState(() => {
     // Calcular posición inicial centrada horizontalmente en la parte superior
-    const dialogWidth = 425;
-    const centerX = typeof window !== 'undefined' ? (window.innerWidth - dialogWidth) / 2 : 0;
-    return { x: centerX, y: 40 };
+    return { x: 16, y: 40 };
   });
   const [isDragging, setIsDragging] = useState(false);
   const [hasBeenDragged, setHasBeenDragged] = useState(true);
