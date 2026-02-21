@@ -971,9 +971,10 @@ const createFurnitureModel = (
     const sx = model.scale.x;
     const sy = model.scale.y;
     const sz = model.scale.z;
-    const widthCm = sx * 60;
-    const heightCm = sz * 200;
-    const depthCm = sy * 100;
+    const baseDims = getDefaultDimensions(furnitureItem.type);
+    const widthCm = sx * baseDims.width;
+    const heightCm = sz * baseDims.height;
+    const depthCm = sy * baseDims.depth;
     const widthMm = Math.round(widthCm * 10);
     const heightMm = Math.round(heightCm * 10);
     const depthMm = Math.round(depthCm * 10);
@@ -1089,7 +1090,7 @@ const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'block' | 
     case 'rack':
       return { width: 60, height: 200, depth: 100 };
     case 'topVentBox':
-      return { width: 50, height: 100, depth: 50 };
+      return { width: 50, height: 150, depth: 50 };
     case 'vent':
       return { width: 50, height: 50, depth: 10 };
     case 'nozzle':
@@ -6401,9 +6402,10 @@ export default function Canvas3D({
       });
       oldDims.forEach((d) => sceneRef.current!.remove(d));
 
-      const widthCm = newScale.x * 60;
-      const heightCm = newScale.z * 200;
-      const depthCm = newScale.y * 100;
+      const baseDims = getDefaultDimensions(editingFurniture.item.type as any);
+      const widthCm = newScale.x * baseDims.width;
+      const heightCm = newScale.z * baseDims.height;
+      const depthCm = newScale.y * baseDims.depth;
       const widthMm = Math.round(widthCm * 10);
       const heightMm = Math.round(heightCm * 10);
       const depthMm = Math.round(depthCm * 10);

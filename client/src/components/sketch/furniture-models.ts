@@ -424,7 +424,7 @@ export const createTopVentBoxModel = (simulationProperties?: { state?: string; a
 
   const boxWidth = 50;
   const boxDepth = 50;
-  const boxHeight = 100;
+  const boxHeight = 150;
 
   const bodyMaterial = new THREE.MeshStandardMaterial({
     color: 0x8a8a8a,

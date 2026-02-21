@@ -318,7 +318,9 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
     depth: 100
   });
 
-  const RACK_BASE = { width: 600, height: 2000, depth: 1000 };
+  const RACK_BASE = type === 'topVentBox' 
+    ? { width: 500, height: 1500, depth: 500 } 
+    : { width: 600, height: 2000, depth: 1000 };
   const [rackDimensions, setRackDimensions] = useState({ ...RACK_BASE });
 
   const [nozzleProps, setNozzleProps] = useState({

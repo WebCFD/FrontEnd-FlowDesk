@@ -43,7 +43,7 @@ const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'block' | 
     case 'rack':
       return { width: 60, height: 200, depth: 100 };
     case 'topVentBox':
-      return { width: 50, height: 100, depth: 50 };
+      return { width: 50, height: 150, depth: 50 };
     case 'vent':
       return { width: 50, height: 50, depth: 10 };
     case 'nozzle':
