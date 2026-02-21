@@ -8,7 +8,7 @@ import UnifiedVentDialog from "./UnifiedVentDialog";
 import { ViewDirection } from "./Toolbar3D";
 import { useSceneContext } from "../../contexts/SceneContext";
 import { FurnitureItem, FurnitureCallbacks } from "@shared/furniture-types";
-import { createTableModel, createPersonModel, createArmchairModel, createCarModel, createBlockModel, createRackModel } from "./furniture-models";
+import { createTableModel, createPersonModel, createArmchairModel, createCarModel, createBlockModel, createRackModel, createDimensionLabel } from "./furniture-models";
 import { STLProcessor } from "./STLProcessor";
 import { customFurnitureStore } from "@/lib/custom-furniture-store";
 import { useRoomStore } from "@/lib/store/room-store";
@@ -965,6 +965,32 @@ const createFurnitureModel = (
       currentScale.y * furnitureItem.scale.y,
       currentScale.z * furnitureItem.scale.z
     );
+  }
+
+  if (furnitureItem.type === 'rack') {
+    const totalScaleY = model.scale.y;
+    const baseDepthCm = 100;
+    const depthMm = Math.round(totalScaleY * baseDepthCm * 10);
+    model.traverse((child) => {
+      if (child.userData.dimensionType === 'depth') {
+        const depthGroup = child as THREE.Group;
+        const oldSprites: THREE.Sprite[] = [];
+        depthGroup.children.forEach((c) => {
+          if (c instanceof THREE.Sprite) {
+            oldSprites.push(c as THREE.Sprite);
+          }
+        });
+        oldSprites.forEach((s) => {
+          s.material.dispose();
+          (s.material as THREE.SpriteMaterial).map?.dispose();
+          depthGroup.remove(s);
+        });
+        const newLabel = createDimensionLabel(`${depthMm} mm`);
+        newLabel.position.set(-42, 0, 0);
+        newLabel.scale.y /= totalScaleY;
+        depthGroup.add(newLabel);
+      }
+    });
   }
 
   // Add metadata to the model for identification

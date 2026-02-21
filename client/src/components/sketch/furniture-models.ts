@@ -313,6 +313,120 @@ function createFallbackCar(group: THREE.Group): void {
   });
 }
 
+export const createDimensionLabel = (text: string, fontSize: number = 28): THREE.Sprite => {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d')!;
+  const pixelRatio = window.devicePixelRatio || 1;
+  const font = `bold ${fontSize}px Arial`;
+  ctx.font = font;
+  const metrics = ctx.measureText(text);
+  const textW = metrics.width;
+  const padX = fontSize * 0.6;
+  const padY = fontSize * 0.4;
+  const w = textW + padX * 2;
+  const h = fontSize * 1.4 + padY * 2;
+  canvas.width = w * pixelRatio;
+  canvas.height = h * pixelRatio;
+  ctx.scale(pixelRatio, pixelRatio);
+  ctx.fillStyle = 'rgba(255,255,255,0.92)';
+  const r = 4;
+  ctx.beginPath();
+  ctx.moveTo(r, 0);
+  ctx.lineTo(w - r, 0);
+  ctx.quadraticCurveTo(w, 0, w, r);
+  ctx.lineTo(w, h - r);
+  ctx.quadraticCurveTo(w, h, w - r, h);
+  ctx.lineTo(r, h);
+  ctx.quadraticCurveTo(0, h, 0, h - r);
+  ctx.lineTo(0, r);
+  ctx.quadraticCurveTo(0, 0, r, 0);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(100,116,139,0.5)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.font = font;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#1e293b';
+  ctx.fillText(text, w / 2, h / 2);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.minFilter = THREE.LinearFilter;
+  const mat = new THREE.SpriteMaterial({
+    map: texture,
+    transparent: true,
+    depthTest: false,
+    sizeAttenuation: true,
+  });
+  const sprite = new THREE.Sprite(mat);
+  sprite.scale.set(w / pixelRatio / 5, h / pixelRatio / 5, 1);
+  sprite.renderOrder = 999;
+  return sprite;
+};
+
+const createDimensionLine = (
+  start: THREE.Vector3,
+  end: THREE.Vector3,
+  label: string,
+  color: number = 0x64748b,
+  offsetDir?: THREE.Vector3
+): THREE.Group => {
+  const dimGroup = new THREE.Group();
+  const lineMat = new THREE.LineBasicMaterial({ color, linewidth: 1, depthTest: false });
+
+  const dir = new THREE.Vector3().subVectors(end, start);
+  const length = dir.length();
+  const arrowSize = Math.min(length * 0.08, 5);
+
+  const mainGeo = new THREE.BufferGeometry().setFromPoints([start, end]);
+  const mainLine = new THREE.Line(mainGeo, lineMat);
+  mainLine.renderOrder = 998;
+  dimGroup.add(mainLine);
+
+  const norm = dir.clone().normalize();
+  const createArrowhead = (tip: THREE.Vector3, direction: THREE.Vector3) => {
+    const perp = new THREE.Vector3();
+    if (Math.abs(direction.z) > 0.9) {
+      perp.crossVectors(direction, new THREE.Vector3(1, 0, 0)).normalize();
+    } else {
+      perp.crossVectors(direction, new THREE.Vector3(0, 0, 1)).normalize();
+    }
+    const p1 = tip.clone().add(direction.clone().multiplyScalar(-arrowSize)).add(perp.clone().multiplyScalar(arrowSize * 0.35));
+    const p2 = tip.clone().add(direction.clone().multiplyScalar(-arrowSize)).add(perp.clone().multiplyScalar(-arrowSize * 0.35));
+    const geo = new THREE.BufferGeometry().setFromPoints([tip, p1, tip, p2]);
+    const line = new THREE.LineSegments(geo, lineMat);
+    line.renderOrder = 998;
+    return line;
+  };
+
+  dimGroup.add(createArrowhead(end, norm));
+  dimGroup.add(createArrowhead(start, norm.clone().negate()));
+
+  if (offsetDir) {
+    const extLen = 6;
+    const ext1Geo = new THREE.BufferGeometry().setFromPoints([
+      start.clone().add(offsetDir.clone().multiplyScalar(-extLen)),
+      start.clone().add(offsetDir.clone().multiplyScalar(extLen * 0.3)),
+    ]);
+    const ext2Geo = new THREE.BufferGeometry().setFromPoints([
+      end.clone().add(offsetDir.clone().multiplyScalar(-extLen)),
+      end.clone().add(offsetDir.clone().multiplyScalar(extLen * 0.3)),
+    ]);
+    const ext1 = new THREE.Line(ext1Geo, lineMat);
+    const ext2 = new THREE.Line(ext2Geo, lineMat);
+    ext1.renderOrder = 998;
+    ext2.renderOrder = 998;
+    dimGroup.add(ext1);
+    dimGroup.add(ext2);
+  }
+
+  const midPoint = start.clone().add(end).multiplyScalar(0.5);
+  const labelSprite = createDimensionLabel(label);
+  labelSprite.position.copy(midPoint);
+  dimGroup.add(labelSprite);
+
+  return dimGroup;
+};
+
 export const createRackModel = (): THREE.Group => {
   const group = new THREE.Group();
 
@@ -399,6 +513,40 @@ export const createRackModel = (): THREE.Group => {
       group.add(hotArrow);
     }
   }
+
+  const dimOffset = 12;
+  const dimColor = 0x475569;
+
+  const widthDim = createDimensionLine(
+    new THREE.Vector3(-rackWidth / 2, rackDepth / 2 + dimOffset, 0),
+    new THREE.Vector3(rackWidth / 2, rackDepth / 2 + dimOffset, 0),
+    '600 mm',
+    dimColor,
+    new THREE.Vector3(0, 1, 0)
+  );
+  widthDim.userData.dimensionType = 'width';
+  group.add(widthDim);
+
+  const heightDim = createDimensionLine(
+    new THREE.Vector3(rackWidth / 2 + dimOffset, 0, 0),
+    new THREE.Vector3(rackWidth / 2 + dimOffset, 0, rackHeight),
+    '2000 mm',
+    dimColor,
+    new THREE.Vector3(1, 0, 0)
+  );
+  heightDim.userData.dimensionType = 'height';
+  group.add(heightDim);
+
+  const depthDim = createDimensionLine(
+    new THREE.Vector3(-rackWidth / 2 - dimOffset, -rackDepth / 2, 0),
+    new THREE.Vector3(-rackWidth / 2 - dimOffset, rackDepth / 2, 0),
+    '1000 mm',
+    dimColor,
+    new THREE.Vector3(-1, 0, 0)
+  );
+  depthDim.userData.dimensionType = 'depth';
+  depthDim.userData.baseDepthCm = rackDepth;
+  group.add(depthDim);
 
   return group;
 };
