@@ -6618,6 +6618,10 @@ export default function Canvas3D({
         furnitureGroup.userData.simulationProperties = data.simulationProperties;
       }
       
+      if (data.serverProperties) {
+        furnitureGroup.userData.serverProperties = data.serverProperties;
+      }
+      
       if (data.nozzleProperties) {
         furnitureGroup.userData.nozzleProperties = data.nozzleProperties;
         
@@ -6676,6 +6680,7 @@ export default function Canvas3D({
           scale: data.scale,
           properties: data.properties,
           simulationProperties: data.simulationProperties,
+          ...(data.serverProperties && { serverProperties: data.serverProperties }),
           ...(data.nozzleProperties && { nozzleProperties: data.nozzleProperties }),
           updatedAt: Date.now()
         };
