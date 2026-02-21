@@ -1250,7 +1250,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                     </div>
 
                     {/* Air Inflow Temperature */}
-                    <div className="grid grid-cols-4 items-center gap-4">
+                    <div className={`grid grid-cols-4 items-center gap-4 ${simulationProperties.state === 'closed' ? 'opacity-40 pointer-events-none' : ''}`}>
                       <Label htmlFor="air-temp" className="text-right">
                         Air Inflow Temperature
                       </Label>
@@ -1264,20 +1264,22 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                         }))}
                         className="col-span-2"
                         placeholder="20"
+                        disabled={simulationProperties.state === 'closed'}
                       />
                       <span className="text-sm">°C</span>
                     </div>
-                    <p className="text-xs text-gray-500 col-span-4 text-right">
+                    <p className={`text-xs text-gray-500 col-span-4 text-right ${simulationProperties.state === 'closed' ? 'opacity-40' : ''}`}>
                       Temperature of air entering the room
                     </p>
 
                     {/* Air Direction */}
-                    <div className="grid grid-cols-4 items-center gap-4">
+                    <div className={`grid grid-cols-4 items-center gap-4 ${simulationProperties.state === 'closed' ? 'opacity-40 pointer-events-none' : ''}`}>
                       <Label htmlFor="air-direction" className="text-right">
                         Air Direction
                       </Label>
                       <Select value={simulationProperties.airOrientation} onValueChange={(value: 'inflow' | 'outflow') => 
-                        setSimulationProperties(prev => ({...prev, airOrientation: value}))}>
+                        setSimulationProperties(prev => ({...prev, airOrientation: value}))}
+                        disabled={simulationProperties.state === 'closed'}>
                         <SelectTrigger className="col-span-3">
                           <SelectValue />
                         </SelectTrigger>
@@ -1348,7 +1350,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                     )}
 
                     {/* Flow Type */}
-                    <div className="grid grid-cols-4 items-center gap-4">
+                    <div className={`grid grid-cols-4 items-center gap-4 ${simulationProperties.state === 'closed' ? 'opacity-40 pointer-events-none' : ''}`}>
                       <Label className="text-right text-xs text-slate-600">
                         Flow Type
                       </Label>
@@ -1393,12 +1395,13 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                     </div>
 
                     {/* Flow Intensity */}
-                    <div className="grid grid-cols-4 items-center gap-4">
+                    <div className={`grid grid-cols-4 items-center gap-4 ${simulationProperties.state === 'closed' ? 'opacity-40 pointer-events-none' : ''}`}>
                       <Label htmlFor="flow-intensity" className="text-right">
                         Flow Intensity
                       </Label>
                       <Select value={simulationProperties.flowIntensity} onValueChange={(value: 'low' | 'medium' | 'high' | 'custom') => 
-                        setSimulationProperties(prev => ({...prev, flowIntensity: value}))}>
+                        setSimulationProperties(prev => ({...prev, flowIntensity: value}))}
+                        disabled={simulationProperties.state === 'closed'}>
                         <SelectTrigger className="col-span-3">
                           <SelectValue />
                         </SelectTrigger>

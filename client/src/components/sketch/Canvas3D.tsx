@@ -6635,17 +6635,24 @@ export default function Canvas3D({
         const savedScale = furnitureGroup.scale.clone();
         const savedUserData = { ...furnitureGroup.userData };
         
-        while (furnitureGroup.children.length > 0) {
-          const child = furnitureGroup.children[0];
-          if (child instanceof THREE.Mesh) {
-            child.geometry?.dispose();
-            if (Array.isArray(child.material)) {
-              child.material.forEach(m => m.dispose());
+        const disposeObject = (obj: THREE.Object3D) => {
+          if (obj instanceof THREE.Mesh) {
+            obj.geometry?.dispose();
+            if (Array.isArray(obj.material)) {
+              obj.material.forEach(m => m.dispose());
             } else {
-              child.material?.dispose();
+              obj.material?.dispose();
             }
           }
-          furnitureGroup.remove(child);
+          while (obj.children.length > 0) {
+            disposeObject(obj.children[0]);
+            obj.remove(obj.children[0]);
+          }
+        };
+        
+        while (furnitureGroup.children.length > 0) {
+          disposeObject(furnitureGroup.children[0]);
+          furnitureGroup.remove(furnitureGroup.children[0]);
         }
         
         const freshModel = createTopVentBoxModel(data.simulationProperties);
