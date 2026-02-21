@@ -2379,7 +2379,7 @@ export default function Canvas3D({
   }, [currentFloor]);
 
   const isMeasureModeRef = useRef(false);
-  const lastRightClickTimeRef = useRef(0);
+  const rightClickStartRef = useRef<{ x: number; y: number } | null>(null);
 
   // Store the positions and dimensions of air entries that have been updated
   // This is used to ensure they keep their properties when the scene is rebuilt
@@ -3758,64 +3758,7 @@ export default function Canvas3D({
 
       if (event.button !== 2) return;
 
-      const now = Date.now();
-      const DOUBLE_CLICK_THRESHOLD = 500;
-      const timeSinceLastClick = now - lastRightClickTimeRef.current;
-      lastRightClickTimeRef.current = now;
-
-      if (timeSinceLastClick < DOUBLE_CLICK_THRESHOLD) {
-        const canvas = containerRef.current;
-        if (!canvas || !cameraRef.current || !sceneRef.current) return;
-
-        const rect = canvas.getBoundingClientRect();
-        const mouse = new THREE.Vector2(
-          ((event.clientX - rect.left) / rect.width) * 2 - 1,
-          -((event.clientY - rect.top) / rect.height) * 2 + 1
-        );
-
-        const raycaster = new THREE.Raycaster();
-        raycaster.setFromCamera(mouse, cameraRef.current);
-
-        const furnitureObjects: THREE.Object3D[] = [];
-        sceneRef.current.traverse((object) => {
-          if (object.userData.type === 'furniture') {
-            furnitureObjects.push(object);
-          } else if (object instanceof THREE.Mesh && object.parent?.userData.type === 'furniture') {
-            furnitureObjects.push(object);
-          }
-        });
-
-        const intersects = raycaster.intersectObjects(furnitureObjects, true);
-        if (intersects.length > 0) {
-          let furnitureGroup = intersects[0].object as THREE.Object3D;
-          while (furnitureGroup && furnitureGroup.userData.type !== 'furniture') {
-            furnitureGroup = furnitureGroup.parent!;
-          }
-
-          if (furnitureGroup?.userData.type === 'furniture') {
-            const furnitureId = furnitureGroup.userData.furnitureId;
-            const floorName = furnitureGroup.userData.floorName || currentFloor;
-            const reactiveFloors = useRoomStore.getState().floors;
-            const floorData = reactiveFloors[floorName];
-            const actualItem = floorData?.furnitureItems?.find((item: any) => item.id === furnitureId);
-
-            if (actualItem) {
-              setFurnitureContextMenu({
-                x: event.clientX,
-                y: event.clientY,
-                item: { ...actualItem },
-                floorName,
-                meshScale: {
-                  x: furnitureGroup.scale.x,
-                  y: furnitureGroup.scale.y,
-                  z: furnitureGroup.scale.z,
-                },
-              });
-              return;
-            }
-          }
-        }
-      }
+      rightClickStartRef.current = { x: event.clientX, y: event.clientY };
 
       // Get mouse position for raycasting
       const canvas = containerRef.current;
@@ -4671,7 +4614,63 @@ export default function Canvas3D({
     };
 
       const handleMouseUp = (event: MouseEvent) => {
-        // Drag handling removed - maintain controls only
+        if (event.button === 2 && rightClickStartRef.current && !presentationMode) {
+          const dx = event.clientX - rightClickStartRef.current.x;
+          const dy = event.clientY - rightClickStartRef.current.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          rightClickStartRef.current = null;
+
+          if (distance < 5 && sceneRef.current && cameraRef.current && containerRef.current) {
+            const rect = containerRef.current.getBoundingClientRect();
+            const mouse = new THREE.Vector2(
+              ((event.clientX - rect.left) / rect.width) * 2 - 1,
+              -((event.clientY - rect.top) / rect.height) * 2 + 1
+            );
+
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, cameraRef.current);
+
+            const furnitureObjects: THREE.Object3D[] = [];
+            sceneRef.current.traverse((object) => {
+              if (object.userData.type === 'furniture') {
+                furnitureObjects.push(object);
+              } else if (object instanceof THREE.Mesh && object.parent?.userData.type === 'furniture') {
+                furnitureObjects.push(object);
+              }
+            });
+
+            const intersects = raycaster.intersectObjects(furnitureObjects, true);
+            if (intersects.length > 0) {
+              let furnitureGroup = intersects[0].object as THREE.Object3D;
+              while (furnitureGroup && furnitureGroup.userData.type !== 'furniture') {
+                furnitureGroup = furnitureGroup.parent!;
+              }
+
+              if (furnitureGroup?.userData.type === 'furniture') {
+                const furnitureId = furnitureGroup.userData.furnitureId;
+                const floorName = furnitureGroup.userData.floorName || currentFloor;
+                const reactiveFloors = useRoomStore.getState().floors;
+                const floorData = reactiveFloors[floorName];
+                const actualItem = floorData?.furnitureItems?.find((item: any) => item.id === furnitureId);
+
+                if (actualItem) {
+                  setFurnitureContextMenu({
+                    x: event.clientX,
+                    y: event.clientY,
+                    item: { ...actualItem },
+                    floorName,
+                    meshScale: {
+                      x: furnitureGroup.scale.x,
+                      y: furnitureGroup.scale.y,
+                      z: furnitureGroup.scale.z,
+                    },
+                  });
+                  return;
+                }
+              }
+            }
+          }
+        }
 
         // PREVENTATIVE CONTROL RECREATION
         // Instead of just re-enabling controls, completely recreate them
