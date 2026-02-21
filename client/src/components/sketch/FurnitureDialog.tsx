@@ -542,7 +542,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-start justify-center"
+      className="fixed inset-0 z-50 flex items-start justify-start"
       style={{ pointerEvents: 'none' }}
     >
       <div
