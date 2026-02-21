@@ -6814,8 +6814,45 @@ export default function Canvas3D({
               <button
                 className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors"
                 onClick={() => {
+                  if (sceneRef.current) {
+                    const itemId = furnitureContextMenu.item.id;
+                    let meshToRemove: THREE.Object3D | null = null;
+                    sceneRef.current.traverse((object) => {
+                      if (object.userData.type === 'furniture' && object.userData.furnitureId === itemId) {
+                        meshToRemove = object;
+                      }
+                    });
+                    if (meshToRemove) {
+                      const obj = meshToRemove as THREE.Object3D;
+                      if (obj.userData.furnitureType === 'vent' || obj.userData.furnitureType === 'nozzle') {
+                        obj.traverse((child) => {
+                          if (child instanceof THREE.Mesh) {
+                            if (child.geometry) child.geometry.dispose();
+                            if (child.material) {
+                              if (Array.isArray(child.material)) {
+                                child.material.forEach(m => m.dispose());
+                              } else {
+                                child.material.dispose();
+                              }
+                            }
+                          }
+                        });
+                      }
+                      sceneRef.current!.remove(obj);
+                    }
+                    const dimsToRemove: THREE.Object3D[] = [];
+                    sceneRef.current.traverse((object) => {
+                      if (object.userData?.type === 'rackDimensions' && object.userData?.furnitureId === itemId) {
+                        dimsToRemove.push(object);
+                      }
+                    });
+                    dimsToRemove.forEach(d => sceneRef.current!.remove(d));
+                  }
                   if (onDeleteFurniture) {
                     onDeleteFurniture(furnitureContextMenu.floorName, furnitureContextMenu.item.id);
+                  }
+                  if (onFurnitureDeleted) {
+                    onFurnitureDeleted();
                   }
                   setFurnitureContextMenu(null);
                 }}
