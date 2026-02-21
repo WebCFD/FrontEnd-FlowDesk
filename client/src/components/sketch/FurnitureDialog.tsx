@@ -546,14 +546,15 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       style={{ pointerEvents: 'none' }}
     >
       <div
-        className="relative bg-white rounded-lg shadow-lg border border-blue-300/60"
+        className="relative bg-white/95 backdrop-blur-sm rounded-xl border border-gray-100"
         style={{
           left: position.x,
           top: position.y,
           width: '425px',
           maxHeight: '90vh',
           overflow: 'auto',
-          pointerEvents: 'auto'
+          pointerEvents: 'auto',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06)'
         }}
         onMouseDown={handleMouseDown}
       >
