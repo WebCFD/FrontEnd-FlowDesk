@@ -57,18 +57,6 @@ const furnitureItems: FurnitureItem[] = [
     defaultDimensions: { width: 70, height: 85, depth: 70 }
   },
   {
-    id: 'car',
-    name: 'Car',
-    icon: `
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="5" y="20" width="30" height="8" fill="#1E40AF"/>
-        <circle cx="12" cy="32" r="3" fill="#2D3748"/>
-        <circle cx="28" cy="32" r="3" fill="#2D3748"/>
-      </svg>
-    `,
-    defaultDimensions: { width: 450, height: 150, depth: 180 }
-  },
-  {
     id: 'block',
     name: 'Block',
     icon: `
@@ -158,7 +146,7 @@ export function FurnitureMenu({ onDragStart, floorContext, onToggleFurnitureEras
   // Separate items by categories
   const furnitureItems_category = furnitureItems.filter(item => ['table', 'armchair'].includes(item.id));
   const charactersItems = furnitureItems.filter(item => item.id === 'person');
-  const objectsItems = furnitureItems.filter(item => ['car', 'block', 'rack'].includes(item.id));
+  const objectsItems = furnitureItems.filter(item => ['block', 'rack'].includes(item.id));
   const hvacItems = furnitureItems.filter(item => ['vent', 'nozzle'].includes(item.id));
   
   // Custom furniture goes with furniture category

@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 export interface FurnitureModel {
   geometry: THREE.BufferGeometry;
@@ -215,103 +214,6 @@ export const createArmchairModel = (): THREE.Group => {
 
   return group;
 };
-
-export const createCarModel = (): THREE.Group => {
-  const group = new THREE.Group();
-  const loader = new GLTFLoader();
-
-  // Get reference dimensions from the simple car model (body: 180x80x40) - scaled x16
-  const targetWidth = 2880;
-  const targetDepth = 1280;
-  const targetHeight = 960;
-
-  // Load Batmobile synchronously with promise handling
-  loader.load(
-    '/models/car.glb',
-    (gltf) => {
-      const carModel = gltf.scene.clone();
-      
-      // Calculate bounding box to get current size
-      const box = new THREE.Box3().setFromObject(carModel);
-      const currentSize = box.getSize(new THREE.Vector3());
-      
-      // Calculate scale to match target dimensions
-      const scaleX = targetWidth / currentSize.x;
-      const scaleY = targetDepth / currentSize.y;
-      const scaleZ = targetHeight / currentSize.z;
-      
-      // Use the smallest scale to maintain proportions
-      const uniformScale = Math.min(scaleX, scaleY, scaleZ);
-      carModel.scale.setScalar(uniformScale);
-      
-      // Apply additional scaling on X-axis only
-      carModel.scale.x *= 2 * 1.5;
-      
-      // Rotate 90 degrees around X-axis
-      carModel.rotation.x = Math.PI / 2;
-      
-      // Position at ground level
-      carModel.position.z = 0;
-      
-      // Clear the group and add the loaded model
-      group.clear();
-      group.add(carModel);
-    },
-    undefined,
-    (error) => {
-      // Fallback to simple car if loading fails
-      createFallbackCar(group);
-    }
-  );
-
-  // Return group immediately with fallback car
-  createFallbackCar(group);
-  return group;
-};
-
-function createFallbackCar(group: THREE.Group): void {
-  const carBodyMaterial = new THREE.MeshStandardMaterial({
-    color: 0x1E40AF,
-    roughness: 0.2,
-    metalness: 0.8
-  });
-
-  const glassMaterial = new THREE.MeshStandardMaterial({
-    color: 0x87CEEB,
-    transparent: true,
-    opacity: 0.6,
-    roughness: 0.1,
-    metalness: 0.1
-  });
-
-  const tireMaterial = new THREE.MeshStandardMaterial({
-    color: 0x2D3748,
-    roughness: 0.9,
-    metalness: 0.1
-  });
-
-  // Main body
-  const bodyGeometry = new THREE.BoxGeometry(180, 80, 40);
-  const body = new THREE.Mesh(bodyGeometry, carBodyMaterial);
-  body.position.z = 35;
-  group.add(body);
-
-  // Wheels
-  const wheelGeometry = new THREE.CylinderGeometry(18, 18, 12, 16);
-  const wheelPositions = [
-    { x: 80, y: 50 },
-    { x: 80, y: -50 },
-    { x: -80, y: 50 },
-    { x: -80, y: -50 }
-  ];
-
-  wheelPositions.forEach(pos => {
-    const wheel = new THREE.Mesh(wheelGeometry, tireMaterial);
-    wheel.position.set(pos.x, pos.y, 18);
-    wheel.rotation.z = Math.PI / 2;
-    group.add(wheel);
-  });
-}
 
 export const createDimensionLabel = (text: string, fontSize: number = 28): THREE.Sprite => {
   const canvas = document.createElement('canvas');

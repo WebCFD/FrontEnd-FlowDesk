@@ -8,7 +8,7 @@ import UnifiedVentDialog from "./UnifiedVentDialog";
 import { ViewDirection } from "./Toolbar3D";
 import { useSceneContext } from "../../contexts/SceneContext";
 import { FurnitureItem, FurnitureCallbacks } from "@shared/furniture-types";
-import { createTableModel, createPersonModel, createArmchairModel, createCarModel, createBlockModel, createRackModel, createDimensionLabel, createDimensionLine } from "./furniture-models";
+import { createTableModel, createPersonModel, createArmchairModel, createBlockModel, createRackModel, createDimensionLabel, createDimensionLine } from "./furniture-models";
 import { STLProcessor } from "./STLProcessor";
 import { customFurnitureStore } from "@/lib/custom-furniture-store";
 import { useRoomStore } from "@/lib/store/room-store";
@@ -293,7 +293,6 @@ const generateFurnitureId = (
     'table': 'Table',
     'armchair': 'Chair', 
     'person': 'Person',
-    'car': 'Car',
     'block': 'Block',
     'rack': 'Server Rack',
     'vent': 'Vent',
@@ -512,7 +511,7 @@ const calculateFloorBaseHeight = (
 };
 
 // Furniture type restrictions for surface placement
-const FLOOR_ONLY_FURNITURE = ['table', 'person', 'armchair', 'car'];
+const FLOOR_ONLY_FURNITURE = ['table', 'person', 'armchair'];
 const FLEXIBLE_FURNITURE = ['vent', 'block', 'custom'];
 
 // Detect which floor to place furniture based on mouse position and 3D context
@@ -870,9 +869,6 @@ const createFurnitureModel = (
     case 'armchair':
       model = createArmchairModel();
       break;
-    case 'car':
-      model = createCarModel();
-      break;
     case 'block':
       model = createBlockModel();
       break;
@@ -1076,7 +1072,7 @@ const createFurnitureModel = (
 };
 
 // Helper function to get default dimensions for furniture types
-const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car' | 'block' | 'rack' | 'vent' | 'nozzle' | 'custom') => {
+const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'block' | 'rack' | 'vent' | 'nozzle' | 'custom') => {
   switch (type) {
     case 'table':
       return { width: 120, height: 75, depth: 80 };
@@ -1084,8 +1080,6 @@ const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'car' | 'b
       return { width: 50, height: 170, depth: 30 };
     case 'armchair':
       return { width: 70, height: 85, depth: 70 };
-    case 'car':
-      return { width: 450, height: 150, depth: 180 };
     case 'block':
       return { width: 80, height: 80, depth: 80 };
     case 'rack':
@@ -1267,7 +1261,7 @@ export default function Canvas3D({
       // Determine furniture type - check if it's a custom STL object
       // Custom objects have IDs like "Obj 0F-1", "Obj 1F-2", etc.
       const isCustomObject = furnitureMenuData.id.startsWith('Obj ') && furnitureMenuData.id.includes('F-');
-      const furnitureType = isCustomObject ? 'custom' : furnitureMenuData.id as 'table' | 'person' | 'armchair' | 'car' | 'block' | 'vent';
+      const furnitureType = isCustomObject ? 'custom' : furnitureMenuData.id as 'table' | 'person' | 'armchair' | 'block' | 'vent';
       
       // FASE 2 TEST: Sistema de raycasting y detección de piso con restricciones de tipo
       const surfaceDetection = detectSurfaceFromPosition(
@@ -5893,7 +5887,6 @@ export default function Canvas3D({
           if (titleAttr.includes('Table')) furnitureType = 'table';
           else if (titleAttr.includes('Person')) furnitureType = 'person';
           else if (titleAttr.includes('Armchair')) furnitureType = 'armchair';
-          else if (titleAttr.includes('Car')) furnitureType = 'car';
           else if (titleAttr.includes('Vent')) furnitureType = 'vent';
           else if (titleAttr.includes('Block')) furnitureType = 'block';
           else if (titleAttr.includes('Custom')) furnitureType = 'custom';
