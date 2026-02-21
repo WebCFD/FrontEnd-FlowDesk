@@ -528,22 +528,29 @@ export const createTopVentBoxModel = (simulationProperties?: { state?: string; a
 
       const shaftLength = 15;
       const coneHeight = 8;
+      const arrowTotalLength = shaftLength + coneHeight;
 
       const shaftGeometry = new THREE.CylinderGeometry(1.2, 1.2, shaftLength, 8);
       const shaft = new THREE.Mesh(shaftGeometry, arrowMat);
       shaft.rotation.x = Math.PI / 2;
-      shaft.position.z = shaftLength / 2 * direction;
 
       const coneGeometry = new THREE.ConeGeometry(3.5, coneHeight, 8);
       const cone = new THREE.Mesh(coneGeometry, arrowMat);
-      cone.rotation.x = isOutlet ? -Math.PI / 2 : Math.PI / 2;
-      cone.position.z = (shaftLength + coneHeight / 2) * direction;
+
+      if (isOutlet) {
+        shaft.position.z = shaftLength / 2;
+        cone.rotation.x = -Math.PI / 2;
+        cone.position.z = shaftLength + coneHeight / 2;
+        arrowGroup.position.set(x, y, boxHeight + 3);
+      } else {
+        shaft.position.z = coneHeight + shaftLength / 2;
+        cone.rotation.x = Math.PI / 2;
+        cone.position.z = coneHeight / 2;
+        arrowGroup.position.set(x, y, boxHeight + 3);
+      }
 
       arrowGroup.add(shaft);
       arrowGroup.add(cone);
-      const arrowTotalLength = shaftLength + coneHeight;
-      const zOffset = isOutlet ? 3 : arrowTotalLength + 3;
-      arrowGroup.position.set(x, y, boxHeight + zOffset);
       arrowGroup.userData = { type: 'topVentArrow' };
       group.add(arrowGroup);
     }
@@ -666,20 +673,23 @@ export const createSideVentBoxModel = (simulationProperties?: { state?: string; 
 
       const shaftGeometry = new THREE.CylinderGeometry(1.2, 1.2, shaftLength, 8);
       const shaft = new THREE.Mesh(shaftGeometry, arrowMat);
-      shaft.position.y = shaftLength / 2 * direction;
 
       const coneGeometry = new THREE.ConeGeometry(3.5, coneHeight, 8);
       const cone = new THREE.Mesh(coneGeometry, arrowMat);
-      if (!isOutlet) {
+
+      if (isOutlet) {
+        shaft.position.y = shaftLength / 2;
+        cone.position.y = shaftLength + coneHeight / 2;
+        arrowGroup.position.set(x, boxDepth / 2 + 3, z);
+      } else {
         cone.rotation.z = Math.PI;
+        cone.position.y = coneHeight / 2;
+        shaft.position.y = coneHeight + shaftLength / 2;
+        arrowGroup.position.set(x, boxDepth / 2 + 3, z);
       }
-      cone.position.y = (shaftLength + coneHeight / 2) * direction;
 
       arrowGroup.add(shaft);
       arrowGroup.add(cone);
-      const arrowTotalLength = shaftLength + coneHeight;
-      const yOffset = isOutlet ? 3 : arrowTotalLength + 3;
-      arrowGroup.position.set(x, boxDepth / 2 + yOffset, z);
       arrowGroup.userData = { type: 'sideVentArrow' };
       group.add(arrowGroup);
     }
