@@ -3119,7 +3119,8 @@ export default function WizardDesign() {
               properties: furnitureItem.properties, // Include thermal properties for JSON export
               simulationProperties: furnitureItem.simulationProperties, // Include simulation properties for JSON export
               serverProperties: furnitureItem.serverProperties, // Include server/rack properties for JSON export
-              filePath: furnitureItem.filePath // Include STL file path for custom objects
+              filePath: furnitureItem.filePath, // Include STL file path for custom objects
+              dimensions: furnitureItem.dimensions // Include dimensions for JSON export
             },
             position: {
               x: furnitureItem.position.x,
@@ -4036,6 +4037,19 @@ export default function WizardDesign() {
               ? furnitureType 
               : 'block';
             
+            const simProps = item.simulationProperties || {};
+            const defaultDims = getDefaultDimensions(mappedType);
+            
+            // Compute scale from dimensions (meters) vs default dimensions (cm)
+            let computedScale = { x: item.scale?.x || 1, y: item.scale?.y || 1, z: item.scale?.z || 1 };
+            if (item.dimensions) {
+              computedScale = {
+                x: (item.dimensions.width * 100) / defaultDims.width,
+                y: (item.dimensions.depth * 100) / defaultDims.depth,
+                z: (item.dimensions.height * 100) / defaultDims.height
+              };
+            }
+            
             const furnitureEntry: any = {
               id: item.id,
               type: mappedType as const,
@@ -4051,28 +4065,20 @@ export default function WizardDesign() {
                 y: item.rotation?.y || 0, 
                 z: item.rotation?.z || 0 
               },
-              scale: { 
-                x: item.scale?.x || 1, 
-                y: item.scale?.y || 1, 
-                z: item.scale?.z || 1 
-              },
-              dimensions: getDefaultDimensions(mappedType),
+              scale: computedScale,
+              dimensions: defaultDims,
               properties: {
-                material: 'wood',
-                emissivity: item.simulationProperties?.emissivity || 0.9,
-                temperature: item.simulationProperties?.temperature || 20
-              },
-              simulationProperties: {
-                temperature: item.simulationProperties?.temperature || 20,
-                emissivity: item.simulationProperties?.emissivity || 0.9
+                material: simProps.chassisMaterial || 'wood',
+                emissivity: simProps.chassisEmissivity || simProps.emissivity || 0.9,
+                temperature: simProps.chassisTemperature || simProps.temperature || 20
               }
             };
             
-            if (mappedType === 'rack' && item.simulationProperties) {
+            if (mappedType === 'rack') {
               furnitureEntry.serverProperties = {
-                rackDensity: item.simulationProperties.rackDensity || 'medium',
-                thermalPower: item.simulationProperties.thermalPower || 10,
-                airFlow: item.simulationProperties.airFlow || 2395
+                rackDensity: simProps.serverRackDensity || 'medium',
+                thermalPower: simProps.serverThermalPower || 10,
+                airFlow: simProps.serverAirFlow || 2395
               };
             }
             

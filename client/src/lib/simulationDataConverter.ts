@@ -187,19 +187,21 @@ interface FurnitureExport {
     y: number;
     z: number;
   };
-  scale: {
-    x: number;
-    y: number;
-    z: number;
+  dimensions: {
+    width: number;
+    height: number;
+    depth: number;
   };
-  // File path for custom STL objects
   filePath?: string;
-  // Propiedades de simulación térmica para TODOS los tipos de muebles
   simulationProperties: {
-    temperature: number;    // Temperatura del objeto (°C)
-    emissivity: number;     // Emisividad térmica (0.0 - 1.0)
+    chassisTemperature: number;
+    chassisMaterial: string;
+    chassisEmissivity: number;
     
-    // Propiedades adicionales solo para vents
+    serverRackDensity?: 'low' | 'medium' | 'high' | 'custom';
+    serverThermalPower?: number;
+    serverAirFlow?: number;
+    
     flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
     flowValue?: number;
     flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
@@ -646,7 +648,7 @@ export function generateSimulationData(
       table: 0, 
       person: 0, 
       armchair: 0, 
-      car: 0, 
+      rack: 0, 
       block: 0, 
       vent_furniture: 0,
       custom: 0 
@@ -693,17 +695,29 @@ export function generateSimulationData(
       const properties = obj.userData?.properties || {};
       const simulationProperties = obj.userData?.simulationProperties || {};
       
-      // Build base simulation properties for all furniture types
+      // Compute actual dimensions in meters from base dimensions (cm) × scale
+      const baseDims = obj.userData?.dimensions || { width: 80, height: 80, depth: 80 };
+      const scaleX = obj.scale?.x || 1;
+      const scaleY = obj.scale?.y || 1;
+      const scaleZ = obj.scale?.z || 1;
+      const dimensionsInMeters = {
+        width: cmToM(baseDims.width * scaleX),
+        height: cmToM(baseDims.height * scaleZ),
+        depth: cmToM(baseDims.depth * scaleY)
+      };
+      
+      // Build chassis simulation properties for all furniture types
       const baseSimulationProperties = {
-        temperature: properties.temperature || simulationProperties.airTemperature || 20,
-        emissivity: properties.emissivity || 0.90
+        chassisTemperature: properties.temperature || simulationProperties.airTemperature || 20,
+        chassisMaterial: properties.material || 'default',
+        chassisEmissivity: properties.emissivity || 0.90
       };
       
       // Add rack-specific server properties if this is a rack
-      const serverProperties = obj.userData?.furnitureType === 'rack' && obj.userData?.serverProperties ? {
-        rackDensity: obj.userData.serverProperties.rackDensity,
-        thermalPower: obj.userData.serverProperties.thermalPower,
-        airFlow: obj.userData.serverProperties.airFlow
+      const rackServerProperties = obj.userData?.furnitureType === 'rack' && obj.userData?.serverProperties ? {
+        serverRackDensity: obj.userData.serverProperties.rackDensity,
+        serverThermalPower: obj.userData.serverProperties.thermalPower,
+        serverAirFlow: obj.userData.serverProperties.airFlow
       } : {};
       
       // Add vent-specific properties if this is a vent
@@ -719,36 +733,24 @@ export function generateSimulationData(
         airTemperature: simulationProperties.airTemperature,
         normalVector: simulationProperties.normalVector
       } : {};
-      
-      const scaleValues = {
-        x: obj.scale?.x || 1,
-        y: obj.scale?.y || 1,
-        z: obj.scale?.z || 1
-      };
-
-      console.log('[SCALE DEBUG 5] JSON Export - ID:', furnitureId);
-      console.log('[SCALE DEBUG 5] Type:', obj.userData?.furnitureType);
-      console.log('[SCALE DEBUG 5] Raw obj.scale:', obj.scale);
-      console.log('[SCALE DEBUG 5] Export scale values:', scaleValues);
 
       const exportObject: FurnitureExport = {
         id: furnitureId,
         position: {
-          x: cmToM(obj.position.x), // Direct conversion: cm to meters
-          y: cmToM(obj.position.y), // Direct conversion: cm to meters  
-          z: cmToM(obj.position.z)  // Direct conversion: cm to meters
+          x: cmToM(obj.position.x),
+          y: cmToM(obj.position.y),
+          z: cmToM(obj.position.z)
         },
         rotation: {
-          x: obj.rotation.x || 0, // Keep radians (SI units)
-          y: obj.rotation.y || 0, // Keep radians (SI units)
-          z: obj.rotation.z || 0  // Keep radians (SI units)
+          x: obj.rotation.x || 0,
+          y: obj.rotation.y || 0,
+          z: obj.rotation.z || 0
         },
-        scale: scaleValues,
-        // Include simulation properties for ALL furniture types
+        dimensions: dimensionsInMeters,
         simulationProperties: {
           ...baseSimulationProperties,
           ...ventSpecificProperties,
-          ...serverProperties
+          ...rackServerProperties
         }
       };
 
