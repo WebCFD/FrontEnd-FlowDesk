@@ -678,11 +678,11 @@ export const createSideVentBoxModel = (simulationProperties?: { state?: string; 
       const cone = new THREE.Mesh(coneGeometry, arrowMat);
 
       if (isOutlet) {
+        cone.rotation.z = Math.PI;
         cone.position.y = coneHeight / 2;
         shaft.position.y = coneHeight + shaftLength / 2;
         arrowGroup.position.set(x, boxDepth / 2 + 3, z);
       } else {
-        cone.rotation.z = Math.PI;
         shaft.position.y = shaftLength / 2;
         cone.position.y = shaftLength + coneHeight / 2;
         arrowGroup.position.set(x, boxDepth / 2 + 3, z);
