@@ -60,6 +60,13 @@ A transactional email system for the landing page contact form is integrated usi
 - **TypeScript**: Static type checking.
 - **Vite**: Build tool and development server.
 
+## Recent Changes (February 2026)
+
+### Face-Based Rack JSON Export (2026-02-21)
+Racks are now exported as face-based geometry instead of position/rotation/dimensions. Each rack has 6 faces (front, back, left, right, top, bottom), each defined by 4 vertices in global coordinates (meters). Inlet/outlet faces carry server properties (`rackDensity`, `thermalPower_kW`, `airFlow`), wall faces carry chassis properties (`material`, `emissivity`). The `thermalPower` field was renamed to `thermalPower_kW`. Load path supports both face-based format and legacy position/dimensions format for backwards compatibility.
+
+**Files Modified**: `client/src/lib/simulationDataConverter.ts`, `client/src/pages/dashboard/wizard-design.tsx`, `client/src/components/sketch/FurnitureDialog.tsx`, `shared/furniture-types.ts`
+
 ## Recent Changes (November 2025)
 
 ### Production Encoding Fix (2025-11-30)

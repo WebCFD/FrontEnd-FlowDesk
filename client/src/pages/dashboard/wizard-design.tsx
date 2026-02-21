@@ -4022,17 +4022,99 @@ export default function WizardDesign() {
         const furnitureItems: any[] = [];
         if (floorData.furniture) {
           floorData.furniture.forEach((item: any) => {
-            // Extraer tipo de furniture del ID (person_0F_1 -> person)
+            // Face-based rack format: reconstruct position/dimensions/rotation/properties from faces
+            if (item.faces && !item.position) {
+              const faceEntries = Object.values(item.faces) as any[];
+              const defaultDims = getDefaultDimensions('rack');
+              
+              // Find faces by role (preferred) with fallback to named keys
+              const inletFace = faceEntries.find((f: any) => f.role === 'inlet') || item.faces.front;
+              const outletFace = faceEntries.find((f: any) => f.role === 'outlet') || item.faces.back;
+              const wallFace = faceEntries.find((f: any) => f.role === 'wall') || item.faces.left;
+              
+              // Reconstruct local axes from inlet (front) face to recover rotation
+              const fv = inletFace?.vertices || [[0,0,0],[1,0,0],[1,0,1],[0,0,1]];
+              // Front face edge vectors: widthDir (v0->v1), heightDir (v0->v3)
+              const widthDir = [fv[1][0] - fv[0][0], fv[1][1] - fv[0][1], fv[1][2] - fv[0][2]];
+              const heightDir = [fv[3][0] - fv[0][0], fv[3][1] - fv[0][1], fv[3][2] - fv[0][2]];
+              // depthDir = from front face center to back face center
+              const frontCenter = [
+                (fv[0][0] + fv[1][0] + fv[2][0] + fv[3][0]) / 4,
+                (fv[0][1] + fv[1][1] + fv[2][1] + fv[3][1]) / 4,
+                (fv[0][2] + fv[1][2] + fv[2][2] + fv[3][2]) / 4
+              ];
+              const bv = outletFace?.vertices || fv;
+              const backCenter = [
+                (bv[0][0] + bv[1][0] + bv[2][0] + bv[3][0]) / 4,
+                (bv[0][1] + bv[1][1] + bv[2][1] + bv[3][1]) / 4,
+                (bv[0][2] + bv[1][2] + bv[2][2] + bv[3][2]) / 4
+              ];
+              const depthDir = [backCenter[0] - frontCenter[0], backCenter[1] - frontCenter[1], backCenter[2] - frontCenter[2]];
+              
+              // Compute dimensions from edge lengths (meters)
+              const norm = (v: number[]) => Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+              const dimW = norm(widthDir);
+              const dimH = norm(heightDir);
+              const dimD = norm(depthDir);
+              
+              // Compute rotation from depth direction (Y-axis in local space)
+              // Export rotation: global depthDir = (-sinZ, cosZ), so rotZ = atan2(-depthDir.x, depthDir.y)
+              const rotZ = Math.atan2(-depthDir[0], depthDir[1]);
+              // For X rotation: angle of depth dir relative to XY plane
+              const depthHoriz = Math.sqrt(depthDir[0]*depthDir[0] + depthDir[1]*depthDir[1]);
+              const rotX = -Math.atan2(depthDir[2], depthHoriz);
+              
+              // Position: center of rack bottom = midpoint between front and back face bottom edges
+              const centerX = (frontCenter[0] + backCenter[0]) / 2;
+              const centerY = (frontCenter[1] + backCenter[1]) / 2;
+              // Bottom Z from lowest vertex
+              const allVerts = faceEntries.flatMap((f: any) => f.vertices || []);
+              const minZ = Math.min(...allVerts.map((v: number[]) => v[2]));
+              
+              const computedScale = {
+                x: (dimW * 100) / defaultDims.width,
+                y: (dimD * 100) / defaultDims.depth,
+                z: (dimH * 100) / defaultDims.height
+              };
+              
+              const furnitureEntry: any = {
+                id: item.id,
+                type: 'rack' as const,
+                name: item.id,
+                floorName: floorName,
+                position: {
+                  x: centerX * 100,
+                  y: centerY * 100,
+                  z: minZ * 100
+                },
+                rotation: { x: rotX, y: 0, z: rotZ },
+                scale: computedScale,
+                dimensions: defaultDims,
+                properties: {
+                  material: wallFace?.material || 'metal',
+                  emissivity: wallFace?.emissivity || 0.25,
+                  temperature: wallFace?.temperature || 35
+                },
+                serverProperties: {
+                  rackDensity: inletFace?.rackDensity || 'medium',
+                  thermalPower_kW: inletFace?.thermalPower_kW || 10,
+                  airFlow: inletFace?.airFlow || 2395
+                }
+              };
+              
+              furnitureItems.push(furnitureEntry);
+              return;
+            }
+            
+            // Legacy format: position/rotation/dimensions/simulationProperties
             const furnitureType = item.id.split('_')[0];
             
-            // Convertir posición de metros a centímetros (* 100) directamente, SIN denormalizeCoordinates
             const positionInCm = { 
               x: item.position.x * 100, 
               y: item.position.y * 100, 
               z: item.position.z * 100 
             };
             
-            // Mapear tipos conocidos o usar 'block' como fallback
             const mappedType = ['table', 'person', 'armchair', 'block', 'rack'].includes(furnitureType) 
               ? furnitureType 
               : 'block';
@@ -4040,7 +4122,6 @@ export default function WizardDesign() {
             const simProps = item.simulationProperties || {};
             const defaultDims = getDefaultDimensions(mappedType);
             
-            // Compute scale from dimensions (meters) vs default dimensions (cm)
             let computedScale = { x: item.scale?.x || 1, y: item.scale?.y || 1, z: item.scale?.z || 1 };
             if (item.dimensions) {
               computedScale = {
@@ -4077,7 +4158,7 @@ export default function WizardDesign() {
             if (mappedType === 'rack') {
               furnitureEntry.serverProperties = {
                 rackDensity: simProps.serverRackDensity || 'medium',
-                thermalPower: simProps.serverThermalPower || 10,
+                thermalPower_kW: simProps.serverThermalPower || 10,
                 airFlow: simProps.serverAirFlow || 2395
               };
             }

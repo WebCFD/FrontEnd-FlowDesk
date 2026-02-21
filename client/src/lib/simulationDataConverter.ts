@@ -179,28 +179,36 @@ interface WallExport {
   airEntries: AirEntryExport[];
 }
 
+interface RackFaceExport {
+  role: 'inlet' | 'outlet' | 'wall';
+  vertices: [number, number, number][];
+  temperature: number;
+  rackDensity?: 'low' | 'medium' | 'high' | 'custom';
+  thermalPower_kW?: number;
+  airFlow?: number;
+  material?: string;
+  emissivity?: number;
+}
+
 interface FurnitureExport {
   id: string;
-  position: Position3D;
-  rotation: {
+  position?: Position3D;
+  rotation?: {
     x: number;
     y: number;
     z: number;
   };
-  dimensions: {
+  dimensions?: {
     width: number;
     height: number;
     depth: number;
   };
   filePath?: string;
-  simulationProperties: {
+  faces?: Record<string, RackFaceExport>;
+  simulationProperties?: {
     chassisTemperature: number;
     chassisMaterial: string;
     chassisEmissivity: number;
-    
-    serverRackDensity?: 'low' | 'medium' | 'high' | 'custom';
-    serverThermalPower?: number;
-    serverAirFlow?: number;
     
     flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
     flowValue?: number;
@@ -706,19 +714,125 @@ export function generateSimulationData(
         depth: cmToM(baseDims.depth * scaleY)
       };
       
-      // Build chassis simulation properties for all furniture types
+      // For racks: generate face-based export with vertices in global coordinates
+      if (obj.userData?.furnitureType === 'rack') {
+        const posM = {
+          x: cmToM(obj.position.x),
+          y: cmToM(obj.position.y),
+          z: cmToM(obj.position.z)
+        };
+        const w = dimensionsInMeters.width / 2;
+        const d = dimensionsInMeters.depth / 2;
+        const h = dimensionsInMeters.height;
+        
+        // Build 8 corner vertices in local space (rack origin at bottom center)
+        // width = X axis, depth = Y axis, height = Z axis
+        const localCorners: [number, number, number][] = [
+          [-w, -d, 0],   // 0: bottom-left-front
+          [ w, -d, 0],   // 1: bottom-right-front
+          [ w,  d, 0],   // 2: bottom-right-back
+          [-w,  d, 0],   // 3: bottom-left-back
+          [-w, -d, h],   // 4: top-left-front
+          [ w, -d, h],   // 5: top-right-front
+          [ w,  d, h],   // 6: top-right-back
+          [-w,  d, h],   // 7: top-left-back
+        ];
+        
+        // Apply rotation and translate to global coordinates
+        const rotX = obj.rotation.x || 0;
+        const rotY = obj.rotation.y || 0;
+        const rotZ = obj.rotation.z || 0;
+        
+        const cosX = Math.cos(rotX), sinX = Math.sin(rotX);
+        const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
+        const cosZ = Math.cos(rotZ), sinZ = Math.sin(rotZ);
+        
+        const transformPoint = (p: [number, number, number]): [number, number, number] => {
+          let [x, y, z] = p;
+          // Rotate around X
+          let y1 = y * cosX - z * sinX;
+          let z1 = y * sinX + z * cosX;
+          // Rotate around Y
+          let x2 = x * cosY + z1 * sinY;
+          let z2 = -x * sinY + z1 * cosY;
+          // Rotate around Z
+          let x3 = x2 * cosZ - y1 * sinZ;
+          let y3 = x2 * sinZ + y1 * cosZ;
+          return [
+            Math.round((x3 + posM.x) * 10000) / 10000,
+            Math.round((y3 + posM.y) * 10000) / 10000,
+            Math.round((z2 + posM.z) * 10000) / 10000
+          ];
+        };
+        
+        const gc = localCorners.map(transformPoint);
+        
+        const serverProps = obj.userData?.serverProperties || {};
+        const chassisTemp = properties.temperature || 35;
+        const inletTemp = serverProps.inletTemperature || 22;
+        const outletTemp = serverProps.outletTemperature || 45;
+        const chassisMat = properties.material || 'metal';
+        const chassisEmis = properties.emissivity || 0.25;
+        
+        const serverFaceProps = {
+          rackDensity: serverProps.rackDensity || 'medium',
+          thermalPower_kW: serverProps.thermalPower_kW ?? serverProps.thermalPower ?? 10,
+          airFlow: serverProps.airFlow || 2395
+        };
+        
+        const wallFaceProps = {
+          material: chassisMat,
+          emissivity: chassisEmis
+        };
+        
+        const faces: Record<string, RackFaceExport> = {
+          front: {
+            role: 'inlet',
+            vertices: [gc[0], gc[1], gc[5], gc[4]],
+            temperature: inletTemp,
+            ...serverFaceProps
+          },
+          back: {
+            role: 'outlet',
+            vertices: [gc[2], gc[3], gc[7], gc[6]],
+            temperature: outletTemp,
+            ...serverFaceProps
+          },
+          left: {
+            role: 'wall',
+            vertices: [gc[3], gc[0], gc[4], gc[7]],
+            temperature: chassisTemp,
+            ...wallFaceProps
+          },
+          right: {
+            role: 'wall',
+            vertices: [gc[1], gc[2], gc[6], gc[5]],
+            temperature: chassisTemp,
+            ...wallFaceProps
+          },
+          top: {
+            role: 'wall',
+            vertices: [gc[4], gc[5], gc[6], gc[7]],
+            temperature: chassisTemp,
+            ...wallFaceProps
+          },
+          bottom: {
+            role: 'wall',
+            vertices: [gc[3], gc[2], gc[1], gc[0]],
+            temperature: chassisTemp,
+            ...wallFaceProps
+          }
+        };
+        
+        return { id: furnitureId, faces } as FurnitureExport;
+      }
+      
+      // Non-rack furniture: standard export with position/rotation/dimensions
       const baseSimulationProperties = {
         chassisTemperature: properties.temperature || simulationProperties.airTemperature || 20,
         chassisMaterial: properties.material || 'default',
         chassisEmissivity: properties.emissivity || 0.90
       };
-      
-      // Add rack-specific server properties if this is a rack
-      const rackServerProperties = obj.userData?.furnitureType === 'rack' && obj.userData?.serverProperties ? {
-        serverRackDensity: obj.userData.serverProperties.rackDensity,
-        serverThermalPower: obj.userData.serverProperties.thermalPower,
-        serverAirFlow: obj.userData.serverProperties.airFlow
-      } : {};
       
       // Add vent-specific properties if this is a vent
       const ventSpecificProperties = obj.userData?.furnitureType === 'vent' ? {
@@ -749,8 +863,7 @@ export function generateSimulationData(
         dimensions: dimensionsInMeters,
         simulationProperties: {
           ...baseSimulationProperties,
-          ...ventSpecificProperties,
-          ...rackServerProperties
+          ...ventSpecificProperties
         }
       };
 

@@ -79,7 +79,7 @@ interface FurnitureDialogProps {
     };
     serverProperties?: {
       rackDensity: 'low' | 'medium' | 'high' | 'custom';
-      thermalPower: number;
+      thermalPower_kW: number;
       airFlow: number;
     };
     nozzleProperties?: {
@@ -361,7 +361,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       const savedDensity = defaults.serverProperties?.rackDensity ?? 'medium';
       setRackDensity(savedDensity);
       if (savedDensity === 'custom') {
-        setThermalPower(defaults.serverProperties?.thermalPower ?? 10);
+        setThermalPower(defaults.serverProperties?.thermalPower_kW ?? 10);
         setAirFlow(defaults.serverProperties?.airFlow ?? 2395);
       } else {
         const preset = rackDensityPresets[savedDensity as 'low' | 'medium' | 'high'];
@@ -471,7 +471,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       ...(type === 'rack' && {
         serverProperties: {
           rackDensity,
-          thermalPower,
+          thermalPower_kW: thermalPower,
           airFlow
         }
       }),

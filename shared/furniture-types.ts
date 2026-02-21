@@ -40,7 +40,7 @@ export interface FurnitureItem {
   
   serverProperties?: {
     rackDensity: 'low' | 'medium' | 'high' | 'custom';
-    thermalPower: number;
+    thermalPower_kW: number;
     airFlow: number;
   };
   
