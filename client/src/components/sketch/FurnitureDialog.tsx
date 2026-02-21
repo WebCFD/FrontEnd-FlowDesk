@@ -605,7 +605,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
               <div className="space-y-4">
                 {/* Position */}
                 <div>
-                  <Label className="text-xs text-slate-600 mb-2 block">Position (cm)</Label>
+                  <Label className="text-xs text-slate-600 mb-2 block">Position - Base Center (cm)</Label>
                   <div className="grid grid-cols-3 gap-2">
                     <div>
                       <Label htmlFor="pos-x" className="text-xs">X</Label>
