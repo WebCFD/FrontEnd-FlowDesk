@@ -8,7 +8,7 @@ import UnifiedVentDialog from "./UnifiedVentDialog";
 import { ViewDirection } from "./Toolbar3D";
 import { useSceneContext } from "../../contexts/SceneContext";
 import { FurnitureItem, FurnitureCallbacks } from "@shared/furniture-types";
-import { createTableModel, createPersonModel, createArmchairModel, createBlockModel, createRackModel, createDimensionLabel, createDimensionLine } from "./furniture-models";
+import { createTableModel, createPersonModel, createArmchairModel, createBlockModel, createRackModel, createTopVentBoxModel, createDimensionLabel, createDimensionLine } from "./furniture-models";
 import { STLProcessor } from "./STLProcessor";
 import { customFurnitureStore } from "@/lib/custom-furniture-store";
 import { useRoomStore } from "@/lib/store/room-store";
@@ -295,6 +295,7 @@ const generateFurnitureId = (
     'person': 'Person',
     'block': 'Block',
     'rack': 'Server Rack',
+    'topVentBox': 'Top Vent Box',
     'vent': 'Vent',
     'custom': 'Obj'
   };
@@ -875,6 +876,9 @@ const createFurnitureModel = (
     case 'rack':
       model = createRackModel();
       break;
+    case 'topVentBox':
+      model = createTopVentBoxModel(furnitureItem.simulationProperties);
+      break;
     case 'vent':
       model = createVentPlaneModel(furnitureItem);
       break;
@@ -963,7 +967,7 @@ const createFurnitureModel = (
     );
   }
 
-  if (furnitureItem.type === 'rack') {
+  if (furnitureItem.type === 'rack' || furnitureItem.type === 'topVentBox') {
     const sx = model.scale.x;
     const sy = model.scale.y;
     const sz = model.scale.z;
@@ -1072,7 +1076,7 @@ const createFurnitureModel = (
 };
 
 // Helper function to get default dimensions for furniture types
-const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'block' | 'rack' | 'vent' | 'nozzle' | 'custom') => {
+const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'block' | 'rack' | 'topVentBox' | 'vent' | 'nozzle' | 'custom') => {
   switch (type) {
     case 'table':
       return { width: 120, height: 75, depth: 80 };
@@ -1083,6 +1087,8 @@ const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'block' | 
     case 'block':
       return { width: 80, height: 80, depth: 80 };
     case 'rack':
+      return { width: 60, height: 200, depth: 100 };
+    case 'topVentBox':
       return { width: 60, height: 200, depth: 100 };
     case 'vent':
       return { width: 50, height: 50, depth: 10 };
@@ -3176,7 +3182,7 @@ export default function Canvas3D({
           if (furnitureModel) {
             objects.push(furnitureModel);
           }
-        } else if (furnitureItem.type === 'rack' && sceneRef.current) {
+        } else if ((furnitureItem.type === 'rack' || furnitureItem.type === 'topVentBox') && sceneRef.current) {
           let hasDimGroup = false;
           sceneRef.current.traverse((child) => {
             if (child.userData?.type === 'rackDimensions' && child.userData?.furnitureId === furnitureItem.id) {
@@ -6386,7 +6392,7 @@ export default function Canvas3D({
       furnitureGroup.scale.set(newScale.x, newScale.y, newScale.z);
     }
 
-    if (editingFurniture.item.type === 'rack') {
+    if (editingFurniture.item.type === 'rack' || editingFurniture.item.type === 'topVentBox') {
       const oldDims: THREE.Object3D[] = [];
       sceneRef.current.traverse((child) => {
         if (child.userData?.type === 'rackDimensions' && child.userData?.furnitureId === furnitureId) {
@@ -6620,6 +6626,39 @@ export default function Canvas3D({
       
       if (data.serverProperties) {
         furnitureGroup.userData.serverProperties = data.serverProperties;
+      }
+      
+      // Rebuild topVentBox model when simulation properties change (arrows depend on state/direction)
+      if (editingFurniture.item.type === 'topVentBox' && data.simulationProperties) {
+        const savedPosition = furnitureGroup.position.clone();
+        const savedRotation = furnitureGroup.rotation.clone();
+        const savedScale = furnitureGroup.scale.clone();
+        const savedUserData = { ...furnitureGroup.userData };
+        
+        while (furnitureGroup.children.length > 0) {
+          const child = furnitureGroup.children[0];
+          if (child instanceof THREE.Mesh) {
+            child.geometry?.dispose();
+            if (Array.isArray(child.material)) {
+              child.material.forEach(m => m.dispose());
+            } else {
+              child.material?.dispose();
+            }
+          }
+          furnitureGroup.remove(child);
+        }
+        
+        const freshModel = createTopVentBoxModel(data.simulationProperties);
+        while (freshModel.children.length > 0) {
+          const child = freshModel.children[0];
+          freshModel.remove(child);
+          furnitureGroup.add(child);
+        }
+        
+        furnitureGroup.position.copy(savedPosition);
+        furnitureGroup.rotation.copy(savedRotation);
+        furnitureGroup.scale.copy(savedScale);
+        furnitureGroup.userData = savedUserData;
       }
       
       if (data.nozzleProperties) {
@@ -7092,7 +7131,8 @@ export default function Canvas3D({
             // Use memoized simulation properties to prevent infinite loops
             simulationProperties: currentSimulationProperties,
             ...(editingFurniture.item.serverProperties && { serverProperties: editingFurniture.item.serverProperties }),
-            ...(editingFurniture.item.nozzleProperties && { nozzleProperties: editingFurniture.item.nozzleProperties })
+            ...(editingFurniture.item.nozzleProperties && { nozzleProperties: editingFurniture.item.nozzleProperties }),
+            ...(editingFurniture.item.simulationProperties && { simulationProperties: editingFurniture.item.simulationProperties })
           }}
           isEditing={true}
           floorContext={{

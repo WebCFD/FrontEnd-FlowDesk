@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { X, Move } from "lucide-react";
 import type { FurnitureItem } from "@shared/furniture-types";
 
-type FurnitureType = 'table' | 'person' | 'armchair' | 'block' | 'rack' | 'vent' | 'nozzle' | 'custom';
+type FurnitureType = 'table' | 'person' | 'armchair' | 'block' | 'rack' | 'topVentBox' | 'vent' | 'nozzle' | 'custom';
 
 interface FurnitureDialogProps {
   type: FurnitureType;
@@ -335,8 +335,8 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
     const baseDefaults = (furnitureDefaults as any)[type] || furnitureDefaults.table;
     
     if (props.initialValues) {
-      // For vent types, ensure simulationProperties exist by merging with defaults
-      if ((type === 'vent' || type === 'nozzle') && !props.initialValues.simulationProperties) {
+      // For vent types and topVentBox, ensure simulationProperties exist by merging with defaults
+      if ((type === 'vent' || type === 'nozzle' || type === 'topVentBox') && !props.initialValues.simulationProperties) {
         return {
           ...props.initialValues,
           simulationProperties: baseDefaults.simulationProperties
@@ -357,7 +357,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       if (type !== 'vent' && type !== 'nozzle') {
         setMaterialType(defaults.properties?.material || "default");
       }
-      setTemperature(defaults.properties?.temperature ?? (type === 'rack' ? 40 : 20));
+      setTemperature(defaults.properties?.temperature ?? (type === 'rack' || type === 'topVentBox' ? 40 : 20));
       const savedDensity = defaults.serverProperties?.rackDensity ?? 'medium';
       setRackDensity(savedDensity);
       if (savedDensity === 'custom') {
@@ -374,8 +374,8 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
         setCustomEmissivity(defaults.properties.emissivity);
       }
       
-      // Initialize simulation properties for vent furniture
-      if (type === 'vent' || type === 'nozzle') {
+      // Initialize simulation properties for vent furniture and topVentBox
+      if (type === 'vent' || type === 'nozzle' || type === 'topVentBox') {
         const simProps = (defaults as any).simulationProperties;
         
         const newSimulationProperties = {
@@ -432,14 +432,14 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
         
         setElementScale(dialogScale);
 
-        if (type === 'rack') {
+        if (type === 'rack' || type === 'topVentBox') {
           setRackDimensions({
             width: Math.round(dialogScale.x * RACK_BASE.width),
             height: Math.round(dialogScale.z * RACK_BASE.height),
             depth: Math.round(dialogScale.y * RACK_BASE.depth),
           });
         }
-      } else if (type === 'rack') {
+      } else if (type === 'rack' || type === 'topVentBox') {
         setRackDimensions({ ...RACK_BASE });
       }
     }
@@ -451,11 +451,9 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
     // Build properties object based on furniture type
     const properties = (type === 'vent' || type === 'nozzle') 
       ? {
-          // Vent/Nozzle furniture: Only temperature needed
           temperature: temperature
         }
       : {
-          // Non-vent furniture: Use material/emissivity system
           material: materialType,
           temperature: temperature,
           emissivity: getCurrentEmissivity()
@@ -475,10 +473,9 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
           airFlow
         }
       }),
-      ...((type === 'vent' || type === 'nozzle') && { 
+      ...((type === 'vent' || type === 'nozzle' || type === 'topVentBox') && { 
         simulationProperties: {
           ...simulationProperties,
-          // Only include angles if vent is open and airOrientation is inflow (mimicking AirEntry logic)
           ...(simulationProperties.state === 'open' && simulationProperties.airOrientation === 'inflow' ? {
             verticalAngle: simulationProperties.verticalAngle,
             horizontalAngle: simulationProperties.horizontalAngle
@@ -686,8 +683,8 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                             onPositionUpdate(newPosition);
                           }
                         }}
-                        disabled={type !== 'block' && type !== 'rack' && type !== 'vent' && type !== 'nozzle'}
-                        className={`text-sm ${type !== 'block' && type !== 'rack' && type !== 'vent' && type !== 'nozzle' ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
+                        disabled={type !== 'block' && type !== 'rack' && type !== 'topVentBox' && type !== 'vent' && type !== 'nozzle'}
+                        className={`text-sm ${type !== 'block' && type !== 'rack' && type !== 'topVentBox' && type !== 'vent' && type !== 'nozzle' ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
                       />
                     </div>
                   </div>
@@ -784,7 +781,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           const newScaleX = Number(e.target.value);
                           const newScale = { ...elementScale, x: newScaleX };
                           setElementScale(newScale);
-                          if (type === 'rack') {
+                          if (type === 'rack' || type === 'topVentBox') {
                             setRackDimensions(prev => ({ ...prev, width: Math.round(newScaleX * RACK_BASE.width) }));
                           }
                           if (onScaleUpdate) onScaleUpdate(newScale);
@@ -803,7 +800,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           const newScaleY = Number(e.target.value);
                           const newScale = { ...elementScale, y: newScaleY };
                           setElementScale(newScale);
-                          if (type === 'rack') {
+                          if (type === 'rack' || type === 'topVentBox') {
                             setRackDimensions(prev => ({ ...prev, depth: Math.round(newScaleY * RACK_BASE.depth) }));
                           }
                           if (onScaleUpdate) onScaleUpdate(newScale);
@@ -822,7 +819,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           const newScaleZ = Number(e.target.value);
                           const newScale = { ...elementScale, z: newScaleZ };
                           setElementScale(newScale);
-                          if (type === 'rack') {
+                          if (type === 'rack' || type === 'topVentBox') {
                             setRackDimensions(prev => ({ ...prev, height: Math.round(newScaleZ * RACK_BASE.height) }));
                           }
                           if (onScaleUpdate) onScaleUpdate(newScale);
@@ -833,8 +830,8 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                   </div>
                 </div>
                 
-                {/* Rack Dimensions - Editable fields in mm */}
-                {type === 'rack' && (
+                {/* Rack/TopVentBox Dimensions - Editable fields in mm */}
+                {(type === 'rack' || type === 'topVentBox') && (
                   <div>
                     <Label className="text-xs text-slate-600 mb-2 block">Dimensions (mm)</Label>
                     <div className="grid grid-cols-3 gap-2">
@@ -1140,9 +1137,13 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
               </div>
             )}
 
-            {(type === 'vent' || type === 'nozzle') && (
+            {(type === 'vent' || type === 'nozzle' || type === 'topVentBox') && (
             <div className="border rounded-lg p-4 bg-slate-50/50">
               <div className="space-y-4">
+
+                {type === 'topVentBox' && (
+                  <h4 className="font-medium text-sm text-slate-700 border-b border-slate-200 pb-2">Top Vent Configuration</h4>
+                )}
 
                 {type === 'nozzle' && (
                   <>
@@ -1223,8 +1224,8 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                   </>
                 )}
 
-                {/* Vent-specific simulation properties only */}
-                {(type === 'vent' || type === 'nozzle') && (
+                {/* Vent-specific simulation properties */}
+                {(type === 'vent' || type === 'nozzle' || type === 'topVentBox') && (
                   <>
                     {/* Simulation Conditions section header */}
                     <div className="border-t border-slate-300 pt-4 mt-4">

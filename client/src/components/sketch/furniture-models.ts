@@ -419,6 +419,105 @@ export const createRackModel = (): THREE.Group => {
   return group;
 };
 
+export const createTopVentBoxModel = (simulationProperties?: { state?: string; airOrientation?: string }): THREE.Group => {
+  const group = new THREE.Group();
+
+  const rackWidth = 60;
+  const rackDepth = 100;
+  const rackHeight = 200;
+
+  const rackMaterial = new THREE.MeshStandardMaterial({
+    color: 0x2d2d2d,
+    roughness: 0.6,
+    metalness: 0.4,
+  });
+
+  const rackGeometry = new THREE.BoxGeometry(rackWidth, rackDepth, rackHeight);
+  const rack = new THREE.Mesh(rackGeometry, rackMaterial);
+  rack.position.z = rackHeight / 2;
+  group.add(rack);
+
+  const slotMaterial = new THREE.MeshStandardMaterial({
+    color: 0x1a1a1a,
+    roughness: 0.8,
+    metalness: 0.2,
+  });
+
+  const slotCount = 10;
+  const slotSpacing = rackHeight / (slotCount + 1);
+  for (let i = 1; i <= slotCount; i++) {
+    const slotGeometry = new THREE.BoxGeometry(rackWidth * 0.85, 1, rackHeight * 0.045);
+    const slot = new THREE.Mesh(slotGeometry, slotMaterial);
+    slot.position.set(0, rackDepth / 2 + 0.5, i * slotSpacing);
+    group.add(slot);
+
+    const slotBack = new THREE.Mesh(slotGeometry, slotMaterial);
+    slotBack.position.set(0, -(rackDepth / 2 + 0.5), i * slotSpacing);
+    group.add(slotBack);
+  }
+
+  const ventPlaneMaterial = new THREE.MeshStandardMaterial({
+    color: 0x22c55e,
+    roughness: 0.5,
+    metalness: 0.1,
+    transparent: true,
+    opacity: 0.3,
+    side: THREE.DoubleSide
+  });
+  const ventPlaneGeometry = new THREE.PlaneGeometry(rackWidth * 0.9, rackDepth * 0.9);
+  const ventPlane = new THREE.Mesh(ventPlaneGeometry, ventPlaneMaterial);
+  ventPlane.position.set(0, 0, rackHeight + 0.5);
+  group.add(ventPlane);
+
+  const state = simulationProperties?.state || 'open';
+  const airOrientation = simulationProperties?.airOrientation || 'outflow';
+
+  if (state === 'open') {
+    const arrowColor = 0x22c55e;
+    const arrowMat = new THREE.MeshStandardMaterial({
+      color: arrowColor,
+      roughness: 0.3,
+      metalness: 0.1,
+      transparent: true,
+      opacity: 0.85,
+    });
+
+    const arrowPositions = [
+      [-15, -25], [15, -25],
+      [-15, 0],   [15, 0],
+      [-15, 25],  [15, 25],
+    ];
+
+    const isOutlet = airOrientation === 'outflow';
+    const direction = isOutlet ? 1 : -1;
+
+    for (const [x, y] of arrowPositions) {
+      const arrowGroup = new THREE.Group();
+
+      const shaftLength = 15;
+      const coneHeight = 8;
+
+      const shaftGeometry = new THREE.CylinderGeometry(1.2, 1.2, shaftLength, 8);
+      const shaft = new THREE.Mesh(shaftGeometry, arrowMat);
+      shaft.rotation.x = Math.PI / 2;
+      shaft.position.z = shaftLength / 2 * direction;
+
+      const coneGeometry = new THREE.ConeGeometry(3.5, coneHeight, 8);
+      const cone = new THREE.Mesh(coneGeometry, arrowMat);
+      cone.rotation.x = isOutlet ? 0 : Math.PI;
+      cone.position.z = (shaftLength + coneHeight / 2) * direction;
+
+      arrowGroup.add(shaft);
+      arrowGroup.add(cone);
+      arrowGroup.position.set(x, y, rackHeight + 1);
+      arrowGroup.userData = { type: 'topVentArrow' };
+      group.add(arrowGroup);
+    }
+  }
+
+  return group;
+};
+
 export const createBlockModel = (): THREE.Group => {
   const group = new THREE.Group();
 

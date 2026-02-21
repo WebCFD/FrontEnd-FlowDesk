@@ -86,6 +86,23 @@ const furnitureItems: FurnitureItem[] = [
     defaultDimensions: { width: 60, height: 200, depth: 100 }
   },
   {
+    id: 'topVentBox',
+    name: 'Top Vent Box',
+    icon: `
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="10" y="10" width="20" height="27" rx="1" fill="#2d2d2d" stroke="#555" stroke-width="1.5"/>
+        <rect x="12" y="6" width="16" height="4" rx="0.5" fill="#22c55e" opacity="0.5"/>
+        <path d="M16 5 L16 2 L15 3.5 M16 2 L17 3.5" stroke="#22c55e" stroke-width="1"/>
+        <path d="M20 5 L20 2 L19 3.5 M20 2 L21 3.5" stroke="#22c55e" stroke-width="1"/>
+        <path d="M24 5 L24 2 L23 3.5 M24 2 L25 3.5" stroke="#22c55e" stroke-width="1"/>
+        <rect x="13" y="14" width="14" height="3" rx="0.5" fill="#1a1a1a"/>
+        <rect x="13" y="20" width="14" height="3" rx="0.5" fill="#1a1a1a"/>
+        <rect x="13" y="26" width="14" height="3" rx="0.5" fill="#1a1a1a"/>
+      </svg>
+    `,
+    defaultDimensions: { width: 60, height: 200, depth: 100 }
+  },
+  {
     id: 'vent',
     name: 'Vent',
     icon: `
@@ -146,7 +163,7 @@ export function FurnitureMenu({ onDragStart, floorContext, onToggleFurnitureEras
   // Separate items by categories
   const furnitureItems_category = furnitureItems.filter(item => ['table', 'armchair'].includes(item.id));
   const charactersItems = furnitureItems.filter(item => item.id === 'person');
-  const objectsItems = furnitureItems.filter(item => ['block', 'rack'].includes(item.id));
+  const objectsItems = furnitureItems.filter(item => ['block', 'rack', 'topVentBox'].includes(item.id));
   const hvacItems = furnitureItems.filter(item => ['vent', 'nozzle'].includes(item.id));
   
   // Custom furniture goes with furniture category

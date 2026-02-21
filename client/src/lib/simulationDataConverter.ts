@@ -180,7 +180,7 @@ interface WallExport {
 }
 
 interface RackFaceExport {
-  role: 'inlet' | 'outlet' | 'wall';
+  role: 'inlet' | 'outlet' | 'wall' | 'vent';
   vertices: [number, number, number][];
   temperature: number;
   rackDensity?: 'low' | 'medium' | 'high' | 'custom';
@@ -657,6 +657,7 @@ export function generateSimulationData(
       person: 0, 
       armchair: 0, 
       rack: 0, 
+      topVentBox: 0,
       block: 0, 
       vent_furniture: 0,
       custom: 0 
@@ -815,6 +816,114 @@ export function generateSimulationData(
             vertices: [gc[4], gc[5], gc[6], gc[7]],
             temperature: chassisTemp,
             ...wallFaceProps
+          },
+          bottom: {
+            role: 'wall',
+            vertices: [gc[3], gc[2], gc[1], gc[0]],
+            temperature: chassisTemp,
+            ...wallFaceProps
+          }
+        };
+        
+        return { id: furnitureId, faces } as FurnitureExport;
+      }
+      
+      // For topVentBox: face-based export with top face as 'vent' role
+      if (obj.userData?.furnitureType === 'topVentBox') {
+        const posM = {
+          x: cmToM(obj.position.x),
+          y: cmToM(obj.position.y),
+          z: cmToM(obj.position.z)
+        };
+        const w = dimensionsInMeters.width / 2;
+        const d = dimensionsInMeters.depth / 2;
+        const h = dimensionsInMeters.height;
+        
+        const localCorners: [number, number, number][] = [
+          [-w, -d, 0],
+          [ w, -d, 0],
+          [ w,  d, 0],
+          [-w,  d, 0],
+          [-w, -d, h],
+          [ w, -d, h],
+          [ w,  d, h],
+          [-w,  d, h],
+        ];
+        
+        const rotX = obj.rotation.x || 0;
+        const rotY = obj.rotation.y || 0;
+        const rotZ = obj.rotation.z || 0;
+        
+        const cosX = Math.cos(rotX), sinX = Math.sin(rotX);
+        const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
+        const cosZ = Math.cos(rotZ), sinZ = Math.sin(rotZ);
+        
+        const transformPoint = (p: [number, number, number]): [number, number, number] => {
+          let [x, y, z] = p;
+          let y1 = y * cosX - z * sinX;
+          let z1 = y * sinX + z * cosX;
+          let x2 = x * cosY + z1 * sinY;
+          let z2 = -x * sinY + z1 * cosY;
+          let x3 = x2 * cosZ - y1 * sinZ;
+          let y3 = x2 * sinZ + y1 * cosZ;
+          return [
+            Math.round((x3 + posM.x) * 10000) / 10000,
+            Math.round((y3 + posM.y) * 10000) / 10000,
+            Math.round((z2 + posM.z) * 10000) / 10000
+          ];
+        };
+        
+        const gc = localCorners.map(transformPoint);
+        
+        const chassisTemp = properties.temperature || 35;
+        const chassisMat = properties.material || 'metal';
+        const chassisEmis = properties.emissivity || 0.25;
+        
+        const wallFaceProps = {
+          material: chassisMat,
+          emissivity: chassisEmis
+        };
+        
+        const ventSimProps = simulationProperties || {};
+        const ventFaceProps = {
+          state: ventSimProps.state || 'open',
+          airDirection: ventSimProps.airOrientation || 'outflow',
+          flowType: ventSimProps.flowType || 'Air Mass Flow',
+          flowIntensity: ventSimProps.flowIntensity || 'medium',
+          customIntensityValue: ventSimProps.customIntensityValue,
+          airTemperature: ventSimProps.airTemperature || 20
+        };
+        
+        const faces: Record<string, RackFaceExport> = {
+          front: {
+            role: 'wall',
+            vertices: [gc[0], gc[1], gc[5], gc[4]],
+            temperature: chassisTemp,
+            ...wallFaceProps
+          },
+          back: {
+            role: 'wall',
+            vertices: [gc[2], gc[3], gc[7], gc[6]],
+            temperature: chassisTemp,
+            ...wallFaceProps
+          },
+          left: {
+            role: 'wall',
+            vertices: [gc[3], gc[0], gc[4], gc[7]],
+            temperature: chassisTemp,
+            ...wallFaceProps
+          },
+          right: {
+            role: 'wall',
+            vertices: [gc[1], gc[2], gc[6], gc[5]],
+            temperature: chassisTemp,
+            ...wallFaceProps
+          },
+          top: {
+            role: 'vent',
+            vertices: [gc[4], gc[5], gc[6], gc[7]],
+            temperature: ventFaceProps.airTemperature,
+            ...ventFaceProps
           },
           bottom: {
             role: 'wall',
@@ -1267,6 +1376,7 @@ function getFurnitureTypeForId(furnitureType?: string): string {
     case 'person': return 'person';
     case 'armchair': return 'armchair';
     case 'rack': return 'rack';
+    case 'topVentBox': return 'topVentBox';
     case 'block': return 'block';
     case 'vent': return 'vent_furniture';
     case 'custom': return 'custom';
