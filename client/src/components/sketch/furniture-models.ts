@@ -422,9 +422,9 @@ export const createRackModel = (): THREE.Group => {
 export const createTopVentBoxModel = (simulationProperties?: { state?: string; airOrientation?: string }): THREE.Group => {
   const group = new THREE.Group();
 
-  const boxWidth = 60;
-  const boxDepth = 100;
-  const boxHeight = 200;
+  const boxWidth = 50;
+  const boxDepth = 50;
+  const boxHeight = 100;
 
   const bodyMaterial = new THREE.MeshStandardMaterial({
     color: 0x8a8a8a,
@@ -516,9 +516,8 @@ export const createTopVentBoxModel = (simulationProperties?: { state?: string; a
     });
 
     const arrowPositions = [
-      [-15, -25], [15, -25],
-      [-15, 0],   [15, 0],
-      [-15, 25],  [15, 25],
+      [-10, -10], [10, -10],
+      [-10, 10],  [10, 10],
     ];
 
     const isOutlet = airOrientation === 'outflow';
