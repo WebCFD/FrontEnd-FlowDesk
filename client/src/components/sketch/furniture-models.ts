@@ -541,7 +541,9 @@ export const createTopVentBoxModel = (simulationProperties?: { state?: string; a
 
       arrowGroup.add(shaft);
       arrowGroup.add(cone);
-      arrowGroup.position.set(x, y, boxHeight + 3);
+      const arrowTotalLength = shaftLength + coneHeight;
+      const zOffset = isOutlet ? 3 : arrowTotalLength + 3;
+      arrowGroup.position.set(x, y, boxHeight + zOffset);
       arrowGroup.userData = { type: 'topVentArrow' };
       group.add(arrowGroup);
     }
@@ -675,7 +677,9 @@ export const createSideVentBoxModel = (simulationProperties?: { state?: string; 
 
       arrowGroup.add(shaft);
       arrowGroup.add(cone);
-      arrowGroup.position.set(x, boxDepth / 2 + 3, z);
+      const arrowTotalLength = shaftLength + coneHeight;
+      const yOffset = isOutlet ? 3 : arrowTotalLength + 3;
+      arrowGroup.position.set(x, boxDepth / 2 + yOffset, z);
       arrowGroup.userData = { type: 'sideVentArrow' };
       group.add(arrowGroup);
     }
