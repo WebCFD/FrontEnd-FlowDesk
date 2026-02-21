@@ -78,6 +78,7 @@ interface FurnitureDialogProps {
       normalVector?: { x: number; y: number; z: number };
     };
     serverProperties?: {
+      rackDensity: 'low' | 'medium' | 'high' | 'custom';
       thermalPower: number;
       airFlow: number;
     };
@@ -278,8 +279,15 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
   const [furnitureName, setFurnitureName] = useState("");
   const [materialType, setMaterialType] = useState("default");
   const [temperature, setTemperature] = useState(20);
+  const [rackDensity, setRackDensity] = useState<'low' | 'medium' | 'high' | 'custom'>('medium');
   const [thermalPower, setThermalPower] = useState(10);
-  const [airFlow, setAirFlow] = useState(1800);
+  const [airFlow, setAirFlow] = useState(2395);
+
+  const rackDensityPresets = {
+    low: { thermalPower: 5, airFlow: 1195 },
+    medium: { thermalPower: 10, airFlow: 2395 },
+    high: { thermalPower: 20, airFlow: 4795 },
+  };
   const [customEmissivity, setCustomEmissivity] = useState(0.85);
 
 
@@ -361,8 +369,16 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
         setMaterialType(defaults.properties?.material || "default");
       }
       setTemperature(defaults.properties?.temperature ?? (type === 'rack' ? 40 : 20));
-      setThermalPower(defaults.serverProperties?.thermalPower ?? 10);
-      setAirFlow(defaults.serverProperties?.airFlow ?? 1800);
+      const savedDensity = defaults.serverProperties?.rackDensity ?? 'medium';
+      setRackDensity(savedDensity);
+      if (savedDensity === 'custom') {
+        setThermalPower(defaults.serverProperties?.thermalPower ?? 10);
+        setAirFlow(defaults.serverProperties?.airFlow ?? 2395);
+      } else {
+        const preset = rackDensityPresets[savedDensity as 'low' | 'medium' | 'high'];
+        setThermalPower(preset.thermalPower);
+        setAirFlow(preset.airFlow);
+      }
       
       // Initialize emissivity for non-vent furniture
       if (type !== 'vent' && type !== 'nozzle' && defaults.properties?.emissivity !== undefined) {
@@ -465,6 +481,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       properties,
       ...(type === 'rack' && {
         serverProperties: {
+          rackDensity,
           thermalPower,
           airFlow
         }
@@ -1056,6 +1073,46 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                 <h4 className="font-medium text-sm mb-4 text-slate-700 border-b border-slate-200 pb-2">Simulation Server Properties</h4>
                 <div className="space-y-4">
                   <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="rackDensity" className="text-right">
+                      Rack Density
+                    </Label>
+                    <Select value={rackDensity} onValueChange={(value: 'low' | 'medium' | 'high' | 'custom') => {
+                      setRackDensity(value);
+                      if (value !== 'custom') {
+                        const preset = rackDensityPresets[value];
+                        setThermalPower(preset.thermalPower);
+                        setAirFlow(preset.airFlow);
+                      }
+                    }}>
+                      <SelectTrigger className="col-span-3">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="low">
+                          <div className="flex items-center justify-between w-full">
+                            <span>Low Density</span>
+                            <span className="text-xs text-gray-500 ml-2">5 kW · 1,060-1,330 m³/h</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="medium">
+                          <div className="flex items-center justify-between w-full">
+                            <span>Medium Density</span>
+                            <span className="text-xs text-gray-500 ml-2">10 kW · 2,120-2,670 m³/h</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="high">
+                          <div className="flex items-center justify-between w-full">
+                            <span>High Density</span>
+                            <span className="text-xs text-gray-500 ml-2">20 kW · 4,250-5,340 m³/h</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="custom">
+                          <span>Custom</span>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="thermalPower" className="text-right">
                       Thermal Power
                     </Label>
@@ -1066,7 +1123,8 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       step="0.1"
                       value={thermalPower}
                       onChange={(e) => setThermalPower(Number(e.target.value))}
-                      className="col-span-2"
+                      className={`col-span-2 ${rackDensity !== 'custom' ? 'bg-gray-100 text-gray-500' : ''}`}
+                      disabled={rackDensity !== 'custom'}
                     />
                     <span className="text-sm">kW</span>
                   </div>
@@ -1081,7 +1139,8 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       step="10"
                       value={airFlow}
                       onChange={(e) => setAirFlow(Number(e.target.value))}
-                      className="col-span-2"
+                      className={`col-span-2 ${rackDensity !== 'custom' ? 'bg-gray-100 text-gray-500' : ''}`}
+                      disabled={rackDensity !== 'custom'}
                     />
                     <div className="flex flex-col">
                       <span className="text-sm">m³/h</span>
