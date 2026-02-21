@@ -77,6 +77,10 @@ interface FurnitureDialogProps {
       airTemperature?: number;
       normalVector?: { x: number; y: number; z: number };
     };
+    serverProperties?: {
+      thermalPower: number;
+      airFlow: number;
+    };
     nozzleProperties?: {
       ductLength: number;
       ductDiameter: number;
@@ -274,6 +278,8 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
   const [furnitureName, setFurnitureName] = useState("");
   const [materialType, setMaterialType] = useState("default");
   const [temperature, setTemperature] = useState(20);
+  const [thermalPower, setThermalPower] = useState(10);
+  const [airFlow, setAirFlow] = useState(1800);
   const [customEmissivity, setCustomEmissivity] = useState(0.85);
 
 
@@ -354,7 +360,9 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       if (type !== 'vent' && type !== 'nozzle') {
         setMaterialType(defaults.properties?.material || "default");
       }
-      setTemperature(defaults.properties?.temperature || 20);
+      setTemperature(defaults.properties?.temperature ?? (type === 'rack' ? 40 : 20));
+      setThermalPower(defaults.serverProperties?.thermalPower ?? 10);
+      setAirFlow(defaults.serverProperties?.airFlow ?? 1800);
       
       // Initialize emissivity for non-vent furniture
       if (type !== 'vent' && type !== 'nozzle' && defaults.properties?.emissivity !== undefined) {
@@ -455,6 +463,12 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       scale: elementScale,
       ...(type === 'custom' && { dimensions: dimensions }),
       properties,
+      ...(type === 'rack' && {
+        serverProperties: {
+          thermalPower,
+          airFlow
+        }
+      }),
       ...((type === 'vent' || type === 'nozzle') && { 
         simulationProperties: {
           ...simulationProperties,
@@ -1034,6 +1048,53 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                     )}
                   </>
                 )}
+              </div>
+            </div>
+
+            {type === 'rack' && (
+              <div className="border rounded-lg p-4 bg-slate-50/50">
+                <h4 className="font-medium text-sm mb-4 text-slate-700 border-b border-slate-200 pb-2">Simulation Server Properties</h4>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="thermalPower" className="text-right">
+                      Thermal Power
+                    </Label>
+                    <Input
+                      id="thermalPower"
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      value={thermalPower}
+                      onChange={(e) => setThermalPower(Number(e.target.value))}
+                      className="col-span-2"
+                    />
+                    <span className="text-sm">kW</span>
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="airFlow" className="text-right">
+                      Air Flow
+                    </Label>
+                    <Input
+                      id="airFlow"
+                      type="number"
+                      min="0"
+                      step="10"
+                      value={airFlow}
+                      onChange={(e) => setAirFlow(Number(e.target.value))}
+                      className="col-span-2"
+                    />
+                    <div className="flex flex-col">
+                      <span className="text-sm">m³/h</span>
+                      <span className="text-xs text-gray-400">{(airFlow * 0.5886).toFixed(0)} CFM</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {(type === 'vent' || type === 'nozzle') && (
+            <div className="border rounded-lg p-4 bg-slate-50/50">
+              <div className="space-y-4">
 
                 {type === 'nozzle' && (
                   <>
@@ -1456,6 +1517,8 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                 )}
               </div>
             </div>
+            )}
+
           </div>
 
           {/* Footer */}
