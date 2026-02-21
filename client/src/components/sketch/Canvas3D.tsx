@@ -6240,11 +6240,14 @@ export default function Canvas3D({
       }
     };
 
-    const handleFurnitureContextMenu = (event: MouseEvent) => {
+    let rightClickPending: { x: number; y: number; clientX: number; clientY: number } | null = null;
+
+    const handleRightMouseDown = (event: MouseEvent) => {
+      if (event.button !== 2) return;
       if (presentationMode) return;
       if (!sceneRef.current || !cameraRef.current) return;
 
-      const canvasEl = container.querySelector('canvas');
+      const canvasEl = rendererRef.current?.domElement || container.querySelector('canvas');
       const rect = canvasEl ? canvasEl.getBoundingClientRect() : container.getBoundingClientRect();
       const mouse = new THREE.Vector2(
         ((event.clientX - rect.left) / rect.width) * 2 - 1,
@@ -6265,8 +6268,7 @@ export default function Canvas3D({
 
       const intersects = raycaster.intersectObjects(furnitureObjects, true);
       if (intersects.length > 0) {
-        event.preventDefault();
-        event.stopImmediatePropagation();
+        rightClickPending = { x: event.clientX, y: event.clientY, clientX: event.clientX, clientY: event.clientY };
 
         let furnitureGroup = intersects[0].object as THREE.Object3D;
         while (furnitureGroup && furnitureGroup.userData.type !== 'furniture') {
@@ -6274,6 +6276,10 @@ export default function Canvas3D({
         }
 
         if (furnitureGroup?.userData.type === 'furniture') {
+          if (controlsRef.current) {
+            controlsRef.current.enabled = false;
+          }
+
           const furnitureId = furnitureGroup.userData.furnitureId;
           const floorName = furnitureGroup.userData.floorName || currentFloor;
           const reactiveFloors = useRoomStore.getState().floors;
@@ -6294,10 +6300,23 @@ export default function Canvas3D({
             });
           }
         }
+      } else {
+        rightClickPending = null;
       }
     };
 
-    const canvas = container.querySelector('canvas');
+    const handleFurnitureContextMenu = (event: MouseEvent) => {
+      if (rightClickPending) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        rightClickPending = null;
+        setTimeout(() => {
+          if (controlsRef.current) {
+            controlsRef.current.enabled = true;
+          }
+        }, 100);
+      }
+    };
 
     container.addEventListener("dragenter", handleDragEnter);
     container.addEventListener("dragover", handleDragOver);
@@ -6305,9 +6324,8 @@ export default function Canvas3D({
     container.addEventListener("drop", handleDrop);
     container.addEventListener("dblclick", handleFurnitureDoubleClick);
     container.addEventListener("click", handleClick);
-    if (canvas) {
-      canvas.addEventListener("contextmenu", handleFurnitureContextMenu, true);
-    }
+    container.addEventListener("mousedown", handleRightMouseDown, true);
+    container.addEventListener("contextmenu", handleFurnitureContextMenu, true);
 
     return () => {
       container.removeEventListener("dragenter", handleDragEnter);
@@ -6316,9 +6334,8 @@ export default function Canvas3D({
       container.removeEventListener("drop", handleDrop);
       container.removeEventListener("dblclick", handleFurnitureDoubleClick);
       container.removeEventListener("click", handleClick);
-      if (canvas) {
-        canvas.removeEventListener("contextmenu", handleFurnitureContextMenu, true);
-      }
+      container.removeEventListener("mousedown", handleRightMouseDown, true);
+      container.removeEventListener("contextmenu", handleFurnitureContextMenu, true);
     };
   }, [currentFloor, onFurnitureAdd, isMultifloor, floorParameters, isFurnitureEraserMode, onDeleteFurniture]);
 
@@ -6499,6 +6516,7 @@ export default function Canvas3D({
     }
 
     setFurnitureContextMenu(null);
+    if (controlsRef.current) controlsRef.current.enabled = true;
   }, [furnitureContextMenu, finalFloors, onFurnitureAdd, onDeleteFurniture, onFurnitureAdded]);
 
   // Memoize simulation properties from 3D object to prevent infinite loops
@@ -6790,8 +6808,8 @@ export default function Canvas3D({
         {furnitureContextMenu && (
           <div
             className="fixed inset-0 z-50"
-            onClick={() => setFurnitureContextMenu(null)}
-            onContextMenu={(e) => { e.preventDefault(); setFurnitureContextMenu(null); }}
+            onClick={() => { setFurnitureContextMenu(null); if (controlsRef.current) controlsRef.current.enabled = true; }}
+            onContextMenu={(e) => { e.preventDefault(); setFurnitureContextMenu(null); if (controlsRef.current) controlsRef.current.enabled = true; }}
           >
             <div
               className="absolute bg-white rounded-lg shadow-xl border border-slate-200 py-1 min-w-[160px]"
@@ -6805,6 +6823,7 @@ export default function Canvas3D({
                 className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-2 transition-colors"
                 onClick={() => {
                   setFurnitureContextMenu(null);
+                  if (controlsRef.current) controlsRef.current.enabled = true;
                   const floorName = furnitureContextMenu.floorName;
                   const item = furnitureContextMenu.item;
                   const furnitureGroup = (() => {
@@ -6846,6 +6865,7 @@ export default function Canvas3D({
                     onDeleteFurniture(furnitureContextMenu.floorName, furnitureContextMenu.item.id);
                   }
                   setFurnitureContextMenu(null);
+                  if (controlsRef.current) controlsRef.current.enabled = true;
                 }}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
