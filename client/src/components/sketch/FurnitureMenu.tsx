@@ -100,7 +100,7 @@ const furnitureItems: FurnitureItem[] = [
         <rect x="13" y="26" width="14" height="3" rx="0.5" fill="#1a1a1a"/>
       </svg>
     `,
-    defaultDimensions: { width: 60, height: 200, depth: 100 }
+    defaultDimensions: { width: 50, height: 150, depth: 50 }
   },
   {
     id: 'vent',
