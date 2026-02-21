@@ -6244,7 +6244,8 @@ export default function Canvas3D({
       if (presentationMode) return;
       if (!sceneRef.current || !cameraRef.current) return;
 
-      const rect = container.getBoundingClientRect();
+      const canvasEl = container.querySelector('canvas');
+      const rect = canvasEl ? canvasEl.getBoundingClientRect() : container.getBoundingClientRect();
       const mouse = new THREE.Vector2(
         ((event.clientX - rect.left) / rect.width) * 2 - 1,
         -((event.clientY - rect.top) / rect.height) * 2 + 1
@@ -6265,7 +6266,7 @@ export default function Canvas3D({
       const intersects = raycaster.intersectObjects(furnitureObjects, true);
       if (intersects.length > 0) {
         event.preventDefault();
-        event.stopPropagation();
+        event.stopImmediatePropagation();
 
         let furnitureGroup = intersects[0].object as THREE.Object3D;
         while (furnitureGroup && furnitureGroup.userData.type !== 'furniture') {
@@ -6296,13 +6297,17 @@ export default function Canvas3D({
       }
     };
 
+    const canvas = container.querySelector('canvas');
+
     container.addEventListener("dragenter", handleDragEnter);
     container.addEventListener("dragover", handleDragOver);
     container.addEventListener("dragleave", handleDragLeave);
     container.addEventListener("drop", handleDrop);
     container.addEventListener("dblclick", handleFurnitureDoubleClick);
     container.addEventListener("click", handleClick);
-    container.addEventListener("contextmenu", handleFurnitureContextMenu);
+    if (canvas) {
+      canvas.addEventListener("contextmenu", handleFurnitureContextMenu, true);
+    }
 
     return () => {
       container.removeEventListener("dragenter", handleDragEnter);
@@ -6311,7 +6316,9 @@ export default function Canvas3D({
       container.removeEventListener("drop", handleDrop);
       container.removeEventListener("dblclick", handleFurnitureDoubleClick);
       container.removeEventListener("click", handleClick);
-      container.removeEventListener("contextmenu", handleFurnitureContextMenu);
+      if (canvas) {
+        canvas.removeEventListener("contextmenu", handleFurnitureContextMenu, true);
+      }
     };
   }, [currentFloor, onFurnitureAdd, isMultifloor, floorParameters, isFurnitureEraserMode, onDeleteFurniture]);
 
