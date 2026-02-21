@@ -7091,6 +7091,7 @@ export default function Canvas3D({
             }),
             // Use memoized simulation properties to prevent infinite loops
             simulationProperties: currentSimulationProperties,
+            ...(editingFurniture.item.serverProperties && { serverProperties: editingFurniture.item.serverProperties }),
             ...(editingFurniture.item.nozzleProperties && { nozzleProperties: editingFurniture.item.nozzleProperties })
           }}
           isEditing={true}
