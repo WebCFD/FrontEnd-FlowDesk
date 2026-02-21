@@ -1365,6 +1365,13 @@ export default function Canvas3D({
           normalVector: surfaceDetection.surfaceType === 'ceiling' 
             ? { x: 0, y: 0, z: -1 } // Ceiling: pointing down
             : { x: 0, y: 0, z: 1 }   // Floor: pointing up
+        } : (furnitureType === 'topVentBox' || furnitureType === 'sideVentBox') ? {
+          flowType: 'Air Mass Flow',
+          flowValue: 0.5,
+          flowIntensity: 'medium',
+          airOrientation: 'inflow',
+          state: 'open',
+          airTemperature: 20
         } : undefined,
         ...(furnitureType === 'nozzle' && {
           nozzleProperties: {

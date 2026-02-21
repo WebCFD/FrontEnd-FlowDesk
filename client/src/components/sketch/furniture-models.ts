@@ -461,7 +461,7 @@ export const createTopVentBoxModel = (simulationProperties?: { state?: string; a
   }
 
   const state = simulationProperties?.state || 'open';
-  const airOrientation = simulationProperties?.airOrientation || 'outflow';
+  const airOrientation = simulationProperties?.airOrientation || 'inflow';
 
   const ventColor = state === 'open' ? 0x22c55e : 0x666666;
   const ventOpacity = state === 'open' ? 0.4 : 0.6;
@@ -592,7 +592,7 @@ export const createSideVentBoxModel = (simulationProperties?: { state?: string; 
   }
 
   const state = simulationProperties?.state || 'open';
-  const airOrientation = simulationProperties?.airOrientation || 'outflow';
+  const airOrientation = simulationProperties?.airOrientation || 'inflow';
 
   const ventColor = state === 'open' ? 0x22c55e : 0x666666;
   const ventOpacity = state === 'open' ? 0.4 : 0.6;
