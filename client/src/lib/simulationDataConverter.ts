@@ -886,13 +886,19 @@ export function generateSimulationData(
         };
         
         const ventSimProps = simulationProperties || {};
+        const ventState = ventSimProps.state || 'open';
         const ventFaceProps = {
-          state: ventSimProps.state || 'open',
-          airDirection: ventSimProps.airOrientation || 'outflow',
-          flowType: mapFlowType(ventSimProps.flowType) || 'pressure',
-          flowIntensity: ventSimProps.flowIntensity || 'medium',
-          customIntensityValue: ventSimProps.customIntensityValue,
-          temperature: ventSimProps.airTemperature || 20
+          state: ventState,
+          temperature: ventSimProps.airTemperature || 20,
+          ...(ventState === 'closed' ? {
+            material: properties.material || 'default',
+            emissivity: properties.emissivity || 0.90
+          } : {
+            airDirection: ventSimProps.airOrientation || 'outflow',
+            flowType: mapFlowType(ventSimProps.flowType) || 'pressure',
+            flowIntensity: ventSimProps.flowIntensity || 'medium',
+            customIntensityValue: ventSimProps.customIntensityValue
+          })
         };
         
         const isSideVent = obj.userData?.furnitureType === 'sideVentBox';
