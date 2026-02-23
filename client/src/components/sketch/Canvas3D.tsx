@@ -94,7 +94,6 @@ interface Canvas3DProps {
   isEraserMode?: boolean;
   isFurnitureEraserMode?: boolean;
   simulationName?: string;
-  simulationType?: string;
   isMultifloor?: boolean;
   presentationMode?: boolean; // New: disables editing tools
   allowAirEntryEditing?: boolean; // New: allows AirEntry editing even in presentation mode
@@ -1137,7 +1136,6 @@ export default function Canvas3D({
   isEraserMode, // Removed default value to ensure external state is always respected
   isFurnitureEraserMode = false,
   simulationName = "",
-  simulationType = "Comfort Simulation (steady run)",
   isMultifloor = false,
   presentationMode = false,
   allowAirEntryEditing = false,

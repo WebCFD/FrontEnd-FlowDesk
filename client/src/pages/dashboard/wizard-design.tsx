@@ -289,7 +289,6 @@ export default function WizardDesign() {
   const { viewportOffset, gridSize, canvasHeightPercentage, menuWidthPercentage, setGridSize } = useSketchStore();
   const [step, setStep] = useState(0);
   const [simulationName, setSimulationName] = useState("MySim");
-  const [simulationType, setSimulationType] = useState("SteadySim");
   const [cfdType, setCfdType] = useState(() => {
     const stored = sessionStorage.getItem('selectedCFDType');
     if (stored) sessionStorage.removeItem('selectedCFDType');
@@ -2736,12 +2735,7 @@ export default function WizardDesign() {
                   {cfdType === 'data-centers' ? 'Data Centers' : cfdType === 'indoor-spaces' ? 'Indoor Spaces' : cfdType === 'fire-smoke' ? 'Fire & Smoke' : 'Industrial Cooling'}
                 </span>
               </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-600">Type:</span>
-                <span className="font-medium">
-                  {simulationType === "comfort" ? "Steady" : "Air Renovation"}
-                </span>
-              </div>
+              
               <div className="flex justify-between items-center text-sm">
                 <span className="text-gray-600">Cost:</span>
                 <span className="font-medium text-blue-600">
@@ -3171,7 +3165,6 @@ export default function WizardDesign() {
     return {
       case_name,
       simulation_type: cfdTypeToSimType[cfdType] || 'IndoorSpaces',
-      simulationType: simulationType,
       version,
       ...restData
     };
@@ -3202,11 +3195,8 @@ export default function WizardDesign() {
       // Generar datos de simulación completos desde el diseño actual
       const simulationData = generateSimulationDataForExport();
       
-      console.log('[FRONTEND] Creating HVAC simulation with type:', simulationType);
+      console.log('[FRONTEND] Creating HVAC simulation');
       
-      // ========== TEMPORARY PASSWORD PROTECTION - TO BE REMOVED SOON ==========
-      // Incluir contraseña en el body de la petición
-      // Esta funcionalidad será eliminada próximamente
       const response = await fetch("/api/simulations/create", {
         method: "POST",
         headers: {
@@ -3214,8 +3204,8 @@ export default function WizardDesign() {
         },
         credentials: "include",
         body: JSON.stringify({
-          name: `HVAC ${simulationType === 'SteadySim' ? 'Steady TEST' : 'Transient'} - ${simulationData.case_name}`,
-          simulationType: simulationType,
+          name: `HVAC Steady - ${simulationData.case_name}`,
+          simulationType: 'SteadySim',
           status: "pending",
           jsonConfig: simulationData,
           password: simulationPassword,
@@ -3235,7 +3225,7 @@ export default function WizardDesign() {
 
       toast({
         title: "Simulación HVAC Creada",
-        description: `Type: ${simulationType === 'SteadySim' ? 'Steady Simulation TEST (3 iter)' : 'Transient Simulation'}. The worker will process this simulation shortly.`,
+        description: `The worker will process this simulation shortly.`,
       });
 
       // Redirect to dashboard
@@ -3515,7 +3505,7 @@ export default function WizardDesign() {
         credentials: "include",
         body: JSON.stringify({
           name: simulationName,
-          simulationType,
+          simulationType: 'SteadySim',
           status: simulationStatus,
           jsonConfig: exportData,
           password: simulationPassword, // TEMPORARY: contraseña de lanzamiento
@@ -4549,11 +4539,7 @@ export default function WizardDesign() {
               walls={walls} // Phase 1: Pass walls for AirEntry dialog unification
               hasClosedContour={hasClosedContour} // NEW: Pass hasClosedContour to show warning
               simulationName={simulationName}
-              simulationType={
-                simulationType === "SteadySim"
-                  ? "Steady Simulation TEST (3 iterations)"
-                  : "Transient Simulation (full simulation)"
-              }
+              
               onUpdateAirEntry={handleUpdateAirEntryFrom3D}
               onDeleteAirEntry={handleDeleteAirEntryFrom3D}
               onPropertiesUpdate={handlePropertiesUpdateFrom3D}
@@ -4587,21 +4573,7 @@ export default function WizardDesign() {
           placeholder="Enter simulation name"
         />
       </div>
-      <div>
-        <Label htmlFor="simulation-type">Simulation type</Label>
-        <select
-          id="simulation-type"
-          value={simulationType}
-          onChange={(e) => setSimulationType(e.target.value)}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        >
-          <option value="SteadySim">Steady Simulation (3 iterations - Test)</option>
-          <option value="TransientSim">Transient Simulation (500 iterations)</option>
-        </select>
-        <p className="text-xs text-muted-foreground mt-1">
-          {simulationType === 'SteadySim' ? 'Quick test run - €9.99' : 'Full simulation - €12.00'}
-        </p>
-      </div>
+      
     </div>
   );
 
@@ -4707,9 +4679,7 @@ export default function WizardDesign() {
               <p className="text-sm text-gray-600 mb-2">
                 You are about to create simulation: <strong>"{simulationName}"</strong>
               </p>
-              <p className="text-sm text-gray-600">
-                Type: <strong>{simulationType === "SteadySim" ? "Steady Simulation TEST" : "Transient Simulation"}</strong>
-              </p>
+              
             </div>
             
             <div className="space-y-2">
@@ -4728,7 +4698,7 @@ export default function WizardDesign() {
 
             <div className="bg-blue-50 p-3 rounded-lg">
               <p className="text-sm text-blue-800">
-                <strong>Cost:</strong> €{getSimulationCost(simulationType).toFixed(2)} will be deducted from your credits
+                <strong>Cost:</strong> €{getSimulationCost('SteadySim').toFixed(2)} will be deducted from your credits
               </p>
             </div>
           </div>
@@ -4789,14 +4759,7 @@ export default function WizardDesign() {
               <span className="text-muted-foreground">Name:</span>
               <span className="font-medium">{simulationName}</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Type:</span>
-              <span className="font-medium">{simulationType === 'SteadySim' ? 'Steady Simulation (3 iter)' : 'Transient Simulation (500 iter)'}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Price:</span>
-              <span className="font-medium">{simulationType === 'SteadySim' ? '€9.99' : '€12.00'}</span>
-            </div>
+            
           </div>
           
           {/* TEMPORARY: Campo de contraseña - será eliminado próximamente */}
