@@ -170,6 +170,7 @@ const furnitureDefaults = {
     properties: {
       material: "metal",
       temperature: 20,
+      emissivity: 0.25,
       thermalConductivity: 45,
       density: 2700,
       heatCapacity: 900
@@ -304,9 +305,9 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
     custom: { name: "Custom", emissivity: customEmissivity }
   };
 
-  // Get current emissivity value (only for non-vent furniture)
   const getCurrentEmissivity = () => {
-    if (type === 'vent' || type === 'nozzle') return undefined;
+    if (type === 'nozzle') return undefined;
+    if (type === 'vent' && simulationProperties.state === 'open') return undefined;
     return materialType === 'custom' ? customEmissivity : materialDefinitions[materialType as keyof typeof materialDefinitions]?.emissivity || 0.85;
   };
   
@@ -356,7 +357,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       const defaults = getDefaultValues();
       setValues(defaults);
       setFurnitureName(defaults.name);
-      if (type !== 'vent' && type !== 'nozzle') {
+      if (type !== 'nozzle') {
         setMaterialType(defaults.properties?.material || "default");
       }
       setTemperature(defaults.properties?.temperature ?? (type === 'rack' || type === 'topVentBox' || type === 'sideVentBox' ? 40 : 20));
@@ -371,8 +372,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
         setAirFlow(preset.airFlow);
       }
       
-      // Initialize emissivity for non-vent furniture
-      if (type !== 'vent' && type !== 'nozzle' && defaults.properties?.emissivity !== undefined) {
+      if (type !== 'nozzle' && defaults.properties?.emissivity !== undefined) {
         setCustomEmissivity(defaults.properties.emissivity);
       }
       
@@ -450,16 +450,19 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Build properties object based on furniture type
-    const properties = (type === 'vent' || type === 'nozzle') 
+    const properties = (type === 'nozzle')
       ? {
           temperature: temperature
         }
-      : {
-          material: materialType,
-          temperature: temperature,
-          emissivity: getCurrentEmissivity()
-        };
+      : (type === 'vent' && simulationProperties.state === 'open')
+        ? {
+            temperature: temperature
+          }
+        : {
+            material: materialType,
+            temperature: temperature,
+            emissivity: getCurrentEmissivity()
+          };
     
     const furnitureData = {
       name: furnitureName,
@@ -972,10 +975,13 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                   </div>
                 )}
 
-                {/* Material/Emissivity system for non-vent furniture */}
-                {type !== 'vent' && type !== 'nozzle' && (
+                {/* Material/Emissivity system — always for chassis types, conditional for vents (only when closed) */}
+                {type !== 'nozzle' && (
                   <>
-                    <div className="grid grid-cols-4 items-center gap-4">
+                    {type === 'vent' && simulationProperties.state === 'open' && (
+                      <p className="text-xs text-amber-600 italic">Material and emissivity not used — element is open (airflow mode)</p>
+                    )}
+                    <div className={`grid grid-cols-4 items-center gap-4 ${type === 'vent' && simulationProperties.state === 'open' ? 'opacity-40 pointer-events-none' : ''}`}>
                       <div className="text-right flex items-center gap-2">
                         <Label htmlFor="material">Material Chassis</Label>
                         <div className="group relative">
@@ -997,7 +1003,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           </div>
                         </div>
                       </div>
-                      <Select value={materialType} onValueChange={setMaterialType}>
+                      <Select value={materialType} onValueChange={setMaterialType} disabled={type === 'vent' && simulationProperties.state === 'open'}>
                         <SelectTrigger className="col-span-3">
                           <SelectValue placeholder="Select material" />
                         </SelectTrigger>
@@ -1033,9 +1039,8 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       </Select>
                     </div>
 
-                    {/* Custom emissivity input when Custom material is selected */}
                     {materialType === 'custom' && (
-                      <div className="grid grid-cols-4 items-center gap-4">
+                      <div className={`grid grid-cols-4 items-center gap-4 ${type === 'vent' && simulationProperties.state === 'open' ? 'opacity-40 pointer-events-none' : ''}`}>
                         <Label htmlFor="custom-emissivity" className="text-right">
                           Emissivity
                         </Label>
@@ -1048,6 +1053,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           value={Math.round(customEmissivity * 100) / 100}
                           onChange={(e) => setCustomEmissivity(Math.max(0, Math.min(1, Number(e.target.value))))}
                           className="col-span-2"
+                          disabled={type === 'vent' && simulationProperties.state === 'open'}
                         />
                         <span className="text-sm">ε (0.00-1.00)</span>
                       </div>
@@ -1255,6 +1261,10 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                         </SelectContent>
                       </Select>
                     </div>
+
+                    {simulationProperties.state === 'closed' && (type === 'vent' || type === 'topVentBox' || type === 'sideVentBox') && (
+                      <p className="text-xs text-amber-600 italic">Airflow properties not used — element is closed (wall mode)</p>
+                    )}
 
                     {/* Air Inflow Temperature */}
                     <div className={`grid grid-cols-4 items-center gap-4 ${simulationProperties.state === 'closed' ? 'opacity-40 pointer-events-none' : ''}`}>
