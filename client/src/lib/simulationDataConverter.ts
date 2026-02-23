@@ -23,7 +23,7 @@ interface BaseSimulationProperties {
 
 // Propiedades específicas para vents
 interface VentSimulationProperties {
-  flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+  flowType?: 'massFlow' | 'velocity' | 'pressure';
   flowValue?: number;
   flowIntensity?: 'low' | 'medium' | 'high';
   airOrientation?: 'inflow' | 'outflow';
@@ -144,7 +144,7 @@ interface AirEntryExport {
     airDirection?: "inflow" | "outflow";
     customValue?: number;
     // Propiedades específicas para vents
-    flowType?: "Air Mass Flow" | "Air Velocity" | "Pressure";
+    flowType?: "massFlow" | "velocity" | "pressure";
   };
 }
 
@@ -206,11 +206,11 @@ interface FurnitureExport {
   filePath?: string;
   faces?: Record<string, RackFaceExport>;
   simulationProperties?: {
-    chassisTemperature: number;
-    chassisMaterial: string;
-    chassisEmissivity: number;
+    temperature: number;
+    material: string;
+    emissivity: number;
     
-    flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
+    flowType?: 'massFlow' | 'velocity' | 'pressure';
     flowValue?: number;
     flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
     airOrientation?: 'inflow' | 'outflow';
@@ -290,17 +290,17 @@ export function denormalizeCoordinates(jsonPoint: PointXY): Point2D {
 /**
  * Maps internal flow type values to export format
  */
-function mapFlowType(flowType?: string): "Air Mass Flow" | "Air Velocity" | "Pressure" | undefined {
+function mapFlowType(flowType?: string): "massFlow" | "velocity" | "pressure" | undefined {
   switch (flowType) {
     case 'Air Mass Flow':
     case 'massFlow':
-      return 'Air Mass Flow';
+      return 'massFlow';
     case 'Air Velocity':
     case 'velocity':
-      return 'Air Velocity';
+      return 'velocity';
     case 'Pressure':
     case 'pressure':
-      return 'Pressure';
+      return 'pressure';
     default:
       return undefined;
   }
@@ -779,7 +779,9 @@ export function generateSimulationData(
         const serverFaceProps = {
           rackDensity: serverProps.rackDensity || 'medium',
           thermalPower_kW: serverProps.thermalPower_kW || 10,
-          airFlow: serverProps.airFlow || 2395
+          airFlow: serverProps.airFlow || 2395,
+          material: 'air',
+          emissivity: 0.05
         };
         
         const wallFaceProps = {
@@ -889,10 +891,12 @@ export function generateSimulationData(
         const ventFaceProps = {
           state: ventSimProps.state || 'open',
           airDirection: ventSimProps.airOrientation || 'outflow',
-          flowType: ventSimProps.flowType || 'Air Mass Flow',
+          flowType: mapFlowType(ventSimProps.flowType) || 'pressure',
           flowIntensity: ventSimProps.flowIntensity || 'medium',
           customIntensityValue: ventSimProps.customIntensityValue,
-          airTemperature: ventSimProps.airTemperature || 20
+          airTemperature: ventSimProps.airTemperature || 20,
+          material: 'air',
+          emissivity: 0.05
         };
         
         const isSideVent = obj.userData?.furnitureType === 'sideVentBox';
@@ -941,14 +945,14 @@ export function generateSimulationData(
       
       // Non-rack furniture: standard export with position/rotation/dimensions
       const baseSimulationProperties = {
-        chassisTemperature: properties.temperature || simulationProperties.airTemperature || 20,
-        chassisMaterial: properties.material || 'default',
-        chassisEmissivity: properties.emissivity || 0.90
+        temperature: properties.temperature || simulationProperties.airTemperature || 20,
+        material: properties.material || 'default',
+        emissivity: properties.emissivity || 0.90
       };
       
       // Add vent-specific properties if this is a vent
       const ventSpecificProperties = obj.userData?.furnitureType === 'vent' ? {
-        flowType: simulationProperties.flowType,
+        flowType: mapFlowType(simulationProperties.flowType) || 'velocity',
         flowValue: simulationProperties.flowValue,
         flowIntensity: simulationProperties.flowIntensity,
         airOrientation: simulationProperties.airOrientation,
@@ -1046,7 +1050,7 @@ export function generateSimulationData(
             }
           } : {}),
           
-          flowType: mapFlowType(ventObj.userData?.simulationProperties?.flowType) || "Air Velocity",
+          flowType: mapFlowType(ventObj.userData?.simulationProperties?.flowType) || "velocity",
           flowIntensity: (ventObj.userData?.simulationProperties?.flowIntensity as "low" | "medium" | "high" | "custom") || "medium"
         }
       };

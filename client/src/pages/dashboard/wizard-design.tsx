@@ -3164,7 +3164,7 @@ export default function WizardDesign() {
     const { case_name, version, ...restData } = baseData;
     return {
       case_name,
-      simulation_type: cfdTypeToSimType[cfdType] || 'IndoorSpaces',
+      simulationType: cfdTypeToSimType[cfdType] || 'IndoorSpaces',
       version,
       ...restData
     };
@@ -3679,14 +3679,14 @@ export default function WizardDesign() {
         setSimulationName(designData.case_name);
       }
       
-      if (designData.simulation_type) {
+      if (designData.simulationType) {
         const simTypeToConfig: Record<string, string> = {
           'DataCenters': 'data-centers',
           'FirePropagation': 'fire-smoke',
           'IndoorSpaces': 'indoor-spaces',
           'IndustrialCooling': 'industrial-cooling',
         };
-        const mappedType = simTypeToConfig[designData.simulation_type];
+        const mappedType = simTypeToConfig[designData.simulationType];
         if (mappedType) {
           setCfdType(mappedType);
         }
