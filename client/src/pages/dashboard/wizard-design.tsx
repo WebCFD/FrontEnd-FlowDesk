@@ -3161,10 +3161,16 @@ export default function WizardDesign() {
       simulationName || undefined
     );
     
-    // Añadir el tipo de simulación al JSON exportado, justo después de case_name
+    const cfdTypeToSimType: Record<string, string> = {
+      'data-centers': 'DataCenters',
+      'fire-smoke': 'FirePropagation',
+      'indoor-spaces': 'IndoorSpaces',
+      'industrial-cooling': 'IndustrialCooling',
+    };
     const { case_name, version, ...restData } = baseData;
     return {
       case_name,
+      simulation_type: cfdTypeToSimType[cfdType] || 'IndoorSpaces',
       simulationType: simulationType,
       version,
       ...restData
@@ -3679,9 +3685,21 @@ export default function WizardDesign() {
       // Primero limpiar el estado actual
       reset();
       
-      // Cargar case_name si existe en el nuevo formato
       if (designData.case_name) {
         setSimulationName(designData.case_name);
+      }
+      
+      if (designData.simulation_type) {
+        const simTypeToConfig: Record<string, string> = {
+          'DataCenters': 'data-centers',
+          'FirePropagation': 'fire-smoke',
+          'IndoorSpaces': 'indoor-spaces',
+          'IndustrialCooling': 'industrial-cooling',
+        };
+        const mappedType = simTypeToConfig[designData.simulation_type];
+        if (mappedType) {
+          setCfdType(mappedType);
+        }
       }
       
       // Convertir datos del JSON al formato interno
