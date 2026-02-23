@@ -4184,9 +4184,9 @@ export default function WizardDesign() {
               scale: computedScale,
               dimensions: defaultDims,
               properties: {
-                material: simProps.chassisMaterial || 'wood',
-                emissivity: simProps.chassisEmissivity || simProps.emissivity || 0.9,
-                temperature: simProps.chassisTemperature || simProps.temperature || 20
+                material: simProps.material || simProps.chassisMaterial || 'wood',
+                emissivity: simProps.emissivity || simProps.chassisEmissivity || 0.9,
+                temperature: simProps.temperature || simProps.chassisTemperature || 20
               }
             };
             

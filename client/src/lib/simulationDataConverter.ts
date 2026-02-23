@@ -218,7 +218,7 @@ interface FurnitureExport {
     customIntensityValue?: number;
     verticalAngle?: number;
     horizontalAngle?: number;
-    airTemperature?: number;
+    temperature?: number;
     normalVector?: { x: number; y: number; z: number };
   };
 }
@@ -779,9 +779,7 @@ export function generateSimulationData(
         const serverFaceProps = {
           rackDensity: serverProps.rackDensity || 'medium',
           thermalPower_kW: serverProps.thermalPower_kW || 10,
-          airFlow: serverProps.airFlow || 2395,
-          material: 'air',
-          emissivity: 0.05
+          airFlow: serverProps.airFlow || 2395
         };
         
         const wallFaceProps = {
@@ -894,9 +892,7 @@ export function generateSimulationData(
           flowType: mapFlowType(ventSimProps.flowType) || 'pressure',
           flowIntensity: ventSimProps.flowIntensity || 'medium',
           customIntensityValue: ventSimProps.customIntensityValue,
-          airTemperature: ventSimProps.airTemperature || 20,
-          material: 'air',
-          emissivity: 0.05
+          temperature: ventSimProps.airTemperature || 20
         };
         
         const isSideVent = obj.userData?.furnitureType === 'sideVentBox';
@@ -905,7 +901,7 @@ export function generateSimulationData(
           front: {
             role: isSideVent ? 'vent' : 'wall',
             vertices: [gc[0], gc[1], gc[5], gc[4]],
-            temperature: isSideVent ? ventFaceProps.airTemperature : chassisTemp,
+            temperature: isSideVent ? ventFaceProps.temperature : chassisTemp,
             ...(isSideVent ? ventFaceProps : wallFaceProps)
           },
           back: {
@@ -929,7 +925,7 @@ export function generateSimulationData(
           top: {
             role: isSideVent ? 'wall' : 'vent',
             vertices: [gc[4], gc[5], gc[6], gc[7]],
-            temperature: isSideVent ? chassisTemp : ventFaceProps.airTemperature,
+            temperature: isSideVent ? chassisTemp : ventFaceProps.temperature,
             ...(isSideVent ? wallFaceProps : ventFaceProps)
           },
           bottom: {
@@ -960,7 +956,7 @@ export function generateSimulationData(
         customIntensityValue: simulationProperties.customIntensityValue,
         verticalAngle: simulationProperties.verticalAngle,
         horizontalAngle: simulationProperties.horizontalAngle,
-        airTemperature: simulationProperties.airTemperature,
+        temperature: simulationProperties.airTemperature,
         normalVector: simulationProperties.normalVector
       } : {};
 
