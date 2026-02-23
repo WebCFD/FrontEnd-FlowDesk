@@ -552,21 +552,23 @@ export function generateSimulationData(
           const entryProps = (entry as any).properties;
           
           if (entry.type === "window" || entry.type === "door") {
-            // Default materials: glass for windows, wood for doors
             const defaultMaterial = entry.type === "window" ? "glass" : "wood";
             const defaultEmissivity = entry.type === "window" ? 0.92 : 0.90;
+            const entryState = (entryProps?.state as "open" | "closed") || "closed";
             
             airEntryBase.simulation = {
-              state: (entryProps?.state as "open" | "closed") || "closed",
+              state: entryState,
               temperature: entryProps?.temperature || 20,
-              material: entryProps?.material || defaultMaterial,
-              emissivity: entryProps?.emissivity ?? defaultEmissivity,
-              airDirection: (entryProps?.airOrientation as "inflow" | "outflow") || "inflow",
-              flowIntensity: entryProps?.flowIntensity || "low"
+              ...(entryState === 'closed' ? {
+                material: entryProps?.material || defaultMaterial,
+                emissivity: entryProps?.emissivity ?? defaultEmissivity
+              } : {
+                airDirection: (entryProps?.airOrientation as "inflow" | "outflow") || "inflow",
+                flowIntensity: entryProps?.flowIntensity || "low"
+              })
             };
             
-            // Agregar customValue si el usuario eligió "custom"
-            if (entryProps?.flowIntensity === "custom" && entryProps?.customIntensityValue !== undefined) {
+            if (entryState === 'open' && entryProps?.flowIntensity === "custom" && entryProps?.customIntensityValue !== undefined) {
               airEntryBase.simulation.customValue = entryProps.customIntensityValue;
             }
             
@@ -575,45 +577,34 @@ export function generateSimulationData(
               airEntryBase.dimensions.shape = "rectangular";
             }
           } else if (entry.type === "vent") {
-            // Build simulation object in dialog order
+            const ventEntryState = (entryProps?.state as "open" | "closed") || "closed";
+            
             const simulation: any = {
-              // 1. Element Status (same as windows/doors)
-              state: (entryProps?.state as "open" | "closed") || "closed",
-              
-              // 2. Air Inflow Temperature (same as windows/doors)
+              state: ventEntryState,
               temperature: entryProps?.temperature || 20,
-              
-              // 2b. Material and Emissivity (default for vents)
-              material: entryProps?.material || "default",
-              emissivity: entryProps?.emissivity ?? 0.90,
-              
-              // 3. Air Direction 
-              airDirection: (entryProps?.airOrientation as "inflow" | "outflow") || "inflow",
-              
-              // 4. Air Orientation (vent-specific, only when state is open and direction is inflow)
-              ...(entryProps?.state === "open" && entryProps?.airOrientation === "inflow" ? {
-                airOrientation: {
-                  verticalAngle: entryProps?.verticalAngle || 0,
-                  horizontalAngle: entryProps?.horizontalAngle || 0
-                }
-              } : {}),
-              
-              // 5. Flow Type (vent-specific)
-              flowType: (() => {
-                const flowType = entryProps?.flowType || "Air Velocity";
-                // Convert to simple lowercase format
-                if (flowType === "Air Mass Flow") return "massFlow";
-                if (flowType === "Air Velocity") return "velocity";
-                if (flowType === "Pressure") return "pressure";
-                return "velocity"; // default
-              })(),
-              
-              // 6. Flow Intensity (same as windows/doors)
-              flowIntensity: entryProps?.flowIntensity || "medium"
+              ...(ventEntryState === 'closed' ? {
+                material: entryProps?.material || "default",
+                emissivity: entryProps?.emissivity ?? 0.90
+              } : {
+                airDirection: (entryProps?.airOrientation as "inflow" | "outflow") || "inflow",
+                ...(entryProps?.airOrientation === "inflow" ? {
+                  airOrientation: {
+                    verticalAngle: entryProps?.verticalAngle || 0,
+                    horizontalAngle: entryProps?.horizontalAngle || 0
+                  }
+                } : {}),
+                flowType: (() => {
+                  const flowType = entryProps?.flowType || "Air Velocity";
+                  if (flowType === "Air Mass Flow") return "massFlow";
+                  if (flowType === "Air Velocity") return "velocity";
+                  if (flowType === "Pressure") return "pressure";
+                  return "velocity";
+                })(),
+                flowIntensity: entryProps?.flowIntensity || "medium"
+              })
             };
             
-            // 7. Custom Value (when flow intensity is custom)
-            if (entryProps?.flowIntensity === "custom" && entryProps?.customIntensityValue !== undefined) {
+            if (ventEntryState === 'open' && entryProps?.flowIntensity === "custom" && entryProps?.customIntensityValue !== undefined) {
               simulation.customValue = entryProps.customIntensityValue;
             }
             
@@ -1036,29 +1027,32 @@ export function generateSimulationData(
           height: cmToM(ventObj.userData?.dimensions?.height || 50), // Convertir cm a metros
           shape: "rectangular" as const
         },
-        simulation: {
-          state: (ventObj.userData?.simulationProperties?.state as "open" | "closed") || "closed",
-          temperature: ventObj.userData?.simulationProperties?.airTemperature || 20,
-          material: ventObj.userData?.simulationProperties?.material || "default",
-          emissivity: ventObj.userData?.simulationProperties?.emissivity ?? 0.90,
-          airDirection: (ventObj.userData?.simulationProperties?.airOrientation as "inflow" | "outflow") || "inflow",
-          
-          // Air Orientation (FurnVent-specific, matching AirEntry format exactly)
-          ...(ventObj.userData?.simulationProperties?.state === "open" && 
-              ventObj.userData?.simulationProperties?.airOrientation === "inflow" ? {
-            airOrientation: {
-              verticalAngle: ventObj.userData?.simulationProperties?.verticalAngle || 0,
-              horizontalAngle: ventObj.userData?.simulationProperties?.horizontalAngle || 0
-            }
-          } : {}),
-          
-          flowType: mapFlowType(ventObj.userData?.simulationProperties?.flowType) || "velocity",
-          flowIntensity: (ventObj.userData?.simulationProperties?.flowIntensity as "low" | "medium" | "high" | "custom") || "medium"
-        }
+        simulation: (() => {
+          const sp = ventObj.userData?.simulationProperties;
+          const ventFurnState = (sp?.state as "open" | "closed") || "closed";
+          return {
+            state: ventFurnState,
+            temperature: sp?.airTemperature || 20,
+            ...(ventFurnState === 'closed' ? {
+              material: sp?.material || "default",
+              emissivity: sp?.emissivity ?? 0.90
+            } : {
+              airDirection: (sp?.airOrientation as "inflow" | "outflow") || "inflow",
+              ...(sp?.airOrientation === "inflow" ? {
+                airOrientation: {
+                  verticalAngle: sp?.verticalAngle || 0,
+                  horizontalAngle: sp?.horizontalAngle || 0
+                }
+              } : {}),
+              flowType: mapFlowType(sp?.flowType) || "velocity",
+              flowIntensity: (sp?.flowIntensity as "low" | "medium" | "high" | "custom") || "medium"
+            })
+          };
+        })()
       };
       
-      // Add customValue if flow intensity is custom (matching AirEntry pattern)
-      if (ventObj.userData?.simulationProperties?.flowIntensity === "custom" && 
+      if (ventObj.userData?.simulationProperties?.state !== "closed" &&
+          ventObj.userData?.simulationProperties?.flowIntensity === "custom" && 
           ventObj.userData?.simulationProperties?.customIntensityValue !== undefined) {
         airEntry.simulation.customValue = ventObj.userData.simulationProperties.customIntensityValue;
       }
