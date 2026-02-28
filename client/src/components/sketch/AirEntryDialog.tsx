@@ -1534,7 +1534,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             <Input
                               id="width"
                               type="number"
-                              value={localWidth}
+                              value={(values as any).width ?? localWidth}
                               onChange={(e) => {
                                 const newWidth = Number(e.target.value);
                                 handleWidthChange(newWidth);
@@ -1564,7 +1564,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             <Input
                               id="height"
                               type="number"
-                              value={localHeight}
+                              value={(values as any).height ?? localHeight}
                               onChange={(e) => {
                                 const newHeight = Number(e.target.value);
                                 handleHeightChange(newHeight);
