@@ -1768,8 +1768,8 @@ export default function Canvas2D({
             type: currentAirEntry,
             position: calculatePositionAlongWall(selectedLine, exactPoint),
             dimensions: {
-              width: currentAirEntry === 'door' ? 80 : 60, // Default width in cm
-              height: currentAirEntry === 'door' ? 200 : 40, // Default height in cm
+              width: currentAirEntry === 'door' ? 72.5 : 60, // Default width in cm (EN 14351-1)
+              height: currentAirEntry === 'door' ? 203 : 40, // Default height in cm (EN 14351-1)
               distanceToFloor: currentAirEntry === 'door' ? 0 : 110, // Default distance to floor in cm
               shape: 'rectangular',
             },
