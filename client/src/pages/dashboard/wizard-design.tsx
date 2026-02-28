@@ -283,6 +283,8 @@ const getConnectedFloorName = (
   return floorName; // No valid connected floor
 };
 
+const DEFAULT_CEILING_HEIGHT_CM = 250;
+
 export default function WizardDesign() {
   const [, setLocation] = useLocation();
   const { user, setReturnTo } = useAuth();
@@ -312,7 +314,7 @@ export default function WizardDesign() {
   const [showEraseDesignDialog, setShowEraseDesignDialog] = useState(false);
   const [wallTransparency, setWallTransparency] = useState(0.2);
   const [airEntryTransparency, setAirEntryTransparency] = useState(1.0);
-  const [ceilingHeight, setCeilingHeight] = useState(220); // Default 220cm - deprecated, usar floorParameters
+  const [ceilingHeight, setCeilingHeight] = useState(DEFAULT_CEILING_HEIGHT_CM); // Deprecated, usar floorParameters
   const [isMultifloor, setIsMultifloor] = useState(true);
   const [selectedFloor, setSelectedFloor] = useState("ground");
   const [loadFromFloor, setLoadFromFloor] = useState("ground");
@@ -350,7 +352,7 @@ export default function WizardDesign() {
   
   // Nuevos estados para parámetros por planta
   const [floorParameters, setFloorParameters] = useState<Record<string, { ceilingHeight: number; floorDeck: number; ceilingTemperature?: number; floorTemperature?: number; ceilingEmissivity?: number; floorEmissivity?: number }>>({
-    ground: { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20, ceilingEmissivity: 0.90, floorEmissivity: 0.90 }
+    ground: { ceilingHeight: DEFAULT_CEILING_HEIGHT_CM, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20, ceilingEmissivity: 0.90, floorEmissivity: 0.90 }
   });
 
   // Wall Line restriction state variables
@@ -372,14 +374,14 @@ export default function WizardDesign() {
 
   // Funciones auxiliares para manejo de parámetros por planta
   const getCurrentFloorParameters = () => {
-    return floorParameters[selectedFloor] || { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20, ceilingEmissivity: 0.90, floorEmissivity: 0.90 };
+    return floorParameters[selectedFloor] || { ceilingHeight: DEFAULT_CEILING_HEIGHT_CM, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20, ceilingEmissivity: 0.90, floorEmissivity: 0.90 };
   };
 
   const updateFloorParameter = (floor: string, parameter: 'ceilingHeight' | 'floorDeck' | 'ceilingTemperature' | 'floorTemperature' | 'ceilingEmissivity' | 'floorEmissivity', value: number) => {
     setFloorParameters(prev => ({
       ...prev,
       [floor]: {
-        ...prev[floor] || { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20, ceilingEmissivity: 0.90, floorEmissivity: 0.90 },
+        ...prev[floor] || { ceilingHeight: DEFAULT_CEILING_HEIGHT_CM, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20, ceilingEmissivity: 0.90, floorEmissivity: 0.90 },
         [parameter]: value
       }
     }));
@@ -392,7 +394,7 @@ export default function WizardDesign() {
     if (!floorParameters[floor]) {
       setFloorParameters(prev => ({
         ...prev,
-        [floor]: { ceilingHeight: 220, floorDeck: 35 }
+        [floor]: { ceilingHeight: DEFAULT_CEILING_HEIGHT_CM, floorDeck: 35 }
       }));
     }
   };
@@ -2435,7 +2437,7 @@ export default function WizardDesign() {
                     // Modo multifloor: controles por planta
                     <div className="space-y-4">
                       {Object.keys(floors).filter(floorName => floors[floorName]?.hasClosedContour).map((floorName) => {
-                        const floorParams = floorParameters[floorName] || { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20, ceilingEmissivity: 0.90, floorEmissivity: 0.90 };
+                        const floorParams = floorParameters[floorName] || { ceilingHeight: DEFAULT_CEILING_HEIGHT_CM, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20, ceilingEmissivity: 0.90, floorEmissivity: 0.90 };
                         const isCurrentFloor = floorName === currentFloor;
                         
                         return (
@@ -3583,7 +3585,7 @@ export default function WizardDesign() {
   const handleEraseDesign = () => {
     // PASO 1: LIMPIAR PRIMERO floorParameters para evitar recreación de plantas
     setFloorParameters({
-      ground: { ceilingHeight: 220, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20, ceilingEmissivity: 0.90, floorEmissivity: 0.90 }
+      ground: { ceilingHeight: DEFAULT_CEILING_HEIGHT_CM, floorDeck: 35, ceilingTemperature: 20, floorTemperature: 20, ceilingEmissivity: 0.90, floorEmissivity: 0.90 }
     });
     
     // Clear all furniture from 3D scene BEFORE resetting store to avoid useEffect interference
@@ -3649,7 +3651,7 @@ export default function WizardDesign() {
     setTab("2d-editor");
     setShowStartSimulationPrompt(false);
     setWallTransparency(0.2);
-    setCeilingHeight(220);
+    setCeilingHeight(DEFAULT_CEILING_HEIGHT_CM);
     setFloorDeckThickness(35);
     
     // PASO 8: Limpiar mediciones y escalones locales
@@ -3932,7 +3934,7 @@ export default function WizardDesign() {
                 position: {
                   x: positionInCm.x,
                   y: positionInCm.y,
-                  z: (entry.position?.z * 100) || 220 // Convertir metros a cm, default ceiling height
+                  z: (entry.position?.z * 100) || DEFAULT_CEILING_HEIGHT_CM // Convertir metros a cm, default ceiling height
                 },
                 rotation: { x: 0, y: 0, z: 0 },
                 scale: { x: 1, y: 1, z: 1 },
@@ -4215,7 +4217,7 @@ export default function WizardDesign() {
         const floorTempValue = (floorData.floor || floorData.floor_surf)?.temp;
         
         newFloorParameters[floorName] = {
-          ceilingHeight: (floorData.height || 2.2) * 100, // Convertir metros a cm
+          ceilingHeight: (floorData.height || DEFAULT_CEILING_HEIGHT_CM / 100) * 100, // Convertir metros a cm
           floorDeck: (deckValue || 0) * 100, // Convertir metros a cm - soporte nuevo y antiguo formato
           ceilingTemperature: floorData.ceiling?.temp || floorData.ceilingTemperature || 20, // Leer de ceiling.temp o default
           floorTemperature: floorTempValue || floorData.floorTemperature || 20, // Leer de floor.temp/floor_surf.temp o default
@@ -4487,7 +4489,7 @@ export default function WizardDesign() {
               floorText={formatFloorText(currentFloor)}
               currentFloor={currentFloor}
               isMultifloor={isMultifloor}
-              ceilingHeight={isMultifloor ? (floorParameters[currentFloor]?.ceilingHeight || 220) / 100 : ceilingHeight / 100}
+              ceilingHeight={isMultifloor ? (floorParameters[currentFloor]?.ceilingHeight || DEFAULT_CEILING_HEIGHT_CM) / 100 : ceilingHeight / 100}
               defaultWallTemperature={defaultWallTemperature}
               defaultWallMaterial={defaultWallMaterial}
               defaultWallEmissivity={getDefaultWallEmissivity()}
