@@ -688,7 +688,16 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   // Reset values when dialog opens with new type or initialValues
   useEffect(() => {
     if (dialogOpen) {
-      setValues(getDefaultValues());
+      const defaultVals = getDefaultValues();
+      setValues(defaultVals);
+
+      // Sync localWidth/localHeight with the resolved defaults (creation mode)
+      if (!isEditing && props.type !== 'wall') {
+        const dw = (defaultVals as any).width;
+        const dh = (defaultVals as any).height;
+        if (dw !== undefined) setLocalWidth(dw);
+        if (dh !== undefined) setLocalHeight(dh);
+      }
       
       // Load saved simulation properties when editing
       if (isEditing && props.type !== 'wall' && 'initialValues' in props && props.initialValues?.properties) {
