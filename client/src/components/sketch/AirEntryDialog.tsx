@@ -126,8 +126,8 @@ const windowDefaults = {
 };
 
 const doorDefaults = {
-  width: 75,
-  height: 190
+  width: 72.5,
+  height: 203
 };
 
 const ventDefaults = {
@@ -517,7 +517,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     
     // Para puertas, distancia = altura de la puerta / 2 (centro de la puerta)
     if (type === 'door') {
-      const doorHeight = (values as any).height || 200; // Default 200cm
+      const doorHeight = (values as any).height || 203; // Default 203cm (EN 14351-1)
       return Math.round((doorHeight / 2) * 100) / 100;
     }
     
@@ -1568,6 +1568,13 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                       </div>
                     )}
                     
+                    {/* EN 14351-1 note for doors */}
+                    {type === 'door' && (
+                      <p className="text-xs text-slate-400 mt-1">
+                        Default: 72.5 × 203 cm — EN 14351-1 (Europe): standard leaf widths 62.5, 72.5, 82.5, 92.5 cm · standard height 203 cm
+                      </p>
+                    )}
+
                     {/* Circular dimensions */}
                     {type !== 'door' && shapeType === 'circular' && (
                       <div className="space-y-2">
