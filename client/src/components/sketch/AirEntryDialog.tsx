@@ -120,9 +120,9 @@ interface WallPropertiesDialogProps {
 type PropertyDialogProps = AirEntryDialogProps | WallPropertiesDialogProps;
 
 const windowDefaults = {
-  width: 50,
-  height: 50,
-  distanceToFloor: 120
+  width: 120,
+  height: 120,
+  distanceToFloor: 150
 };
 
 const doorDefaults = {
@@ -1572,6 +1572,13 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                     {type === 'door' && (
                       <p className="text-xs text-slate-400 mt-1">
                         Default: 72.5 × 203 cm — EN 14351-1 (Europe): standard leaf widths 62.5, 72.5, 82.5, 92.5 cm · standard height 203 cm
+                      </p>
+                    )}
+
+                    {/* EN 14351-1 note for windows */}
+                    {type === 'window' && (
+                      <p className="text-xs text-slate-400 mt-1">
+                        Default: 120 × 120 cm — EN 14351-1 (Europe): standard modular widths 60, 90, 120, 150, 180 cm · standard heights 60, 90, 120, 150 cm
                       </p>
                     )}
 
