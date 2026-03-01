@@ -6703,19 +6703,29 @@ export default function Canvas3D({
       }
 
       // Update vent arrows in real-time when airOrientation, state, or orientation angles change
-      if (editingFurniture.item.type === 'vent' && (
-        properties.airOrientation || properties.state ||
-        properties.verticalAngle !== undefined || properties.horizontalAngle !== undefined
-      )) {
+      if (editingFurniture.item.type === 'vent') {
         const merged = furnitureGroup.userData.simulationProperties ?? {};
-        const currentAirOrientation = merged.airOrientation ?? 'inflow';
-        const currentState = merged.state ?? 'open';
-        removeVentArrows(furnitureGroup);
-        addVentArrows(
-          furnitureGroup, currentAirOrientation, currentState, editingFurniture.item.surfaceType,
-          merged.verticalAngle ?? 0,
-          merged.horizontalAngle ?? 0
-        );
+
+        if (properties.airOrientation || properties.state) {
+          // Full rebuild needed when flow direction or open/close state changes
+          const currentAirOrientation = merged.airOrientation ?? 'inflow';
+          const currentState = merged.state ?? 'open';
+          removeVentArrows(furnitureGroup);
+          addVentArrows(
+            furnitureGroup, currentAirOrientation, currentState, editingFurniture.item.surfaceType,
+            merged.verticalAngle ?? 0,
+            merged.horizontalAngle ?? 0
+          );
+        } else if (properties.verticalAngle !== undefined || properties.horizontalAngle !== undefined) {
+          // Angle-only change: directly mutate the existing ventArrowsRoot rotation
+          // This avoids remove+recreate and guarantees both angles always compound
+          furnitureGroup.traverse((child) => {
+            if (child.userData.type === 'ventArrow') {
+              child.rotation.x = (merged.verticalAngle ?? 0) * Math.PI / 180;
+              child.rotation.y = (merged.horizontalAngle ?? 0) * Math.PI / 180;
+            }
+          });
+        }
       }
     }
   };
