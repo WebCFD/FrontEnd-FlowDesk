@@ -3215,7 +3215,8 @@ export default function Canvas3D({
             child.renderOrder = 3;
           }
         });
-        objects.push(arrowsGroup);
+        // Add directly to scene (not via objects array) so THREE.Group children are preserved
+        sceneRef.current?.add(arrowsGroup);
       }
       const coordSysData = orientationData;
       const { 
@@ -5504,6 +5505,11 @@ export default function Canvas3D({
       }
       
       if (object.userData?.type === 'rackDimensions') {
+        toRemove.push(object);
+        return;
+      }
+
+      if (object.userData?.type === 'airEntryVentArrow') {
         toRemove.push(object);
         return;
       }
