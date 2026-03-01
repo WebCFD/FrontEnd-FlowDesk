@@ -3041,6 +3041,14 @@ export default function Canvas3D({
       // Key functions: transform2DTo3D, wall normal calculations, positioning logic
       
 
+      // Centroide del local para garantizar que wallNormal apunte siempre INWARD
+      const roomPoints3D = floorData.lines.flatMap((l: any) => [
+        transform2DTo3D(l.start), transform2DTo3D(l.end)
+      ]);
+      const roomCentroid3D = roomPoints3D.reduce(
+        (acc: THREE.Vector3, p: THREE.Vector3) => acc.add(p), new THREE.Vector3()
+      ).divideScalar(roomPoints3D.length);
+
       floorData.airEntries.forEach((entry, index) => {
         
         // CRITICAL FIX: Always use current store data instead of potentially stale finalFloors data
@@ -3152,7 +3160,17 @@ export default function Canvas3D({
         };
 
         const orientationData = calculateAirEntryCoordinateSystemComplete(entry);
-        const { forward, up, right, xDirection, yDirection, zDirection } = orientationData;
+        let { forward, up, right, xDirection, yDirection, zDirection } = orientationData;
+
+        // Garantizar que forward (= wallNormal) apunta INWARD usando el centroide del local
+        const ventPos3D = new THREE.Vector3(position.x, position.y, zPosition);
+        const towardCentroid = new THREE.Vector3().subVectors(roomCentroid3D, ventPos3D).normalize();
+        const dotProduct = forward.dot(towardCentroid);
+        console.log('[INWARD CHECK] forward:', forward.toArray().map((v: number) => v.toFixed(3)), 'dot:', dotProduct.toFixed(3), dotProduct < 0 ? '→ FLIPPED' : '→ OK');
+        if (dotProduct < 0) {
+          forward = forward.clone().negate();
+          right = right.clone().negate();
+        }
         
         const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
         mesh.setRotationFromMatrix(rotationMatrix);
@@ -3187,12 +3205,9 @@ export default function Canvas3D({
           entryIndex: index,
           airEntryId: entryId,
         };
-        // surfaceType='ceiling' → arrowZ=-8 (inward, toward room interior)
-        // wallNormal = wallDir × worldUp points OUTWARD (exterior side),
-        // so we need -Z direction (ceiling logic) to place arrows inside the room.
-        // outflow/inflow meaning is correct with ceiling: outflow arrows point inward (into room),
-        // inflow arrows point outward (toward wall/duct).
-        addVentArrows(arrowsGroup, arrowOrientation, arrowState, 'ceiling', arrowVertical, arrowHorizontal);
+        // surfaceType=undefined → wall mode: arrowZ=+8, posiciones [[-20,-10],[20,-10],[-20,10],[20,10]]
+        // forward ya está garantizado INWARD por el centroide, así que arrowZ=+8 = hacia el interior
+        addVentArrows(arrowsGroup, arrowOrientation, arrowState, undefined, arrowVertical, arrowHorizontal);
         // Make arrows render on top (prevent depth occlusion from wall geometry)
         arrowsGroup.traverse((child) => {
           if (child instanceof THREE.Mesh) {
