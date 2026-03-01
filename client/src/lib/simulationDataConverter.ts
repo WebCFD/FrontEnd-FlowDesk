@@ -123,6 +123,7 @@ interface AirEntryExport {
       y: number;
       z: number;
     };
+    rotation?: number;
   };
   dimensions: 
     | {
@@ -517,6 +518,7 @@ export function generateSimulationData(
           };
           
           // Crear objeto base
+          const entryPropsForPosition = (entry as any).properties;
           const airEntryBase = {
             id: airEntryId,
             type: entry.type as "window" | "door" | "vent",
@@ -528,7 +530,10 @@ export function generateSimulationData(
                 x: parseFloat(wallNormal.x.toFixed(5)),
                 y: parseFloat(wallNormal.y.toFixed(5)),
                 z: parseFloat(wallNormal.z.toFixed(5))
-              }
+              },
+              ...(entry.type === 'vent' && entryPropsForPosition?.ventRotation
+                ? { rotation: entryPropsForPosition.ventRotation }
+                : {})
             },
             dimensions: (() => {
               const shape = ((entry.dimensions as any).shape || "rectangular") as "rectangular" | "circular";
@@ -590,8 +595,7 @@ export function generateSimulationData(
                 ...(entryProps?.airOrientation === "inflow" ? {
                   airOrientation: {
                     verticalAngle: entryProps?.verticalAngle || 0,
-                    horizontalAngle: entryProps?.horizontalAngle || 0,
-                    rotation: entryProps?.ventRotation || 0
+                    horizontalAngle: entryProps?.horizontalAngle || 0
                   }
                 } : {}),
                 flowType: (() => {
@@ -1021,7 +1025,10 @@ export function generateSimulationData(
             x: 0,
             y: 0,
             z: isFloorVent ? 1 : -1 // Normal hacia arriba para floor, hacia abajo para ceiling
-          }
+          },
+          ...(ventObj.userData?.simulationProperties?.ventRotation
+            ? { rotation: ventObj.userData.simulationProperties.ventRotation }
+            : {})
         },
         dimensions: (() => {
           const sp = ventObj.userData?.simulationProperties;
@@ -1052,8 +1059,7 @@ export function generateSimulationData(
               ...(sp?.airOrientation === "inflow" ? {
                 airOrientation: {
                   verticalAngle: sp?.verticalAngle || 0,
-                  horizontalAngle: sp?.horizontalAngle || 0,
-                  rotation: sp?.ventRotation || 0
+                  horizontalAngle: sp?.horizontalAngle || 0
                 }
               } : {}),
               flowType: mapFlowType(sp?.flowType) || "velocity",
