@@ -275,6 +275,13 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
           y: newScaleY,  // Height controls Y scale (vertical)
           z: props.initialValues?.scale?.z || 1  // Keep Z scale unchanged (depth)
         });
+
+        // Propagate shape change in real-time so Canvas3D can update geometry immediately
+        if ((newDimensions as any).shape) {
+          const newShape = (newDimensions as any).shape as 'rectangular' | 'circular';
+          setCurrentShape(newShape);
+          stableOnPropertiesUpdate({ shape: newShape } as any);
+        }
       }}
       // Add position and rotation update callbacks for real-time updates
       onPositionUpdate={(newPosition) => {

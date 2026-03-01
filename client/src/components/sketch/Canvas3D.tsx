@@ -6555,6 +6555,7 @@ export default function Canvas3D({
     verticalAngle?: number;
     horizontalAngle?: number;
     airTemperature?: number;
+    shape?: 'rectangular' | 'circular';
   }) => {
     if (!editingFurniture || !sceneRef.current) return;
 
@@ -6578,6 +6579,20 @@ export default function Canvas3D({
         ...furnitureGroup.userData.simulationProperties,
         ...properties
       };
+
+      // Update vent geometry in real-time when shape changes
+      if (properties.shape && editingFurniture.item.type === 'vent') {
+        const defaultDims = getDefaultDimensions('vent');
+        const newShape = properties.shape;
+        furnitureGroup.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
+            child.geometry.dispose();
+            child.geometry = newShape === 'circular'
+              ? new THREE.CircleGeometry(defaultDims.width / 2, 32)
+              : new THREE.PlaneGeometry(defaultDims.width, defaultDims.height);
+          }
+        });
+      }
     }
   };
 
