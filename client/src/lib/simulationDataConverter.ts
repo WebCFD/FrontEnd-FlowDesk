@@ -590,7 +590,8 @@ export function generateSimulationData(
                 ...(entryProps?.airOrientation === "inflow" ? {
                   airOrientation: {
                     verticalAngle: entryProps?.verticalAngle || 0,
-                    horizontalAngle: entryProps?.horizontalAngle || 0
+                    horizontalAngle: entryProps?.horizontalAngle || 0,
+                    rotation: entryProps?.ventRotation || 0
                   }
                 } : {}),
                 flowType: (() => {
@@ -1022,11 +1023,21 @@ export function generateSimulationData(
             z: isFloorVent ? 1 : -1 // Normal hacia arriba para floor, hacia abajo para ceiling
           }
         },
-        dimensions: {
-          width: cmToM(ventObj.userData?.dimensions?.width || 50), // Convertir cm a metros
-          height: cmToM(ventObj.userData?.dimensions?.height || 50), // Convertir cm a metros
-          shape: "rectangular" as const
-        },
+        dimensions: (() => {
+          const sp = ventObj.userData?.simulationProperties;
+          const ventShape = (sp?.shape as "rectangular" | "circular") || "rectangular";
+          if (ventShape === "circular") {
+            return {
+              diameter: cmToM(ventObj.userData?.dimensions?.width || 50),
+              shape: "circular" as const
+            };
+          }
+          return {
+            width: cmToM(ventObj.userData?.dimensions?.width || 50),
+            height: cmToM(ventObj.userData?.dimensions?.height || 50),
+            shape: "rectangular" as const
+          };
+        })(),
         simulation: (() => {
           const sp = ventObj.userData?.simulationProperties;
           const ventFurnState = (sp?.state as "open" | "closed") || "closed";
@@ -1041,7 +1052,8 @@ export function generateSimulationData(
               ...(sp?.airOrientation === "inflow" ? {
                 airOrientation: {
                   verticalAngle: sp?.verticalAngle || 0,
-                  horizontalAngle: sp?.horizontalAngle || 0
+                  horizontalAngle: sp?.horizontalAngle || 0,
+                  rotation: sp?.ventRotation || 0
                 }
               } : {}),
               flowType: mapFlowType(sp?.flowType) || "velocity",

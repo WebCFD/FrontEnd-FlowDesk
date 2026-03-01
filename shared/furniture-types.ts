@@ -34,6 +34,8 @@ export interface FurnitureItem {
     customIntensityValue?: number;
     verticalAngle?: number;
     horizontalAngle?: number;
+    ventRotation?: number;
+    shape?: 'rectangular' | 'circular';
     airTemperature?: number;
     normalVector?: { x: number; y: number; z: number };
   };

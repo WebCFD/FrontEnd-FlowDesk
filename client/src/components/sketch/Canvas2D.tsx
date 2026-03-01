@@ -1771,7 +1771,7 @@ export default function Canvas2D({
               width: currentAirEntry === 'door' ? 72.5 : currentAirEntry === 'window' ? 120 : 60, // Default width in cm (EN 14351-1)
               height: currentAirEntry === 'door' ? 203 : currentAirEntry === 'window' ? 120 : 40, // Default height in cm (EN 14351-1)
               distanceToFloor: currentAirEntry === 'door' ? 0 : currentAirEntry === 'window' ? 150 : 110, // Center height in cm
-              shape: 'rectangular',
+              shape: 'rectangular' as const,
             },
             line: selectedLine,
             lineId: selectedLine.id,

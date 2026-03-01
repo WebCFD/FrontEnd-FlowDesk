@@ -149,6 +149,7 @@ export const contactMessageSchema = z.object({
 export const airOrientationSchema = z.object({
   verticalAngle: z.number().min(-45).max(45),
   horizontalAngle: z.number().min(-45).max(45),
+  rotation: z.number().min(0).max(360).default(0),
 }).nullable();
 
 export const airEntrySchema = z.object({

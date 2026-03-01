@@ -86,6 +86,7 @@ interface AirEntryDialogProps {
     customIntensityValue?: number;
     verticalAngle?: number;
     horizontalAngle?: number;
+    ventRotation?: number;
   }) => void;
   // 3D specific props for furnVent mode
   position?: { x: number; y: number; z: number };
@@ -255,6 +256,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   const [ventMeasurementType, setVentMeasurementType] = useState<'massflow' | 'velocity' | 'pressure'>('massflow');
   const [verticalAngle, setVerticalAngle] = useState(0);
   const [horizontalAngle, setHorizontalAngle] = useState(0);
+  const [ventRotation, setVentRotation] = useState(0);
   
   // Estados locales para dimensiones (igual que wallPosition para tiempo real)
   const [localWidth, setLocalWidth] = useState(50);
@@ -467,6 +469,24 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     // Trigger real-time properties update
     if (props.type !== 'wall' && 'onPropertiesUpdate' in props && props.onPropertiesUpdate) {
       props.onPropertiesUpdate({ horizontalAngle: newAngle });
+    }
+  };
+
+  const handleVentRotationChange = (newRotation: number) => {
+    const clamped = Math.min(360, Math.max(0, newRotation));
+    setVentRotation(clamped);
+    
+    // Update form values for persistence
+    setValues(prev => ({ ...prev, ventRotation: clamped }));
+    
+    // Trigger real-time visual update (dimensions update carries rotation for wall air entries)
+    if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
+      props.onDimensionsUpdate({ ventRotation: clamped } as any);
+    }
+    
+    // Also trigger properties update (for furniture vents)
+    if (props.type !== 'wall' && 'onPropertiesUpdate' in props && props.onPropertiesUpdate) {
+      props.onPropertiesUpdate({ ventRotation: clamped });
     }
   };
 
@@ -759,6 +779,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           if (savedProps.horizontalAngle !== undefined) {
             setHorizontalAngle(savedProps.horizontalAngle);
           }
+          if ((savedProps as any).ventRotation !== undefined) {
+            setVentRotation((savedProps as any).ventRotation);
+          }
         }
       }
     }
@@ -798,7 +821,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         ventFlowType: type === 'vent' ? ventMeasurementType : null,
         airOrientation: (type === 'vent' && elementState === 'open' && airDirection === 'inflow') ? {
           verticalAngle: verticalAngle,
-          horizontalAngle: horizontalAngle
+          horizontalAngle: horizontalAngle,
+          rotation: ventRotation
         } : null,
         
         // Position data will be calculated by parent component
@@ -827,6 +851,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           // CRITICAL FIX: Save vertical and horizontal angles to store for persistence
           simulationProperties.verticalAngle = verticalAngle;
           simulationProperties.horizontalAngle = horizontalAngle;
+          simulationProperties.ventRotation = ventRotation;
+          simulationProperties.shape = shapeType;
         }
         
         // Always save wallPosition for all air entry types
@@ -877,6 +903,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
             // CRITICAL FIX: Include angles in properties object for Canvas2D/Canvas3D persistence
             verticalAngle: verticalAngle,
             horizontalAngle: horizontalAngle,
+            ventRotation: ventRotation,
           })
         }
       };
@@ -1568,6 +1595,44 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                       </div>
                     )}
                     
+                    {/* Rotation - Solo para vents rectangulares */}
+                    {type === 'vent' && shapeType === 'rectangular' && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="vent-rotation" className="text-xs text-slate-600">Rotation</Label>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <HelpCircle className="h-3 w-3 text-slate-400 hover:text-slate-600 cursor-help" />
+                              </TooltipTrigger>
+                              <TooltipContent side="right" sideOffset={5}>
+                                <p className="text-xs max-w-48">
+                                  Rotate the vent around its normal axis. 0° is the default orientation; 90° turns a horizontal vent vertical.
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Input
+                            id="vent-rotation"
+                            type="number"
+                            min="0"
+                            max="360"
+                            step="1"
+                            value={ventRotation}
+                            onChange={(e) => handleVentRotationChange(Number(e.target.value))}
+                            className="h-8 text-sm"
+                            placeholder="0"
+                          />
+                          <span className="text-xs text-slate-500">degrees</span>
+                        </div>
+                        <p className="text-xs text-gray-500">
+                          0° to 360° around vent normal
+                        </p>
+                      </div>
+                    )}
+
                     {/* EN 14351-1 note for doors */}
                     {type === 'door' && (
                       <p className="text-xs text-slate-400 mt-1">

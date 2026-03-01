@@ -1766,6 +1766,7 @@ export default function Canvas3D({
       distanceToFloor?: number;
       shape?: 'rectangular' | 'circular';
       wallPosition?: number;
+      ventRotation?: number;
     };
     position?: Point;
     properties?: {
@@ -1900,6 +1901,14 @@ export default function Canvas3D({
           // Update userData for persistence
           if (object.userData.dimensions) {
             object.userData.dimensions = { ...object.userData.dimensions, ...newDimensions };
+          }
+
+          // Apply vent rotation around normal (mesh local Z axis)
+          if (newDimensions.ventRotation !== undefined) {
+            object.userData.ventRotation = newDimensions.ventRotation;
+            object.rotation.z = newDimensions.ventRotation * Math.PI / 180;
+            if (!object.userData.properties) object.userData.properties = {};
+            object.userData.properties.ventRotation = newDimensions.ventRotation;
           }
 
           // PHASE 5: Update coordinate system during real-time dimension changes
@@ -5174,6 +5183,14 @@ export default function Canvas3D({
         ...mesh.userData.dimensions,
         ...changes.dimensions
       };
+
+      // Apply vent rotation around normal
+      if (changes.dimensions.ventRotation !== undefined) {
+        mesh.userData.ventRotation = changes.dimensions.ventRotation;
+        mesh.rotation.z = changes.dimensions.ventRotation * Math.PI / 180;
+        if (!mesh.userData.properties) mesh.userData.properties = {};
+        mesh.userData.properties.ventRotation = changes.dimensions.ventRotation;
+      }
 
       // Handle position changes if distanceToFloor changed
       if (changes.dimensions.distanceToFloor !== undefined) {

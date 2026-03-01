@@ -23,6 +23,8 @@ interface UnifiedVentDialogProps {
       customIntensityValue?: number;
       verticalAngle?: number;
       horizontalAngle?: number;
+      ventRotation?: number;
+      shape?: 'rectangular' | 'circular';
       airTemperature?: number;
       normalVector?: { x: number; y: number; z: number };
     };
@@ -46,6 +48,9 @@ interface UnifiedVentDialogProps {
       customIntensityValue?: number;
       verticalAngle?: number;
       horizontalAngle?: number;
+      ventRotation?: number;
+      shape?: 'rectangular' | 'circular';
+      diameter?: number;
       airTemperature?: number;
       normalVector?: { x: number; y: number; z: number };
     };
@@ -67,6 +72,7 @@ interface UnifiedVentDialogProps {
     customIntensityValue?: number;
     verticalAngle?: number;
     horizontalAngle?: number;
+    ventRotation?: number;
     airTemperature?: number;
   }) => void;
   debugKey?: string;
@@ -109,6 +115,7 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
     customIntensityValue?: number;
     verticalAngle?: number;
     horizontalAngle?: number;
+    ventRotation?: number;
     airTemperature?: number;
   }) => {
     if (onPropertiesUpdate) {
@@ -128,6 +135,16 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
       width: scale.x * 50,
       height: scale.y * 50  // Corrected: Height maps to Y (vertical) not Z (depth)
     };
+  });
+
+  // State to track vent rotation (degrees, 0-360)
+  const [currentVentRotation, setCurrentVentRotation] = useState(() => {
+    return props.initialValues?.simulationProperties?.ventRotation || 0;
+  });
+
+  // State to track vent shape
+  const [currentShape, setCurrentShape] = useState<'rectangular' | 'circular'>(() => {
+    return props.initialValues?.simulationProperties?.shape || 'rectangular';
   });
 
   // State to track current position and rotation for accurate real-time updates
@@ -157,12 +174,12 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
     // No store dependency - follow positions architecture exactly
     
     return {
-      width: currentDimensions.width,   // ✅ Real-time state only
-      height: currentDimensions.height, // ✅ Real-time state only
+      width: currentShape === 'circular' ? (simProps?.diameter || currentDimensions.width) : currentDimensions.width,
+      height: currentShape === 'circular' ? (simProps?.diameter || currentDimensions.height) : currentDimensions.height,
       distanceToFloor: 120, // Default (not used in 3D)
       position: currentPosition, // Use current state instead of initial values
       rotation: currentRotation, // Use current state instead of initial values
-      shape: 'rectangular' as const,
+      shape: currentShape,
       properties: {
         state: simProps?.state || 'open',
         temperature: simProps?.airTemperature || 20,
@@ -175,6 +192,7 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
         // Include vertical/horizontal angles following airTemperature pattern
         verticalAngle: simProps?.verticalAngle || 0,
         horizontalAngle: simProps?.horizontalAngle || 0,
+        ventRotation: currentVentRotation,
       }
     };
   };
@@ -210,6 +228,8 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
         customIntensityValue: airEntryData.properties?.customIntensityValue || 0.5,
         verticalAngle: airEntryData.properties?.verticalAngle || 0,
         horizontalAngle: airEntryData.properties?.horizontalAngle || 0,
+        ventRotation: airEntryData.properties?.ventRotation ?? currentVentRotation,
+        shape: airEntryData.shape || currentShape,
         airTemperature: airEntryData.properties?.temperature || 20,
         normalVector: props.initialValues?.simulationProperties?.normalVector || { x: 0, y: 0, z: 1 }
       }
@@ -271,8 +291,8 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
         const mappedProperties = {
           state: newProperties.state,
           temperature: newProperties.temperature,
-          material: newProperties.material,
-          emissivity: newProperties.emissivity,
+          material: (newProperties as any).material,
+          emissivity: (newProperties as any).emissivity,
           airOrientation: newProperties.airOrientation,
           flowIntensity: newProperties.flowIntensity,
           flowType: newProperties.flowType,
@@ -283,6 +303,15 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
         };
         
         stableOnPropertiesUpdate(mappedProperties);
+
+        // Handle ventRotation: update 3D mesh rotation around normal axis
+        if (newProperties.ventRotation !== undefined) {
+          setCurrentVentRotation(newProperties.ventRotation);
+          const rotationRad = newProperties.ventRotation * Math.PI / 180;
+          const newRotation = { ...currentRotation, z: rotationRad };
+          setCurrentRotation(newRotation);
+          stableOnRotationUpdate(newRotation);
+        }
       }}
       // Pass floor context for Information section
       floorContext={props.floorContext}

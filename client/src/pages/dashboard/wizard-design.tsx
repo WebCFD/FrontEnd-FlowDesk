@@ -3768,14 +3768,23 @@ export default function WizardDesign() {
                 const positionInCm = { x: entry.position.x * 100, y: entry.position.y * 100 };
                 const denormalizedPosition = denormalizeCoordinates(positionInCm);
                 
+                const wallEntryShape = (entry.dimensions?.shape as 'rectangular' | 'circular') || 'rectangular';
+                const wallEntryWidth = wallEntryShape === 'circular'
+                  ? ((entry.dimensions?.diameter || 1) * 100)
+                  : ((entry.dimensions?.width || 1) * 100);
+                const wallEntryHeight = wallEntryShape === 'circular'
+                  ? wallEntryWidth
+                  : ((entry.dimensions?.height || 1) * 100);
+
                 airEntries.push({
                   id: entry.id, // Preservar ID del JSON
                   type: entry.type,
                   position: denormalizedPosition,
                   dimensions: {
-                    width: (entry.dimensions?.width * 100) || 100, // Convertir metros a centímetros
-                    height: (entry.dimensions?.height * 100) || 100,
-                    distanceToFloor: (entry.position?.z * 100) || 110 // Convertir metros a centímetros, default 110cm
+                    width: wallEntryWidth,
+                    height: wallEntryHeight,
+                    distanceToFloor: (entry.position?.z * 100) || 110, // Convertir metros a centímetros, default 110cm
+                    shape: wallEntryShape
                   },
                   properties: { // Mapear correctamente las propiedades de simulación
                     state: entry.simulation?.state || 'closed',
@@ -3799,6 +3808,9 @@ export default function WizardDesign() {
                     }),
                     ...(entry.simulation?.airOrientation?.horizontalAngle !== undefined && {
                       horizontalAngle: entry.simulation.airOrientation.horizontalAngle
+                    }),
+                    ...(entry.simulation?.airOrientation?.rotation !== undefined && {
+                      ventRotation: entry.simulation.airOrientation.rotation
                     })
                   },
                   line: wallLine // Asociar con la línea de pared correcta
@@ -3836,14 +3848,23 @@ export default function WizardDesign() {
               }
             });
             
+            const oldFmtShape = (entry.dimensions?.shape as 'rectangular' | 'circular') || 'rectangular';
+            const oldFmtWidth = oldFmtShape === 'circular'
+              ? ((entry.dimensions?.diameter || 1) * 100)
+              : ((entry.dimensions?.width || 1) * 100);
+            const oldFmtHeight = oldFmtShape === 'circular'
+              ? oldFmtWidth
+              : ((entry.dimensions?.height || 1) * 100);
+
             airEntries.push({
               id: entry.id, // Preservar ID del JSON
               type: entry.type,
               position: denormalizedPosition,
               dimensions: {
-                width: (entry.dimensions?.width * 100) || 100, // Convertir metros a centímetros
-                height: (entry.dimensions?.height * 100) || 100,
-                distanceToFloor: (entry.position?.z * 100) || 110 // Convertir metros a centímetros, default 110cm
+                width: oldFmtWidth,
+                height: oldFmtHeight,
+                distanceToFloor: (entry.position?.z * 100) || 110, // Convertir metros a centímetros, default 110cm
+                shape: oldFmtShape
               },
               properties: { // Mapear correctamente las propiedades de simulación
                 state: entry.simulation?.state || 'closed',
@@ -3867,6 +3888,9 @@ export default function WizardDesign() {
                 }),
                 ...(entry.simulation?.airOrientation?.horizontalAngle !== undefined && {
                   horizontalAngle: entry.simulation.airOrientation.horizontalAngle
+                }),
+                ...(entry.simulation?.airOrientation?.rotation !== undefined && {
+                  ventRotation: entry.simulation.airOrientation.rotation
                 })
               },
               line: closestLine // Asociar con la línea más cercana
@@ -3926,6 +3950,15 @@ export default function WizardDesign() {
               // Convertir metros a centímetros (* 100) directamente, SIN denormalizeCoordinates
               const positionInCm = { x: entry.position.x * 100, y: entry.position.y * 100 };
               
+              const ceilingVentShape = (entry.dimensions?.shape as 'rectangular' | 'circular') || 'rectangular';
+              const ceilingVentWidth = ceilingVentShape === 'circular'
+                ? ((entry.dimensions?.diameter || 0.5) * 100)
+                : ((entry.dimensions?.width || 0.5) * 100);
+              const ceilingVentHeight = ceilingVentShape === 'circular'
+                ? ceilingVentWidth
+                : ((entry.dimensions?.height || 0.5) * 100);
+              const ceilingVentRotationRad = ((entry.simulation?.airOrientation?.rotation || 0) * Math.PI) / 180;
+
               horizontalVents.push({
                 id: entry.id,
                 type: 'vent' as const,
@@ -3936,11 +3969,11 @@ export default function WizardDesign() {
                   y: positionInCm.y,
                   z: (entry.position?.z * 100) || DEFAULT_CEILING_HEIGHT_CM // Convertir metros a cm, default ceiling height
                 },
-                rotation: { x: 0, y: 0, z: 0 },
+                rotation: { x: 0, y: 0, z: ceilingVentRotationRad },
                 scale: { x: 1, y: 1, z: 1 },
                 dimensions: {
-                  width: (entry.dimensions?.width * 100) || 50, // Convertir metros a centímetros
-                  height: (entry.dimensions?.height * 100) || 50,
+                  width: ceilingVentWidth,
+                  height: ceilingVentHeight,
                   depth: 1 // Mínimo espesor para vents horizontales
                 },
                 surfaceType: 'ceiling' as const,
@@ -3957,6 +3990,8 @@ export default function WizardDesign() {
                   airOrientation: entry.simulation?.airDirection || 'inflow',
                   flowType: entry.simulation?.flowType || 'airMassFlow',
                   flowIntensity: entry.simulation?.flowIntensity || 'medium',
+                  shape: ceilingVentShape,
+                  ventRotation: entry.simulation?.airOrientation?.rotation || 0,
                   // Mapear customValue solo cuando flowIntensity es "custom"
                   ...(entry.simulation?.flowIntensity === 'custom' && entry.simulation?.customValue && {
                     customIntensityValue: entry.simulation.customValue
@@ -3982,7 +4017,16 @@ export default function WizardDesign() {
             if (entry.type === 'vent') {
               // Convertir metros a centímetros (* 100) directamente, SIN denormalizeCoordinates
               const positionInCm = { x: entry.position.x * 100, y: entry.position.y * 100 };
-              
+
+              const floorVentShape = (entry.dimensions?.shape as 'rectangular' | 'circular') || 'rectangular';
+              const floorVentWidth = floorVentShape === 'circular'
+                ? ((entry.dimensions?.diameter || 0.5) * 100)
+                : ((entry.dimensions?.width || 0.5) * 100);
+              const floorVentHeight = floorVentShape === 'circular'
+                ? floorVentWidth
+                : ((entry.dimensions?.height || 0.5) * 100);
+              const floorVentRotationRad = ((entry.simulation?.airOrientation?.rotation || 0) * Math.PI) / 180;
+
               horizontalVents.push({
                 id: entry.id,
                 type: 'vent' as const,
@@ -3993,11 +4037,11 @@ export default function WizardDesign() {
                   y: positionInCm.y,
                   z: (entry.position?.z * 100) || 0 // Convertir metros a cm, default floor level
                 },
-                rotation: { x: 0, y: 0, z: 0 },
+                rotation: { x: 0, y: 0, z: floorVentRotationRad },
                 scale: { x: 1, y: 1, z: 1 },
                 dimensions: {
-                  width: (entry.dimensions?.width * 100) || 50, // Convertir metros a centímetros
-                  height: (entry.dimensions?.height * 100) || 50,
+                  width: floorVentWidth,
+                  height: floorVentHeight,
                   depth: 1 // Mínimo espesor para vents horizontales
                 },
                 surfaceType: 'floor' as const,
@@ -4014,6 +4058,8 @@ export default function WizardDesign() {
                   airOrientation: entry.simulation?.airDirection || 'inflow',
                   flowType: entry.simulation?.flowType || 'airMassFlow',
                   flowIntensity: entry.simulation?.flowIntensity || 'medium',
+                  shape: floorVentShape,
+                  ventRotation: entry.simulation?.airOrientation?.rotation || 0,
                   // Mapear customValue solo cuando flowIntensity es "custom"
                   ...(entry.simulation?.flowIntensity === 'custom' && entry.simulation?.customValue && {
                     customIntensityValue: entry.simulation.customValue
