@@ -2491,6 +2491,7 @@ export default function Canvas3D({
         distanceToFloor: data.distanceToFloor,
         shape: data.shape,
         wallPosition: data.wallPosition,
+        ventRotation: (data.properties as any)?.ventRotation,
       },
       properties: data.properties
     });
@@ -3020,6 +3021,15 @@ export default function Canvas3D({
         
         const rotationMatrix = new THREE.Matrix4().makeBasis(right, up, forward);
         mesh.setRotationFromMatrix(rotationMatrix);
+
+        // Apply stored ventRotation around the wall normal (local Z axis)
+        const storedVentRotation =
+          currentStoreEntry?.properties?.ventRotation ??
+          (entry as any).properties?.ventRotation ??
+          (finalDimensions as any).ventRotation;
+        if (storedVentRotation) {
+          mesh.rotation.z = storedVentRotation * Math.PI / 180;
+        }
 
       objects.push(mesh);
 
