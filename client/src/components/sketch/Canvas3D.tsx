@@ -3166,7 +3166,6 @@ export default function Canvas3D({
         const ventPos3D = new THREE.Vector3(position.x, position.y, zPosition);
         const towardCentroid = new THREE.Vector3().subVectors(roomCentroid3D, ventPos3D).normalize();
         const dotProduct = forward.dot(towardCentroid);
-        console.log('[INWARD CHECK] forward:', forward.toArray().map((v: number) => v.toFixed(3)), 'dot:', dotProduct.toFixed(3), dotProduct < 0 ? '→ FLIPPED' : '→ OK');
         if (dotProduct < 0) {
           forward = forward.clone().negate();
           right = right.clone().negate();
@@ -3208,10 +3207,6 @@ export default function Canvas3D({
         // surfaceType=undefined → wall mode: arrowZ=+8, posiciones [[-20,-10],[20,-10],[-20,10],[20,10]]
         // forward ya está garantizado INWARD por el centroide, así que arrowZ=+8 = hacia el interior
         addVentArrows(arrowsGroup, arrowOrientation, arrowState, undefined, arrowVertical, arrowHorizontal);
-        console.log('[ARROWS DEBUG] children after addVentArrows:', arrowsGroup.children.length, 'state:', arrowState, 'orient:', arrowOrientation);
-        arrowsGroup.traverse((child) => {
-          console.log('[ARROWS DEBUG] traverse child:', child.type, child.uuid.substring(0,8), 'parent.type:', child.parent?.type);
-        });
         // Make arrows render on top (prevent depth occlusion from wall geometry)
         arrowsGroup.traverse((child) => {
           if (child instanceof THREE.Mesh) {
@@ -4012,13 +4007,6 @@ export default function Canvas3D({
         meshCount++;
 
         // Log object type and info
-        if (object instanceof THREE.Group) {
-          console.log(
-            `[TRAVERSE GROUP] ${object.uuid.substring(0, 8)}`,
-            `userData:`, object.userData,
-            `children:`, object.children.length,
-          );
-        }
         if (object instanceof THREE.Mesh) {
           console.log(
             `Found mesh: ${object.uuid.substring(0, 8)}`,

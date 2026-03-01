@@ -1777,7 +1777,7 @@ export default function Canvas2D({
             lineId: selectedLine.id,
             wallId: wallId, // Direct reference to wall ID for robust JSON export
             properties: {
-              state: 'closed',
+              state: 'open',
               temperature: 20,
               flowType: 'Air Mass Flow',
               flowValue: 0.5,
