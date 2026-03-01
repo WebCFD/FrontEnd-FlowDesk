@@ -6682,10 +6682,14 @@ export default function Canvas3D({
         furnitureGroup.userData.simulationProperties = {};
       }
       
-      // Merge new properties with existing ones
+      // Merge new properties with existing ones, filtering undefined values
+      // to prevent explicit undefined from overwriting accumulated state
+      const definedProperties = Object.fromEntries(
+        Object.entries(properties).filter(([, v]) => v !== undefined)
+      );
       furnitureGroup.userData.simulationProperties = {
         ...furnitureGroup.userData.simulationProperties,
-        ...properties
+        ...definedProperties
       };
 
       // Update vent geometry in real-time when shape changes
