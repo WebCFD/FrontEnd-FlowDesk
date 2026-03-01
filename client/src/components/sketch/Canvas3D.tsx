@@ -6431,7 +6431,7 @@ export default function Canvas3D({
     let furnitureGroup: THREE.Group | null = null;
 
     sceneRef.current.traverse((child) => {
-      if (child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
+      if (child instanceof THREE.Group && child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
         furnitureGroup = child as THREE.Group;
       }
     });
@@ -6475,7 +6475,7 @@ export default function Canvas3D({
     let furnitureGroup: THREE.Group | null = null;
 
     sceneRef.current.traverse((child) => {
-      if (child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
+      if (child instanceof THREE.Group && child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
         furnitureGroup = child as THREE.Group;
       }
     });
@@ -6513,7 +6513,7 @@ export default function Canvas3D({
     let furnitureGroup: THREE.Group | null = null;
 
     sceneRef.current.traverse((child) => {
-      if (child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
+      if (child instanceof THREE.Group && child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
         furnitureGroup = child as THREE.Group;
       }
     });
@@ -6640,7 +6640,7 @@ export default function Canvas3D({
     let furnitureGroup: THREE.Group | null = null;
 
     sceneRef.current.traverse((child) => {
-      if (child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
+      if (child instanceof THREE.Group && child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
         furnitureGroup = child as THREE.Group;
       }
     });
@@ -6723,7 +6723,7 @@ export default function Canvas3D({
     let furnitureGroup: THREE.Group | null = null;
 
     sceneRef.current.traverse((child) => {
-      if (child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
+      if (child instanceof THREE.Group && child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
         furnitureGroup = child as THREE.Group;
       }
     });
@@ -6939,7 +6939,7 @@ export default function Canvas3D({
       // Final validation: Check if object is still in scene after all modifications
       let finalValidation = false;
       sceneRef.current.traverse((child) => {
-        if (child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
+        if (child instanceof THREE.Group && child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
           finalValidation = true;
         }
       });
@@ -6957,7 +6957,7 @@ export default function Canvas3D({
       let delayedValidation = false;
       if (sceneRef.current) {
         sceneRef.current.traverse((child) => {
-          if (child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
+          if (child instanceof THREE.Group && child.userData.furnitureId === furnitureId && child.userData.type === 'furniture') {
             delayedValidation = true;
           }
         });
