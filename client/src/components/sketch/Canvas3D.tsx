@@ -6684,6 +6684,20 @@ export default function Canvas3D({
       if (data.simulationProperties) {
         furnitureGroup.userData.simulationProperties = data.simulationProperties;
       }
+
+      // Update vent mesh geometry when shape changes (scene rebuild skips existing furniture)
+      if (editingFurniture.item.type === 'vent' && data.simulationProperties?.shape) {
+        const defaultDims = getDefaultDimensions('vent');
+        const newShape = data.simulationProperties.shape;
+        furnitureGroup.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
+            child.geometry.dispose();
+            child.geometry = newShape === 'circular'
+              ? new THREE.CircleGeometry(defaultDims.width / 2, 32)
+              : new THREE.PlaneGeometry(defaultDims.width, defaultDims.height);
+          }
+        });
+      }
       
       if (data.serverProperties) {
         furnitureGroup.userData.serverProperties = data.serverProperties;
