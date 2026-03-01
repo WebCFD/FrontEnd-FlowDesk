@@ -762,6 +762,14 @@ const addVentArrows = (
     ventArrowsRoot.add(arrowGroup);
   }
 
+  // Counter-scale to compensate for parent group scale so arrows stay undistorted
+  const gs = group.scale;
+  ventArrowsRoot.scale.set(
+    gs.x !== 0 ? 1 / gs.x : 1,
+    gs.y !== 0 ? 1 / gs.y : 1,
+    gs.z !== 0 ? 1 / gs.z : 1
+  );
+
   group.add(ventArrowsRoot);
 };
 
@@ -1079,6 +1087,22 @@ const createFurnitureModel = (
       currentScale.y * furnitureItem.scale.y,
       currentScale.z * furnitureItem.scale.z
     );
+  }
+
+  // For vents: counter-scale ventArrowsRoot to undo parent scale distortion on arrows
+  if (furnitureItem.type === 'vent') {
+    const finalSx = model.scale.x;
+    const finalSy = model.scale.y;
+    const finalSz = model.scale.z;
+    model.traverse((child) => {
+      if (child.userData.type === 'ventArrow') {
+        child.scale.set(
+          finalSx !== 0 ? 1 / finalSx : 1,
+          finalSy !== 0 ? 1 / finalSy : 1,
+          finalSz !== 0 ? 1 / finalSz : 1
+        );
+      }
+    });
   }
 
   if (furnitureItem.type === 'rack' || furnitureItem.type === 'topVentBox' || furnitureItem.type === 'sideVentBox') {
@@ -6551,6 +6575,19 @@ export default function Canvas3D({
 
     if (furnitureGroup) {
       furnitureGroup.scale.set(newScale.x, newScale.y, newScale.z);
+
+      // For vents: counter-scale ventArrowsRoot to prevent arrow distortion after resize
+      if (editingFurniture.item.type === 'vent') {
+        furnitureGroup.traverse((child) => {
+          if (child.userData.type === 'ventArrow') {
+            child.scale.set(
+              newScale.x !== 0 ? 1 / newScale.x : 1,
+              newScale.y !== 0 ? 1 / newScale.y : 1,
+              newScale.z !== 0 ? 1 / newScale.z : 1
+            );
+          }
+        });
+      }
     }
 
     if (editingFurniture.item.type === 'rack' || editingFurniture.item.type === 'topVentBox' || editingFurniture.item.type === 'sideVentBox') {
