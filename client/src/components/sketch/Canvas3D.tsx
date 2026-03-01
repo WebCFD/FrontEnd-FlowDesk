@@ -2270,10 +2270,12 @@ export default function Canvas3D({
       });
     }
     
-    // STEP 1.5: Update vent arrows in real-time when orientation/state changes
-    if (editingAirEntry.entry.type === 'vent' && sceneRef.current) {
+    // STEP 1.5: Update flow arrows in real-time when orientation/state changes (vent, window, door)
+    const isArrowEntry = ['vent', 'window', 'door'].includes(editingAirEntry.entry.type);
+    if (isArrowEntry && sceneRef.current) {
       const currentProps = (editingAirEntry.entry.properties as any) ?? {};
       const mergedProps = { ...currentProps, ...newProperties };
+      const isVent = editingAirEntry.entry.type === 'vent';
       sceneRef.current.traverse((object) => {
         if (
           object.userData?.type === 'airEntryVentArrow' &&
@@ -2286,8 +2288,8 @@ export default function Canvas3D({
             mergedProps.airOrientation ?? 'inflow',
             mergedProps.state ?? 'open',
             undefined,
-            mergedProps.verticalAngle ?? 0,
-            mergedProps.horizontalAngle ?? 0
+            isVent ? (mergedProps.verticalAngle ?? 0) : 0,
+            isVent ? (mergedProps.horizontalAngle ?? 0) : 0
           );
           arrowsGroup.traverse((child) => {
             if (child instanceof THREE.Mesh) {
@@ -3216,13 +3218,14 @@ export default function Canvas3D({
       // Capture mesh index BEFORE potentially pushing arrowsGroup below
       const parentMeshIndex = objects.length - 1;
 
-      // Add green flow arrows for wall vents
-      if (entry.type === 'vent') {
+      // Add green flow arrows for wall vents, windows, and doors
+      if (entry.type === 'vent' || entry.type === 'window' || entry.type === 'door') {
         const entryProps = (currentStoreEntry?.properties ?? (entry as any).properties ?? {}) as any;
         const arrowState = entryProps.state ?? 'open';
         const arrowOrientation = entryProps.airOrientation ?? 'inflow';
-        const arrowVertical = entryProps.verticalAngle ?? 0;
-        const arrowHorizontal = entryProps.horizontalAngle ?? 0;
+        // Windows and doors don't support orientation angles
+        const arrowVertical = entry.type === 'vent' ? (entryProps.verticalAngle ?? 0) : 0;
+        const arrowHorizontal = entry.type === 'vent' ? (entryProps.horizontalAngle ?? 0) : 0;
 
         const arrowsGroup = new THREE.Group();
         arrowsGroup.position.copy(mesh.position);
