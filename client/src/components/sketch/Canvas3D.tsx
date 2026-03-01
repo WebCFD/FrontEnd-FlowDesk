@@ -690,7 +690,14 @@ const calculateFurniturePosition = (
 // Helper: add/refresh green flow arrows to a vent furniture group (local Z axis = normal)
 // surfaceType: 'floor'|'ceiling' → TopVent style (compact 2×2 grid)
 // surfaceType: undefined         → SideVent style (wider grid for wall vents)
-const addVentArrows = (group: THREE.Group, airOrientation: string, state: string, surfaceType?: 'floor' | 'ceiling') => {
+const addVentArrows = (
+  group: THREE.Group,
+  airOrientation: string,
+  state: string,
+  surfaceType?: 'floor' | 'ceiling',
+  verticalAngle?: number,
+  horizontalAngle?: number
+) => {
   if (state !== 'open') return;
 
   const arrowMat = new THREE.MeshStandardMaterial({
@@ -709,12 +716,18 @@ const addVentArrows = (group: THREE.Group, airOrientation: string, state: string
 
   const isOutlet = airOrientation === 'outflow';
   const isCeiling = surfaceType === 'ceiling';
-  // For ceiling vents: arrows go below the vent (toward the room) and direction logic inverts
   const effectiveOutlet = isOutlet;
   const arrowZ = isCeiling ? -8 : 8;
 
   const shaftLength = 15;
   const coneHeight = 8;
+
+  // Root container: holds all arrows and receives orientation tilt.
+  // ventRotation is already on the parent furnitureGroup.rotation.z (solid-body rotation).
+  const ventArrowsRoot = new THREE.Group();
+  ventArrowsRoot.userData = { type: 'ventArrow' };
+  ventArrowsRoot.rotation.x = (verticalAngle ?? 0) * Math.PI / 180;
+  ventArrowsRoot.rotation.y = (horizontalAngle ?? 0) * Math.PI / 180;
 
   for (const [x, y] of positions) {
     const arrowGroup = new THREE.Group();
@@ -745,9 +758,10 @@ const addVentArrows = (group: THREE.Group, airOrientation: string, state: string
     arrowGroup.add(shaft);
     arrowGroup.add(cone);
     arrowGroup.position.set(x, y, arrowZ);
-    arrowGroup.userData = { type: 'ventArrow' };
-    group.add(arrowGroup);
+    ventArrowsRoot.add(arrowGroup);
   }
+
+  group.add(ventArrowsRoot);
 };
 
 // Helper: remove existing vent arrows from a group
@@ -831,7 +845,11 @@ const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
   const simProps = furnitureItem.simulationProperties as any;
   const ventAirOrientation = simProps?.airOrientation ?? 'inflow';
   const ventState = simProps?.state ?? 'open';
-  addVentArrows(group, ventAirOrientation, ventState, furnitureItem.surfaceType);
+  addVentArrows(
+    group, ventAirOrientation, ventState, furnitureItem.surfaceType,
+    simProps?.verticalAngle ?? 0,
+    simProps?.horizontalAngle ?? 0
+  );
 
   return group;
 };
@@ -6682,13 +6700,20 @@ export default function Canvas3D({
         });
       }
 
-      // Update vent arrows in real-time when airOrientation or state changes
-      if (editingFurniture.item.type === 'vent' && (properties.airOrientation || properties.state)) {
+      // Update vent arrows in real-time when airOrientation, state, or orientation angles change
+      if (editingFurniture.item.type === 'vent' && (
+        properties.airOrientation || properties.state ||
+        properties.verticalAngle !== undefined || properties.horizontalAngle !== undefined
+      )) {
         const merged = furnitureGroup.userData.simulationProperties ?? {};
         const currentAirOrientation = merged.airOrientation ?? 'inflow';
         const currentState = merged.state ?? 'open';
         removeVentArrows(furnitureGroup);
-        addVentArrows(furnitureGroup, currentAirOrientation, currentState, editingFurniture.item.surfaceType);
+        addVentArrows(
+          furnitureGroup, currentAirOrientation, currentState, editingFurniture.item.surfaceType,
+          merged.verticalAngle ?? 0,
+          merged.horizontalAngle ?? 0
+        );
       }
     }
   };
@@ -6811,14 +6836,16 @@ export default function Canvas3D({
         });
       }
 
-      // Refresh vent arrows when confirming (airOrientation or state may have changed)
+      // Refresh vent arrows when confirming (airOrientation, state, or orientation angles may have changed)
       if (editingFurniture.item.type === 'vent' && data.simulationProperties) {
         removeVentArrows(furnitureGroup);
         addVentArrows(
           furnitureGroup,
           data.simulationProperties.airOrientation ?? 'inflow',
           data.simulationProperties.state ?? 'open',
-          editingFurniture.item.surfaceType
+          editingFurniture.item.surfaceType,
+          data.simulationProperties.verticalAngle ?? 0,
+          data.simulationProperties.horizontalAngle ?? 0
         );
       }
       
