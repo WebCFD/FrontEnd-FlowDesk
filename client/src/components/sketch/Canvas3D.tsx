@@ -688,7 +688,9 @@ const calculateFurniturePosition = (
 // Legacy function removed - now using handleComponentFurnitureDrop inside Canvas3D component
 
 // Helper: add/refresh green flow arrows to a vent furniture group (local Z axis = normal)
-const addVentArrows = (group: THREE.Group, airOrientation: string, state: string) => {
+// surfaceType: 'floor'|'ceiling' → TopVent style (compact 2×2 grid)
+// surfaceType: undefined         → SideVent style (wider grid for wall vents)
+const addVentArrows = (group: THREE.Group, airOrientation: string, state: string, surfaceType?: 'floor' | 'ceiling') => {
   if (state !== 'open') return;
 
   const arrowMat = new THREE.MeshStandardMaterial({
@@ -699,7 +701,12 @@ const addVentArrows = (group: THREE.Group, airOrientation: string, state: string
     opacity: 0.85,
   });
 
-  const positions: [number, number][] = [[-10, -10], [10, -10], [-10, 10], [10, 10]];
+  // TopVent style for floor/ceiling; SideVent style (wider) for wall vents
+  const isWall = surfaceType === undefined;
+  const positions: [number, number][] = isWall
+    ? [[-20, -10], [20, -10], [-20, 10], [20, 10]]   // wider horizontal spread for walls
+    : [[-10, -10], [10, -10], [-10, 10], [10, 10]];  // compact grid for floor/ceiling
+
   const isOutlet = airOrientation === 'outflow';
   const shaftLength = 15;
   const coneHeight = 8;
@@ -713,15 +720,15 @@ const addVentArrows = (group: THREE.Group, airOrientation: string, state: string
     const cone = new THREE.Mesh(new THREE.ConeGeometry(3.5, coneHeight, 8), arrowMat);
 
     if (isOutlet) {
-      // Arrow points away from surface (+Z): cone tip at front, shaft behind
+      // Arrow points away from surface (+Z): cone tip first, shaft behind
       cone.rotation.x = -Math.PI / 2;
-      cone.position.z = shaftLength + coneHeight / 2;
-      shaft.position.z = shaftLength / 2;
-    } else {
-      // Arrow points toward surface (-Z): cone tip at back, shaft at front
-      cone.rotation.x = Math.PI / 2;
       cone.position.z = coneHeight / 2;
       shaft.position.z = coneHeight + shaftLength / 2;
+    } else {
+      // Arrow points toward surface (-Z): shaft first, cone tip after
+      shaft.position.z = shaftLength / 2;
+      cone.rotation.x = Math.PI / 2;
+      cone.position.z = shaftLength + coneHeight / 2;
     }
 
     arrowGroup.add(shaft);
@@ -813,7 +820,7 @@ const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
   const simProps = furnitureItem.simulationProperties as any;
   const ventAirOrientation = simProps?.airOrientation ?? 'inflow';
   const ventState = simProps?.state ?? 'open';
-  addVentArrows(group, ventAirOrientation, ventState);
+  addVentArrows(group, ventAirOrientation, ventState, furnitureItem.surfaceType);
 
   return group;
 };
@@ -6670,7 +6677,7 @@ export default function Canvas3D({
         const currentAirOrientation = merged.airOrientation ?? 'inflow';
         const currentState = merged.state ?? 'open';
         removeVentArrows(furnitureGroup);
-        addVentArrows(furnitureGroup, currentAirOrientation, currentState);
+        addVentArrows(furnitureGroup, currentAirOrientation, currentState, editingFurniture.item.surfaceType);
       }
     }
   };
@@ -6799,7 +6806,8 @@ export default function Canvas3D({
         addVentArrows(
           furnitureGroup,
           data.simulationProperties.airOrientation ?? 'inflow',
-          data.simulationProperties.state ?? 'open'
+          data.simulationProperties.state ?? 'open',
+          editingFurniture.item.surfaceType
         );
       }
       
