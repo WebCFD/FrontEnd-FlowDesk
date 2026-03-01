@@ -687,7 +687,7 @@ const calculateFurniturePosition = (
 
 // Legacy function removed - now using handleComponentFurnitureDrop inside Canvas3D component
 
-// PHASE 3: Function to create vent plane model using PlaneGeometry
+// PHASE 3: Function to create vent plane model using PlaneGeometry or CircleGeometry
 const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
   const group = new THREE.Group();
   
@@ -696,8 +696,11 @@ const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
   const width = defaultDimensions.width; // Use default 50cm
   const height = defaultDimensions.height; // Use default 50cm
   
-  // Create PlaneGeometry with default dimensions (scaling applied later like other furniture)
-  const geometry = new THREE.PlaneGeometry(width, height);
+  // Create geometry based on shape stored in simulationProperties
+  const ventShape = (furnitureItem.simulationProperties as any)?.shape || 'rectangular';
+  const geometry = ventShape === 'circular'
+    ? new THREE.CircleGeometry(width / 2, 32)
+    : new THREE.PlaneGeometry(width, height);
   
   // Create material with vent-specific properties
   const material = new THREE.MeshPhongMaterial({
@@ -6645,12 +6648,19 @@ export default function Canvas3D({
           z: data.position.z - parentPosition.z
         };
         
-        // Convert world rotation to local rotation
-        const localRotation = {
-          x: data.rotation.x - parentRotation.x,
-          y: data.rotation.y - parentRotation.y,
-          z: data.rotation.z - parentRotation.z
-        };
+        // For horizontal vents (floor/ceiling), derive rotation directly from ventRotation
+        // to avoid coordinate system subtraction errors
+        let localRotation;
+        if (editingFurniture.item.type === 'vent' && data.simulationProperties?.ventRotation !== undefined) {
+          const ventRotRad = data.simulationProperties.ventRotation * Math.PI / 180;
+          localRotation = { x: data.rotation.x, y: data.rotation.y, z: ventRotRad };
+        } else {
+          localRotation = {
+            x: data.rotation.x - parentRotation.x,
+            y: data.rotation.y - parentRotation.y,
+            z: data.rotation.z - parentRotation.z
+          };
+        }
         
         furnitureGroup.position.set(localPosition.x, localPosition.y, localPosition.z);
         furnitureGroup.rotation.set(localRotation.x, localRotation.y, localRotation.z);
@@ -6775,7 +6785,9 @@ export default function Canvas3D({
           ...editingFurniture.item,
           name: data.name,
           position: data.position,
-          rotation: data.rotation,
+          rotation: (editingFurniture.item.type === 'vent' && data.simulationProperties?.ventRotation !== undefined)
+            ? { x: data.rotation.x, y: data.rotation.y, z: data.simulationProperties.ventRotation * Math.PI / 180 }
+            : data.rotation,
           scale: data.scale,
           properties: data.properties,
           simulationProperties: data.simulationProperties,

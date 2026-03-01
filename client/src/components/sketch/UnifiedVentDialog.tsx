@@ -206,7 +206,7 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
     const furnitureData = {
       name: props.initialValues?.name || 'Vent',
       position: airEntryData.position || currentPosition,
-      rotation: airEntryData.rotation || currentRotation,
+      rotation: currentRotation,
       scale: { 
         x: newScaleX, 
         y: newScaleY, // Height controls Y scale (vertical)
