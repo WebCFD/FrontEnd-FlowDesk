@@ -1507,7 +1507,12 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               name="shape"
                               value="rectangular"
                               checked={shapeType === 'rectangular'}
-                              onChange={() => setShapeType('rectangular')}
+                              onChange={() => {
+                                setShapeType('rectangular');
+                                if ('onDimensionsUpdate' in props && props.onDimensionsUpdate) {
+                                  props.onDimensionsUpdate({ shape: 'rectangular' } as any);
+                                }
+                              }}
                               className="text-blue-600"
                             />
                             <span className="text-xs text-slate-600">Rectangular</span>
@@ -1518,7 +1523,13 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               name="shape"
                               value="circular"
                               checked={shapeType === 'circular'}
-                              onChange={() => setShapeType('circular')}
+                              onChange={() => {
+                                setShapeType('circular');
+                                const currentW = (values as any).width || 60;
+                                if ('onDimensionsUpdate' in props && props.onDimensionsUpdate) {
+                                  props.onDimensionsUpdate({ shape: 'circular', width: currentW, height: currentW } as any);
+                                }
+                              }}
                               className="text-blue-600"
                             />
                             <span className="text-xs text-slate-600">Circular</span>
@@ -1679,8 +1690,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               }));
                               
                               // Real-time dimension updates for circular elements
-                              if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
-                                props.onDimensionsUpdate({ width: diameter, height: diameter });
+                              if ('onDimensionsUpdate' in props && props.onDimensionsUpdate) {
+                                props.onDimensionsUpdate({ shape: 'circular', width: diameter, height: diameter } as any);
                               }
                             }}
                             className="h-8 text-sm"

@@ -1872,8 +1872,8 @@ export default function Canvas3D({
       entry: updatedEntry
     } : null);
     
-    // Force immediate dimension update for visual feedback (Center Height, Width, Height)
-    if (sceneRef.current && (newDimensions.distanceToFloor !== undefined || newDimensions.width !== undefined || newDimensions.height !== undefined)) {
+    // Force immediate dimension update for visual feedback (Center Height, Width, Height, Rotation)
+    if (sceneRef.current && (newDimensions.distanceToFloor !== undefined || newDimensions.width !== undefined || newDimensions.height !== undefined || newDimensions.ventRotation !== undefined || newDimensions.shape !== undefined)) {
       sceneRef.current.traverse((object) => {
         if (object instanceof THREE.Mesh && 
             object.userData?.type === editingAirEntry.entry.type &&
@@ -1886,15 +1886,18 @@ export default function Canvas3D({
             object.position.setZ(newZ);
           }
 
-          // Update mesh geometry for Width and Height (same approach as creation)
-          if (newDimensions.width !== undefined || newDimensions.height !== undefined) {
+          // Update mesh geometry for Width, Height, or Shape changes
+          if (newDimensions.width !== undefined || newDimensions.height !== undefined || newDimensions.shape !== undefined) {
             const currentDimensions = object.userData.dimensions || editingAirEntry.entry.dimensions;
             const newWidth = newDimensions.width !== undefined ? newDimensions.width : currentDimensions.width;
             const newHeight = newDimensions.height !== undefined ? newDimensions.height : currentDimensions.height;
+            const resolvedShape = newDimensions.shape !== undefined ? newDimensions.shape : (currentDimensions.shape || 'rectangular');
             
-            // Update geometry directly (same as creation) - no scale conversion
-            const newGeometry = new THREE.PlaneGeometry(newWidth, newHeight);
-            object.geometry.dispose(); // Clean up old geometry
+            // Create geometry based on shape
+            const newGeometry = resolvedShape === 'circular'
+              ? new THREE.CircleGeometry(newWidth / 2, 32)
+              : new THREE.PlaneGeometry(newWidth, newHeight);
+            object.geometry.dispose();
             object.geometry = newGeometry;
           }
           
@@ -2944,7 +2947,10 @@ export default function Canvas3D({
             ? height / 2
             : finalDimensions.distanceToFloor || 0);
 
-        const geometry = new THREE.PlaneGeometry(width, height);
+        const entryShape = (finalDimensions as any).shape || 'rectangular';
+        const geometry = entryShape === 'circular'
+          ? new THREE.CircleGeometry(width / 2, 32)
+          : new THREE.PlaneGeometry(width, height);
         // CRITICAL FIX: Check for existing material with textures before creating new one
         let material: THREE.MeshPhongMaterial;
         let existingMesh: THREE.Mesh | null = null;
@@ -5164,12 +5170,16 @@ export default function Canvas3D({
       const newWidth = changes.dimensions.width ?? currentWidth;
       const newHeight = changes.dimensions.height ?? currentHeight;
       
+      const newShape = changes.dimensions.shape ?? (mesh.userData.dimensions?.shape || 'rectangular');
+
       // Check if geometry needs to be updated
-      if (newWidth !== currentWidth || newHeight !== currentHeight) {
+      if (newWidth !== currentWidth || newHeight !== currentHeight || newShape !== (mesh.userData.dimensions?.shape || 'rectangular')) {
         needsGeometryUpdate = true;
         
-        // Create new geometry with updated dimensions
-        const newGeometry = new THREE.PlaneGeometry(newWidth, newHeight);
+        // Create new geometry with updated dimensions and shape
+        const newGeometry = newShape === 'circular'
+          ? new THREE.CircleGeometry(newWidth / 2, 32)
+          : new THREE.PlaneGeometry(newWidth, newHeight);
         
         // Dispose old geometry and assign new one
         mesh.geometry.dispose();
