@@ -3167,6 +3167,8 @@ export default function Canvas3D({
         }
 
       objects.push(mesh);
+      // Capture mesh index BEFORE potentially pushing arrowsGroup below
+      const parentMeshIndex = objects.length - 1;
 
       // Add green flow arrows for wall vents
       if (entry.type === 'vent') {
@@ -3185,11 +3187,21 @@ export default function Canvas3D({
           entryIndex: index,
           airEntryId: entryId,
         };
-        addVentArrows(arrowsGroup, arrowOrientation, arrowState, 'floor', arrowVertical, arrowHorizontal);
+        // surfaceType='ceiling' → arrowZ=-8 (inward, toward room interior)
+        // wallNormal = wallDir × worldUp points OUTWARD (exterior side),
+        // so we need -Z direction (ceiling logic) to place arrows inside the room.
+        // outflow/inflow meaning is correct with ceiling: outflow arrows point inward (into room),
+        // inflow arrows point outward (toward wall/duct).
+        addVentArrows(arrowsGroup, arrowOrientation, arrowState, 'ceiling', arrowVertical, arrowHorizontal);
+        // Make arrows render on top (prevent depth occlusion from wall geometry)
+        arrowsGroup.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
+            (child.material as THREE.Material).depthTest = false;
+            child.renderOrder = 3;
+          }
+        });
         objects.push(arrowsGroup);
       }
-
-      const parentMeshIndex = objects.length - 1;
       const coordSysData = orientationData;
       const { 
         axisLength, axisRadius, axisSegments, axisOpacity, axisColors 
