@@ -1033,15 +1033,18 @@ export function generateSimulationData(
         dimensions: (() => {
           const sp = ventObj.userData?.simulationProperties;
           const ventShape = (sp?.shape as "rectangular" | "circular") || "rectangular";
+          const baseSize = 50; // default vent size in cm
+          const actualWidth = baseSize * (ventObj.scale?.x || 1);
+          const actualHeight = baseSize * (ventObj.scale?.y || 1);
           if (ventShape === "circular") {
             return {
-              diameter: cmToM(ventObj.userData?.dimensions?.width || 50),
+              diameter: cmToM(actualWidth),
               shape: "circular" as const
             };
           }
           return {
-            width: cmToM(ventObj.userData?.dimensions?.width || 50),
-            height: cmToM(ventObj.userData?.dimensions?.height || 50),
+            width: cmToM(actualWidth),
+            height: cmToM(actualHeight),
             shape: "rectangular" as const
           };
         })(),
