@@ -1026,9 +1026,11 @@ export function generateSimulationData(
             y: 0,
             z: isFloorVent ? 1 : -1 // Normal hacia arriba para floor, hacia abajo para ceiling
           },
-          ...(ventObj.userData?.simulationProperties?.ventRotation
-            ? { rotation: ventObj.userData.simulationProperties.ventRotation }
-            : {})
+          ...((() => {
+            const shape = ventObj.userData?.simulationProperties?.shape;
+            const rot = ventObj.userData?.simulationProperties?.ventRotation;
+            return (shape !== 'circular' && rot) ? { rotation: rot } : {};
+          })())
         },
         dimensions: (() => {
           const sp = ventObj.userData?.simulationProperties;

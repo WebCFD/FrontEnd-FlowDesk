@@ -3957,7 +3957,7 @@ export default function WizardDesign() {
               const ceilingVentHeight = ceilingVentShape === 'circular'
                 ? ceilingVentWidth
                 : ((entry.dimensions?.height || 0.5) * 100);
-              const ceilingVentRotationRad = ((entry.position?.rotation || 0) * Math.PI) / 180;
+              const ceilingVentRotationRad = ceilingVentShape === 'circular' ? 0 : ((entry.position?.rotation || 0) * Math.PI) / 180;
 
               horizontalVents.push({
                 id: entry.id,
@@ -3991,7 +3991,7 @@ export default function WizardDesign() {
                   flowType: entry.simulation?.flowType || 'airMassFlow',
                   flowIntensity: entry.simulation?.flowIntensity || 'medium',
                   shape: ceilingVentShape,
-                  ventRotation: entry.position?.rotation || 0,
+                  ventRotation: ceilingVentShape === 'circular' ? 0 : (entry.position?.rotation || 0),
                   // Mapear customValue solo cuando flowIntensity es "custom"
                   ...(entry.simulation?.flowIntensity === 'custom' && entry.simulation?.customValue && {
                     customIntensityValue: entry.simulation.customValue
@@ -4025,7 +4025,7 @@ export default function WizardDesign() {
               const floorVentHeight = floorVentShape === 'circular'
                 ? floorVentWidth
                 : ((entry.dimensions?.height || 0.5) * 100);
-              const floorVentRotationRad = ((entry.position?.rotation || 0) * Math.PI) / 180;
+              const floorVentRotationRad = floorVentShape === 'circular' ? 0 : ((entry.position?.rotation || 0) * Math.PI) / 180;
 
               horizontalVents.push({
                 id: entry.id,
@@ -4059,7 +4059,7 @@ export default function WizardDesign() {
                   flowType: entry.simulation?.flowType || 'airMassFlow',
                   flowIntensity: entry.simulation?.flowIntensity || 'medium',
                   shape: floorVentShape,
-                  ventRotation: entry.position?.rotation || 0,
+                  ventRotation: floorVentShape === 'circular' ? 0 : (entry.position?.rotation || 0),
                   // Mapear customValue solo cuando flowIntensity es "custom"
                   ...(entry.simulation?.flowIntensity === 'custom' && entry.simulation?.customValue && {
                     customIntensityValue: entry.simulation.customValue
