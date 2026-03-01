@@ -749,10 +749,11 @@ const addVentArrows = (
       cone.position.z = shaftLength + coneHeight / 2;
     }
 
-    // For ceiling: all components extend in -Z (downward toward room), flip z positions only
+    // For ceiling: all components extend in -Z (downward toward room), flip z positions and cone rotation
     if (isCeiling) {
       shaft.position.z *= -1;
       cone.position.z *= -1;
+      cone.rotation.x *= -1;
     }
 
     arrowGroup.add(shaft);
@@ -832,11 +833,12 @@ const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
   group.userData = {
     type: 'furniture',
     furnitureType: 'vent',
-    furnitureId: furnitureItem.id, // Essential ID for double-click editing
+    furnitureId: furnitureItem.id,
     floorName: furnitureItem.floorName,
     furnitureName: furnitureItem.name,
     isSelectable: true,
-    isVentFurniture: true
+    isVentFurniture: true,
+    simulationProperties: { ...(furnitureItem.simulationProperties as any ?? {}) }
   };
   
   group.add(mesh);
