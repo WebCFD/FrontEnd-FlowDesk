@@ -708,6 +708,11 @@ const addVentArrows = (group: THREE.Group, airOrientation: string, state: string
     : [[-10, -10], [10, -10], [-10, 10], [10, 10]];  // compact grid for floor/ceiling
 
   const isOutlet = airOrientation === 'outflow';
+  const isCeiling = surfaceType === 'ceiling';
+  // For ceiling vents: arrows go below the vent (toward the room) and direction logic inverts
+  const effectiveOutlet = isCeiling ? !isOutlet : isOutlet;
+  const arrowZ = isCeiling ? -8 : 8;
+
   const shaftLength = 15;
   const coneHeight = 8;
 
@@ -719,7 +724,7 @@ const addVentArrows = (group: THREE.Group, airOrientation: string, state: string
 
     const cone = new THREE.Mesh(new THREE.ConeGeometry(3.5, coneHeight, 8), arrowMat);
 
-    if (isOutlet) {
+    if (effectiveOutlet) {
       // Arrow points away from surface (+Z): cone tip first, shaft behind
       cone.rotation.x = -Math.PI / 2;
       cone.position.z = coneHeight / 2;
@@ -731,9 +736,16 @@ const addVentArrows = (group: THREE.Group, airOrientation: string, state: string
       cone.position.z = shaftLength + coneHeight / 2;
     }
 
+    // For ceiling: all components extend in -Z (downward toward room), flip z positions and cone direction
+    if (isCeiling) {
+      shaft.position.z *= -1;
+      cone.position.z *= -1;
+      cone.rotation.x *= -1;
+    }
+
     arrowGroup.add(shaft);
     arrowGroup.add(cone);
-    arrowGroup.position.set(x, y, 8);
+    arrowGroup.position.set(x, y, arrowZ);
     arrowGroup.userData = { type: 'ventArrow' };
     group.add(arrowGroup);
   }
