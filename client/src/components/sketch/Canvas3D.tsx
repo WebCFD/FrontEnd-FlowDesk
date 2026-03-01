@@ -687,6 +687,69 @@ const calculateFurniturePosition = (
 
 // Legacy function removed - now using handleComponentFurnitureDrop inside Canvas3D component
 
+// Helper: add/refresh green flow arrows to a vent furniture group (local Z axis = normal)
+const addVentArrows = (group: THREE.Group, airOrientation: string, state: string) => {
+  if (state !== 'open') return;
+
+  const arrowMat = new THREE.MeshStandardMaterial({
+    color: 0x22c55e,
+    roughness: 0.3,
+    metalness: 0.1,
+    transparent: true,
+    opacity: 0.85,
+  });
+
+  const positions: [number, number][] = [[-10, -10], [10, -10], [-10, 10], [10, 10]];
+  const isOutlet = airOrientation === 'outflow';
+  const shaftLength = 15;
+  const coneHeight = 8;
+
+  for (const [x, y] of positions) {
+    const arrowGroup = new THREE.Group();
+
+    const shaft = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, shaftLength, 8), arrowMat);
+    shaft.rotation.x = Math.PI / 2;
+
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(3.5, coneHeight, 8), arrowMat);
+
+    if (isOutlet) {
+      // Arrow points away from surface (+Z): cone tip at front, shaft behind
+      cone.rotation.x = -Math.PI / 2;
+      cone.position.z = shaftLength + coneHeight / 2;
+      shaft.position.z = shaftLength / 2;
+    } else {
+      // Arrow points toward surface (-Z): cone tip at back, shaft at front
+      cone.rotation.x = Math.PI / 2;
+      cone.position.z = coneHeight / 2;
+      shaft.position.z = coneHeight + shaftLength / 2;
+    }
+
+    arrowGroup.add(shaft);
+    arrowGroup.add(cone);
+    arrowGroup.position.set(x, y, 8);
+    arrowGroup.userData = { type: 'ventArrow' };
+    group.add(arrowGroup);
+  }
+};
+
+// Helper: remove existing vent arrows from a group
+const removeVentArrows = (group: THREE.Group) => {
+  const toRemove: THREE.Object3D[] = [];
+  group.traverse((child) => {
+    if (child.userData.type === 'ventArrow') toRemove.push(child);
+  });
+  for (const obj of toRemove) {
+    obj.traverse((c) => {
+      if (c instanceof THREE.Mesh) {
+        c.geometry?.dispose();
+        if (Array.isArray(c.material)) c.material.forEach(m => m.dispose());
+        else c.material?.dispose();
+      }
+    });
+    group.remove(obj);
+  }
+};
+
 // PHASE 3: Function to create vent plane model using PlaneGeometry or CircleGeometry
 const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
   const group = new THREE.Group();
@@ -745,6 +808,13 @@ const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
   };
   
   group.add(mesh);
+
+  // Add flow direction arrows based on simulationProperties
+  const simProps = furnitureItem.simulationProperties as any;
+  const ventAirOrientation = simProps?.airOrientation ?? 'inflow';
+  const ventState = simProps?.state ?? 'open';
+  addVentArrows(group, ventAirOrientation, ventState);
+
   return group;
 };
 
@@ -6593,6 +6663,15 @@ export default function Canvas3D({
           }
         });
       }
+
+      // Update vent arrows in real-time when airOrientation or state changes
+      if (editingFurniture.item.type === 'vent' && (properties.airOrientation || properties.state)) {
+        const merged = furnitureGroup.userData.simulationProperties ?? {};
+        const currentAirOrientation = merged.airOrientation ?? 'inflow';
+        const currentState = merged.state ?? 'open';
+        removeVentArrows(furnitureGroup);
+        addVentArrows(furnitureGroup, currentAirOrientation, currentState);
+      }
     }
   };
 
@@ -6712,6 +6791,16 @@ export default function Canvas3D({
               : new THREE.PlaneGeometry(defaultDims.width, defaultDims.height);
           }
         });
+      }
+
+      // Refresh vent arrows when confirming (airOrientation or state may have changed)
+      if (editingFurniture.item.type === 'vent' && data.simulationProperties) {
+        removeVentArrows(furnitureGroup);
+        addVentArrows(
+          furnitureGroup,
+          data.simulationProperties.airOrientation ?? 'inflow',
+          data.simulationProperties.state ?? 'open'
+        );
       }
       
       if (data.serverProperties) {
