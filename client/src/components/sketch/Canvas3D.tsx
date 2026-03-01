@@ -3168,6 +3168,27 @@ export default function Canvas3D({
 
       objects.push(mesh);
 
+      // Add green flow arrows for wall vents
+      if (entry.type === 'vent') {
+        const entryProps = (currentStoreEntry?.properties ?? (entry as any).properties ?? {}) as any;
+        const arrowState = entryProps.state ?? 'open';
+        const arrowOrientation = entryProps.airOrientation ?? 'inflow';
+        const arrowVertical = entryProps.verticalAngle ?? 0;
+        const arrowHorizontal = entryProps.horizontalAngle ?? 0;
+
+        const arrowsGroup = new THREE.Group();
+        arrowsGroup.position.copy(mesh.position);
+        arrowsGroup.quaternion.copy(mesh.quaternion);
+        arrowsGroup.userData = {
+          type: 'airEntryVentArrow',
+          floorName: floorData.name,
+          entryIndex: index,
+          airEntryId: entryId,
+        };
+        addVentArrows(arrowsGroup, arrowOrientation, arrowState, 'floor', arrowVertical, arrowHorizontal);
+        objects.push(arrowsGroup);
+      }
+
       const parentMeshIndex = objects.length - 1;
       const coordSysData = orientationData;
       const { 
