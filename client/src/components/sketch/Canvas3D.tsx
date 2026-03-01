@@ -2270,6 +2270,35 @@ export default function Canvas3D({
       });
     }
     
+    // STEP 1.5: Update vent arrows in real-time when orientation/state changes
+    if (editingAirEntry.entry.type === 'vent' && sceneRef.current) {
+      const currentProps = (editingAirEntry.entry.properties as any) ?? {};
+      const mergedProps = { ...currentProps, ...newProperties };
+      sceneRef.current.traverse((object) => {
+        if (
+          object.userData?.type === 'airEntryVentArrow' &&
+          object.userData?.airEntryId === editingAirEntry.entry.id
+        ) {
+          const arrowsGroup = object as THREE.Group;
+          removeVentArrows(arrowsGroup);
+          addVentArrows(
+            arrowsGroup,
+            mergedProps.airOrientation ?? 'inflow',
+            mergedProps.state ?? 'open',
+            undefined,
+            mergedProps.verticalAngle ?? 0,
+            mergedProps.horizontalAngle ?? 0
+          );
+          arrowsGroup.traverse((child) => {
+            if (child instanceof THREE.Mesh) {
+              (child.material as THREE.Material).depthTest = false;
+              child.renderOrder = 3;
+            }
+          });
+        }
+      });
+    }
+    
     // STEP 2: Update local editing state for real-time visual feedback
     setEditingAirEntry(prev => prev ? {
       ...prev,
