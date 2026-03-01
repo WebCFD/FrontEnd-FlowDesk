@@ -710,7 +710,7 @@ const addVentArrows = (group: THREE.Group, airOrientation: string, state: string
   const isOutlet = airOrientation === 'outflow';
   const isCeiling = surfaceType === 'ceiling';
   // For ceiling vents: arrows go below the vent (toward the room) and direction logic inverts
-  const effectiveOutlet = isCeiling ? !isOutlet : isOutlet;
+  const effectiveOutlet = isOutlet;
   const arrowZ = isCeiling ? -8 : 8;
 
   const shaftLength = 15;
@@ -736,11 +736,10 @@ const addVentArrows = (group: THREE.Group, airOrientation: string, state: string
       cone.position.z = shaftLength + coneHeight / 2;
     }
 
-    // For ceiling: all components extend in -Z (downward toward room), flip z positions and cone direction
+    // For ceiling: all components extend in -Z (downward toward room), flip z positions only
     if (isCeiling) {
       shaft.position.z *= -1;
       cone.position.z *= -1;
-      cone.rotation.x *= -1;
     }
 
     arrowGroup.add(shaft);
