@@ -4191,7 +4191,13 @@ export default function WizardDesign() {
             }
             
             // Position-based format for non-rack furniture (table, person, armchair, block, nozzle, vent)
-            const furnitureType = item.id.split('_')[0];
+            // Support both ID formats:
+            //   Old: "nozzle_0F_1"       → type = split[0]
+            //   New: "object_0F_nozzle_1" → type = split[2..-1] joined
+            const idParts = item.id.split('_');
+            const furnitureType = idParts[0] === 'object' && idParts.length >= 4
+              ? idParts.slice(2, -1).join('_')
+              : idParts[0];
             
             const positionInCm = { 
               x: item.position.x * 100, 

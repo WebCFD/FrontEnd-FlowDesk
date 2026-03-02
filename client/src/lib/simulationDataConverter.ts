@@ -656,6 +656,7 @@ export function generateSimulationData(
       topVentBox: 0,
       sideVentBox: 0,
       block: 0, 
+      nozzle: 0,
       vent_furniture: 0,
       custom: 0 
     };
@@ -948,8 +949,8 @@ export function generateSimulationData(
         emissivity: properties.emissivity || 0.90
       };
       
-      // Add vent-specific properties if this is a vent
-      const ventSpecificProperties = obj.userData?.furnitureType === 'vent' ? {
+      // Add vent/nozzle-specific properties if this is a vent or nozzle
+      const ventSpecificProperties = (obj.userData?.furnitureType === 'vent' || obj.userData?.furnitureType === 'nozzle') ? {
         flowType: mapFlowType(simulationProperties.flowType) || 'velocity',
         flowValue: simulationProperties.flowValue,
         flowIntensity: simulationProperties.flowIntensity,
@@ -1410,6 +1411,7 @@ function getFurnitureTypeForId(furnitureType?: string): string {
     case 'topVentBox': return 'topVentBox';
     case 'sideVentBox': return 'sideVentBox';
     case 'block': return 'block';
+    case 'nozzle': return 'nozzle';
     case 'vent': return 'vent_furniture';
     case 'custom': return 'custom';
     default: return 'block'; // Default fallback
