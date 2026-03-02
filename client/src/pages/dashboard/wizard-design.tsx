@@ -3120,7 +3120,8 @@ export default function WizardDesign() {
               simulationProperties: furnitureItem.simulationProperties, // Include simulation properties for JSON export
               serverProperties: furnitureItem.serverProperties, // Include server/rack properties for JSON export
               filePath: furnitureItem.filePath, // Include STL file path for custom objects
-              dimensions: furnitureItem.dimensions // Include dimensions for JSON export
+              dimensions: furnitureItem.dimensions, // Include dimensions for JSON export
+              nozzleProperties: furnitureItem.nozzleProperties // Include nozzle duct config for JSON export
             },
             position: {
               x: furnitureItem.position.x,
@@ -4189,7 +4190,7 @@ export default function WizardDesign() {
               return;
             }
             
-            // Position-based format for non-rack furniture (table, person, armchair, block)
+            // Position-based format for non-rack furniture (table, person, armchair, block, nozzle, vent)
             const furnitureType = item.id.split('_')[0];
             
             const positionInCm = { 
@@ -4198,12 +4199,12 @@ export default function WizardDesign() {
               z: item.position.z * 100 
             };
             
-            const mappedType = ['table', 'person', 'armchair', 'block'].includes(furnitureType) 
+            const mappedType = ['table', 'person', 'armchair', 'block', 'nozzle', 'vent'].includes(furnitureType) 
               ? furnitureType 
               : 'block';
             
             const simProps = item.simulationProperties || {};
-            const defaultDims = getDefaultDimensions(mappedType);
+            const defaultDims = getDefaultDimensions(mappedType as any);
             
             let computedScale = { x: item.scale?.x || 1, y: item.scale?.y || 1, z: item.scale?.z || 1 };
             if (item.dimensions) {
@@ -4235,7 +4236,28 @@ export default function WizardDesign() {
                 material: simProps.material || simProps.chassisMaterial || 'wood',
                 emissivity: simProps.emissivity || simProps.chassisEmissivity || 0.9,
                 temperature: simProps.temperature || simProps.chassisTemperature || 20
-              }
+              },
+              ...(mappedType === 'nozzle' && {
+                simulationProperties: {
+                  flowType: simProps.flowType || 'Air Mass Flow',
+                  flowValue: simProps.flowValue || 0.5,
+                  flowIntensity: simProps.flowIntensity || 'medium',
+                  airOrientation: simProps.airOrientation || 'inflow',
+                  state: simProps.state || 'open',
+                  verticalAngle: simProps.verticalAngle || 0,
+                  horizontalAngle: simProps.horizontalAngle || 0,
+                  airTemperature: simProps.airTemperature || 20,
+                },
+                nozzleProperties: item.nozzleProperties || {
+                  ductLength: 200,
+                  ductDiameter: 50,
+                  outletCount: 2,
+                  outletShape: 'rectangular',
+                  outletDiameter: 15,
+                  outletWidth: 20,
+                  outletHeight: 15
+                }
+              })
             };
             
             furnitureItems.push(furnitureEntry);

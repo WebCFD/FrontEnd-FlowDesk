@@ -986,6 +986,11 @@ export function generateSimulationData(
         exportObject.filePath = obj.userData.filePath;
       }
 
+      // Add nozzleProperties for nozzle furniture so it can be fully restored on import
+      if (obj.userData?.furnitureType === 'nozzle' && obj.userData?.nozzleProperties) {
+        (exportObject as any).nozzleProperties = obj.userData.nozzleProperties;
+      }
+
       return exportObject;
     });
 
