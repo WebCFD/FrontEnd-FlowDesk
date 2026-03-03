@@ -559,22 +559,32 @@ export function generateSimulationData(
           if (entry.type === "window" || entry.type === "door") {
             const defaultMaterial = entry.type === "window" ? "glass" : "wood";
             const defaultEmissivity = entry.type === "window" ? 0.92 : 0.90;
-            const entryState = (entryProps?.state as "open" | "closed") || "closed";
+            const airOrientation = (entryProps?.airOrientation as "inflow" | "outflow" | "equilibrium" | "closed") || "equilibrium";
             
-            airEntryBase.simulation = {
-              state: entryState,
-              temperature: entryProps?.temperature || 20,
-              ...(entryState === 'closed' ? {
+            if (airOrientation === "closed") {
+              airEntryBase.simulation = {
+                state: "closed",
+                temperature: entryProps?.temperature || 20,
                 material: entryProps?.material || defaultMaterial,
                 emissivity: entryProps?.emissivity ?? defaultEmissivity
-              } : {
-                airDirection: (entryProps?.airOrientation as "inflow" | "outflow") || "inflow",
+              };
+            } else if (airOrientation === "equilibrium") {
+              airEntryBase.simulation = {
+                state: "open",
+                airDirection: "equilibrium",
+                flowIntensity: "0",
+                temperature: entryProps?.temperature || 20
+              };
+            } else {
+              airEntryBase.simulation = {
+                state: "open",
+                temperature: entryProps?.temperature || 20,
+                airDirection: airOrientation,
                 flowIntensity: entryProps?.flowIntensity || "low"
-              })
-            };
-            
-            if (entryState === 'open' && entryProps?.flowIntensity === "custom" && entryProps?.customIntensityValue !== undefined) {
-              airEntryBase.simulation.customValue = entryProps.customIntensityValue;
+              };
+              if (entryProps?.flowIntensity === "custom" && entryProps?.customIntensityValue !== undefined) {
+                airEntryBase.simulation.customValue = entryProps.customIntensityValue;
+              }
             }
             
             // Las puertas solo pueden ser rectangulares

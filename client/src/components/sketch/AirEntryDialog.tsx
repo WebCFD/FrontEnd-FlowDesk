@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Tooltip,
@@ -42,7 +41,7 @@ interface AirEntryDialogProps {
       flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
       flowValue?: number;
       flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
-      airOrientation?: 'inflow' | 'outflow';
+      airOrientation?: 'inflow' | 'outflow' | 'equilibrium' | 'closed';
       customIntensityValue?: number;
     };
   }) => void;
@@ -60,7 +59,7 @@ interface AirEntryDialogProps {
       flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
       flowValue?: number;
       flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
-      airOrientation?: 'inflow' | 'outflow';
+      airOrientation?: 'inflow' | 'outflow' | 'equilibrium' | 'closed';
       customIntensityValue?: number;
     };
   };
@@ -80,7 +79,9 @@ interface AirEntryDialogProps {
   onPropertiesUpdate?: (properties: {
     state?: 'open' | 'closed';
     temperature?: number;
-    airOrientation?: 'inflow' | 'outflow';
+    material?: string;
+    emissivity?: number;
+    airOrientation?: 'inflow' | 'outflow' | 'equilibrium' | 'closed';
     flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
     flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
     customIntensityValue?: number;
@@ -230,25 +231,26 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   }, [mode]);
   
   // Estados para condiciones de simulación
-  const [elementState, setElementState] = useState<'open' | 'closed'>('closed');
+  // Default is 'open' because the default Element Action is 'equilibrium' (open element)
+  const [elementState, setElementState] = useState<'open' | 'closed'>('open');
   const [elementTemperature, setElementTemperature] = useState(20);
   // Material and emissivity - defaults depend on element type and state
   // For closed: glass for windows, wood for doors, default for vents
   // For open: air (very low emissivity)
-  const getDefaultMaterial = (state: 'open' | 'closed' = 'closed') => {
+  const getDefaultMaterial = (state: 'open' | 'closed' = 'open') => {
     if (state === 'open') return 'air';
     if (type === 'window') return 'glass';
     if (type === 'door') return 'wood';
     return 'default';
   };
-  const getDefaultEmissivity = (state: 'open' | 'closed' = 'closed') => {
+  const getDefaultEmissivity = (state: 'open' | 'closed' = 'open') => {
     if (state === 'open') return openMaterialDefinitions.air.emissivity;
     const mat = getDefaultMaterial('closed');
     return closedMaterialDefinitions[mat as keyof typeof closedMaterialDefinitions]?.emissivity || 0.90;
   };
-  const [elementMaterial, setElementMaterial] = useState(getDefaultMaterial('closed'));
-  const [elementEmissivity, setElementEmissivity] = useState(getDefaultEmissivity('closed'));
-  const [airDirection, setAirDirection] = useState<'inflow' | 'outflow'>('inflow');
+  const [elementMaterial, setElementMaterial] = useState(getDefaultMaterial('open'));
+  const [elementEmissivity, setElementEmissivity] = useState(getDefaultEmissivity('open'));
+  const [airDirection, setAirDirection] = useState<'inflow' | 'outflow' | 'equilibrium' | 'closed'>('equilibrium');
   const [intensityLevel, setIntensityLevel] = useState<'high' | 'medium' | 'low' | 'custom'>('medium');
   const [customIntensity, setCustomIntensity] = useState(0.5);
   
@@ -350,34 +352,31 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   };
 
   // Funciones para manejar cambios de Simulation Conditions en tiempo real
-  const handleElementStatusChange = (newStatus: boolean) => {
-    const newState = newStatus ? 'open' : 'closed';
-    setElementState(newState);
-    
-    // Update material and emissivity based on state change
-    // Open elements use low emissivity (air), closed use surface material defaults
+  const handleAirDirectionChange = (newDirection: 'inflow' | 'outflow' | 'equilibrium' | 'closed') => {
+    setAirDirection(newDirection);
+
+    let newState: 'open' | 'closed';
     let newMaterial: string;
     let newEmissivity: number;
-    
-    if (newState === 'open') {
-      // Switch to air material with low emissivity
-      newMaterial = 'air';
-      newEmissivity = openMaterialDefinitions.air.emissivity;
-    } else {
-      // Switch to default surface material based on element type
+
+    if (newDirection === 'closed') {
+      newState = 'closed';
       newMaterial = type === 'window' ? 'glass' : type === 'door' ? 'wood' : 'default';
       newEmissivity = closedMaterialDefinitions[newMaterial as keyof typeof closedMaterialDefinitions]?.emissivity || 0.90;
+    } else {
+      newState = 'open';
+      newMaterial = 'air';
+      newEmissivity = openMaterialDefinitions.air.emissivity;
     }
-    
+
+    setElementState(newState);
     setElementMaterial(newMaterial);
     setElementEmissivity(newEmissivity);
-    
-    // Update form values for persistence (include material and emissivity)
-    setValues(prev => ({ ...prev, state: newState, material: newMaterial, emissivity: newEmissivity }));
-    
-    // Trigger real-time properties update with material and emissivity
+
+    setValues(prev => ({ ...prev, state: newState, material: newMaterial, emissivity: newEmissivity, airOrientation: newDirection }));
+
     if (props.type !== 'wall' && 'onPropertiesUpdate' in props && props.onPropertiesUpdate) {
-      props.onPropertiesUpdate({ state: newState, material: newMaterial, emissivity: newEmissivity });
+      props.onPropertiesUpdate({ state: newState, material: newMaterial, emissivity: newEmissivity, airOrientation: newDirection as any });
     }
   };
 
@@ -390,18 +389,6 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     // Trigger real-time properties update
     if (props.type !== 'wall' && 'onPropertiesUpdate' in props && props.onPropertiesUpdate) {
       props.onPropertiesUpdate({ temperature: newTemperature });
-    }
-  };
-
-  const handleAirDirectionChange = (newDirection: 'inflow' | 'outflow') => {
-    setAirDirection(newDirection);
-    
-    // Update form values for persistence
-    setValues(prev => ({ ...prev, airOrientation: newDirection }));
-    
-    // Trigger real-time properties update
-    if (props.type !== 'wall' && 'onPropertiesUpdate' in props && props.onPropertiesUpdate) {
-      props.onPropertiesUpdate({ airOrientation: newDirection });
     }
   };
 
@@ -710,6 +697,16 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     if (dialogOpen) {
       setValues(getDefaultValues());
       
+      // Reset simulation state to defaults when creating a new element
+      if (!isEditing) {
+        setElementState('open');
+        setAirDirection('equilibrium');
+        setElementMaterial(getDefaultMaterial('open'));
+        setElementEmissivity(getDefaultEmissivity('open'));
+        setIntensityLevel('medium');
+        setCustomIntensity(0.5);
+      }
+
       // Load saved simulation properties when editing
       if (isEditing && props.type !== 'wall' && 'initialValues' in props && props.initialValues?.properties) {
         const savedProps = props.initialValues.properties;
@@ -747,8 +744,12 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         if (savedProps.flowIntensity) {
           setIntensityLevel(savedProps.flowIntensity);
         }
+        // Load airDirection (Element Action): supports new values 'equilibrium'|'closed' and legacy 'inflow'|'outflow'
         if (savedProps.airOrientation) {
-          setAirDirection(savedProps.airOrientation);
+          setAirDirection(savedProps.airOrientation as 'inflow' | 'outflow' | 'equilibrium' | 'closed');
+        } else {
+          // Backward compatibility: derive from state
+          setAirDirection(loadedState === 'closed' ? 'closed' : 'equilibrium');
         }
         
         // Load custom intensity value for all element types
@@ -841,18 +842,23 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         simulationProperties.temperature = elementTemperature;
         simulationProperties.material = elementMaterial;
         simulationProperties.emissivity = elementEmissivity;
+        simulationProperties.airOrientation = airDirection;
         
         // Type-specific properties for vents  
         if (props.type === 'vent') {
           simulationProperties.flowType = ventMeasurementType;
           simulationProperties.flowValue = customIntensity;
           simulationProperties.flowIntensity = intensityLevel === 'custom' ? 'medium' : intensityLevel;
-          simulationProperties.airOrientation = airDirection;
           // CRITICAL FIX: Save vertical and horizontal angles to store for persistence
           simulationProperties.verticalAngle = verticalAngle;
           simulationProperties.horizontalAngle = horizontalAngle;
           simulationProperties.ventRotation = ventRotation;
           simulationProperties.shape = shapeType;
+        } else {
+          // For windows and doors, save flowIntensity only when inflow/outflow
+          if (airDirection === 'inflow' || airDirection === 'outflow') {
+            simulationProperties.flowIntensity = intensityLevel;
+          }
         }
         
         // Always save wallPosition for all air entry types
@@ -893,7 +899,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           material: elementMaterial,
           emissivity: elementEmissivity,
           flowIntensity: intensityLevel as 'low' | 'medium' | 'high' | 'custom',
-          airOrientation: airDirection as 'inflow' | 'outflow',
+          airOrientation: airDirection as 'inflow' | 'outflow' | 'equilibrium' | 'closed',
           ...(intensityLevel === 'custom' && {
             customIntensityValue: customIntensity,
           }),
@@ -1644,22 +1650,63 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                   <h4 className="font-medium text-sm mb-4 text-slate-700 border-b border-slate-200 pb-2">Simulation Conditions</h4>
                   <div className="space-y-4">
                     
-                    {/* Estado del elemento: Abierto/Cerrado */}
-                    <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
-                      <div className="space-y-1">
-                        <Label className="text-sm font-medium text-slate-700">Element Status</Label>
-                        <p className="text-xs text-slate-500">
-                          {elementState === 'open'
-                            ? `${type === 'window' ? 'Window' : type === 'door' ? 'Door' : 'Vent'} is open and allows airflow` 
-                            : `${type === 'window' ? 'Window' : type === 'door' ? 'Door' : 'Vent'} is closed, no airflow`
-                          }
-                        </p>
+                    {/* Element Action selector - always visible */}
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-1">
+                        <Label className="text-xs text-slate-600">Element Action</Label>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <HelpCircle className="h-3 w-3 text-slate-400 hover:text-slate-600 cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent side="right" sideOffset={5}>
+                              <div className="text-xs max-w-56 space-y-1.5">
+                                <p><span className="font-semibold">Pressure Equilibrium:</span> The element is open but with no net forced flow. Air naturally equalizes through pressure differences — ideal for openings exposed to the outdoor environment.</p>
+                                <p><span className="font-semibold">Inflow:</span> The element acts as an air inlet, forcing air into the room at a defined intensity.</p>
+                                <p><span className="font-semibold">Outflow:</span> The element acts as an air outlet, extracting air from the room at a defined intensity.</p>
+                                <p><span className="font-semibold">Closed:</span> The element is shut — no airflow passes through. It behaves as a solid surface with thermal properties.</p>
+                              </div>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       </div>
-                      <Switch
-                        checked={elementState === 'open'}
-                        onCheckedChange={handleElementStatusChange}
-                        className="ml-4"
-                      />
+                      <Select value={airDirection} onValueChange={(value: 'inflow' | 'outflow' | 'equilibrium' | 'closed') => handleAirDirectionChange(value)}>
+                        <SelectTrigger className="h-8 text-sm">
+                          <SelectValue placeholder="Select action" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="equilibrium">
+                            <div className="flex items-center space-x-2">
+                              <span className="text-blue-500 text-base">⇌</span>
+                              <span>Pressure Equilibrium</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="inflow">
+                            <div className="flex items-center space-x-2">
+                              <div className="flex items-center space-x-0.5">
+                                <span className="text-green-600 text-lg font-bold">→</span>
+                                <span style={{ fontSize: '12px', filter: 'grayscale(100%)' }}>🏠</span>
+                              </div>
+                              <span>Inflow (Air enters)</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="outflow">
+                            <div className="flex items-center space-x-2">
+                              <div className="flex items-center space-x-0.5">
+                                <span style={{ fontSize: '12px', filter: 'grayscale(100%)' }}>🏠</span>
+                                <span className="text-red-600 text-lg font-bold">→</span>
+                              </div>
+                              <span>Outflow (Air exits)</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="closed">
+                            <div className="flex items-center space-x-2">
+                              <span className="text-slate-500 text-base">✕</span>
+                              <span>Closed</span>
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     {/* Temperatura del elemento */}
@@ -1792,53 +1839,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                       </div>
                     </div>
 
-                    {/* Campos condicionales que aparecen solo cuando está abierto */}
-                    {elementState === 'open' && (
+                    {/* Campos condicionales que aparecen solo cuando está abierto con inflow/outflow */}
+                    {(airDirection === 'inflow' || airDirection === 'outflow' || (type === 'vent' && elementState === 'open')) && (
                       <div className="space-y-4 border-t pt-4">
-                        {/* Dirección del flujo de aire */}
-                        <div className="space-y-2">
-                          <div className="flex items-center space-x-1">
-                            <Label className="text-xs text-slate-600">Air Direction</Label>
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <HelpCircle className="h-3 w-3 text-slate-400 hover:text-slate-600 cursor-help" />
-                                </TooltipTrigger>
-                                <TooltipContent side="right" sideOffset={5}>
-                                  <p className="text-xs max-w-48">
-                                    Set whether air enters or exits through this element. For proper airflow simulation, you need at least one inflow and one outflow element to create continuous air circulation.
-                                  </p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </div>
-                          <Select value={airDirection} onValueChange={(value: 'inflow' | 'outflow') => handleAirDirectionChange(value)}>
-                            <SelectTrigger className="h-8 text-sm">
-                              <SelectValue placeholder="Select direction" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="inflow">
-                                <div className="flex items-center space-x-2">
-                                  <div className="flex items-center space-x-0.5">
-                                    <span className="text-green-600 text-lg font-bold">→</span>
-                                    <span style={{ fontSize: '12px', filter: 'grayscale(100%)' }}>🏠</span>
-                                  </div>
-                                  <span>Inflow (Air enters)</span>
-                                </div>
-                              </SelectItem>
-                              <SelectItem value="outflow">
-                                <div className="flex items-center space-x-2">
-                                  <div className="flex items-center space-x-0.5">
-                                    <span style={{ fontSize: '12px', filter: 'grayscale(100%)' }}>🏠</span>
-                                    <span className="text-red-600 text-lg font-bold">→</span>
-                                  </div>
-                                  <span>Outflow (Air exits)</span>
-                                </div>
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-
                         {/* Air Orientation - Solo para vents con inflow */}
                         {type === 'vent' && elementState === 'open' && airDirection === 'inflow' && (
                           <div className="space-y-2 border-t pt-4">
@@ -1967,8 +1970,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           </div>
                         )}
 
-                        {/* Intensidad del flujo */}
-                        <div className="space-y-2">
+                        {/* Intensidad del flujo - solo para inflow/outflow (no equilibrium) */}
+                        {(airDirection === 'inflow' || airDirection === 'outflow') && <div className="space-y-2">
                           <div className="flex items-center space-x-1">
                             <Label className="text-xs text-slate-600">Flow Intensity</Label>
                             <TooltipProvider>
@@ -2124,7 +2127,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               </span>
                             </div>
                           )}
-                        </div>
+                        </div>}
                       </div>
                     )}
                   </div>

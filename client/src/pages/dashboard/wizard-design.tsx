@@ -1480,7 +1480,7 @@ export default function WizardDesign() {
     properties: {
       state?: 'open' | 'closed';
       temperature?: number;
-      airOrientation?: 'inflow' | 'outflow';
+      airOrientation?: 'inflow' | 'outflow' | 'equilibrium' | 'closed';
       flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
       flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
       customIntensityValue?: number;
@@ -3406,19 +3406,21 @@ export default function WizardDesign() {
       if (floorData.airEntries && Array.isArray(floorData.airEntries)) {
         floorData.airEntries.forEach((entry) => {
           if (entry && entry.properties && entry.properties.airOrientation) {
-            // Solo contar si el elemento está en estado 'open' (no cerrado)
-            const isOpen = !entry.properties.state || entry.properties.state === 'open';
+            const orientation = entry.properties.airOrientation;
+            // Solo contar si el elemento está en estado 'open' (no cerrado) y no tiene orientación 'closed'
+            const isOpen = orientation !== 'closed' && (!entry.properties.state || entry.properties.state === 'open');
             
             if (isOpen) {
-              if (entry.properties.airOrientation === 'inflow') {
+              if (orientation === 'inflow') {
                 airEntryInflow += 1;
-              } else if (entry.properties.airOrientation === 'outflow') {
+              } else if (orientation === 'outflow') {
                 airEntryOutflow += 1;
               }
 
               // Contar Pressure BCs para AirEntry elements
+              // 'equilibrium' también cuenta como presión (es una condición de presión abierta)
               if (entry.type === 'window' || entry.type === 'door') {
-                // Puertas y ventanas siempre son presión (si están abiertas)
+                // Puertas y ventanas siempre son presión (si están abiertas o en equilibrio)
                 pressureBCs += 1;
               } else if (entry.type === 'vent' && entry.properties.flowType === 'Pressure') {
                 // AirEntry Vents solo si su flowType es 'Pressure' (y están abiertas)
@@ -3793,7 +3795,10 @@ export default function WizardDesign() {
                     material: entry.simulation?.material || (entry.type === 'window' ? 'glass' : entry.type === 'door' ? 'wood' : 'default'),
                     emissivity: entry.simulation?.emissivity ?? (entry.type === 'window' ? 0.92 : 0.90),
                     flowIntensity: entry.simulation?.flowIntensity || 'medium',
-                    airOrientation: entry.simulation?.airDirection || 'inflow',
+                    // Map airDirection from JSON: 'equilibrium'|'inflow'|'outflow' -> airOrientation; absent/closed state -> 'closed'
+                    airOrientation: entry.simulation?.airDirection
+                      ? entry.simulation.airDirection as 'inflow' | 'outflow' | 'equilibrium' | 'closed'
+                      : (entry.simulation?.state === 'closed' ? 'closed' : 'equilibrium'),
                     flowType: entry.simulation?.flowType || 'airMassFlow',
                     // Mapear customValue solo cuando flowIntensity es "custom"
                     ...(entry.simulation?.flowIntensity === 'custom' && entry.simulation?.customValue && {
@@ -3873,7 +3878,10 @@ export default function WizardDesign() {
                 material: entry.simulation?.material || (entry.type === 'window' ? 'glass' : entry.type === 'door' ? 'wood' : 'default'),
                 emissivity: entry.simulation?.emissivity ?? (entry.type === 'window' ? 0.92 : 0.90),
                 flowIntensity: entry.simulation?.flowIntensity || 'medium',
-                airOrientation: entry.simulation?.airDirection || 'inflow',
+                // Map airDirection from JSON: 'equilibrium'|'inflow'|'outflow' -> airOrientation; absent/closed state -> 'closed'
+                airOrientation: entry.simulation?.airDirection
+                  ? entry.simulation.airDirection as 'inflow' | 'outflow' | 'equilibrium' | 'closed'
+                  : (entry.simulation?.state === 'closed' ? 'closed' : 'equilibrium'),
                 flowType: entry.simulation?.flowType || 'airMassFlow',
                 // Mapear customValue solo cuando flowIntensity es "custom"
                 ...(entry.simulation?.flowIntensity === 'custom' && entry.simulation?.customValue && {

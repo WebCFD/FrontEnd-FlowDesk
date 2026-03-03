@@ -29,7 +29,7 @@ export interface FurnitureItem {
     flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
     flowValue?: number;
     flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
-    airOrientation?: 'inflow' | 'outflow';
+    airOrientation?: 'inflow' | 'outflow' | 'equilibrium' | 'closed';
     state?: 'open' | 'closed';
     customIntensityValue?: number;
     verticalAngle?: number;

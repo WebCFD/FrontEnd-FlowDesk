@@ -170,7 +170,7 @@ export const airEntrySchema = z.object({
   diameter: z.number().nullable(),
   isOpen: z.boolean(),
   temperature: z.number(),
-  airDirection: z.enum(['inflow', 'outflow']),
+  airDirection: z.enum(['inflow', 'outflow', 'equilibrium', 'closed']),
   flowIntensity: z.enum(['low', 'medium', 'high', 'custom']),
   customIntensityValue: z.number().nullable(),
   ventFlowType: z.enum(['massflow', 'velocity', 'pressure']).nullable(),
