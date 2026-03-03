@@ -592,22 +592,38 @@ export function generateSimulationData(
               airEntryBase.dimensions.shape = "rectangular";
             }
           } else if (entry.type === "vent") {
-            const ventEntryState = (entryProps?.state as "open" | "closed") || "closed";
+            const ventAirOrientation = entryProps?.airOrientation || "closed";
             
-            const simulation: any = {
-              state: ventEntryState,
-              temperature: entryProps?.temperature || 20,
-              ...(ventEntryState === 'closed' ? {
+            let simulation: any;
+            
+            if (ventAirOrientation === 'closed') {
+              simulation = {
+                state: "closed",
+                temperature: entryProps?.temperature || 20,
                 material: entryProps?.material || "default",
                 emissivity: entryProps?.emissivity ?? 0.90
-              } : {
-                airDirection: (entryProps?.airOrientation as "inflow" | "outflow") || "inflow",
-                ...(entryProps?.airOrientation === "inflow" ? {
-                  airOrientation: {
-                    verticalAngle: entryProps?.verticalAngle || 0,
-                    horizontalAngle: entryProps?.horizontalAngle || 0
-                  }
-                } : {}),
+              };
+            } else if (ventAirOrientation === 'equilibrium') {
+              simulation = {
+                state: "open",
+                temperature: entryProps?.temperature || 20,
+                airDirection: "equilibrium",
+                flowType: "pressure",
+                flowIntensity: "0",
+                airOrientation: {
+                  verticalAngle: entryProps?.verticalAngle || 0,
+                  horizontalAngle: entryProps?.horizontalAngle || 0
+                }
+              };
+            } else {
+              simulation = {
+                state: "open",
+                temperature: entryProps?.temperature || 20,
+                airDirection: ventAirOrientation as "inflow" | "outflow",
+                airOrientation: {
+                  verticalAngle: entryProps?.verticalAngle || 0,
+                  horizontalAngle: entryProps?.horizontalAngle || 0
+                },
                 flowType: (() => {
                   const flowType = entryProps?.flowType || "Air Velocity";
                   if (flowType === "Air Mass Flow") return "massFlow";
@@ -616,11 +632,11 @@ export function generateSimulationData(
                   return "velocity";
                 })(),
                 flowIntensity: entryProps?.flowIntensity || "medium"
-              })
-            };
-            
-            if (ventEntryState === 'open' && entryProps?.flowIntensity === "custom" && entryProps?.customIntensityValue !== undefined) {
-              simulation.customValue = entryProps.customIntensityValue;
+              };
+              
+              if (entryProps?.flowIntensity === "custom" && entryProps?.customIntensityValue !== undefined) {
+                simulation.customValue = entryProps.customIntensityValue;
+              }
             }
             
             airEntryBase.simulation = simulation;

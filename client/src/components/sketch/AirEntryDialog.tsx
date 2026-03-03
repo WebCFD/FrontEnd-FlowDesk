@@ -820,7 +820,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         flowIntensity: intensityLevel,
         customIntensityValue: intensityLevel === 'custom' ? customIntensity : null,
         ventFlowType: type === 'vent' ? ventMeasurementType : null,
-        airOrientation: (type === 'vent' && elementState === 'open' && airDirection === 'inflow') ? {
+        airOrientation: (type === 'vent' && airDirection !== 'closed') ? {
           verticalAngle: verticalAngle,
           horizontalAngle: horizontalAngle,
           rotation: ventRotation
@@ -1840,10 +1840,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                     </div>
 
                     {/* Campos condicionales que aparecen solo cuando está abierto con inflow/outflow */}
-                    {(airDirection === 'inflow' || airDirection === 'outflow' || (type === 'vent' && elementState === 'open')) && (
+                    {(airDirection === 'inflow' || airDirection === 'outflow' || (type === 'vent' && airDirection !== 'closed')) && (
                       <div className="space-y-4 border-t pt-4">
-                        {/* Air Orientation - Solo para vents con inflow */}
-                        {type === 'vent' && elementState === 'open' && airDirection === 'inflow' && (
+                        {/* Air Orientation - Para vents en cualquier estado excepto closed */}
+                        {type === 'vent' && airDirection !== 'closed' && (
                           <div className="space-y-2 border-t pt-4">
                             <Label className="text-xs text-slate-600">Air Orientation</Label>
                             
@@ -1925,8 +1925,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           </div>
                         )}
 
-                        {/* Tipo de flujo para vents */}
-                        {type === 'vent' && (
+                        {/* Tipo de flujo para vents - oculto cuando equilibrium */}
+                        {type === 'vent' && airDirection !== 'equilibrium' && (
                           <div className="space-y-2">
                             <Label className="text-xs text-slate-600">Flow Type</Label>
                             <div className="flex space-x-4">
