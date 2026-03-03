@@ -1662,9 +1662,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             <TooltipContent side="right" sideOffset={5}>
                               <div className="text-xs max-w-56 space-y-1.5">
                                 <p><span className="font-semibold">Pressure Equilibrium:</span> The element is open but with no net forced flow. Air naturally equalizes through pressure differences — ideal for openings exposed to the outdoor environment.</p>
+                                <p><span className="font-semibold">Closed:</span> The element is shut — no airflow passes through. It behaves as a solid surface with thermal properties.</p>
                                 <p><span className="font-semibold">Inflow:</span> The element acts as an air inlet, forcing air into the room at a defined intensity.</p>
                                 <p><span className="font-semibold">Outflow:</span> The element acts as an air outlet, extracting air from the room at a defined intensity.</p>
-                                <p><span className="font-semibold">Closed:</span> The element is shut — no airflow passes through. It behaves as a solid surface with thermal properties.</p>
                               </div>
                             </TooltipContent>
                           </Tooltip>
@@ -1679,6 +1679,12 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             <div className="flex items-center space-x-2">
                               <span className="text-blue-500 text-base">⇌</span>
                               <span>Pressure Equilibrium</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="closed">
+                            <div className="flex items-center space-x-2">
+                              <span className="text-slate-500 text-base">✕</span>
+                              <span>Closed</span>
                             </div>
                           </SelectItem>
                           <SelectItem value="inflow">
@@ -1697,12 +1703,6 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                 <span className="text-red-600 text-lg font-bold">→</span>
                               </div>
                               <span>Outflow (Air exits)</span>
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="closed">
-                            <div className="flex items-center space-x-2">
-                              <span className="text-slate-500 text-base">✕</span>
-                              <span>Closed</span>
                             </div>
                           </SelectItem>
                         </SelectContent>

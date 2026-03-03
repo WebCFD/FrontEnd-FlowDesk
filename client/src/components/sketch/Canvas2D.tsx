@@ -1782,7 +1782,7 @@ export default function Canvas2D({
               flowType: 'Air Mass Flow',
               flowValue: 0.5,
               flowIntensity: 'medium',
-              airOrientation: 'inflow',
+              airOrientation: 'equilibrium',
             },
             wallContext: {
               wallId: wallId,
