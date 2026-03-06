@@ -126,7 +126,7 @@ export default function Footer() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <a href="https://www.lanave.es" target="_blank" rel="noopener noreferrer">
+                  <a href="https://lanavemadrid.com/en/" target="_blank" rel="noopener noreferrer">
                     <img
                       src="/lanave-badge.png"
                       alt="Madrid Innovation - LaNave"
