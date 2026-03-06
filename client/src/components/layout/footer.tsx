@@ -112,13 +112,13 @@ export default function Footer() {
                 <a href="https://www.enisa.es/en" target="_blank" rel="noopener noreferrer">
                   <img
                     src="/enisa-badge.png"
-                    alt="Certified as an Emerging Company - ENISA, Ministry of Industry and Tourism of Spain"
+                    alt="Certified as an Emerging Company - ENISA, Ministry of Industry of Spain"
                     className="h-[50px] opacity-70 hover:opacity-100 transition-opacity cursor-pointer"
                   />
                 </a>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Certified as an Emerging Company — Ministry of Industry and Tourism of Spain</p>
+                <p>Certified as an Emerging Company — Ministry of Industry of Spain</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
