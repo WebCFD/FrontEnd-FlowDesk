@@ -104,8 +104,15 @@ export default function Footer() {
 
         <Separator className="my-8" />
 
-        <div className="text-sm text-muted-foreground">
-          © {new Date().getFullYear()} FlowDesk. All rights reserved.
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="text-sm text-muted-foreground">
+            © {new Date().getFullYear()} FlowDesk. All rights reserved.
+          </div>
+          <img
+            src="/enisa-badge.png"
+            alt="Certificada como Empresa Emergente - ENISA, Ministerio de Industria y Turismo"
+            className="h-10 opacity-70 hover:opacity-100 transition-opacity"
+          />
         </div>
       </div>
     </footer>
