@@ -1,5 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { Separator } from "@/components/ui/separator";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function Footer() {
   const [location, setLocation] = useLocation();
@@ -108,11 +109,20 @@ export default function Footer() {
           <div className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} FlowDesk. All rights reserved.
           </div>
-          <img
-            src="/enisa-badge.png"
-            alt="Certificada como Empresa Emergente - ENISA, Ministerio de Industria y Turismo"
-            className="h-[50px] opacity-70 hover:opacity-100 transition-opacity"
-          />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <img
+                  src="/enisa-badge.png"
+                  alt="Certified as an Emerging Company - ENISA, Ministry of Industry and Tourism of Spain"
+                  className="h-[50px] opacity-70 hover:opacity-100 transition-opacity cursor-default"
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Certified as an Emerging Company — Ministry of Industry and Tourism of Spain</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
     </footer>
