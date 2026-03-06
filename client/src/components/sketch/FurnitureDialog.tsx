@@ -1336,7 +1336,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           <span className="text-sm">degrees</span>
                         </div>
                         <p className="text-xs text-gray-500 col-span-4 text-right">
-                          Up +45° to Down -45°
+                          Up -45° to Down +45°
                         </p>
 
                         {/* Horizontal Angle */}
@@ -1361,7 +1361,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           <span className="text-sm">degrees</span>
                         </div>
                         <p className="text-xs text-gray-500 col-span-4 text-right">
-                          Left -45° to Right +45°
+                          Left +45° to Right -45°
                         </p>
                       </>
                     )}
@@ -1553,7 +1553,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           <span className="text-sm">°</span>
                         </div>
                         <p className="text-xs text-gray-500 col-span-4 text-right">
-                          Up +45° to Down -45°
+                          Up -45° to Down +45°
                         </p>
 
                         {/* Horizontal Angle */}
@@ -1578,7 +1578,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           <span className="text-sm">°</span>
                         </div>
                         <p className="text-xs text-gray-500 col-span-4 text-right">
-                          Left -45° to Right +45°
+                          Left +45° to Right -45°
                         </p>
                       </div>
                     )}

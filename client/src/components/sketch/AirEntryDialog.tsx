@@ -1881,7 +1881,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                 <span className="text-xs text-slate-500">degrees</span>
                               </div>
                               <p className="text-xs text-gray-500">
-                                Up +45° to Down -45°
+                                Up -45° to Down +45°
                               </p>
                             </div>
 
@@ -1919,7 +1919,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                                 <span className="text-xs text-slate-500">degrees</span>
                               </div>
                               <p className="text-xs text-gray-500">
-                                Left -45° to Right +45°
+                                Left +45° to Right -45°
                               </p>
                             </div>
                           </div>
