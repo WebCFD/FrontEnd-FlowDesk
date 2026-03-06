@@ -111,7 +111,7 @@ export default function Footer() {
           <img
             src="/enisa-badge.png"
             alt="Certificada como Empresa Emergente - ENISA, Ministerio de Industria y Turismo"
-            className="h-10 opacity-70 hover:opacity-100 transition-opacity"
+            className="h-[50px] opacity-70 hover:opacity-100 transition-opacity"
           />
         </div>
       </div>
