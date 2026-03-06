@@ -1180,7 +1180,8 @@ export default function WizardDesign() {
       const generatedId = useRoomStore.getState().addAirEntryToFloor(currentFloor, newAirEntryWithoutId);
       const newAirEntry = { ...newAirEntryWithoutId, id: generatedId };
 
-      const newAirEntries = [...airEntries, newAirEntry];
+      const freshAirEntriesForAdd = useRoomStore.getState().floors[currentFloor]?.airEntries || airEntries;
+      const newAirEntries = [...freshAirEntriesForAdd, newAirEntry];
       setAirEntries(newAirEntries);
       setSelectedLine(null);
       setClickedPoint(null);
@@ -1303,8 +1304,9 @@ export default function WizardDesign() {
 
     // Use the store's setAirEntries function when updating the current floor
     if (floorName === currentFloor) {
-      // Create a deep copy of the air entries array
-      const updatedAirEntries = airEntries.filter((_, i) => i !== index);
+      // Create a deep copy of the air entries array using fresh store data
+      const freshAirEntriesForDelete = useRoomStore.getState().floors[floorName]?.airEntries || airEntries;
+      const updatedAirEntries = freshAirEntriesForDelete.filter((_, i) => i !== index);
 
       // Set the air entries with the filtered array
       setAirEntries(updatedAirEntries);
@@ -1363,8 +1365,9 @@ export default function WizardDesign() {
   ) => {
 
     
-    // CRITICAL FIX: Preserve wallPosition from existing store data
-    const existingEntry = airEntries[index];
+    // CRITICAL FIX: Preserve wallPosition from existing store data — always read from store to avoid stale useMemo
+    const freshStoreEntries = useRoomStore.getState().floors[floorName]?.airEntries || airEntries;
+    const existingEntry = freshStoreEntries[index];
     
     // Create merged entry preserving wallPosition
     const preservedDimensions = {
@@ -1385,8 +1388,8 @@ export default function WizardDesign() {
     // Use the store's setAirEntries function when updating the current floor
     if (floorName === currentFloor) {
       
-      // Create a deep copy of the air entries array with structuredClone
-      const updatedAirEntries = airEntries.map((entry, i) =>
+      // Create a deep copy of the air entries array using fresh store data to avoid stale useMemo
+      const updatedAirEntries = freshStoreEntries.map((entry, i) =>
         i === index ? deepClonedEntry : { ...entry },
       );
 
@@ -1408,10 +1411,10 @@ export default function WizardDesign() {
     // For other floors, create a deep copy of the floors object
     const updatedFloors = { ...floors };
 
-    // Check if the floor and its air entries exist
-    if (updatedFloors[floorName]?.airEntries) {
-      // Create a copy of the air entries array
-      const floorAirEntries = [...updatedFloors[floorName].airEntries];
+    // Check if the floor and its air entries exist (use freshStoreEntries for up-to-date properties)
+    if (freshStoreEntries.length > 0 || updatedFloors[floorName]?.airEntries) {
+      // Use fresh store data to avoid stale useMemo properties
+      const floorAirEntries = [...freshStoreEntries];
 
       // Log the floor air entries before updating
       console.log(
