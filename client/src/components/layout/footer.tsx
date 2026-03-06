@@ -106,9 +106,6 @@ export default function Footer() {
         <Separator className="my-8" />
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} FlowDesk. All rights reserved.
-          </div>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -123,6 +120,9 @@ export default function Footer() {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
+          <div className="text-sm text-muted-foreground">
+            © {new Date().getFullYear()} FlowDesk. All rights reserved.
+          </div>
         </div>
       </div>
     </footer>
