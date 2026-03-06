@@ -106,22 +106,40 @@ export default function Footer() {
         <Separator className="my-8" />
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <a href="https://www.enisa.es/en" target="_blank" rel="noopener noreferrer">
-                  <img
-                    src="/enisa-badge.png"
-                    alt="Certified as a Startup Company - ENISA, Ministry of Industry of Spain"
-                    className="h-[50px] opacity-70 hover:opacity-100 transition-opacity cursor-pointer"
-                  />
-                </a>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Certified as a Startup Company — Ministry of Industry of Spain</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <div className="flex items-center gap-4">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a href="https://www.enisa.es/en" target="_blank" rel="noopener noreferrer">
+                    <img
+                      src="/enisa-badge.png"
+                      alt="Certified as a Startup Company - ENISA, Ministry of Industry of Spain"
+                      className="h-[50px] opacity-70 hover:opacity-100 transition-opacity cursor-pointer"
+                    />
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Certified as a Startup Company — Ministry of Industry of Spain</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a href="https://www.lanave.es" target="_blank" rel="noopener noreferrer">
+                    <img
+                      src="/lanave-badge.png"
+                      alt="Madrid Innovation - LaNave"
+                      className="h-[50px] opacity-70 hover:opacity-100 transition-opacity cursor-pointer"
+                    />
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Accepted into the Madrid Innovation Programme — LaNave</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
           <div className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} FlowDesk. All rights reserved.
           </div>
