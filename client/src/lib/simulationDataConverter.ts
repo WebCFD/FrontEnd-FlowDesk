@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import type { StairPolygon } from '@/types';
 import { createRoomPerimeter } from '@/lib/geometryEngine';
+import { computeWallFlowDirection, computeSurfaceFlowDirection } from '@/lib/flowDirectionUtils';
 
 // Definición de los tipos internos que necesitamos
 interface Point2D {
@@ -136,15 +137,16 @@ interface AirEntryExport {
         shape: "circular";
       };
   simulation: {
-    // Propiedades comunes para todos los tipos
     state?: "open" | "closed";
     temperature?: number;
     material?: string;
     emissivity?: number;
     flowIntensity?: "low" | "medium" | "high" | "custom";
-    airDirection?: "inflow" | "outflow";
+    airDirection?: "inflow" | "outflow" | "equilibrium";
+    flowDirection?: { x: number; y: number; z: number };
+    verticalAngle?: number;
+    horizontalAngle?: number;
     customValue?: number;
-    // Propiedades específicas para vents
     flowType?: "massFlow" | "velocity" | "pressure";
   };
 }
@@ -214,12 +216,11 @@ interface FurnitureExport {
     flowType?: 'massFlow' | 'velocity' | 'pressure';
     flowValue?: number;
     flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
-    airOrientation?: 'inflow' | 'outflow';
+    airOrientation?: 'inflow' | 'outflow' | 'equilibrium';
     state?: 'open' | 'closed';
     customIntensityValue?: number;
     verticalAngle?: number;
     horizontalAngle?: number;
-    temperature?: number;
     normalVector?: { x: number; y: number; z: number };
   };
 }
@@ -568,21 +569,18 @@ export function generateSimulationData(
                 material: entryProps?.material || defaultMaterial,
                 emissivity: entryProps?.emissivity ?? defaultEmissivity
               };
-            } else if (airOrientation === "equilibrium") {
+            } else {
+              const wdFlowDir = computeWallFlowDirection(wallNormal, 0, 0, 0, airOrientation);
               airEntryBase.simulation = {
                 state: "open",
-                airDirection: "equilibrium",
-                flowIntensity: "0",
+                airDirection: airOrientation as "inflow" | "outflow" | "equilibrium",
+                flowDirection: wdFlowDir,
+                verticalAngle: 0,
+                horizontalAngle: 0,
+                flowIntensity: airOrientation === "equilibrium" ? ("0" as any) : (entryProps?.flowIntensity || "low"),
                 temperature: entryProps?.temperature || 20
               };
-            } else {
-              airEntryBase.simulation = {
-                state: "open",
-                temperature: entryProps?.temperature || 20,
-                airDirection: airOrientation,
-                flowIntensity: entryProps?.flowIntensity || "low"
-              };
-              if (entryProps?.flowIntensity === "custom" && entryProps?.customIntensityValue !== undefined) {
+              if (airOrientation !== "equilibrium" && entryProps?.flowIntensity === "custom" && entryProps?.customIntensityValue !== undefined) {
                 airEntryBase.simulation.customValue = entryProps.customIntensityValue;
               }
             }
@@ -603,38 +601,25 @@ export function generateSimulationData(
                 material: entryProps?.material || "default",
                 emissivity: entryProps?.emissivity ?? 0.90
               };
-            } else if (ventAirOrientation === 'equilibrium') {
-              simulation = {
-                state: "open",
-                temperature: entryProps?.temperature || 20,
-                airDirection: "equilibrium",
-                flowType: "pressure",
-                flowIntensity: "0",
-                airOrientation: {
-                  verticalAngle: entryProps?.verticalAngle || 0,
-                  horizontalAngle: entryProps?.horizontalAngle || 0
-                }
-              };
             } else {
+              const vθv = entryProps?.verticalAngle ?? 0;
+              const vθh = entryProps?.horizontalAngle ?? 0;
+              const vRot = entryProps?.ventRotation ?? 0;
+              const wallFlowDir = computeWallFlowDirection(wallNormal, vθv, vθh, vRot, ventAirOrientation);
+              const rawFlowType = entryProps?.flowType || "Air Velocity";
               simulation = {
                 state: "open",
                 temperature: entryProps?.temperature || 20,
-                airDirection: ventAirOrientation as "inflow" | "outflow",
-                airOrientation: {
-                  verticalAngle: entryProps?.verticalAngle || 0,
-                  horizontalAngle: entryProps?.horizontalAngle || 0
-                },
-                flowType: (() => {
-                  const flowType = entryProps?.flowType || "Air Velocity";
-                  if (flowType === "Air Mass Flow") return "massFlow";
-                  if (flowType === "Air Velocity") return "velocity";
-                  if (flowType === "Pressure") return "pressure";
-                  return "velocity";
-                })(),
-                flowIntensity: entryProps?.flowIntensity || "medium"
+                airDirection: ventAirOrientation as "inflow" | "outflow" | "equilibrium",
+                flowDirection: wallFlowDir,
+                verticalAngle: vθv,
+                horizontalAngle: vθh,
+                flowType: rawFlowType === "Air Mass Flow" ? "massFlow"
+                  : rawFlowType === "Pressure" ? "pressure"
+                  : "velocity",
+                flowIntensity: ventAirOrientation === "equilibrium" ? ("0" as any) : (entryProps?.flowIntensity || "medium")
               };
-              
-              if (entryProps?.flowIntensity === "custom" && entryProps?.customIntensityValue !== undefined) {
+              if (ventAirOrientation !== "equilibrium" && entryProps?.flowIntensity === "custom" && entryProps?.customIntensityValue !== undefined) {
                 simulation.customValue = entryProps.customIntensityValue;
               }
             }
@@ -1085,23 +1070,33 @@ export function generateSimulationData(
         simulation: (() => {
           const sp = ventObj.userData?.simulationProperties;
           const ventFurnState = (sp?.state as "open" | "closed") || "closed";
+          if (ventFurnState === 'closed') {
+            return {
+              state: ventFurnState,
+              temperature: sp?.airTemperature || 20,
+              material: sp?.material || "default",
+              emissivity: sp?.emissivity ?? 0.90
+            };
+          }
+          const sfAirOrientation = (sp?.airOrientation as "inflow" | "outflow" | "equilibrium") || "inflow";
+          const sfθv = sp?.verticalAngle ?? 0;
+          const sfθh = sp?.horizontalAngle ?? 0;
+          const sfRot = sp?.ventRotation ?? 0;
+          const sfFlowDir = computeSurfaceFlowDirection(
+            isFloorVent ? 'floor' : 'ceiling',
+            sfθv, sfθh, sfRot, sfAirOrientation
+          );
           return {
             state: ventFurnState,
             temperature: sp?.airTemperature || 20,
-            ...(ventFurnState === 'closed' ? {
-              material: sp?.material || "default",
-              emissivity: sp?.emissivity ?? 0.90
-            } : {
-              airDirection: (sp?.airOrientation as "inflow" | "outflow") || "inflow",
-              ...(sp?.airOrientation === "inflow" ? {
-                airOrientation: {
-                  verticalAngle: sp?.verticalAngle || 0,
-                  horizontalAngle: sp?.horizontalAngle || 0
-                }
-              } : {}),
-              flowType: mapFlowType(sp?.flowType) || "velocity",
-              flowIntensity: (sp?.flowIntensity as "low" | "medium" | "high" | "custom") || "medium"
-            })
+            airDirection: sfAirOrientation,
+            flowDirection: sfFlowDir,
+            verticalAngle: sfθv,
+            horizontalAngle: sfθh,
+            flowType: mapFlowType(sp?.flowType) || "velocity",
+            flowIntensity: sfAirOrientation === "equilibrium"
+              ? ("0" as any)
+              : ((sp?.flowIntensity as "low" | "medium" | "high" | "custom") || "medium")
           };
         })()
       };
