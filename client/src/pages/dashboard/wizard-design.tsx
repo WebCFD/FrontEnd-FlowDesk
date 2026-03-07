@@ -3812,11 +3812,12 @@ export default function WizardDesign() {
                       customIntensityValue: entry.simulation.customIntensityValue
                     }),
                     // Mapear ángulos de orientación del aire si están presentes
-                    ...(entry.simulation?.airOrientation?.verticalAngle !== undefined && {
-                      verticalAngle: entry.simulation.airOrientation.verticalAngle
+                    // Nuevo formato: top-level. Compat. antiguo: nested airOrientation object.
+                    ...((entry.simulation?.verticalAngle ?? entry.simulation?.airOrientation?.verticalAngle) !== undefined && {
+                      verticalAngle: entry.simulation?.verticalAngle ?? entry.simulation?.airOrientation?.verticalAngle
                     }),
-                    ...(entry.simulation?.airOrientation?.horizontalAngle !== undefined && {
-                      horizontalAngle: entry.simulation.airOrientation.horizontalAngle
+                    ...((entry.simulation?.horizontalAngle ?? entry.simulation?.airOrientation?.horizontalAngle) !== undefined && {
+                      horizontalAngle: entry.simulation?.horizontalAngle ?? entry.simulation?.airOrientation?.horizontalAngle
                     }),
                     ...(entry.position?.rotation !== undefined && {
                       ventRotation: entry.position.rotation
@@ -3895,11 +3896,12 @@ export default function WizardDesign() {
                   customIntensityValue: entry.simulation.customIntensityValue
                 }),
                 // Mapear ángulos de orientación del aire si están presentes
-                ...(entry.simulation?.airOrientation?.verticalAngle !== undefined && {
-                  verticalAngle: entry.simulation.airOrientation.verticalAngle
+                // Nuevo formato: top-level. Compat. antiguo: nested airOrientation object.
+                ...((entry.simulation?.verticalAngle ?? entry.simulation?.airOrientation?.verticalAngle) !== undefined && {
+                  verticalAngle: entry.simulation?.verticalAngle ?? entry.simulation?.airOrientation?.verticalAngle
                 }),
-                ...(entry.simulation?.airOrientation?.horizontalAngle !== undefined && {
-                  horizontalAngle: entry.simulation.airOrientation.horizontalAngle
+                ...((entry.simulation?.horizontalAngle ?? entry.simulation?.airOrientation?.horizontalAngle) !== undefined && {
+                  horizontalAngle: entry.simulation?.horizontalAngle ?? entry.simulation?.airOrientation?.horizontalAngle
                 }),
                 ...(entry.position?.rotation !== undefined && {
                   ventRotation: entry.position.rotation
@@ -4009,11 +4011,12 @@ export default function WizardDesign() {
                     customIntensityValue: entry.simulation.customValue
                   }),
                   // Mapear ángulos de orientación del aire si están presentes
-                  ...(entry.simulation?.airOrientation?.verticalAngle !== undefined && {
-                    verticalAngle: entry.simulation.airOrientation.verticalAngle
+                  // Nuevo formato: top-level. Compat. antiguo: nested airOrientation object.
+                  ...((entry.simulation?.verticalAngle ?? entry.simulation?.airOrientation?.verticalAngle) !== undefined && {
+                    verticalAngle: entry.simulation?.verticalAngle ?? entry.simulation?.airOrientation?.verticalAngle
                   }),
-                  ...(entry.simulation?.airOrientation?.horizontalAngle !== undefined && {
-                    horizontalAngle: entry.simulation.airOrientation.horizontalAngle
+                  ...((entry.simulation?.horizontalAngle ?? entry.simulation?.airOrientation?.horizontalAngle) !== undefined && {
+                    horizontalAngle: entry.simulation?.horizontalAngle ?? entry.simulation?.airOrientation?.horizontalAngle
                   }),
                   normalVector: { x: 0, y: 0, z: -1 } // Ceiling vents apuntan hacia abajo
                 }
@@ -4077,11 +4080,12 @@ export default function WizardDesign() {
                     customIntensityValue: entry.simulation.customValue
                   }),
                   // Mapear ángulos de orientación del aire si están presentes
-                  ...(entry.simulation?.airOrientation?.verticalAngle !== undefined && {
-                    verticalAngle: entry.simulation.airOrientation.verticalAngle
+                  // Nuevo formato: top-level. Compat. antiguo: nested airOrientation object.
+                  ...((entry.simulation?.verticalAngle ?? entry.simulation?.airOrientation?.verticalAngle) !== undefined && {
+                    verticalAngle: entry.simulation?.verticalAngle ?? entry.simulation?.airOrientation?.verticalAngle
                   }),
-                  ...(entry.simulation?.airOrientation?.horizontalAngle !== undefined && {
-                    horizontalAngle: entry.simulation.airOrientation.horizontalAngle
+                  ...((entry.simulation?.horizontalAngle ?? entry.simulation?.airOrientation?.horizontalAngle) !== undefined && {
+                    horizontalAngle: entry.simulation?.horizontalAngle ?? entry.simulation?.airOrientation?.horizontalAngle
                   }),
                   normalVector: { x: 0, y: 0, z: 1 } // Floor vents apuntan hacia arriba
                 }
