@@ -1806,8 +1806,8 @@ export default function WizardDesign() {
 
   const renderStep1 = () => (
     <>
-      <Card className="mt-4">
-        <CardContent className="p-4">
+      <Card className="flex-1 min-h-0 flex flex-col">
+        <CardContent className="flex-1 min-h-0 flex flex-col p-4">
           <ToolbarToggle
             mode={tab}
             onModeChange={(value: "2d-editor" | "3d-preview") => {
@@ -1816,10 +1816,10 @@ export default function WizardDesign() {
             hasClosedContour={hasClosedContour}
           />
 
-          <PanelGroup direction="horizontal" className="h-full">
+          <PanelGroup direction="horizontal" className="flex-1 min-h-0 mt-3">
             {/* Left side menus - resizable panel */}
             <Panel defaultSize={25} minSize={15} maxSize={50}>
-              <div className="space-y-6 overflow-y-auto pr-2" style={{ maxHeight: `${canvasHeight}px` }}>
+              <div className="space-y-6 overflow-y-auto pr-2 h-full">
               {/* 2D Configuration - only show when in 2D mode */}
               {tab === "2d-editor" && (
                 <div className="border rounded-lg p-4">
@@ -2666,14 +2666,14 @@ export default function WizardDesign() {
   const renderStep2 = () => {
     return (
       <>
-        <Card className="mt-4">
-          <CardContent className="p-4">
+        <Card className="flex-1 min-h-0 flex flex-col">
+          <CardContent className="flex-1 min-h-0 flex flex-col p-4">
 
 
-            <PanelGroup direction="horizontal" className="h-full">
+            <PanelGroup direction="horizontal" className="flex-1 min-h-0">
               {/* Left side menus - resizable panel */}
               <Panel defaultSize={25} minSize={15} maxSize={50}>
-                <div className="space-y-6 overflow-y-auto pr-2" style={{ maxHeight: `${canvasHeight}px` }}>
+                <div className="space-y-6 overflow-y-auto pr-2 h-full">
                 {/* Main options */}
                 <div className="border rounded-lg p-4">
                   <h3 className="font-semibold text-xl mb-4 text-center">Add 3D Elements</h3>
@@ -4492,7 +4492,7 @@ export default function WizardDesign() {
   const renderCanvasSection = (mode = "tabs") => {
     // Dynamic height based on 45% of viewport height
     const canvasClasses = "border rounded-lg overflow-hidden bg-white min-w-[600px]";
-    const canvasStyle = { flex: 1, height: `${canvasHeight}px` }; // Dynamic height with horizontal expansion
+    const canvasStyle = { flex: 1, height: "100%" };
 
     return (
       <div className={canvasClasses} style={canvasStyle}>
@@ -4665,10 +4665,10 @@ export default function WizardDesign() {
   );
 
   return (
-    <DashboardLayout>
-      <div className="container mx-auto py-4 px-3 space-y-4">
+    <DashboardLayout fullHeight>
+      <div className="h-full flex flex-col py-4 px-3">
         {renderStepIndicator()}
-        <div className="min-h-[690px]">
+        <div className="flex-1 min-h-0 flex flex-col mt-4">
           {step === 0 && renderStep0()}
           {step === 1 && renderStep1()}
           {step === 2 && renderStep2()}
