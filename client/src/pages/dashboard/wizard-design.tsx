@@ -4668,12 +4668,18 @@ export default function WizardDesign() {
     <DashboardLayout fullHeight>
       <div className="h-full flex flex-col py-4 px-3">
         {renderStepIndicator()}
-        <div className="flex-1 min-h-0 flex flex-col mt-4">
-          {step === 0 && renderStep0()}
-          {step === 1 && renderStep1()}
-          {step === 2 && renderStep2()}
-          {step === 3 && renderStep3()}
-        </div>
+        {(step === 0 || step === 3) && (
+          <div className="flex-1 min-h-0 overflow-y-auto mt-4">
+            {step === 0 && renderStep0()}
+            {step === 3 && renderStep3()}
+          </div>
+        )}
+        {(step === 1 || step === 2) && (
+          <div className="flex-1 min-h-0 flex flex-col mt-4">
+            {step === 1 && renderStep1()}
+            {step === 2 && renderStep2()}
+          </div>
+        )}
         <div className="flex justify-end gap-2 pt-6 mt-6 border-t">
           {step > 0 && (
             <Button onClick={handleBack} variant="outline">
