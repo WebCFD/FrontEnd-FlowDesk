@@ -102,7 +102,6 @@ function App() {
                 <main className="flex-1 pt-16">
                   <Router />
                 </main>
-                <Footer />
               </>
             </Route>
             <Route path="*">
