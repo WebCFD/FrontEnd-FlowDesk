@@ -124,7 +124,7 @@ interface Canvas3DProps {
     properties: {
       state?: 'open' | 'closed';
       temperature?: number;
-      airOrientation?: 'inflow' | 'outflow';
+      airOrientation?: 'inflow' | 'outflow' | 'equilibrium';
       flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
       flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
       customIntensityValue?: number;
@@ -754,6 +754,18 @@ const addVentArrows = (
       shaft.position.z *= -1;
       cone.position.z *= -1;
       cone.rotation.x *= -1;
+    }
+
+    // Equilibrium: add a second cone at the opposite end (bidirectional arrow)
+    if (airOrientation === 'equilibrium') {
+      const cone2 = new THREE.Mesh(new THREE.ConeGeometry(3.5, coneHeight, 8), arrowMat);
+      cone2.rotation.x = -Math.PI / 2;
+      cone2.position.z = -coneHeight / 2;
+      if (isCeiling) {
+        cone2.position.z *= -1;
+        cone2.rotation.x *= -1;
+      }
+      arrowGroup.add(cone2);
     }
 
     arrowGroup.add(shaft);
@@ -1910,7 +1922,7 @@ export default function Canvas3D({
       flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
       flowValue?: number;
       flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
-      airOrientation?: 'inflow' | 'outflow';
+      airOrientation?: 'inflow' | 'outflow' | 'equilibrium';
       customIntensityValue?: number;
     };
   }
@@ -2642,7 +2654,7 @@ export default function Canvas3D({
         flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
         flowValue?: number;
         flowIntensity?: 'low' | 'medium' | 'high' | 'custom';
-        airOrientation?: 'inflow' | 'outflow';
+        airOrientation?: 'inflow' | 'outflow' | 'equilibrium';
         customIntensityValue?: number;
       };
     },

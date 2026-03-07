@@ -549,6 +549,14 @@ export const createTopVentBoxModel = (simulationProperties?: { state?: string; a
         arrowGroup.position.set(x, y, boxHeight + 3);
       }
 
+      // Equilibrium: add a second cone at the opposite end (bidirectional arrow)
+      if (airOrientation === 'equilibrium') {
+        const cone2 = new THREE.Mesh(new THREE.ConeGeometry(3.5, coneHeight, 8), arrowMat);
+        cone2.rotation.x = -Math.PI / 2;
+        cone2.position.z = -coneHeight / 2;
+        arrowGroup.add(cone2);
+      }
+
       arrowGroup.add(shaft);
       arrowGroup.add(cone);
       arrowGroup.userData = { type: 'topVentArrow' };
@@ -686,6 +694,14 @@ export const createSideVentBoxModel = (simulationProperties?: { state?: string; 
         shaft.position.y = shaftLength / 2;
         cone.position.y = shaftLength + coneHeight / 2;
         arrowGroup.position.set(x, boxDepth / 2 + 3, z);
+      }
+
+      // Equilibrium: add a second cone at the opposite end (bidirectional arrow)
+      if (airOrientation === 'equilibrium') {
+        const cone2 = new THREE.Mesh(new THREE.ConeGeometry(3.5, coneHeight, 8), arrowMat);
+        cone2.rotation.z = Math.PI;
+        cone2.position.y = -coneHeight / 2;
+        arrowGroup.add(cone2);
       }
 
       arrowGroup.add(shaft);
