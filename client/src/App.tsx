@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -66,6 +66,8 @@ function Router() {
 
 function App() {
   const { setUser } = useAuth();
+  const [location] = useLocation();
+  const isDashboard = location.startsWith("/dashboard");
 
   // Check if user is already authenticated on app startup
   useEffect(() => {
@@ -95,25 +97,11 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <>
         <div className="min-h-screen flex flex-col">
-          <Switch>
-            <Route path="/dashboard*">
-              <>
-                <Navbar />
-                <main className="flex-1 pt-16">
-                  <Router />
-                </main>
-              </>
-            </Route>
-            <Route path="*">
-              <>
-                <Navbar />
-                <main className="flex-1 pt-16">
-                  <Router />
-                </main>
-                <Footer />
-              </>
-            </Route>
-          </Switch>
+          <Navbar />
+          <main className="flex-1 pt-16">
+            <Router />
+          </main>
+          {!isDashboard && <Footer />}
         </div>
         <Toaster />
       </>
