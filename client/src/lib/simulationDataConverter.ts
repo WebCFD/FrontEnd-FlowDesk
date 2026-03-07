@@ -517,10 +517,11 @@ export function generateSimulationData(
             y: normalizedWallVector.x,
             z: 0 // Normal en el plano XY
           };
-          // La normal que calcula el converter apunta hacia el exterior de la sala.
-          // Las flechas del canvas usan la normal interior (hacia el centroide).
-          // flowDirection debe coincidir con las flechas → usar la normal interior.
-          const inwardWallNormal = { x: -wallNormal.x, y: -wallNormal.y, z: 0 };
+          // Canvas coordinate system: Y-axis is flipped relative to world space.
+          // wallNormal.x must be negated (canvas +X == world +X, so outward → negate).
+          // wallNormal.y must NOT be negated (canvas Y-flip cancels, so it already
+          // points inward in world space).
+          const inwardWallNormal = { x: -wallNormal.x, y: wallNormal.y, z: 0 };
           
           // Crear objeto base
           const entryPropsForPosition = (entry as any).properties;
