@@ -517,6 +517,10 @@ export function generateSimulationData(
             y: normalizedWallVector.x,
             z: 0 // Normal en el plano XY
           };
+          // La normal que calcula el converter apunta hacia el exterior de la sala.
+          // Las flechas del canvas usan la normal interior (hacia el centroide).
+          // flowDirection debe coincidir con las flechas → usar la normal interior.
+          const inwardWallNormal = { x: -wallNormal.x, y: -wallNormal.y, z: 0 };
           
           // Crear objeto base
           const entryPropsForPosition = (entry as any).properties;
@@ -570,7 +574,7 @@ export function generateSimulationData(
                 emissivity: entryProps?.emissivity ?? defaultEmissivity
               };
             } else {
-              const wdFlowDir = computeWallFlowDirection(wallNormal, 0, 0, 0, airOrientation);
+              const wdFlowDir = computeWallFlowDirection(inwardWallNormal, 0, 0, 0, airOrientation);
               airEntryBase.simulation = {
                 state: "open",
                 airDirection: airOrientation as "inflow" | "outflow" | "equilibrium",
@@ -605,7 +609,7 @@ export function generateSimulationData(
               const vθv = entryProps?.verticalAngle ?? 0;
               const vθh = entryProps?.horizontalAngle ?? 0;
               const vRot = entryProps?.ventRotation ?? 0;
-              const wallFlowDir = computeWallFlowDirection(wallNormal, vθv, vθh, vRot, ventAirOrientation);
+              const wallFlowDir = computeWallFlowDirection(inwardWallNormal, vθv, vθh, vRot, ventAirOrientation);
               const rawFlowType = entryProps?.flowType || "Air Velocity";
               simulation = {
                 state: "open",
