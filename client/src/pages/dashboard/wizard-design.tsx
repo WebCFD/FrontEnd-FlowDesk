@@ -3755,6 +3755,10 @@ export default function WizardDesign() {
           wallEmissivities.set(lineKey, wall.emissivity ?? 0.90);
         });
         
+        // Mapeo inverso: valores exportados al JSON → valores internos del store
+        const reverseMapFlowType = (t?: string): 'Pressure' | 'Air Mass Flow' | 'Air Velocity' =>
+          t === 'pressure' ? 'Pressure' : t === 'massFlow' ? 'Air Mass Flow' : 'Air Velocity';
+
         // Procesar air entries tanto del formato antiguo como nuevo
         let airEntries = [];
         
@@ -3802,7 +3806,7 @@ export default function WizardDesign() {
                     airOrientation: entry.simulation?.airDirection
                       ? entry.simulation.airDirection as 'inflow' | 'outflow' | 'equilibrium' | 'closed'
                       : (entry.simulation?.state === 'closed' ? 'closed' : 'equilibrium'),
-                    flowType: entry.simulation?.flowType || 'airMassFlow',
+                    flowType: reverseMapFlowType(entry.simulation?.flowType),
                     // Mapear customValue solo cuando flowIntensity es "custom"
                     ...(entry.simulation?.flowIntensity === 'custom' && entry.simulation?.customValue && {
                       customIntensityValue: entry.simulation.customValue
@@ -3886,7 +3890,7 @@ export default function WizardDesign() {
                 airOrientation: entry.simulation?.airDirection
                   ? entry.simulation.airDirection as 'inflow' | 'outflow' | 'equilibrium' | 'closed'
                   : (entry.simulation?.state === 'closed' ? 'closed' : 'equilibrium'),
-                flowType: entry.simulation?.flowType || 'airMassFlow',
+                flowType: reverseMapFlowType(entry.simulation?.flowType),
                 // Mapear customValue solo cuando flowIntensity es "custom"
                 ...(entry.simulation?.flowIntensity === 'custom' && entry.simulation?.customValue && {
                   customIntensityValue: entry.simulation.customValue
@@ -4002,7 +4006,7 @@ export default function WizardDesign() {
                   material: entry.simulation?.material || 'default',
                   emissivity: entry.simulation?.emissivity ?? 0.90,
                   airOrientation: entry.simulation?.airDirection || 'inflow',
-                  flowType: entry.simulation?.flowType || 'airMassFlow',
+                  flowType: reverseMapFlowType(entry.simulation?.flowType),
                   flowIntensity: entry.simulation?.flowIntensity || 'medium',
                   shape: ceilingVentShape,
                   ventRotation: ceilingVentShape === 'circular' ? 0 : (entry.position?.rotation || 0),
@@ -4071,7 +4075,7 @@ export default function WizardDesign() {
                   material: entry.simulation?.material || 'default',
                   emissivity: entry.simulation?.emissivity ?? 0.90,
                   airOrientation: entry.simulation?.airDirection || 'inflow',
-                  flowType: entry.simulation?.flowType || 'airMassFlow',
+                  flowType: reverseMapFlowType(entry.simulation?.flowType),
                   flowIntensity: entry.simulation?.flowIntensity || 'medium',
                   shape: floorVentShape,
                   ventRotation: floorVentShape === 'circular' ? 0 : (entry.position?.rotation || 0),
