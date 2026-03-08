@@ -729,3 +729,29 @@ export const createBlockModel = (): THREE.Group => {
 
   return group;
 };
+
+export const createPanelModel = (): THREE.Group => {
+  const group = new THREE.Group();
+
+  const panelGeometry = new THREE.BoxGeometry(80, 80, 80);
+
+  const panelMaterial = new THREE.MeshPhongMaterial({
+    color: 0x90caf9,
+    transparent: true,
+    opacity: 0.35,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+  });
+
+  const panel = new THREE.Mesh(panelGeometry, panelMaterial);
+  panel.position.z = 40;
+  group.add(panel);
+
+  const edgesGeometry = new THREE.EdgesGeometry(panelGeometry);
+  const edgesMaterial = new THREE.LineBasicMaterial({ color: 0x1e88e5 });
+  const edges = new THREE.LineSegments(edgesGeometry, edgesMaterial);
+  edges.position.z = 40;
+  group.add(edges);
+
+  return group;
+};

@@ -977,14 +977,16 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
 
             {/* 3. SIMULATION PROPERTIES SECTION */}
             <div className="border rounded-lg p-4 bg-slate-50/50">
-              <h4 className="font-medium text-sm mb-4 text-slate-700 border-b border-slate-200 pb-2">Simulation Chassis Properties</h4>
+              <h4 className="font-medium text-sm mb-4 text-slate-700 border-b border-slate-200 pb-2">
+                {(type === 'rack' || type === 'topVentBox' || type === 'sideVentBox') ? 'Simulation Chassis Properties' : 'Simulation Properties'}
+              </h4>
               
               <div className="space-y-4">
                 {/* Temperature - Only for non-vent furniture */}
                 {type !== 'vent' && type !== 'nozzle' && (
                   <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="temperature" className="text-right">
-                      Temperature Chassis
+                      {(type === 'rack' || type === 'topVentBox' || type === 'sideVentBox') ? 'Temperature Chassis' : 'Temperature'}
                     </Label>
                     <Input
                       id="temperature"
@@ -1005,7 +1007,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                     )}
                     <div className={`grid grid-cols-4 items-center gap-4 ${type === 'vent' && simulationProperties.state === 'open' ? 'opacity-40 pointer-events-none' : ''}`}>
                       <div className="text-right flex items-center gap-2">
-                        <Label htmlFor="material">Material Chassis</Label>
+                        <Label htmlFor="material">{(type === 'rack' || type === 'topVentBox' || type === 'sideVentBox') ? 'Material Chassis' : 'Material'}</Label>
                         <div className="group relative">
                           <svg
                             className="w-4 h-4 text-gray-400 cursor-help"

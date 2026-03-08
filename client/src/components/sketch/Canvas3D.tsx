@@ -8,7 +8,7 @@ import UnifiedVentDialog from "./UnifiedVentDialog";
 import { ViewDirection } from "./Toolbar3D";
 import { useSceneContext } from "../../contexts/SceneContext";
 import { FurnitureItem, FurnitureCallbacks } from "@shared/furniture-types";
-import { createTableModel, createPersonModel, createArmchairModel, createBlockModel, createRackModel, createTopVentBoxModel, createSideVentBoxModel, createDimensionLabel, createDimensionLine } from "./furniture-models";
+import { createTableModel, createPersonModel, createArmchairModel, createBlockModel, createPanelModel, createRackModel, createTopVentBoxModel, createSideVentBoxModel, createDimensionLabel, createDimensionLine } from "./furniture-models";
 import { STLProcessor } from "./STLProcessor";
 import { customFurnitureStore } from "@/lib/custom-furniture-store";
 import { useRoomStore } from "@/lib/store/room-store";
@@ -1036,9 +1036,11 @@ const createFurnitureModel = (
       model = createArmchairModel();
       break;
     case 'block':
+      model = createBlockModel();
+      break;
     case 'panelVertical':
     case 'panelHorizontal':
-      model = createBlockModel();
+      model = createPanelModel();
       break;
     case 'rack':
       model = createRackModel();
