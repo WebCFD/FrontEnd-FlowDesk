@@ -185,7 +185,7 @@ interface WallExport {
 interface RackFaceExport {
   role: 'inlet' | 'outlet' | 'wall' | 'vent';
   vertices: [number, number, number][];
-  temperature: number;
+  temperature?: number;
   rackDensity?: 'low' | 'medium' | 'high' | 'custom';
   thermalPower_kW?: number;
   airFlow?: number;
@@ -804,13 +804,11 @@ export function generateSimulationData(
           front: {
             role: 'inlet',
             vertices: [gc[0], gc[1], gc[5], gc[4]],
-            temperature: inletTemp,
             ...serverFaceProps
           },
           back: {
             role: 'outlet',
             vertices: [gc[2], gc[3], gc[7], gc[6]],
-            temperature: outletTemp,
             ...serverFaceProps
           },
           left: {
