@@ -3297,9 +3297,7 @@ export default function Canvas3D({
 
         // Add flow-type letter badge for open entries
         if (arrowState !== 'closed') {
-          const typeColor = entry.type === 'window' ? 0x1e3a8a
-                          : entry.type === 'door'   ? 0x78350f
-                          :                           0x14532d;
+          const typeColor = 0x000000;
           const letter = getFlowTypeLetter(entry.type, entryProps.flowType);
           const labelSprite = createFlowTypeLabelSprite(letter, typeColor);
           labelSprite.position.set(
