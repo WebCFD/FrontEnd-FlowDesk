@@ -7027,7 +7027,17 @@ export default function Canvas3D({
         // For tables and other furniture: use existing approach (local coordinates)
         furnitureGroup.position.set(data.position.x, data.position.y, data.position.z);
         furnitureGroup.rotation.set(data.rotation.x, data.rotation.y, data.rotation.z);
-        furnitureGroup.scale.set(data.scale.x, data.scale.y, data.scale.z);
+        // Apply combined dimensional + user scale so panels/blocks keep their shape
+        const editItemDimensions = editingFurniture.item.dimensions;
+        if (editItemDimensions) {
+          const editDefaultDims = getDefaultDimensions(editingFurniture.item.type as any);
+          const dsX = editItemDimensions.width / editDefaultDims.width;
+          const dsY = editItemDimensions.depth / editDefaultDims.depth;
+          const dsZ = editItemDimensions.height / editDefaultDims.height;
+          furnitureGroup.scale.set(dsX * data.scale.x, dsY * data.scale.y, dsZ * data.scale.z);
+        } else {
+          furnitureGroup.scale.set(data.scale.x, data.scale.y, data.scale.z);
+        }
       }
       
       furnitureGroup.userData.furnitureName = data.name;
