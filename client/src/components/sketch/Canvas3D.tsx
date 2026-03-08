@@ -1288,9 +1288,8 @@ const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'block' | 
     case 'custom':
       return { width: 100, height: 100, depth: 100 };
     case 'panelVertical':
-      return { width: 120, height: 230, depth: 5 };
     case 'panelHorizontal':
-      return { width: 200, height: 5, depth: 120 };
+      return { width: 80, height: 80, depth: 80 };
     default:
       return { width: 80, height: 80, depth: 80 };
   }
@@ -7579,7 +7578,8 @@ export default function Canvas3D({
             simulationProperties: currentSimulationProperties,
             ...(editingFurniture.item.serverProperties && { serverProperties: editingFurniture.item.serverProperties }),
             ...(editingFurniture.item.nozzleProperties && { nozzleProperties: editingFurniture.item.nozzleProperties }),
-            ...(editingFurniture.item.simulationProperties && { simulationProperties: editingFurniture.item.simulationProperties })
+            ...(editingFurniture.item.simulationProperties && { simulationProperties: editingFurniture.item.simulationProperties }),
+            ...(editingFurniture.item.dimensions && { dimensions: editingFurniture.item.dimensions })
           }}
           isEditing={true}
           floorContext={{

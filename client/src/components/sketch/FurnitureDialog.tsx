@@ -91,6 +91,7 @@ interface FurnitureDialogProps {
       outletWidth?: number;
       outletHeight?: number;
     };
+    dimensions?: { width: number; height: number; depth: number };
   };
   floorContext?: {
     floorName: string;
@@ -858,6 +859,13 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                   </div>
                 </div>
                 
+                {/* Actual dimensions in cm - shown for block/panel types */}
+                {(type === 'block' || type === 'panelVertical' || type === 'panelHorizontal') && props.initialValues?.dimensions && (
+                  <p className="text-xs text-slate-400 mt-1">
+                    {props.initialValues.dimensions.width} × {props.initialValues.dimensions.height} × {props.initialValues.dimensions.depth} cm (W × H × D)
+                  </p>
+                )}
+
                 {/* Rack/TopVentBox Dimensions - Editable fields in mm */}
                 {(type === 'rack' || type === 'topVentBox' || type === 'sideVentBox') && (
                   <div>
