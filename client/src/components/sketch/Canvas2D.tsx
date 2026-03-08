@@ -575,12 +575,10 @@ export default function Canvas2D({
   };
 
   const handleZoomWheel = (e: WheelEvent) => {
-    if (e.ctrlKey || e.metaKey) {
-      e.preventDefault();
-      const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
-      const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom + delta));
-      handleZoomChange(newZoom);
-    }
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
+    const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, zoom + delta));
+    handleZoomChange(newZoom);
   };
 
   const handleRegularWheel = (e: WheelEvent) => {};
@@ -1005,11 +1003,11 @@ export default function Canvas2D({
       } else {
         letter = 'p';
       }
-      // Offset perpendicular to wall (toward interior) so letter floats off the wall line
-      const labelOffsetFactor = 14;
-      const labelX = entry.position.x + (-normal.y * labelOffsetFactor) / zoom;
-      const labelY = entry.position.y + (normal.x * labelOffsetFactor) / zoom;
-      ctx.font = `bold ${(11 * 1) / zoom}px Arial`;
+      // Offset perpendicular to wall toward the room interior (opposite side from "400cm" label)
+      const labelOffsetFactor = 28;
+      const labelX = entry.position.x + (normal.y * labelOffsetFactor) / zoom;
+      const labelY = entry.position.y + (-normal.x * labelOffsetFactor) / zoom;
+      ctx.font = `bold ${15 / zoom}px Arial`;
       ctx.fillStyle = color;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
