@@ -801,10 +801,6 @@ const createFlowTypeLabelSprite = (letter: string, hexColor: number): THREE.Spri
   canvas.height = size;
   const ctx = canvas.getContext('2d')!;
   const css = '#' + hexColor.toString(16).padStart(6, '0');
-  ctx.fillStyle = 'rgba(255,255,255,0.85)';
-  ctx.beginPath();
-  ctx.arc(32, 32, 28, 0, Math.PI * 2);
-  ctx.fill();
   ctx.strokeStyle = css;
   ctx.lineWidth = 4;
   ctx.beginPath();
@@ -818,7 +814,7 @@ const createFlowTypeLabelSprite = (letter: string, hexColor: number): THREE.Spri
   const tex = new THREE.CanvasTexture(canvas);
   const mat = new THREE.SpriteMaterial({ map: tex, depthTest: false });
   const sprite = new THREE.Sprite(mat);
-  sprite.scale.set(18, 18, 1);
+  sprite.scale.set(36, 36, 1);
   sprite.renderOrder = 10;
   return sprite;
 };
