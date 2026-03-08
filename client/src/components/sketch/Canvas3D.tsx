@@ -785,6 +785,44 @@ const addVentArrows = (
   group.add(ventArrowsRoot);
 };
 
+// Helper: map entry type + flowType → single letter label
+const getFlowTypeLetter = (entryType: string, flowType?: string): string => {
+  if (entryType === 'window' || entryType === 'door') return 'p';
+  if (flowType === 'Air Mass Flow') return 'm';
+  if (flowType === 'Air Velocity')  return 'v';
+  return 'p';
+};
+
+// Helper: create a THREE.Sprite badge with the given letter in the given hex color
+const createFlowTypeLabelSprite = (letter: string, hexColor: number): THREE.Sprite => {
+  const size = 64;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d')!;
+  const css = '#' + hexColor.toString(16).padStart(6, '0');
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.beginPath();
+  ctx.arc(32, 32, 28, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = css;
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.arc(32, 32, 28, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = css;
+  ctx.font = 'bold 34px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(letter, 32, 33);
+  const tex = new THREE.CanvasTexture(canvas);
+  const mat = new THREE.SpriteMaterial({ map: tex, depthTest: false });
+  const sprite = new THREE.Sprite(mat);
+  sprite.scale.set(18, 18, 1);
+  sprite.renderOrder = 10;
+  return sprite;
+};
+
 // Helper: remove existing vent arrows from a group
 const removeVentArrows = (group: THREE.Group) => {
   const toRemove: THREE.Object3D[] = [];
@@ -3260,6 +3298,22 @@ export default function Canvas3D({
         });
         // Add directly to scene (not via objects array) so THREE.Group children are preserved
         sceneRef.current?.add(arrowsGroup);
+
+        // Add flow-type letter badge for open entries
+        if (arrowState !== 'closed') {
+          const typeColor = entry.type === 'window' ? 0x3b82f6
+                          : entry.type === 'door'   ? 0xb45309
+                          :                           0x22c55e;
+          const letter = getFlowTypeLetter(entry.type, entryProps.flowType);
+          const labelSprite = createFlowTypeLabelSprite(letter, typeColor);
+          labelSprite.position.set(
+            mesh.position.x + forward.x * 12,
+            mesh.position.y + forward.y * 12,
+            mesh.position.z + forward.z * 12 + 10,
+          );
+          labelSprite.userData = { type: 'flowTypeLabel', floorName: floorData.name, entryIndex: index, airEntryId: entryId };
+          sceneRef.current?.add(labelSprite);
+        }
       }
       const coordSysData = orientationData;
       const { 
@@ -5553,6 +5607,11 @@ export default function Canvas3D({
       }
 
       if (object.userData?.type === 'airEntryVentArrow') {
+        toRemove.push(object);
+        return;
+      }
+
+      if (object.userData?.type === 'flowTypeLabel') {
         toRemove.push(object);
         return;
       }

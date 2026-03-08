@@ -989,6 +989,33 @@ export default function Canvas2D({
     ctx.fillStyle = color;
     ctx.fill();
 
+    // Draw flow-type letter (p / m / v) for open entries
+    const entryState = (entry.properties as any)?.state;
+    const entryAirOrientation = (entry.properties as any)?.airOrientation;
+    const isClosed = entryState === 'closed' || entryAirOrientation === 'closed';
+    if (!isClosed) {
+      const flowType = (entry.properties as any)?.flowType;
+      let letter: string;
+      if (entry.type === 'window' || entry.type === 'door') {
+        letter = 'p';
+      } else if (flowType === 'Air Mass Flow') {
+        letter = 'm';
+      } else if (flowType === 'Air Velocity') {
+        letter = 'v';
+      } else {
+        letter = 'p';
+      }
+      // Offset perpendicular to wall (toward interior) so letter floats off the wall line
+      const labelOffsetFactor = 14;
+      const labelX = entry.position.x + (-normal.y * labelOffsetFactor) / zoom;
+      const labelY = entry.position.y + (normal.x * labelOffsetFactor) / zoom;
+      ctx.font = `bold ${(11 * 1) / zoom}px Arial`;
+      ctx.fillStyle = color;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(letter, labelX, labelY);
+    }
+
     // Add a "double-click to edit" tooltip when hovered
     if (isHovered) {
       ctx.font = getScaledFont(12, 'Arial');
