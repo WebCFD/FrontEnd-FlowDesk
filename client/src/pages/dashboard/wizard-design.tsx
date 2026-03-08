@@ -3648,7 +3648,6 @@ export default function WizardDesign() {
     
     // PASO 7: Resetear todos los estados locales del wizard
     setSimulationName("");
-    setSimulationType("comfort");
     setGridSize(20);
     setCurrentTool("wall");
     setCurrentAirEntry(null);
