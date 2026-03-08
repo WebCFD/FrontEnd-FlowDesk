@@ -787,10 +787,10 @@ const addVentArrows = (
 
 // Helper: map entry type + flowType → single letter label
 const getFlowTypeLetter = (entryType: string, flowType?: string): string => {
-  if (entryType === 'window' || entryType === 'door') return 'p';
-  if (flowType === 'Air Mass Flow') return 'm';
-  if (flowType === 'Air Velocity')  return 'v';
-  return 'p';
+  if (entryType === 'window' || entryType === 'door') return 'P';
+  if (flowType === 'Air Mass Flow') return 'M';
+  if (flowType === 'Air Velocity')  return 'V';
+  return 'P';
 };
 
 // Helper: create a THREE.Sprite badge with the given letter in the given hex color
@@ -3297,9 +3297,9 @@ export default function Canvas3D({
 
         // Add flow-type letter badge for open entries
         if (arrowState !== 'closed') {
-          const typeColor = entry.type === 'window' ? 0x3b82f6
-                          : entry.type === 'door'   ? 0xb45309
-                          :                           0x22c55e;
+          const typeColor = entry.type === 'window' ? 0x1e3a8a
+                          : entry.type === 'door'   ? 0x78350f
+                          :                           0x14532d;
           const letter = getFlowTypeLetter(entry.type, entryProps.flowType);
           const labelSprite = createFlowTypeLabelSprite(letter, typeColor);
           labelSprite.position.set(

@@ -995,13 +995,13 @@ export default function Canvas2D({
       const flowType = (entry.properties as any)?.flowType;
       let letter: string;
       if (entry.type === 'window' || entry.type === 'door') {
-        letter = 'p';
+        letter = 'P';
       } else if (flowType === 'Air Mass Flow') {
-        letter = 'm';
+        letter = 'M';
       } else if (flowType === 'Air Velocity') {
-        letter = 'v';
+        letter = 'V';
       } else {
-        letter = 'p';
+        letter = 'P';
       }
       // Offset perpendicular to wall toward the room interior (opposite side from "400cm" label)
       const labelOffsetFactor = 28;
