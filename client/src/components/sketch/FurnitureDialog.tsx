@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { X, Move } from "lucide-react";
 import type { FurnitureItem } from "@shared/furniture-types";
 
-type FurnitureType = 'table' | 'person' | 'armchair' | 'block' | 'rack' | 'topVentBox' | 'sideVentBox' | 'vent' | 'nozzle' | 'custom';
+type FurnitureType = 'table' | 'person' | 'armchair' | 'block' | 'rack' | 'topVentBox' | 'sideVentBox' | 'vent' | 'nozzle' | 'custom' | 'panelVertical' | 'panelHorizontal';
 
 interface FurnitureDialogProps {
   type: FurnitureType;
@@ -148,6 +148,28 @@ const furnitureDefaults = {
       material: "concrete",
       temperature: 20,
       emissivity: 0.90
+    }
+  },
+  panelVertical: {
+    name: "Vertical Panel",
+    position: { x: 0, y: 0, z: 0 },
+    rotation: { x: 0, y: 0, z: 0 },
+    scale: { x: 1, y: 1, z: 1 },
+    properties: {
+      material: "glass",
+      temperature: 20,
+      emissivity: 0.84
+    }
+  },
+  panelHorizontal: {
+    name: "Horizontal Panel",
+    position: { x: 0, y: 0, z: 0 },
+    rotation: { x: 0, y: 0, z: 0 },
+    scale: { x: 1, y: 1, z: 1 },
+    properties: {
+      material: "glass",
+      temperature: 20,
+      emissivity: 0.84
     }
   },
   custom: {
@@ -689,8 +711,8 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                             onPositionUpdate(newPosition);
                           }
                         }}
-                        disabled={type !== 'block' && type !== 'rack' && type !== 'topVentBox' && type !== 'sideVentBox' && type !== 'vent' && type !== 'nozzle'}
-                        className={`text-sm ${type !== 'block' && type !== 'rack' && type !== 'topVentBox' && type !== 'sideVentBox' && type !== 'vent' && type !== 'nozzle' ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
+                        disabled={type !== 'block' && type !== 'rack' && type !== 'topVentBox' && type !== 'sideVentBox' && type !== 'vent' && type !== 'nozzle' && type !== 'panelVertical' && type !== 'panelHorizontal'}
+                        className={`text-sm ${type !== 'block' && type !== 'rack' && type !== 'topVentBox' && type !== 'sideVentBox' && type !== 'vent' && type !== 'nozzle' && type !== 'panelVertical' && type !== 'panelHorizontal' ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
                       />
                     </div>
                   </div>

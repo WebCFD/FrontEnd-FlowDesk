@@ -68,6 +68,32 @@ const furnitureItems: FurnitureItem[] = [
     defaultDimensions: { width: 80, height: 80, depth: 80 }
   },
   {
+    id: 'panelVertical',
+    name: 'Vertical Panel',
+    icon: `
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="17" y="3" width="6" height="34" rx="1" fill="#90caf9" fill-opacity="0.5" stroke="#42a5f5" stroke-width="1.5"/>
+        <line x1="20" y1="3" x2="20" y2="37" stroke="#42a5f5" stroke-width="1" stroke-dasharray="3 2" opacity="0.6"/>
+        <rect x="16" y="2" width="8" height="2" rx="0.5" fill="#42a5f5"/>
+        <rect x="16" y="36" width="8" height="2" rx="0.5" fill="#42a5f5"/>
+      </svg>
+    `,
+    defaultDimensions: { width: 120, height: 230, depth: 5 }
+  },
+  {
+    id: 'panelHorizontal',
+    name: 'Horizontal Panel',
+    icon: `
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="17" width="34" height="6" rx="1" fill="#90caf9" fill-opacity="0.5" stroke="#42a5f5" stroke-width="1.5"/>
+        <line x1="3" y1="20" x2="37" y2="20" stroke="#42a5f5" stroke-width="1" stroke-dasharray="3 2" opacity="0.6"/>
+        <rect x="2" y="16" width="2" height="8" rx="0.5" fill="#42a5f5"/>
+        <rect x="36" y="16" width="2" height="8" rx="0.5" fill="#42a5f5"/>
+      </svg>
+    `,
+    defaultDimensions: { width: 200, height: 5, depth: 120 }
+  },
+  {
     id: 'rack',
     name: 'Server Rack',
     icon: `
@@ -180,7 +206,7 @@ export function FurnitureMenu({ onDragStart, floorContext, onToggleFurnitureEras
   // Separate items by categories
   const furnitureItems_category = furnitureItems.filter(item => ['table', 'armchair'].includes(item.id));
   const charactersItems = furnitureItems.filter(item => item.id === 'person');
-  const objectsItems = furnitureItems.filter(item => ['block', 'rack', 'topVentBox', 'sideVentBox'].includes(item.id));
+  const objectsItems = furnitureItems.filter(item => ['block', 'panelVertical', 'panelHorizontal', 'rack', 'topVentBox', 'sideVentBox'].includes(item.id));
   const hvacItems = furnitureItems.filter(item => ['vent', 'nozzle'].includes(item.id));
   
   // Custom furniture goes with furniture category

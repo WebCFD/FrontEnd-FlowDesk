@@ -30,7 +30,7 @@ import { generateSimulationData, denormalizeCoordinates } from "@/lib/simulation
 import * as THREE from "three";
 
 // Helper function for default dimensions (matching Canvas3D)
-const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'block' | 'rack' | 'topVentBox' | 'sideVentBox' | 'vent' | 'nozzle' | 'custom') => {
+const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'block' | 'rack' | 'topVentBox' | 'sideVentBox' | 'vent' | 'nozzle' | 'custom' | 'panelVertical' | 'panelHorizontal') => {
   switch (type) {
     case 'table':
       return { width: 120, height: 75, depth: 80 };
@@ -52,6 +52,10 @@ const getDefaultDimensions = (type: 'table' | 'person' | 'armchair' | 'block' | 
       return { width: 200, height: 50, depth: 50 };
     case 'custom':
       return { width: 100, height: 100, depth: 100 };
+    case 'panelVertical':
+      return { width: 120, height: 230, depth: 5 };
+    case 'panelHorizontal':
+      return { width: 200, height: 5, depth: 120 };
     default:
       return { width: 80, height: 80, depth: 80 };
   }
