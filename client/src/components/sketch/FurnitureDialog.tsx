@@ -817,6 +817,11 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                         }}
                         className="text-sm"
                       />
+                      {(type === 'block' || type === 'panelVertical' || type === 'panelHorizontal') && props.initialValues?.dimensions && (
+                        <p className="text-[10px] text-slate-400 mt-0.5 text-center">
+                          {Math.round(props.initialValues.dimensions.width * elementScale.x)} cm W
+                        </p>
+                      )}
                     </div>
                     <div>
                       <Label htmlFor="scale-y" className="text-xs">Y</Label>
@@ -836,6 +841,11 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                         }}
                         className="text-sm"
                       />
+                      {(type === 'block' || type === 'panelVertical' || type === 'panelHorizontal') && props.initialValues?.dimensions && (
+                        <p className="text-[10px] text-slate-400 mt-0.5 text-center">
+                          {Math.round(props.initialValues.dimensions.depth * elementScale.y)} cm D
+                        </p>
+                      )}
                     </div>
                     <div>
                       <Label htmlFor="scale-z" className="text-xs">Z</Label>
@@ -855,16 +865,14 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                         }}
                         className="text-sm"
                       />
+                      {(type === 'block' || type === 'panelVertical' || type === 'panelHorizontal') && props.initialValues?.dimensions && (
+                        <p className="text-[10px] text-slate-400 mt-0.5 text-center">
+                          {Math.round(props.initialValues.dimensions.height * elementScale.z)} cm H
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
-                
-                {/* Actual dimensions in cm - shown for block/panel types */}
-                {(type === 'block' || type === 'panelVertical' || type === 'panelHorizontal') && props.initialValues?.dimensions && (
-                  <p className="text-xs text-slate-400 mt-1">
-                    {props.initialValues.dimensions.width} × {props.initialValues.dimensions.height} × {props.initialValues.dimensions.depth} cm (W × H × D)
-                  </p>
-                )}
 
                 {/* Rack/TopVentBox Dimensions - Editable fields in mm */}
                 {(type === 'rack' || type === 'topVentBox' || type === 'sideVentBox') && (

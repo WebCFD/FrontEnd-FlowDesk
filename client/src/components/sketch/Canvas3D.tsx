@@ -6731,7 +6731,17 @@ export default function Canvas3D({
     });
 
     if (furnitureGroup) {
-      furnitureGroup.scale.set(newScale.x, newScale.y, newScale.z);
+      const itemType = editingFurniture.item.type;
+      const itemDimensions = editingFurniture.item.dimensions;
+      if (itemDimensions && itemType !== 'vent' && itemType !== 'nozzle' && itemType !== 'custom') {
+        const defaultDimensions = getDefaultDimensions(itemType as any);
+        const dimScaleX = itemDimensions.width / defaultDimensions.width;
+        const dimScaleY = itemDimensions.depth / defaultDimensions.depth;
+        const dimScaleZ = itemDimensions.height / defaultDimensions.height;
+        furnitureGroup.scale.set(dimScaleX * newScale.x, dimScaleY * newScale.y, dimScaleZ * newScale.z);
+      } else {
+        furnitureGroup.scale.set(newScale.x, newScale.y, newScale.z);
+      }
 
       // For vents: counter-scale ventArrowsRoot to prevent arrow distortion after resize
       if (editingFurniture.item.type === 'vent') {
