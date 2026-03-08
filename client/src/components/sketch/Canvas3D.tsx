@@ -6420,23 +6420,15 @@ export default function Canvas3D({
 
               }
 
-              // DIMENSIONS FIX: Read scale from actual mesh instead of store
-              const currentMeshScale = {
-                x: furnitureGroup.scale.x,
-                y: furnitureGroup.scale.y,
-                z: furnitureGroup.scale.z
-              };
-
-
-
               // Use the actual stored item with all its properties including simulationProperties
               const furnitureItemWithCurrentPosition: FurnitureItem = {
                 ...actualFurnitureItem,
                 // For all furniture types: position and rotation from appropriate coordinate system
                 position: dialogPosition,
                 rotation: dialogRotation,
-                // DIMENSIONS FIX: Use current mesh scale instead of obsolete store scale
-                scale: currentMeshScale
+                // Always use the user scale from the store (NOT the mesh scale, which contains
+                // the combined dimensional+user scale and would cause exponential multiplication)
+                scale: actualFurnitureItem.scale || { x: 1, y: 1, z: 1 }
               };
               
 
