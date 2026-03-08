@@ -803,12 +803,12 @@ export function generateSimulationData(
         const faces: Record<string, RackFaceExport> = {
           front: {
             role: 'inlet',
-            vertices: [gc[0], gc[1], gc[5], gc[4]],
+            vertices: [gc[2], gc[3], gc[7], gc[6]],
             ...serverFaceProps
           },
           back: {
             role: 'outlet',
-            vertices: [gc[2], gc[3], gc[7], gc[6]],
+            vertices: [gc[0], gc[1], gc[5], gc[4]],
             ...serverFaceProps
           },
           left: {
