@@ -1515,7 +1515,9 @@ export default function Canvas3D({
         type: furnitureType,
         name: generatedId, // Name is same as ID
         floorName: surfaceDetection.floorName,
-        position: calculatedPosition,
+        position: furnitureType === 'panelHorizontal'
+          ? { ...calculatedPosition, z: 100 } // Place horizontal panel 1m above floor by default
+          : calculatedPosition,
         rotation: surfaceDetection.surfaceType === 'ceiling' && furnitureType !== 'vent' && furnitureType !== 'nozzle' ? { x: Math.PI, y: 0, z: 0 } : { x: 0, y: 0, z: 0 },
         dimensions: dimensions,
         information: `${generatedId} placed on ${surfaceDetection.surfaceType} of ${surfaceDetection.floorName}`,
