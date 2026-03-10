@@ -898,6 +898,11 @@ export function generateSimulationData(
         
         const ventSimProps = simulationProperties || {};
         const ventState = ventSimProps.state || 'open';
+        const sfθv = ventSimProps.verticalAngle ?? 0;
+        const sfθh = ventSimProps.horizontalAngle ?? 0;
+        const ventRotZ = obj.rotation.z || 0;
+        const ventAirDir = (ventSimProps.airOrientation || 'outflow') as 'inflow' | 'outflow' | 'equilibrium';
+        const topFlowDir = computeSurfaceFlowDirection('floor', sfθv, sfθh, ventRotZ, ventAirDir);
         const ventFaceProps = {
           state: ventState,
           temperature: ventSimProps.airTemperature || 20,
@@ -905,7 +910,10 @@ export function generateSimulationData(
             material: properties.material || 'default',
             emissivity: properties.emissivity || 0.90
           } : {
-            airDirection: ventSimProps.airOrientation || 'outflow',
+            airDirection: ventAirDir,
+            flowDirection: topFlowDir,
+            verticalAngle: sfθv,
+            horizontalAngle: sfθh,
             flowType: mapFlowType(ventSimProps.flowType) || 'pressure',
             flowIntensity: ventSimProps.flowIntensity || 'medium',
             customIntensityValue: ventSimProps.customIntensityValue

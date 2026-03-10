@@ -1566,62 +1566,6 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       </div>
                     )}
 
-                    {/* Air Orientation - Solo para vents con state open y airOrientation inflow */}
-                    {simulationProperties.state === 'open' && simulationProperties.airOrientation === 'inflow' && (
-                      <div className="col-span-4 space-y-3 border-t border-slate-300 pt-3 mt-3">
-                        <h6 className="font-medium text-sm text-slate-600">Air Orientation</h6>
-                        
-                        {/* Vertical Angle */}
-                        <div className="grid grid-cols-4 items-center gap-4">
-                          <Label htmlFor="vertical-angle" className="text-right">
-                            Vertical Angle
-                          </Label>
-                          <Input
-                            id="vertical-angle"
-                            type="number"
-                            min="-45"
-                            max="45"
-                            step="1"
-                            value={simulationProperties.verticalAngle}
-                            onChange={(e) => setSimulationProperties(prev => ({
-                              ...prev, 
-                              verticalAngle: Number(e.target.value)
-                            }))}
-                            className="col-span-2"
-                            placeholder="0"
-                          />
-                          <span className="text-sm">°</span>
-                        </div>
-                        <p className="text-xs text-gray-500 col-span-4 text-right">
-                          Up -45° to Down +45°
-                        </p>
-
-                        {/* Horizontal Angle */}
-                        <div className="grid grid-cols-4 items-center gap-4">
-                          <Label htmlFor="horizontal-angle" className="text-right">
-                            Horizontal Angle
-                          </Label>
-                          <Input
-                            id="horizontal-angle"
-                            type="number"
-                            min="-45"
-                            max="45"
-                            step="1"
-                            value={simulationProperties.horizontalAngle}
-                            onChange={(e) => setSimulationProperties(prev => ({
-                              ...prev, 
-                              horizontalAngle: Number(e.target.value)
-                            }))}
-                            className="col-span-2"
-                            placeholder="0"
-                          />
-                          <span className="text-sm">°</span>
-                        </div>
-                        <p className="text-xs text-gray-500 col-span-4 text-right">
-                          Left +45° to Right -45°
-                        </p>
-                      </div>
-                    )}
                   </>
                 )}
               </div>

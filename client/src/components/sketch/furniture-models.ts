@@ -419,7 +419,7 @@ export const createRackModel = (): THREE.Group => {
   return group;
 };
 
-export const createTopVentBoxModel = (simulationProperties?: { state?: string; airOrientation?: string }): THREE.Group => {
+export const createTopVentBoxModel = (simulationProperties?: { state?: string; airOrientation?: string; verticalAngle?: number; horizontalAngle?: number }): THREE.Group => {
   const group = new THREE.Group();
 
   const boxWidth = 50;
@@ -506,6 +506,9 @@ export const createTopVentBoxModel = (simulationProperties?: { state?: string; a
   }
 
   if (state === 'open') {
+    const verticalAngle = simulationProperties?.verticalAngle ?? 0;
+    const horizontalAngle = simulationProperties?.horizontalAngle ?? 0;
+
     const arrowColor = 0x22c55e;
     const arrowMat = new THREE.MeshStandardMaterial({
       color: arrowColor,
@@ -521,14 +524,17 @@ export const createTopVentBoxModel = (simulationProperties?: { state?: string; a
     ];
 
     const isOutlet = airOrientation === 'outflow';
-    const direction = isOutlet ? 1 : -1;
+
+    const ventArrowsRoot = new THREE.Group();
+    ventArrowsRoot.userData = { type: 'topVentArrow' };
+    ventArrowsRoot.rotation.x = verticalAngle * Math.PI / 180;
+    ventArrowsRoot.rotation.y = horizontalAngle * Math.PI / 180;
 
     for (const [x, y] of arrowPositions) {
       const arrowGroup = new THREE.Group();
 
       const shaftLength = 15;
       const coneHeight = 8;
-      const arrowTotalLength = shaftLength + coneHeight;
 
       const shaftGeometry = new THREE.CylinderGeometry(1.2, 1.2, shaftLength, 8);
       const shaft = new THREE.Mesh(shaftGeometry, arrowMat);
@@ -541,15 +547,14 @@ export const createTopVentBoxModel = (simulationProperties?: { state?: string; a
         cone.rotation.x = -Math.PI / 2;
         cone.position.z = coneHeight / 2;
         shaft.position.z = coneHeight + shaftLength / 2;
-        arrowGroup.position.set(x, y, boxHeight + 3);
       } else {
         shaft.position.z = shaftLength / 2;
         cone.rotation.x = Math.PI / 2;
         cone.position.z = shaftLength + coneHeight / 2;
-        arrowGroup.position.set(x, y, boxHeight + 3);
       }
 
-      // Equilibrium: add a second cone at the opposite end (bidirectional arrow)
+      arrowGroup.position.set(x, y, boxHeight + 3);
+
       if (airOrientation === 'equilibrium') {
         const cone2 = new THREE.Mesh(new THREE.ConeGeometry(3.5, coneHeight, 8), arrowMat);
         cone2.rotation.x = -Math.PI / 2;
@@ -559,9 +564,17 @@ export const createTopVentBoxModel = (simulationProperties?: { state?: string; a
 
       arrowGroup.add(shaft);
       arrowGroup.add(cone);
-      arrowGroup.userData = { type: 'topVentArrow' };
-      group.add(arrowGroup);
+      ventArrowsRoot.add(arrowGroup);
     }
+
+    const gs = group.scale;
+    ventArrowsRoot.scale.set(
+      gs.x !== 0 ? 1 / gs.x : 1,
+      gs.y !== 0 ? 1 / gs.y : 1,
+      gs.z !== 0 ? 1 / gs.z : 1
+    );
+
+    group.add(ventArrowsRoot);
   }
 
   return group;

@@ -1559,7 +1559,9 @@ export default function Canvas3D({
           flowIntensity: 'medium',
           airOrientation: 'inflow',
           state: 'open',
-          airTemperature: 20
+          airTemperature: 20,
+          verticalAngle: 0,
+          horizontalAngle: 0
         } : undefined,
         ...(furnitureType === 'nozzle' && {
           nozzleProperties: {
@@ -6923,6 +6925,51 @@ export default function Canvas3D({
           // This avoids remove+recreate and guarantees both angles always compound
           furnitureGroup.traverse((child) => {
             if (child.userData.type === 'ventArrow') {
+              child.rotation.x = (merged.verticalAngle ?? 0) * Math.PI / 180;
+              child.rotation.y = (merged.horizontalAngle ?? 0) * Math.PI / 180;
+            }
+          });
+        }
+      }
+
+      // Update topVentBox/sideVentBox arrows in real-time
+      if (editingFurniture.item.type === 'topVentBox' || editingFurniture.item.type === 'sideVentBox') {
+        const merged = furnitureGroup.userData.simulationProperties ?? {};
+
+        if (properties.airOrientation !== undefined || properties.state !== undefined) {
+          // State or direction changed — full model rebuild
+          const savedPosition = furnitureGroup.position.clone();
+          const savedRotation = furnitureGroup.rotation.clone();
+          const savedScale = furnitureGroup.scale.clone();
+          const savedUserData = { ...furnitureGroup.userData };
+
+          while (furnitureGroup.children.length > 0) {
+            const child = furnitureGroup.children[0];
+            if (child instanceof THREE.Mesh) {
+              child.geometry?.dispose();
+              if (Array.isArray(child.material)) child.material.forEach((m: any) => m.dispose());
+              else (child.material as any)?.dispose();
+            }
+            furnitureGroup.remove(child);
+          }
+
+          const freshModel = editingFurniture.item.type === 'sideVentBox'
+            ? createSideVentBoxModel(merged)
+            : createTopVentBoxModel(merged);
+          while (freshModel.children.length > 0) {
+            const child = freshModel.children[0];
+            freshModel.remove(child);
+            furnitureGroup.add(child);
+          }
+
+          furnitureGroup.position.copy(savedPosition);
+          furnitureGroup.rotation.copy(savedRotation);
+          furnitureGroup.scale.copy(savedScale);
+          furnitureGroup.userData = savedUserData;
+        } else if (properties.verticalAngle !== undefined || properties.horizontalAngle !== undefined) {
+          // Angle-only: directly rotate the arrow root
+          furnitureGroup.traverse((child) => {
+            if (child.userData.type === 'topVentArrow') {
               child.rotation.x = (merged.verticalAngle ?? 0) * Math.PI / 180;
               child.rotation.y = (merged.horizontalAngle ?? 0) * Math.PI / 180;
             }
