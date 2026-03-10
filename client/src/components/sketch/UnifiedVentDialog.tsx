@@ -427,6 +427,7 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
       isEditing={props.isEditing}
       dialogTitle={isTopVentBox ? 'Vent Top Box' : undefined}
       topSectionContent={topSectionContent}
+      hideDimensionsSection={isTopVentBox}
       onConfirm={(data) => {
         const furnitureData = mapFromAirEntryFormat(data);
         props.onConfirm(furnitureData);

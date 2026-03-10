@@ -107,6 +107,8 @@ interface AirEntryDialogProps {
   dialogTitle?: string;
   // Optional extra content rendered at the top of the form (before vent simulation sections)
   topSectionContent?: ReactNode;
+  // Hide the Dimensions section (shape/width/height/rotation) — e.g. for topVentBox which handles dims separately
+  hideDimensionsSection?: boolean;
 }
 
 // Props para propiedades de pared
@@ -1226,6 +1228,33 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           </div>
                         </div>
                       </div>
+
+                      {/* Rotation X/Y/Z */}
+                      <div>
+                        <label className="text-xs text-slate-600 mb-2 block">Rotation (degrees)</label>
+                        <div className="grid grid-cols-3 gap-2">
+                          {(['x', 'y', 'z'] as const).map((axis) => (
+                            <div key={axis}>
+                              <label className="text-xs uppercase">{axis}</label>
+                              <Input
+                                type="number"
+                                step="1"
+                                value={Math.round(element3DRotation[axis] * 180 / Math.PI)}
+                                onChange={(e) => {
+                                  const deg = Number(e.target.value);
+                                  const rad = deg * Math.PI / 180;
+                                  const newRotation = { ...element3DRotation, [axis]: rad };
+                                  setElement3DRotation(newRotation);
+                                  if ('onRotationUpdate' in props && props.onRotationUpdate) {
+                                    props.onRotationUpdate!(newRotation);
+                                  }
+                                }}
+                                className="text-sm"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                       
                     </div>
                   </div>
@@ -1437,8 +1466,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                 </div>
                 )}
 
-                {/* 4. DIMENSIONS SECTION - Show for both airEntry and furnVent modes */}
-                {(mode === 'airEntry' || mode === 'furnVent') && (
+                {/* 4. DIMENSIONS SECTION - Show for both airEntry and furnVent modes (unless hidden, e.g. topVentBox) */}
+                {(mode === 'airEntry' || mode === 'furnVent') && !(props as AirEntryDialogProps).hideDimensionsSection && (
                   <div className="border rounded-lg p-4 bg-slate-50/50">
                     <h4 className="font-medium text-sm mb-4 text-slate-700 border-b border-slate-200 pb-2">Dimensions</h4>
                   
