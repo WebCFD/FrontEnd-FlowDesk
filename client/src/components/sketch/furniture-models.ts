@@ -525,8 +525,10 @@ export const createTopVentBoxModel = (simulationProperties?: { state?: string; a
 
     const isOutlet = airOrientation === 'outflow';
 
+    // Place the rotation pivot AT the top face so angle tilt rotates around the surface
     const ventArrowsRoot = new THREE.Group();
     ventArrowsRoot.userData = { type: 'topVentArrow' };
+    ventArrowsRoot.position.set(0, 0, boxHeight);
     ventArrowsRoot.rotation.x = verticalAngle * Math.PI / 180;
     ventArrowsRoot.rotation.y = horizontalAngle * Math.PI / 180;
 
@@ -553,7 +555,8 @@ export const createTopVentBoxModel = (simulationProperties?: { state?: string; a
         cone.position.z = shaftLength + coneHeight / 2;
       }
 
-      arrowGroup.position.set(x, y, boxHeight + 3);
+      // Arrow positions are relative to ventArrowsRoot (already at boxHeight)
+      arrowGroup.position.set(x, y, 3);
 
       if (airOrientation === 'equilibrium') {
         const cone2 = new THREE.Mesh(new THREE.ConeGeometry(3.5, coneHeight, 8), arrowMat);
@@ -566,13 +569,6 @@ export const createTopVentBoxModel = (simulationProperties?: { state?: string; a
       arrowGroup.add(cone);
       ventArrowsRoot.add(arrowGroup);
     }
-
-    const gs = group.scale;
-    ventArrowsRoot.scale.set(
-      gs.x !== 0 ? 1 / gs.x : 1,
-      gs.y !== 0 ? 1 / gs.y : 1,
-      gs.z !== 0 ? 1 / gs.z : 1
-    );
 
     group.add(ventArrowsRoot);
   }
