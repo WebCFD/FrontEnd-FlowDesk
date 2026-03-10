@@ -819,6 +819,50 @@ const createFlowTypeLabelSprite = (letter: string, hexColor: number): THREE.Spri
   return sprite;
 };
 
+// Helper: add vent arrows to the top face of a TopVentBox.
+// Creates a ventLayer sub-group at z=150 (boxHeight in model local space) so the arrows
+// sit on the top surface of the box, identical to a floor vent.
+const addTopVentArrows = (
+  furnitureGroup: THREE.Group,
+  simulationProps?: Record<string, any>
+) => {
+  // Remove any existing topVentLayer children
+  const toRemove = furnitureGroup.children.filter((c) => c.userData?.type === 'topVentLayer');
+  for (const obj of toRemove) {
+    obj.traverse((c) => {
+      if (c instanceof THREE.Mesh) {
+        c.geometry?.dispose();
+        if (Array.isArray(c.material)) c.material.forEach((m: any) => m.dispose());
+        else (c.material as any)?.dispose();
+      }
+    });
+    furnitureGroup.remove(obj);
+  }
+
+  const airOrientation = simulationProps?.airOrientation ?? 'inflow';
+  const state = simulationProps?.state ?? 'open';
+  const verticalAngle = simulationProps?.verticalAngle ?? 0;
+  const horizontalAngle = simulationProps?.horizontalAngle ?? 0;
+
+  // ventLayer positioned at top face in model local space (boxHeight = 150)
+  // Scale is kept at {1,1,1} when calling addVentArrows so its internal counter-scale
+  // is a no-op. After that we apply the true counter-scale to ventLayer itself.
+  const ventLayer = new THREE.Group();
+  ventLayer.userData = { type: 'topVentLayer' };
+  ventLayer.position.set(0, 0, 150);
+
+  // Identical to a floor vent: surfaceType='floor' → arrows point up, compact 2×2 grid
+  addVentArrows(ventLayer, airOrientation, state, 'floor', verticalAngle, horizontalAngle);
+
+  // Counter-scale ventLayer to cancel distortion from furnitureGroup scale
+  const sx = furnitureGroup.scale.x || 1;
+  const sy = furnitureGroup.scale.y || 1;
+  const sz = furnitureGroup.scale.z || 1;
+  ventLayer.scale.set(1 / sx, 1 / sy, 1 / sz);
+
+  furnitureGroup.add(ventLayer);
+};
+
 // Helper: remove existing vent arrows from a group
 const removeVentArrows = (group: THREE.Group) => {
   const toRemove: THREE.Object3D[] = [];
@@ -1153,6 +1197,11 @@ const createFurnitureModel = (
         );
       }
     });
+  }
+
+  // For topVentBox: add vent arrows on the top face using the shared addVentArrows logic
+  if (furnitureItem.type === 'topVentBox') {
+    addTopVentArrows(model, furnitureItem.simulationProperties as Record<string, any>);
   }
 
   if (furnitureItem.type === 'rack' || furnitureItem.type === 'topVentBox' || furnitureItem.type === 'sideVentBox') {
@@ -6932,49 +6981,10 @@ export default function Canvas3D({
         }
       }
 
-      // Update topVentBox/sideVentBox arrows in real-time
-      if (editingFurniture.item.type === 'topVentBox' || editingFurniture.item.type === 'sideVentBox') {
+      // Update topVentBox arrows in real-time (state, direction, or angle changes)
+      if (editingFurniture.item.type === 'topVentBox') {
         const merged = furnitureGroup.userData.simulationProperties ?? {};
-
-        if (properties.airOrientation !== undefined || properties.state !== undefined) {
-          // State or direction changed — full model rebuild
-          const savedPosition = furnitureGroup.position.clone();
-          const savedRotation = furnitureGroup.rotation.clone();
-          const savedScale = furnitureGroup.scale.clone();
-          const savedUserData = { ...furnitureGroup.userData };
-
-          while (furnitureGroup.children.length > 0) {
-            const child = furnitureGroup.children[0];
-            if (child instanceof THREE.Mesh) {
-              child.geometry?.dispose();
-              if (Array.isArray(child.material)) child.material.forEach((m: any) => m.dispose());
-              else (child.material as any)?.dispose();
-            }
-            furnitureGroup.remove(child);
-          }
-
-          const freshModel = editingFurniture.item.type === 'sideVentBox'
-            ? createSideVentBoxModel(merged)
-            : createTopVentBoxModel(merged);
-          while (freshModel.children.length > 0) {
-            const child = freshModel.children[0];
-            freshModel.remove(child);
-            furnitureGroup.add(child);
-          }
-
-          furnitureGroup.position.copy(savedPosition);
-          furnitureGroup.rotation.copy(savedRotation);
-          furnitureGroup.scale.copy(savedScale);
-          furnitureGroup.userData = savedUserData;
-        } else if (properties.verticalAngle !== undefined || properties.horizontalAngle !== undefined) {
-          // Angle-only: directly rotate the arrow root
-          furnitureGroup.traverse((child) => {
-            if (child.userData.type === 'topVentArrow') {
-              child.rotation.x = (merged.verticalAngle ?? 0) * Math.PI / 180;
-              child.rotation.y = (merged.horizontalAngle ?? 0) * Math.PI / 180;
-            }
-          });
-        }
+        addTopVentArrows(furnitureGroup, merged);
       }
     }
   };
@@ -7164,6 +7174,11 @@ export default function Canvas3D({
         furnitureGroup.rotation.copy(savedRotation);
         furnitureGroup.scale.copy(savedScale);
         furnitureGroup.userData = savedUserData;
+
+        // Add vent arrows on the top face for topVentBox (scale is now restored)
+        if (editingFurniture.item.type === 'topVentBox') {
+          addTopVentArrows(furnitureGroup, data.simulationProperties as Record<string, any>);
+        }
       }
       
       if (data.nozzleProperties) {
@@ -7479,10 +7494,11 @@ export default function Canvas3D({
       )}
 
       {/* Dialog for editing furniture */}
-      {editingFurniture && editingFurniture.item.type === 'vent' ? (
+      {editingFurniture && (editingFurniture.item.type === 'vent' || editingFurniture.item.type === 'topVentBox') ? (
         <UnifiedVentDialog
           key={`vent-dialog-${editingFurniture.item.id}-${editingFurniture.mode || 'edit'}`}
           isOpen={true}
+          furnitureType={editingFurniture.item.type}
           onClose={() => setEditingFurniture(null)}
           onConfirm={(data) => handleFurnitureEdit(editingFurniture.index, data)}
           isCreationMode={editingFurniture.mode === 'creation'}

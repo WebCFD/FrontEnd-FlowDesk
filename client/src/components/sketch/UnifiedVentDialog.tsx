@@ -6,6 +6,7 @@ interface UnifiedVentDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onCancel?: () => void;
+  furnitureType?: string;
   onConfirm: (data: {
     name: string;
     position: { x: number; y: number; z: number };
@@ -84,7 +85,8 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
     onRotationUpdate,
     onScaleUpdate,
     onPropertiesUpdate,
-    debugKey
+    debugKey,
+    furnitureType
   } = props;
 
   // Stable callback references to prevent stale closures
@@ -203,8 +205,9 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
     const newScaleX = (airEntryData.width || currentDimensions.width) / 50; // width to scale.x
     const newScaleY = (airEntryData.height || currentDimensions.height) / 50; // height to scale.y (corrected)
     
+    const defaultName = furnitureType === 'topVentBox' ? 'Top Vent Box' : 'Vent';
     const furnitureData = {
-      name: props.initialValues?.name || 'Vent',
+      name: props.initialValues?.name || defaultName,
       position: airEntryData.position || currentPosition,
       rotation: currentRotation,
       scale: { 
