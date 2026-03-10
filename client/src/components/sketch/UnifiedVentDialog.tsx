@@ -1,6 +1,9 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import AirEntryDialog from './AirEntryDialog';
 import type { FurnitureItem } from '@shared/furniture-types';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface UnifiedVentDialogProps {
   isOpen: boolean;
@@ -14,6 +17,8 @@ interface UnifiedVentDialogProps {
     scale: { x: number; y: number; z: number };
     properties?: {
       temperature?: number;
+      material?: string;
+      emissivity?: number;
     };
     simulationProperties?: {
       flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
@@ -39,6 +44,8 @@ interface UnifiedVentDialogProps {
     scale: { x: number; y: number; z: number };
     properties?: {
       temperature?: number;
+      material?: string;
+      emissivity?: number;
     };
     simulationProperties?: {
       flowType?: 'Air Mass Flow' | 'Air Velocity' | 'Pressure';
@@ -79,6 +86,17 @@ interface UnifiedVentDialogProps {
   debugKey?: string;
 }
 
+const BOX_BASE = { width: 500, height: 1500, depth: 500 };
+
+const CHASSIS_EMISSIVITY: Record<string, number> = {
+  default: 0.90,
+  wood: 0.90,
+  metal: 0.25,
+  glass: 0.84,
+  concrete: 0.91,
+  painted: 0.92,
+};
+
 export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
   const {
     onPositionUpdate,
@@ -88,6 +106,8 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
     debugKey,
     furnitureType
   } = props;
+
+  const isTopVentBox = furnitureType === 'topVentBox';
 
   // Stable callback references to prevent stale closures
   const stableOnPositionUpdate = useCallback((position: { x: number; y: number; z: number }) => {
@@ -125,7 +145,6 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
     }
   }, [onPropertiesUpdate]);
 
-  // Track callback updates (cleaned up)
   useEffect(() => {
     // Callback monitoring for debugging
   }, [onPositionUpdate, onRotationUpdate, onScaleUpdate, onPropertiesUpdate, debugKey]);
@@ -135,7 +154,7 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
     const scale = props.initialValues?.scale || { x: 1, y: 1, z: 1 };
     return {
       width: scale.x * 50,
-      height: scale.y * 50  // Corrected: Height maps to Y (vertical) not Z (depth)
+      height: scale.y * 50
     };
   });
 
@@ -165,22 +184,40 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
     return rotation;
   });
 
-  // No useEffect needed - state is initialized correctly and should not reset to initial values
-  // The currentDimensions state should maintain user changes, not be overridden by props
+  // ── TopVentBox-specific state ─────────────────────────────────────────────
+
+  const [boxDims, setBoxDims] = useState(() => {
+    if (isTopVentBox && props.initialValues?.scale) {
+      const s = props.initialValues.scale;
+      return {
+        width: Math.round(s.x * BOX_BASE.width),
+        height: Math.round(s.z * BOX_BASE.height),
+        depth: Math.round(s.y * BOX_BASE.depth),
+      };
+    }
+    return { ...BOX_BASE };
+  });
+
+  const [chassisTemp, setChassisTemp] = useState<number>(() => {
+    return props.initialValues?.properties?.temperature ?? 40;
+  });
+
+  const [chassisMaterial, setChassisMaterial] = useState<string>(() => {
+    return props.initialValues?.properties?.material || 'metal';
+  });
+
+  // ─────────────────────────────────────────────────────────────────────────
 
   // Map FurnitureItem simulationProperties to AirEntry properties format
   const mapToAirEntryFormat = () => {
     const simProps = props.initialValues?.simulationProperties;
     
-    // DIMENSIONS REAL-TIME FIX: Use ONLY currentDimensions state (like position pattern)
-    // No store dependency - follow positions architecture exactly
-    
     return {
       width: currentShape === 'circular' ? (simProps?.diameter || currentDimensions.width) : currentDimensions.width,
       height: currentShape === 'circular' ? (simProps?.diameter || currentDimensions.height) : currentDimensions.height,
-      distanceToFloor: 120, // Default (not used in 3D)
-      position: currentPosition, // Use current state instead of initial values
-      rotation: currentRotation, // Use current state instead of initial values
+      distanceToFloor: 120,
+      position: currentPosition,
+      rotation: currentRotation,
       shape: currentShape,
       properties: {
         state: simProps?.state || 'open',
@@ -191,7 +228,6 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
         flowIntensity: simProps?.flowIntensity || 'medium',
         airOrientation: simProps?.airOrientation || 'inflow',
         customIntensityValue: simProps?.customIntensityValue || 0.5,
-        // Include vertical/horizontal angles following airTemperature pattern
         verticalAngle: simProps?.verticalAngle || 0,
         horizontalAngle: simProps?.horizontalAngle || 0,
         ventRotation: currentVentRotation,
@@ -201,25 +237,43 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
 
   // Map AirEntry format back to FurnitureItem format
   const mapFromAirEntryFormat = (airEntryData: any) => {
-    // Calculate scale from current dimensions state
-    const newScaleX = (airEntryData.width || currentDimensions.width) / 50; // width to scale.x
-    const newScaleY = (airEntryData.height || currentDimensions.height) / 50; // height to scale.y (corrected)
-    
-    const defaultName = furnitureType === 'topVentBox' ? 'Top Vent Box' : 'Vent';
+    let scale: { x: number; y: number; z: number };
+
+    if (isTopVentBox) {
+      scale = {
+        x: boxDims.width / BOX_BASE.width,
+        y: boxDims.depth / BOX_BASE.depth,
+        z: boxDims.height / BOX_BASE.height,
+      };
+    } else {
+      const newScaleX = (airEntryData.width || currentDimensions.width) / 50;
+      const newScaleY = (airEntryData.height || currentDimensions.height) / 50;
+      scale = {
+        x: newScaleX,
+        y: newScaleY,
+        z: props.initialValues?.scale?.z || 1
+      };
+    }
+
+    const defaultName = isTopVentBox ? 'Vent Top Box' : 'Vent';
+    const chassisEmissivity = CHASSIS_EMISSIVITY[chassisMaterial] ?? 0.90;
+
     const furnitureData = {
       name: props.initialValues?.name || defaultName,
       position: airEntryData.position || currentPosition,
       rotation: currentRotation,
-      scale: { 
-        x: newScaleX, 
-        y: newScaleY, // Height controls Y scale (vertical)
-        z: props.initialValues?.scale?.z || 1  // Keep Z scale unchanged (depth)
-      },
-      properties: {
-        temperature: airEntryData.properties?.temperature || 20,
-        material: airEntryData.properties?.material || 'default',
-        emissivity: airEntryData.properties?.emissivity ?? 0.90
-      },
+      scale,
+      properties: isTopVentBox
+        ? {
+            temperature: chassisTemp,
+            material: chassisMaterial,
+            emissivity: chassisEmissivity,
+          }
+        : {
+            temperature: airEntryData.properties?.temperature || 20,
+            material: airEntryData.properties?.material || 'default',
+            emissivity: airEntryData.properties?.emissivity ?? 0.90
+          },
       simulationProperties: {
         flowType: airEntryData.properties?.flowType || 'Air Mass Flow',
         flowValue: airEntryData.properties?.customIntensityValue || 0.5,
@@ -241,6 +295,127 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
     return furnitureData;
   };
 
+  // ── TopVentBox extra sections (injected into AirEntryDialog) ─────────────
+
+  const topSectionContent = isTopVentBox ? (
+    <>
+      {/* Box Dimensions */}
+      <div className="border rounded-lg p-4 bg-slate-50/50">
+        <h4 className="font-medium text-sm mb-4 text-slate-700 border-b border-slate-200 pb-2">
+          Box Dimensions (mm)
+        </h4>
+        <div className="grid grid-cols-3 gap-2">
+          <div>
+            <Label htmlFor="box-width" className="text-xs">Width</Label>
+            <Input
+              id="box-width"
+              type="number"
+              step="10"
+              min="100"
+              value={boxDims.width}
+              onChange={(e) => {
+                const mm = Number(e.target.value);
+                const updated = { ...boxDims, width: mm };
+                setBoxDims(updated);
+                stableOnScaleUpdate({
+                  x: mm / BOX_BASE.width,
+                  y: updated.depth / BOX_BASE.depth,
+                  z: updated.height / BOX_BASE.height,
+                });
+              }}
+              className="text-sm"
+            />
+          </div>
+          <div>
+            <Label htmlFor="box-height" className="text-xs">Height</Label>
+            <Input
+              id="box-height"
+              type="number"
+              step="10"
+              min="100"
+              value={boxDims.height}
+              onChange={(e) => {
+                const mm = Number(e.target.value);
+                const updated = { ...boxDims, height: mm };
+                setBoxDims(updated);
+                stableOnScaleUpdate({
+                  x: updated.width / BOX_BASE.width,
+                  y: updated.depth / BOX_BASE.depth,
+                  z: mm / BOX_BASE.height,
+                });
+              }}
+              className="text-sm"
+            />
+          </div>
+          <div>
+            <Label htmlFor="box-depth" className="text-xs">Depth</Label>
+            <Input
+              id="box-depth"
+              type="number"
+              step="10"
+              min="100"
+              value={boxDims.depth}
+              onChange={(e) => {
+                const mm = Number(e.target.value);
+                const updated = { ...boxDims, depth: mm };
+                setBoxDims(updated);
+                stableOnScaleUpdate({
+                  x: updated.width / BOX_BASE.width,
+                  y: mm / BOX_BASE.depth,
+                  z: updated.height / BOX_BASE.height,
+                });
+              }}
+              className="text-sm"
+            />
+          </div>
+        </div>
+        <p className="text-[10px] text-slate-400 mt-1">Default box: 500 × 1500 × 500 mm</p>
+      </div>
+
+      {/* Chassis Properties */}
+      <div className="border rounded-lg p-4 bg-slate-50/50">
+        <h4 className="font-medium text-sm mb-4 text-slate-700 border-b border-slate-200 pb-2">
+          Simulation Chassis Properties
+        </h4>
+        <div className="space-y-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="chassis-temp" className="text-right text-sm">
+              Temperature Chassis
+            </Label>
+            <Input
+              id="chassis-temp"
+              type="number"
+              value={chassisTemp}
+              onChange={(e) => setChassisTemp(Number(e.target.value))}
+              className="col-span-2"
+            />
+            <span className="text-sm">°C</span>
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="chassis-material" className="text-right text-sm">
+              Material Chassis
+            </Label>
+            <Select value={chassisMaterial} onValueChange={setChassisMaterial}>
+              <SelectTrigger className="col-span-3">
+                <SelectValue placeholder="Select material" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="default">Default (ε = 0.90)</SelectItem>
+                <SelectItem value="wood">Wood (ε = 0.90)</SelectItem>
+                <SelectItem value="metal">Metal (Steel) (ε = 0.25)</SelectItem>
+                <SelectItem value="glass">Glass (ε = 0.84)</SelectItem>
+                <SelectItem value="concrete">Concrete (ε = 0.91)</SelectItem>
+                <SelectItem value="painted">Painted Surface (ε = 0.92)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
+    </>
+  ) : undefined;
+
+  // ─────────────────────────────────────────────────────────────────────────
+
   return (
     <AirEntryDialog
       type="vent"
@@ -250,43 +425,39 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
       onCancel={props.onCancel}
       isCreating={props.isCreationMode}
       isEditing={props.isEditing}
+      dialogTitle={isTopVentBox ? 'Vent Top Box' : undefined}
+      topSectionContent={topSectionContent}
       onConfirm={(data) => {
         const furnitureData = mapFromAirEntryFormat(data);
         props.onConfirm(furnitureData);
       }}
       initialValues={mapToAirEntryFormat()}
-      // Pass position and rotation as direct props for 3D mode
       position={currentPosition}
       rotation={currentRotation}
-      // Add dimensions update callback for real-time updates
       onDimensionsUpdate={(newDimensions) => {
-        // Update current dimensions state with proper fallbacks - SAME PATTERN AS POSITION
+        if (isTopVentBox) return; // Dimensions handled via boxDims state for topVentBox
         const updatedDimensions = {
           width: newDimensions.width ?? currentDimensions.width,
           height: newDimensions.height ?? currentDimensions.height
         };
         
-        // CRITICAL FIX: Update local state first (same as position)
         setCurrentDimensions(updatedDimensions);
         
         const newScaleX = updatedDimensions.width / 50;
-        const newScaleY = updatedDimensions.height / 50;  // Corrected: Height to Y scale
+        const newScaleY = updatedDimensions.height / 50;
         
-        // CRITICAL FIX: Call callback for real-time scene updates (same as position)
         stableOnScaleUpdate({
           x: newScaleX,
-          y: newScaleY,  // Height controls Y scale (vertical)
-          z: props.initialValues?.scale?.z || 1  // Keep Z scale unchanged (depth)
+          y: newScaleY,
+          z: props.initialValues?.scale?.z || 1
         });
 
-        // Propagate shape change in real-time so Canvas3D can update geometry immediately
         if ((newDimensions as any).shape) {
           const newShape = (newDimensions as any).shape as 'rectangular' | 'circular';
           setCurrentShape(newShape);
           stableOnPropertiesUpdate({ shape: newShape } as any);
         }
       }}
-      // Add position and rotation update callbacks for real-time updates
       onPositionUpdate={(newPosition) => {
         setCurrentPosition(newPosition);
         stableOnPositionUpdate(newPosition);
@@ -295,9 +466,7 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
         setCurrentRotation(newRotation);
         stableOnRotationUpdate(newRotation);
       }}
-      // Add properties update callback for real-time Simulation Conditions updates
       onPropertiesUpdate={(newProperties) => {
-        // Map AirEntry format to UnifiedVent format and trigger callback
         const mappedProperties = {
           state: newProperties.state,
           temperature: newProperties.temperature,
@@ -309,12 +478,11 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
           customIntensityValue: newProperties.customIntensityValue,
           verticalAngle: newProperties.verticalAngle,
           horizontalAngle: newProperties.horizontalAngle,
-          airTemperature: newProperties.temperature, // Map temperature to airTemperature
+          airTemperature: newProperties.temperature,
         };
         
         stableOnPropertiesUpdate(mappedProperties);
 
-        // Handle ventRotation: update 3D mesh rotation around normal axis
         if (newProperties.ventRotation !== undefined) {
           setCurrentVentRotation(newProperties.ventRotation);
           const rotationRad = newProperties.ventRotation * Math.PI / 180;
@@ -323,10 +491,7 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
           stableOnRotationUpdate(newRotation);
         }
       }}
-      // Pass floor context for Information section
       floorContext={props.floorContext}
-      // For 3D vents, we don't need wall context, but AirEntryDialog expects it
-      // We'll provide minimal context to avoid errors
       wallContext={{
         wallId: `3d_vent_${props.floorContext?.floorName || 'unknown'}`,
         floorName: props.floorContext?.floorName || 'Ground Floor',

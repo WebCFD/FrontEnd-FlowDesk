@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -102,6 +103,10 @@ interface AirEntryDialogProps {
   currentFloor?: string;
   // Phase 3: Dialog positioning
   dialogPosition?: { x: number; y: number };
+  // Optional custom title override (e.g. "Vent Top Box" for topVentBox furniture)
+  dialogTitle?: string;
+  // Optional extra content rendered at the top of the form (before vent simulation sections)
+  topSectionContent?: ReactNode;
 }
 
 // Props para propiedades de pared
@@ -1024,7 +1029,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
             className="absolute top-3 left-3 h-1 w-8 bg-muted-foreground/20 rounded-sm" 
             style={{ pointerEvents: 'none' }}
           />
-          <DialogTitle>{mode === 'furnVent' ? 'Vent Furniture Properties' : titles[type]}</DialogTitle>
+          <DialogTitle>{(props as AirEntryDialogProps).dialogTitle || (mode === 'furnVent' ? 'Vent Furniture Properties' : titles[type])}</DialogTitle>
           <DialogDescription>{mode === 'furnVent' ? 'Configure 3D vent furniture simulation properties' : descriptions[type]}</DialogDescription>
           {onCancel && (
             <button
@@ -1048,6 +1053,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="space-y-6 py-4 max-h-[70vh] overflow-y-auto pr-2">
+            {(props as AirEntryDialogProps).topSectionContent}
             {type === 'wall' ? (
               // Campos para propiedades de pared
               <div className="space-y-4">

@@ -294,7 +294,7 @@ const generateFurnitureId = (
     'person': 'Person',
     'block': 'Block',
     'rack': 'Server Rack',
-    'topVentBox': 'Top Vent Box',
+    'topVentBox': 'Vent Top Box',
     'sideVentBox': 'Side Vent Box',
     'vent': 'Vent',
     'custom': 'Obj'

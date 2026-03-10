@@ -113,7 +113,7 @@ const furnitureItems: FurnitureItem[] = [
   },
   {
     id: 'topVentBox',
-    name: 'Top Vent Box',
+    name: 'Vent Top Box',
     icon: `
       <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect x="10" y="10" width="20" height="27" rx="1" fill="#2d2d2d" stroke="#555" stroke-width="1.5"/>
