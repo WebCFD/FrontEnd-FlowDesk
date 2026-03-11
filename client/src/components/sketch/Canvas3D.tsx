@@ -895,8 +895,9 @@ const addSideVentArrows = (
   // Rotate so that local +Z (arrow direction) maps to +Y in parent (outward from front face)
   ventLayer.rotation.x = -Math.PI / 2;
 
-  // Negate verticalAngle: ventLayer's -π/2 rotation flips the sign relative to wall vents.
-  // Negating here makes positive angle = arrows DOWN, matching wall vent behavior and JSON convention.
+  // Negate verticalAngle only: ventLayer's -π/2 rotation flips vertical sign relative to wall vents.
+  // Horizontal does NOT need negation — the Euler XYZ composition of R_x(-v)*R_y(h) gives the same
+  // scene-space X component as the wall vent's R_x(v)*R_y(h), so positive h = rightward for both.
   addVentArrows(ventLayer, airOrientation, state, undefined, -verticalAngle, horizontalAngle);
 
   // Counter-scale to cancel distortion from furnitureGroup scale.
