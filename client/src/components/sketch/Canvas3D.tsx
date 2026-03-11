@@ -895,8 +895,9 @@ const addSideVentArrows = (
   // Rotate so that local +Z (arrow direction) maps to +Y in parent (outward from front face)
   ventLayer.rotation.x = -Math.PI / 2;
 
-  // undefined surfaceType → wall style (wider horizontal spread)
-  addVentArrows(ventLayer, airOrientation, state, undefined, verticalAngle, horizontalAngle);
+  // Negate verticalAngle: ventLayer's -π/2 rotation flips the sign relative to wall vents.
+  // Negating here makes positive angle = arrows DOWN, matching wall vent behavior and JSON convention.
+  addVentArrows(ventLayer, airOrientation, state, undefined, -verticalAngle, horizontalAngle);
 
   // Counter-scale to cancel distortion from furnitureGroup scale.
   // Note: because ventLayer.rotation.x = -π/2, its local Y becomes the parent's -Z
@@ -991,11 +992,9 @@ const createVentPlaneModel = (furnitureItem: FurnitureItem): THREE.Group => {
   const simProps = furnitureItem.simulationProperties as any;
   const ventAirOrientation = simProps?.airOrientation ?? 'inflow';
   const ventState = simProps?.state ?? 'open';
-  // Wall vents (surfaceType=undefined): negate vertical so positive = up (Three.js rotation.x sign fix)
-  const wallVertFix = furnitureItem.surfaceType === undefined ? -1 : 1;
   addVentArrows(
     group, ventAirOrientation, ventState, furnitureItem.surfaceType,
-    wallVertFix * (simProps?.verticalAngle ?? 0),
+    simProps?.verticalAngle ?? 0,
     simProps?.horizontalAngle ?? 0
   );
 
@@ -2447,7 +2446,7 @@ export default function Canvas3D({
             mergedProps.airOrientation ?? 'inflow',
             mergedProps.state ?? 'open',
             undefined,
-            isVent ? -(mergedProps.verticalAngle ?? 0) : 0,
+            isVent ? (mergedProps.verticalAngle ?? 0) : 0,
             isVent ? (mergedProps.horizontalAngle ?? 0) : 0
           );
           arrowsGroup.traverse((child) => {
@@ -3397,7 +3396,7 @@ export default function Canvas3D({
         };
         // surfaceType=undefined → wall mode: arrowZ=+8, posiciones [[-20,-10],[20,-10],[-20,10],[20,10]]
         // forward ya está garantizado INWARD por el centroide, así que arrowZ=+8 = hacia el interior
-        addVentArrows(arrowsGroup, arrowOrientation, arrowState, undefined, -arrowVertical, arrowHorizontal);
+        addVentArrows(arrowsGroup, arrowOrientation, arrowState, undefined, arrowVertical, arrowHorizontal);
         // Make arrows render on top (prevent depth occlusion from wall geometry)
         arrowsGroup.traverse((child) => {
           if (child instanceof THREE.Mesh) {
@@ -7016,20 +7015,18 @@ export default function Canvas3D({
           // Full rebuild needed when flow direction or open/close state changes
           const currentAirOrientation = merged.airOrientation ?? 'inflow';
           const currentState = merged.state ?? 'open';
-          const isWallVent = editingFurniture.item.surfaceType === undefined;
           removeVentArrows(furnitureGroup);
           addVentArrows(
             furnitureGroup, currentAirOrientation, currentState, editingFurniture.item.surfaceType,
-            isWallVent ? -(merged.verticalAngle ?? 0) : (merged.verticalAngle ?? 0),
+            merged.verticalAngle ?? 0,
             merged.horizontalAngle ?? 0
           );
         } else if (properties.verticalAngle !== undefined || properties.horizontalAngle !== undefined) {
           // Angle-only change: directly mutate the existing ventArrowsRoot rotation
           // This avoids remove+recreate and guarantees both angles always compound
-          const isWallVent = editingFurniture.item.surfaceType === undefined;
           furnitureGroup.traverse((child) => {
             if (child.userData.type === 'ventArrow') {
-              child.rotation.x = (isWallVent ? -(merged.verticalAngle ?? 0) : (merged.verticalAngle ?? 0)) * Math.PI / 180;
+              child.rotation.x = (merged.verticalAngle ?? 0) * Math.PI / 180;
               child.rotation.y = (merged.horizontalAngle ?? 0) * Math.PI / 180;
             }
           });
@@ -7180,14 +7177,13 @@ export default function Canvas3D({
 
       // Refresh vent arrows when confirming (airOrientation, state, or orientation angles may have changed)
       if (editingFurniture.item.type === 'vent' && data.simulationProperties) {
-        const isWallVentConfirm = editingFurniture.item.surfaceType === undefined;
         removeVentArrows(furnitureGroup);
         addVentArrows(
           furnitureGroup,
           data.simulationProperties.airOrientation ?? 'inflow',
           data.simulationProperties.state ?? 'open',
           editingFurniture.item.surfaceType,
-          isWallVentConfirm ? -(data.simulationProperties.verticalAngle ?? 0) : (data.simulationProperties.verticalAngle ?? 0),
+          data.simulationProperties.verticalAngle ?? 0,
           data.simulationProperties.horizontalAngle ?? 0
         );
       }

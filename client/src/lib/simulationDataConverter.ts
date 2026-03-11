@@ -902,9 +902,12 @@ export function generateSimulationData(
         const sfθh = ventSimProps.horizontalAngle ?? 0;
         const ventAirDir = (ventSimProps.airOrientation || 'outflow') as 'inflow' | 'outflow' | 'equilibrium';
         const isSideVentForNormal = obj.userData?.furnitureType === 'sideVentBox';
-        // Local outward normal: top face = (0,0,1), side-vent front face = (0,1,0)
+        // computeBoxVentFlowDirection uses localNormal as the base inflow direction
+        // (outflow negates it). For sideVentBox, air exits in +Y so inward ref = {0,-1,0}.
+        // For topVentBox the branch below uses computeSurfaceFlowDirection instead,
+        // but we still provide the top-face local normal {0,0,1} as a fallback.
         const localNormal = isSideVentForNormal
-          ? { x: 0, y: 1, z: 0 }
+          ? { x: 0, y: -1, z: 0 }
           : { x: 0, y: 0, z: 1 };
         const topFlowDir = computeBoxVentFlowDirection(
           localNormal,
