@@ -863,6 +863,52 @@ const addTopVentArrows = (
   furnitureGroup.add(ventLayer);
 };
 
+// Helper: add vent arrows to the front face of a SideVentBox.
+// The vent grill is at +Y (boxDepth/2=25 in model local space). We place a ventLayer
+// group there and rotate it so its local +Z (the arrow axis) points toward +Y in the
+// parent frame — i.e. outward from the front face.
+const addSideVentArrows = (
+  furnitureGroup: THREE.Group,
+  simulationProps?: Record<string, any>
+) => {
+  const toRemove = furnitureGroup.children.filter((c) => c.userData?.type === 'sideVentLayer');
+  for (const obj of toRemove) {
+    obj.traverse((c) => {
+      if (c instanceof THREE.Mesh) {
+        c.geometry?.dispose();
+        if (Array.isArray(c.material)) c.material.forEach((m: any) => m.dispose());
+        else (c.material as any)?.dispose();
+      }
+    });
+    furnitureGroup.remove(obj);
+  }
+
+  const airOrientation = simulationProps?.airOrientation ?? 'inflow';
+  const state = simulationProps?.state ?? 'open';
+  const verticalAngle = simulationProps?.verticalAngle ?? 0;
+  const horizontalAngle = simulationProps?.horizontalAngle ?? 0;
+
+  const ventLayer = new THREE.Group();
+  ventLayer.userData = { type: 'sideVentLayer' };
+  // Center of front face: x=0, y=boxDepth/2=25, z=boxHeight/2=25
+  ventLayer.position.set(0, 25, 25);
+  // Rotate so that local +Z (arrow direction) maps to +Y in parent (outward from front face)
+  ventLayer.rotation.x = -Math.PI / 2;
+
+  // undefined surfaceType → wall style (wider horizontal spread)
+  addVentArrows(ventLayer, airOrientation, state, undefined, verticalAngle, horizontalAngle);
+
+  // Counter-scale to cancel distortion from furnitureGroup scale.
+  // Note: because ventLayer.rotation.x = -π/2, its local Y becomes the parent's -Z
+  // and its local Z becomes the parent's +Y, so we swap sy/sz in the counter-scale.
+  const sx = furnitureGroup.scale.x || 1;
+  const sy = furnitureGroup.scale.y || 1;
+  const sz = furnitureGroup.scale.z || 1;
+  ventLayer.scale.set(1 / sx, 1 / sz, 1 / sy);
+
+  furnitureGroup.add(ventLayer);
+};
+
 // Helper: remove existing vent arrows from a group
 const removeVentArrows = (group: THREE.Group) => {
   const toRemove: THREE.Object3D[] = [];
@@ -1202,6 +1248,11 @@ const createFurnitureModel = (
   // For topVentBox: add vent arrows on the top face using the shared addVentArrows logic
   if (furnitureItem.type === 'topVentBox') {
     addTopVentArrows(model, furnitureItem.simulationProperties as Record<string, any>);
+  }
+
+  // For sideVentBox: add vent arrows on the front face
+  if (furnitureItem.type === 'sideVentBox') {
+    addSideVentArrows(model, furnitureItem.simulationProperties as Record<string, any>);
   }
 
   if (furnitureItem.type === 'rack' || furnitureItem.type === 'topVentBox' || furnitureItem.type === 'sideVentBox') {
@@ -6986,6 +7037,12 @@ export default function Canvas3D({
         const merged = furnitureGroup.userData.simulationProperties ?? {};
         addTopVentArrows(furnitureGroup, merged);
       }
+
+      // Update sideVentBox arrows in real-time
+      if (editingFurniture.item.type === 'sideVentBox') {
+        const merged = furnitureGroup.userData.simulationProperties ?? {};
+        addSideVentArrows(furnitureGroup, merged);
+      }
     }
   };
 
@@ -7178,6 +7235,11 @@ export default function Canvas3D({
         // Add vent arrows on the top face for topVentBox (scale is now restored)
         if (editingFurniture.item.type === 'topVentBox') {
           addTopVentArrows(furnitureGroup, data.simulationProperties as Record<string, any>);
+        }
+
+        // Add vent arrows on the front face for sideVentBox (scale is now restored)
+        if (editingFurniture.item.type === 'sideVentBox') {
+          addSideVentArrows(furnitureGroup, data.simulationProperties as Record<string, any>);
         }
       }
       
@@ -7494,7 +7556,7 @@ export default function Canvas3D({
       )}
 
       {/* Dialog for editing furniture */}
-      {editingFurniture && (editingFurniture.item.type === 'vent' || editingFurniture.item.type === 'topVentBox') ? (
+      {editingFurniture && (editingFurniture.item.type === 'vent' || editingFurniture.item.type === 'topVentBox' || editingFurniture.item.type === 'sideVentBox') ? (
         <UnifiedVentDialog
           key={`vent-dialog-${editingFurniture.item.id}-${editingFurniture.mode || 'edit'}`}
           isOpen={true}

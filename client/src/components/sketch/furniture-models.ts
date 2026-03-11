@@ -594,64 +594,6 @@ export const createSideVentBoxModel = (simulationProperties?: { state?: string; 
     group.add(mesh);
   }
 
-  if (state === 'open') {
-    const arrowColor = 0x22c55e;
-    const arrowMat = new THREE.MeshStandardMaterial({
-      color: arrowColor,
-      roughness: 0.3,
-      metalness: 0.1,
-      transparent: true,
-      opacity: 0.85,
-    });
-
-    const arrowPositions = [
-      [-30, boxHeight * 0.3],
-      [30, boxHeight * 0.3],
-      [-30, boxHeight * 0.7],
-      [30, boxHeight * 0.7],
-    ];
-
-    const isOutlet = airOrientation === 'outflow';
-    const direction = isOutlet ? 1 : -1;
-
-    for (const [x, z] of arrowPositions) {
-      const arrowGroup = new THREE.Group();
-
-      const shaftLength = 15;
-      const coneHeight = 8;
-
-      const shaftGeometry = new THREE.CylinderGeometry(1.2, 1.2, shaftLength, 8);
-      const shaft = new THREE.Mesh(shaftGeometry, arrowMat);
-
-      const coneGeometry = new THREE.ConeGeometry(3.5, coneHeight, 8);
-      const cone = new THREE.Mesh(coneGeometry, arrowMat);
-
-      if (isOutlet) {
-        cone.rotation.z = Math.PI;
-        cone.position.y = coneHeight / 2;
-        shaft.position.y = coneHeight + shaftLength / 2;
-        arrowGroup.position.set(x, boxDepth / 2 + 3, z);
-      } else {
-        shaft.position.y = shaftLength / 2;
-        cone.position.y = shaftLength + coneHeight / 2;
-        arrowGroup.position.set(x, boxDepth / 2 + 3, z);
-      }
-
-      // Equilibrium: add a second cone at the opposite end (bidirectional arrow)
-      if (airOrientation === 'equilibrium') {
-        const cone2 = new THREE.Mesh(new THREE.ConeGeometry(3.5, coneHeight, 8), arrowMat);
-        cone2.rotation.z = Math.PI;
-        cone2.position.y = -coneHeight / 2;
-        arrowGroup.add(cone2);
-      }
-
-      arrowGroup.add(shaft);
-      arrowGroup.add(cone);
-      arrowGroup.userData = { type: 'sideVentArrow' };
-      group.add(arrowGroup);
-    }
-  }
-
   return group;
 };
 

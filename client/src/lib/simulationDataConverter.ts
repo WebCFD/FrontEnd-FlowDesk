@@ -902,9 +902,9 @@ export function generateSimulationData(
         const sfθh = ventSimProps.horizontalAngle ?? 0;
         const ventAirDir = (ventSimProps.airOrientation || 'outflow') as 'inflow' | 'outflow' | 'equilibrium';
         const isSideVentForNormal = obj.userData?.furnitureType === 'sideVentBox';
-        // Local outward normal: top face = (0,0,1), side-vent front face = (0,-1,0)
+        // Local outward normal: top face = (0,0,1), side-vent front face = (0,1,0)
         const localNormal = isSideVentForNormal
-          ? { x: 0, y: -1, z: 0 }
+          ? { x: 0, y: 1, z: 0 }
           : { x: 0, y: 0, z: 1 };
         const topFlowDir = computeBoxVentFlowDirection(
           localNormal,

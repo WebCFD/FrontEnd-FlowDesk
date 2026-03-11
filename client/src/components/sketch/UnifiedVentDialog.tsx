@@ -86,7 +86,12 @@ interface UnifiedVentDialogProps {
   debugKey?: string;
 }
 
+// TopVentBox base dimensions (mm): width × height × depth
 const BOX_BASE = { width: 500, height: 1500, depth: 500 };
+
+// SideVentBox base dimensions (mm): width × height × depth
+// Physical box: 1500mm wide, 500mm tall, 500mm deep — vent on front face
+const BOX_SIDE_BASE = { width: 1500, height: 500, depth: 500 };
 
 const CHASSIS_EMISSIVITY: Record<string, number> = {
   default: 0.90,
@@ -108,8 +113,9 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
   } = props;
 
   const isTopVentBox = furnitureType === 'topVentBox';
+  const isSideVentBox = furnitureType === 'sideVentBox';
+  const isBoxVent = isTopVentBox || isSideVentBox;
 
-  // Stable callback references to prevent stale closures
   const stableOnPositionUpdate = useCallback((position: { x: number; y: number; z: number }) => {
     if (onPositionUpdate) {
       onPositionUpdate(position);
@@ -149,7 +155,6 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
     // Callback monitoring for debugging
   }, [onPositionUpdate, onRotationUpdate, onScaleUpdate, onPropertiesUpdate, debugKey]);
 
-  // State to track current dimensions for accurate real-time updates
   const [currentDimensions, setCurrentDimensions] = useState(() => {
     const scale = props.initialValues?.scale || { x: 1, y: 1, z: 1 };
     return {
@@ -158,17 +163,14 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
     };
   });
 
-  // State to track vent rotation (degrees, 0-360)
   const [currentVentRotation, setCurrentVentRotation] = useState(() => {
     return props.initialValues?.simulationProperties?.ventRotation || 0;
   });
 
-  // State to track vent shape
   const [currentShape, setCurrentShape] = useState<'rectangular' | 'circular'>(() => {
     return props.initialValues?.simulationProperties?.shape || 'rectangular';
   });
 
-  // State to track current position and rotation for accurate real-time updates
   const [currentPosition, setCurrentPosition] = useState(() => {
     return props.initialValues?.position || { x: 0, y: 0, z: 0 };
   });
@@ -184,7 +186,7 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
     return rotation;
   });
 
-  // ── TopVentBox-specific state ─────────────────────────────────────────────
+  // ── Box vent specific state ───────────────────────────────────────────────
 
   const [boxDims, setBoxDims] = useState(() => {
     if (isTopVentBox && props.initialValues?.scale) {
@@ -195,7 +197,17 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
         depth: Math.round(s.y * BOX_BASE.depth),
       };
     }
-    return { ...BOX_BASE };
+    if (isSideVentBox && props.initialValues?.scale) {
+      const s = props.initialValues.scale;
+      return {
+        width: Math.round(s.x * BOX_SIDE_BASE.width),
+        height: Math.round(s.z * BOX_SIDE_BASE.height),
+        depth: Math.round(s.y * BOX_SIDE_BASE.depth),
+      };
+    }
+    if (isTopVentBox) return { ...BOX_BASE };
+    if (isSideVentBox) return { ...BOX_SIDE_BASE };
+    return { width: 500, height: 500, depth: 500 };
   });
 
   const [chassisTemp, setChassisTemp] = useState<number>(() => {
@@ -208,7 +220,6 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
 
   // ─────────────────────────────────────────────────────────────────────────
 
-  // Map FurnitureItem simulationProperties to AirEntry properties format
   const mapToAirEntryFormat = () => {
     const simProps = props.initialValues?.simulationProperties;
     
@@ -235,7 +246,6 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
     };
   };
 
-  // Map AirEntry format back to FurnitureItem format
   const mapFromAirEntryFormat = (airEntryData: any) => {
     let scale: { x: number; y: number; z: number };
 
@@ -244,6 +254,12 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
         x: boxDims.width / BOX_BASE.width,
         y: boxDims.depth / BOX_BASE.depth,
         z: boxDims.height / BOX_BASE.height,
+      };
+    } else if (isSideVentBox) {
+      scale = {
+        x: boxDims.width / BOX_SIDE_BASE.width,
+        y: boxDims.depth / BOX_SIDE_BASE.depth,
+        z: boxDims.height / BOX_SIDE_BASE.height,
       };
     } else {
       const newScaleX = (airEntryData.width || currentDimensions.width) / 50;
@@ -255,7 +271,7 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
       };
     }
 
-    const defaultName = isTopVentBox ? 'Vent Top Box' : 'Vent';
+    const defaultName = isTopVentBox ? 'Vent Top Box' : isSideVentBox ? 'Side Vent Box' : 'Vent';
     const chassisEmissivity = CHASSIS_EMISSIVITY[chassisMaterial] ?? 0.90;
 
     const furnitureData = {
@@ -263,7 +279,7 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
       position: airEntryData.position || currentPosition,
       rotation: currentRotation,
       scale,
-      properties: isTopVentBox
+      properties: isBoxVent
         ? {
             temperature: chassisTemp,
             material: chassisMaterial,
@@ -295,9 +311,9 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
     return furnitureData;
   };
 
-  // ── TopVentBox extra sections (injected into AirEntryDialog) ─────────────
+  // ── Box Dimensions + Chassis Properties sections ──────────────────────────
 
-  const topSectionContent = isTopVentBox ? (
+  const buildBoxDimsSection = (base: typeof BOX_BASE, label: string) => (
     <>
       {/* Box Dimensions */}
       <div className="border rounded-lg p-4 bg-slate-50/50">
@@ -318,9 +334,9 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
                 const updated = { ...boxDims, width: mm };
                 setBoxDims(updated);
                 stableOnScaleUpdate({
-                  x: mm / BOX_BASE.width,
-                  y: updated.depth / BOX_BASE.depth,
-                  z: updated.height / BOX_BASE.height,
+                  x: mm / base.width,
+                  y: updated.depth / base.depth,
+                  z: updated.height / base.height,
                 });
               }}
               className="text-sm"
@@ -339,9 +355,9 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
                 const updated = { ...boxDims, height: mm };
                 setBoxDims(updated);
                 stableOnScaleUpdate({
-                  x: updated.width / BOX_BASE.width,
-                  y: updated.depth / BOX_BASE.depth,
-                  z: mm / BOX_BASE.height,
+                  x: updated.width / base.width,
+                  y: updated.depth / base.depth,
+                  z: mm / base.height,
                 });
               }}
               className="text-sm"
@@ -360,16 +376,16 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
                 const updated = { ...boxDims, depth: mm };
                 setBoxDims(updated);
                 stableOnScaleUpdate({
-                  x: updated.width / BOX_BASE.width,
-                  y: mm / BOX_BASE.depth,
-                  z: updated.height / BOX_BASE.height,
+                  x: updated.width / base.width,
+                  y: mm / base.depth,
+                  z: updated.height / base.height,
                 });
               }}
               className="text-sm"
             />
           </div>
         </div>
-        <p className="text-[10px] text-slate-400 mt-1">Default box: 500 × 1500 × 500 mm</p>
+        <p className="text-[10px] text-slate-400 mt-1">{label}</p>
       </div>
 
       {/* Chassis Properties */}
@@ -412,7 +428,13 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
         </div>
       </div>
     </>
-  ) : undefined;
+  );
+
+  const topSectionContent = isTopVentBox
+    ? buildBoxDimsSection(BOX_BASE, 'Default box: 500 × 1500 × 500 mm')
+    : isSideVentBox
+    ? buildBoxDimsSection(BOX_SIDE_BASE, 'Default box: 1500 × 500 × 500 mm')
+    : undefined;
 
   // ─────────────────────────────────────────────────────────────────────────
 
@@ -425,9 +447,9 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
       onCancel={props.onCancel}
       isCreating={props.isCreationMode}
       isEditing={props.isEditing}
-      dialogTitle={isTopVentBox ? 'Vent Top Box' : undefined}
+      dialogTitle={isTopVentBox ? 'Vent Top Box' : isSideVentBox ? 'Side Vent Box' : undefined}
       topSectionContent={topSectionContent}
-      hideDimensionsSection={isTopVentBox}
+      hideDimensionsSection={isBoxVent}
       onConfirm={(data) => {
         const furnitureData = mapFromAirEntryFormat(data);
         props.onConfirm(furnitureData);
@@ -436,7 +458,7 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
       position={currentPosition}
       rotation={currentRotation}
       onDimensionsUpdate={(newDimensions) => {
-        if (isTopVentBox) return; // Dimensions handled via boxDims state for topVentBox
+        if (isBoxVent) return;
         const updatedDimensions = {
           width: newDimensions.width ?? currentDimensions.width,
           height: newDimensions.height ?? currentDimensions.height
