@@ -222,8 +222,8 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
       properties: {
         state: simProps?.state || 'open',
         temperature: simProps?.airTemperature || 20,
-        material: simProps?.material || (simProps?.state === 'open' ? 'air' : 'default'),
-        emissivity: simProps?.emissivity ?? (simProps?.state === 'open' ? 0.05 : 0.90),
+        material: (simProps as any)?.material || (simProps?.state === 'open' ? 'air' : 'default'),
+        emissivity: (simProps as any)?.emissivity ?? (simProps?.state === 'open' ? 0.05 : 0.90),
         flowType: simProps?.flowType || 'Air Mass Flow',
         flowIntensity: simProps?.flowIntensity || 'medium',
         airOrientation: simProps?.airOrientation || 'inflow',
@@ -460,8 +460,9 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
         }
       }}
       onPositionUpdate={(newPosition) => {
-        setCurrentPosition(newPosition);
-        stableOnPositionUpdate(newPosition);
+        const pos3d = newPosition as { x: number; y: number; z: number };
+        setCurrentPosition(pos3d);
+        stableOnPositionUpdate(pos3d);
       }}
       onRotationUpdate={(newRotation) => {
         setCurrentRotation(newRotation);
@@ -473,7 +474,7 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
           temperature: newProperties.temperature,
           material: (newProperties as any).material,
           emissivity: (newProperties as any).emissivity,
-          airOrientation: newProperties.airOrientation,
+          airOrientation: newProperties.airOrientation as 'inflow' | 'outflow' | undefined,
           flowIntensity: newProperties.flowIntensity,
           flowType: newProperties.flowType,
           customIntensityValue: newProperties.customIntensityValue,

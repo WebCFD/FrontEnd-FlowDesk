@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import type { StairPolygon } from '@/types';
 import { createRoomPerimeter } from '@/lib/geometryEngine';
-import { computeWallFlowDirection, computeSurfaceFlowDirection } from '@/lib/flowDirectionUtils';
+import { computeWallFlowDirection, computeSurfaceFlowDirection, computeBoxVentFlowDirection } from '@/lib/flowDirectionUtils';
 
 // Definición de los tipos internos que necesitamos
 interface Point2D {
@@ -900,9 +900,21 @@ export function generateSimulationData(
         const ventState = ventSimProps.state || 'open';
         const sfθv = ventSimProps.verticalAngle ?? 0;
         const sfθh = ventSimProps.horizontalAngle ?? 0;
-        const ventRotZ = obj.rotation.z || 0;
         const ventAirDir = (ventSimProps.airOrientation || 'outflow') as 'inflow' | 'outflow' | 'equilibrium';
-        const topFlowDir = computeSurfaceFlowDirection('floor', sfθv, sfθh, ventRotZ, ventAirDir);
+        const isSideVentForNormal = obj.userData?.furnitureType === 'sideVentBox';
+        // Local outward normal: top face = (0,0,1), side-vent front face = (0,-1,0)
+        const localNormal = isSideVentForNormal
+          ? { x: 0, y: -1, z: 0 }
+          : { x: 0, y: 0, z: 1 };
+        const topFlowDir = computeBoxVentFlowDirection(
+          localNormal,
+          obj.rotation.x || 0,
+          obj.rotation.y || 0,
+          obj.rotation.z || 0,
+          sfθv,
+          sfθh,
+          ventAirDir
+        );
         const ventFaceProps = {
           state: ventState,
           temperature: ventSimProps.airTemperature || 20,
@@ -920,7 +932,7 @@ export function generateSimulationData(
           })
         };
         
-        const isSideVent = obj.userData?.furnitureType === 'sideVentBox';
+        const isSideVent = isSideVentForNormal;
         
         const faces: Record<string, RackFaceExport> = {
           front: {

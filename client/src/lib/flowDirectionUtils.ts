@@ -129,3 +129,85 @@ export function computeSurfaceFlowDirection(
   }
   return { x: round5(dir.x), y: round5(dir.y), z: round5(dir.z) };
 }
+
+/**
+ * Compute the world-space flow direction for a furniture vent whose box can be
+ * rotated on ALL three Euler axes (X, Y, Z) — used by topVentBox / sideVentBox.
+ *
+ * Algorithm:
+ *  1. Start with the face outward normal in local space (localNormal).
+ *     - topVentBox top face  →  (0, 0, 1)
+ *     - sideVentBox front face → (0, -1, 0)
+ *  2. Apply the Euler rotation Rx·Ry·Rz to get the world-space normal n_world.
+ *  3. Build an orthonormal tangent frame around n_world (Gram-Schmidt).
+ *  4. Apply verticalAngle (θv) and horizontalAngle (θh) offsets in that tangent frame.
+ *  5. Negate for outflow.
+ *
+ * @param localNormal     Outward normal in box-local space, e.g. {0,0,1} for top face
+ * @param rotX            Box Euler rotation around X (radians)
+ * @param rotY            Box Euler rotation around Y (radians)
+ * @param rotZ            Box Euler rotation around Z (radians)
+ * @param verticalAngle   Tilt angle in degrees
+ * @param horizontalAngle Tilt angle in degrees
+ * @param airOrientation  'inflow' | 'outflow' | 'equilibrium'
+ */
+export function computeBoxVentFlowDirection(
+  localNormal: { x: number; y: number; z: number },
+  rotX: number,
+  rotY: number,
+  rotZ: number,
+  verticalAngle: number,
+  horizontalAngle: number,
+  airOrientation: string
+): { x: number; y: number; z: number } {
+  const cosX = Math.cos(rotX), sinX = Math.sin(rotX);
+  const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
+  const cosZ = Math.cos(rotZ), sinZ = Math.sin(rotZ);
+
+  const rotatePoint = (px: number, py: number, pz: number): [number, number, number] => {
+    const y1 = py * cosX - pz * sinX;
+    const z1 = py * sinX + pz * cosX;
+    const x2 = px * cosY + z1 * sinY;
+    const z2 = -px * sinY + z1 * cosY;
+    const x3 = x2 * cosZ - y1 * sinZ;
+    const y3 = x2 * sinZ + y1 * cosZ;
+    return [x3, y3, z2];
+  };
+
+  const [nx, ny, nz] = rotatePoint(localNormal.x, localNormal.y, localNormal.z);
+  const n = normalize({ x: nx, y: ny, z: nz });
+
+  const ref = Math.abs(n.z) < 0.9 ? { x: 0, y: 0, z: 1 } : { x: 1, y: 0, z: 0 };
+
+  const tx = ref.y * n.z - ref.z * n.y;
+  const ty = ref.z * n.x - ref.x * n.z;
+  const tz = ref.x * n.y - ref.y * n.x;
+  const tX = normalize({ x: tx, y: ty, z: tz });
+
+  const bx = n.y * tX.z - n.z * tX.y;
+  const by = n.z * tX.x - n.x * tX.z;
+  const bz = n.x * tX.y - n.y * tX.x;
+  const tY = normalize({ x: bx, y: by, z: bz });
+
+  const θv = (verticalAngle * Math.PI) / 180;
+  const θh = (horizontalAngle * Math.PI) / 180;
+  const cosθv = Math.cos(θv), sinθv = Math.sin(θv);
+  const cosθh = Math.cos(θh), sinθh = Math.sin(θh);
+
+  const dx = cosθv * sinθh;
+  const dy = -sinθv;
+  const dz = cosθv * cosθh;
+
+  const raw = {
+    x: tX.x * dx + tY.x * dy + n.x * dz,
+    y: tX.y * dx + tY.y * dy + n.y * dz,
+    z: tX.z * dx + tY.z * dy + n.z * dz,
+  };
+
+  const dir = normalize(raw);
+
+  if (airOrientation === 'outflow') {
+    return { x: round5(-dir.x), y: round5(-dir.y), z: round5(-dir.z) };
+  }
+  return { x: round5(dir.x), y: round5(dir.y), z: round5(dir.z) };
+}
