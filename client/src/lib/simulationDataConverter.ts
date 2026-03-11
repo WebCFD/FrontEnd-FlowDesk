@@ -928,7 +928,9 @@ export function generateSimulationData(
             horizontalAngle: sfθh,
             flowType: mapFlowType(ventSimProps.flowType) || 'pressure',
             flowIntensity: ventSimProps.flowIntensity || 'medium',
-            customIntensityValue: ventSimProps.customIntensityValue
+            ...(ventSimProps.flowIntensity === 'custom' && ventSimProps.customIntensityValue !== undefined
+              ? { customIntensityValue: ventSimProps.customIntensityValue }
+              : {})
           })
         };
         
