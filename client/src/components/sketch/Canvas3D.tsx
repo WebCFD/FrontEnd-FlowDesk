@@ -801,18 +801,27 @@ const createFlowTypeLabelSprite = (letter: string, hexColor: number): THREE.Spri
   canvas.height = size;
   const ctx = canvas.getContext('2d')!;
   const css = '#' + hexColor.toString(16).padStart(6, '0');
+  // White filled circle background — ensures visibility regardless of alpha handling in production WebGL
+  ctx.fillStyle = '#ffffff';
+  ctx.beginPath();
+  ctx.arc(32, 32, 28, 0, Math.PI * 2);
+  ctx.fill();
+  // Colored circle border
   ctx.strokeStyle = css;
   ctx.lineWidth = 4;
   ctx.beginPath();
   ctx.arc(32, 32, 28, 0, Math.PI * 2);
   ctx.stroke();
+  // Letter
   ctx.fillStyle = css;
   ctx.font = 'bold 34px Arial';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(letter, 32, 33);
   const tex = new THREE.CanvasTexture(canvas);
-  const mat = new THREE.SpriteMaterial({ map: tex, depthTest: false });
+  tex.needsUpdate = true;
+  // transparent: true + depthWrite: false are required for correct alpha in production WebGL
+  const mat = new THREE.SpriteMaterial({ map: tex, depthTest: false, depthWrite: false, transparent: true });
   const sprite = new THREE.Sprite(mat);
   sprite.scale.set(36, 36, 1);
   sprite.renderOrder = 10;
