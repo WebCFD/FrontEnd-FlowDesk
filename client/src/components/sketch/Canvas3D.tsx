@@ -801,12 +801,7 @@ const createFlowTypeLabelSprite = (letter: string, hexColor: number): THREE.Spri
   canvas.height = size;
   const ctx = canvas.getContext('2d')!;
   const css = '#' + hexColor.toString(16).padStart(6, '0');
-  // White filled circle background — ensures visibility regardless of alpha handling in production WebGL
-  ctx.fillStyle = '#ffffff';
-  ctx.beginPath();
-  ctx.arc(32, 32, 28, 0, Math.PI * 2);
-  ctx.fill();
-  // Colored circle border
+  // Colored circle border (transparent background)
   ctx.strokeStyle = css;
   ctx.lineWidth = 4;
   ctx.beginPath();
