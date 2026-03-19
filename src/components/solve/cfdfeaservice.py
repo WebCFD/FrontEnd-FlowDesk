@@ -154,7 +154,7 @@ def upload_case(sim_path: str, api_key: str) -> str:
 
 def submit_simulation(folder: str, api_key: str) -> str:
     """
-    Submit a simulation via POST /api/v2/simulation.
+    Submit a simulation via POST /api/v2/simulation/add.
 
     Env vars (all optional, service defaults apply if not set):
         CFDFEASERVICE_CPU    — number of vCPUs (default: 8)
@@ -173,12 +173,10 @@ def submit_simulation(folder: str, api_key: str) -> str:
     script = os.getenv('CFDFEASERVICE_SCRIPT', 'openfoam2406esi_Allrun')
 
     payload = {
-        'data': {
-            'cpu':    int(cpu),
-            'ram':    ram,
-            'folder': folder,
-            'script': script,
-        }
+        'cpu':    int(cpu),
+        'ram':    ram,
+        'folder': folder,
+        'script': script,
     }
 
     logger.info(
@@ -187,7 +185,7 @@ def submit_simulation(folder: str, api_key: str) -> str:
     )
 
     resp = requests.post(
-        _url('/api/v2/simulation'),
+        _url('/api/v2/simulation/add'),
         headers=_headers(api_key),
         json=payload,
         timeout=60,
@@ -204,7 +202,7 @@ def submit_simulation(folder: str, api_key: str) -> str:
         or data.get('simulation_id')
     )
     if task_id is None:
-        raise ValueError(f"No simulation ID in POST /api/v2/simulation response: {data}")
+        raise ValueError(f"No simulation ID in POST /api/v2/simulation/add response: {data}")
 
     logger.info(f"    * Simulation submitted — task_id: {task_id}")
     return str(task_id)
