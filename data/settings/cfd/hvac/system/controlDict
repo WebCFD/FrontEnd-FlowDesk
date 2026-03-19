@@ -7,7 +7,7 @@ FoamFile
 }
 
 application       buoyantBoussinesqSimpleFoam;
-startFrom         startTime;
+startFrom         latestTime;
 startTime         0;
 stopAt            endTime;
 endTime           300;
@@ -15,7 +15,7 @@ deltaT            1;
 writeControl      timeStep;    // Write by iteration number
 writeInterval     300;          // Write at final iteration
 adjustTimeStep    no;
-purgeWrite        0;            // Keep all timesteps (0 and 300)
+purgeWrite        5;            // Keep only 5 most recent timesteps (SPOT restart safe)
 writeFormat       ascii;
 writePrecision    6;
 writeCompression  off;
