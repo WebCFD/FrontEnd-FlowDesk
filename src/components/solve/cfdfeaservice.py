@@ -5,17 +5,17 @@ API base: https://cloud.cfdfeaservice.it  (v1 endpoints)
 Auth:     X-API-Key header
 
 Upload flow:
-  1. POST /api/v1/storage/upload-url  → presigned PUT URL
+  1. POST /api/v2/storage/upload-url  → presigned PUT URL
   2. PUT  <presigned_url>             → direct upload of zip (no auth header)
-  3. DELETE /api/v1/user/delete-cache → invalidate server cache
+  3. DELETE /api/v2/user/delete-cache → invalidate server cache
 
 Submit flow:
-  POST /api/v1/simulation
+  POST /api/v2/simulation
   Body: {"data": {"cpu": <n>, "ram": <label>, "folder": <name>, "script": <name>}}
   Returns simulation ID
 
 Status flow:
-  GET /api/v1/simulation/{id}  → response.status (int)
+  GET /api/v2/simulation/{id}  → response.status (int)
     20 = pending
     30 = running
     40 = queued/preparing
@@ -23,11 +23,11 @@ Status flow:
     60 = error
 
 Download flow:
-  GET  /api/v1/simulation/{id}               → response.folder (name)
-  GET  /api/v1/storage/index/name/asc/1      → list root folders, find folder_id
-  GET  /api/v1/storage/index/size/desc/parent_id/{folder_id}/1  → list files
-  POST /api/v1/storage/view-by-path          → file_id
-  GET  /api/v1/storage/view-url/{file_id}    → response.mediaLink (direct URL)
+  GET  /api/v2/simulation/{id}               → response.folder (name)
+  GET  /api/v2/storage/index/name/asc/1      → list root folders, find folder_id
+  GET  /api/v2/storage/index/size/desc/parent_id/{folder_id}/1  → list files
+  POST /api/v2/storage/view-by-path          → file_id
+  GET  /api/v2/storage/view-url/{file_id}    → response.mediaLink (direct URL)
   download via GET <mediaLink>
 """
 
@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 
 CFDFEASERVICE_HOST = os.getenv('CFDFEASERVICE_HOST', 'https://cloud.cfdfeaservice.it')
 
-# Numeric status codes (GET /api/v1/simulation/{id})
+# Numeric status codes (GET /api/v2/simulation/{id})
 STATUS_COMPLETED = 10
 STATUS_PENDING   = 20
 STATUS_RUNNING   = 30
@@ -72,9 +72,9 @@ def upload_case(sim_path: str, api_key: str) -> str:
     Compress sim_path to a zip file and upload it to CFD FEA Service storage.
 
     Uses the presigned-URL upload flow:
-      1. POST /api/v1/storage/upload-url → { response: { url: <presigned_put_url> } }
+      1. POST /api/v2/storage/upload-url → { response: { url: <presigned_put_url> } }
       2. PUT <presigned_url> with the zip (no auth header — presigned URL is self-authenticating)
-      3. DELETE /api/v1/user/delete-cache
+      3. DELETE /api/v2/user/delete-cache
 
     Args:
         sim_path: Local path to the OpenFOAM simulation directory.
@@ -103,13 +103,13 @@ def upload_case(sim_path: str, api_key: str) -> str:
 
         # Step 1: get presigned upload URL
         payload = {
-            'dirname': folder_name,
+            'folder': folder_name,
             'filename': 'upload.zip',
-            'contentType': 'application/zip',
+            'contentType': 'application/octet-stream',
         }
         logger.info(f"    * Requesting presigned upload URL for folder '{folder_name}'...")
         resp = requests.post(
-            _url('/api/v1/storage/upload-url'),
+            _url('/api/v2/storage/upload-url'),
             headers=_headers(api_key),
             json=payload,
             timeout=30,
@@ -126,14 +126,14 @@ def upload_case(sim_path: str, api_key: str) -> str:
             put_resp = requests.put(
                 upload_url,
                 data=f,
-                headers={'Content-Type': 'application/zip'},
+                headers={'Content-Type': 'application/octet-stream'},
                 timeout=600,
             )
         put_resp.raise_for_status()
 
         # Step 3: invalidate server-side cache
         requests.delete(
-            _url('/api/v1/user/delete-cache'),
+            _url('/api/v2/user/delete-cache'),
             headers=_headers(api_key),
             timeout=30,
         )
@@ -154,7 +154,7 @@ def upload_case(sim_path: str, api_key: str) -> str:
 
 def submit_simulation(folder: str, api_key: str) -> str:
     """
-    Submit a simulation via POST /api/v1/simulation.
+    Submit a simulation via POST /api/v2/simulation.
 
     Env vars (all optional, service defaults apply if not set):
         CFDFEASERVICE_CPU    — number of vCPUs (default: 8)
@@ -187,7 +187,7 @@ def submit_simulation(folder: str, api_key: str) -> str:
     )
 
     resp = requests.post(
-        _url('/api/v1/simulation'),
+        _url('/api/v2/simulation'),
         headers=_headers(api_key),
         json=payload,
         timeout=60,
@@ -202,7 +202,7 @@ def submit_simulation(folder: str, api_key: str) -> str:
         or data.get('simulation_id')
     )
     if task_id is None:
-        raise ValueError(f"No simulation ID in POST /api/v1/simulation response: {data}")
+        raise ValueError(f"No simulation ID in POST /api/v2/simulation response: {data}")
 
     logger.info(f"    * Simulation submitted — task_id: {task_id}")
     return str(task_id)
@@ -214,7 +214,7 @@ def submit_simulation(folder: str, api_key: str) -> str:
 
 def check_status(task_id: str, api_key: str) -> int:
     """
-    Check simulation status via GET /api/v1/simulation/{id}.
+    Check simulation status via GET /api/v2/simulation/{id}.
 
     Returns:
         Numeric status code:
@@ -229,7 +229,7 @@ def check_status(task_id: str, api_key: str) -> int:
         ValueError if status field is missing.
     """
     resp = requests.get(
-        _url(f'/api/v1/simulation/{task_id}'),
+        _url(f'/api/v2/simulation/{task_id}'),
         headers=_headers(api_key),
         timeout=30,
     )
@@ -244,7 +244,7 @@ def check_status(task_id: str, api_key: str) -> int:
         or data.get('statusCode')
     )
     if status is None:
-        raise ValueError(f"No status field in GET /api/v1/simulation/{task_id} response: {data}")
+        raise ValueError(f"No status field in GET /api/v2/simulation/{task_id} response: {data}")
 
     return int(status)
 
@@ -272,12 +272,12 @@ def download_results(task_id: str, sim_path: str, api_key: str) -> bool:
     Download simulation results from CFD FEA Service to sim_path.
 
     Flow:
-      1. GET /api/v1/simulation/{id}                              → response.folder
-      2. GET /api/v1/storage/index/name/asc/1                    → find folder_id
-      3. GET /api/v1/storage/index/size/desc/parent_id/{fid}/1   → file list
+      1. GET /api/v2/simulation/{id}                              → response.folder
+      2. GET /api/v2/storage/index/name/asc/1                    → find folder_id
+      3. GET /api/v2/storage/index/size/desc/parent_id/{fid}/1   → file list
       4. For each result file:
-           POST /api/v1/storage/view-by-path  → file_id
-           GET  /api/v1/storage/view-url/{id} → response.mediaLink
+           POST /api/v2/storage/view-by-path  → file_id
+           GET  /api/v2/storage/view-url/{id} → response.mediaLink
            GET  <mediaLink>                   → download
       5. Extract zip files with path traversal protection
 
@@ -296,7 +296,7 @@ def download_results(task_id: str, sim_path: str, api_key: str) -> bool:
         # Step 1: get folder name from simulation record
         logger.info(f"    * Getting simulation record for task {task_id}...")
         resp = requests.get(
-            _url(f'/api/v1/simulation/{task_id}'),
+            _url(f'/api/v2/simulation/{task_id}'),
             headers=_headers(api_key),
             timeout=30,
         )
@@ -304,14 +304,14 @@ def download_results(task_id: str, sim_path: str, api_key: str) -> bool:
         sim_data = resp.json().get('response') or resp.json()
         folder_name = sim_data.get('folder') if isinstance(sim_data, dict) else None
         if not folder_name:
-            raise ValueError(f"No folder in GET /api/v1/simulation/{task_id}: {resp.json()}")
+            raise ValueError(f"No folder in GET /api/v2/simulation/{task_id}: {resp.json()}")
         logger.info(f"    * Results folder: {folder_name}")
 
         # Step 2: list root storage folders with pagination to find folder_id
         folder_id = None
         for page in range(1, 20):  # paginate up to 20 pages (each page ~50 items)
             resp = requests.get(
-                _url(f'/api/v1/storage/index/name/asc/{page}'),
+                _url(f'/api/v2/storage/index/name/asc/{page}'),
                 headers=_headers(api_key),
                 timeout=30,
             )
@@ -333,7 +333,7 @@ def download_results(task_id: str, sim_path: str, api_key: str) -> bool:
         files = []
         for page in range(1, 20):  # paginate up to 20 pages
             resp = requests.get(
-                _url(f'/api/v1/storage/index/size/desc/parent_id/{folder_id}/{page}'),
+                _url(f'/api/v2/storage/index/size/desc/parent_id/{folder_id}/{page}'),
                 headers=_headers(api_key),
                 timeout=30,
             )
@@ -362,7 +362,7 @@ def download_results(task_id: str, sim_path: str, api_key: str) -> bool:
 
             # Step 4a: resolve file ID via path
             resp = requests.post(
-                _url('/api/v1/storage/view-by-path'),
+                _url('/api/v2/storage/view-by-path'),
                 headers=_headers(api_key),
                 json={'path': file_path_remote},
                 timeout=30,
@@ -378,7 +378,7 @@ def download_results(task_id: str, sim_path: str, api_key: str) -> bool:
             media_link = None
             for _ in range(5):
                 resp = requests.get(
-                    _url(f'/api/v1/storage/view-url/{file_id}'),
+                    _url(f'/api/v2/storage/view-url/{file_id}'),
                     headers=_headers(api_key),
                     timeout=30,
                 )
