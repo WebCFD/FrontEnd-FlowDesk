@@ -898,16 +898,28 @@ def setup(case_path: str, simulation_type: str = 'comfortTest', transient: bool 
 
         logger.info("    * Mass flow functions added to controlDict")
     
-    logger.info("    * Creating decomposeParDict for local parallel execution")
-    # Detect CPU cores for parallel execution
-    import os as os_module
-    total_cores = os_module.cpu_count()
-    if total_cores is None:
-        total_cores = 16
-    n_cores = max(total_cores - 1, 1)
-    n_cpu_available, _ = best_cpu_partition(n_cores)
-    
-    create_decomposeParDict_local(sim_path)
+    # Determine CPU count: use cloud setting if available, else detect local cores
+    cloud_cpu = os.environ.get('CFDFEASERVICE_CPU')
+    if cloud_cpu:
+        n_target = int(cloud_cpu)
+        logger.info(f"    * Creating decomposeParDict for cloud execution ({n_target} vCPUs)")
+    else:
+        total_cores = os.cpu_count() or 16
+        n_target = max(total_cores - 1, 1)
+        logger.info(f"    * Creating decomposeParDict for local execution ({n_target} cores)")
+
+    n_cpu_available, (n_x, n_y, n_z) = best_cpu_partition(n_target)
+
+    template_path_decomp = str(PROJECT_ROOT / "data" / "settings" / "solve" / "inductiva")
+    input_path  = os.path.join(template_path_decomp, "system", "decomposeParDict")
+    output_path = os.path.join(sim_path, "system", "decomposeParDict")
+    replace_in_file(input_path, output_path, {
+        "$NUM_CPUS":    str(n_cpu_available),
+        "$PARTITION_X": str(n_x),
+        "$PARTITION_Y": str(n_y),
+        "$PARTITION_Z": str(n_z),
+    })
+    logger.info(f"    * decomposeParDict: {n_cpu_available} subdomains ({n_x},{n_y},{n_z})")
     
     # [DEPRECATED 2026-01-17] endTime is now configured in template controlDict files
     # No need to override template values with hardcoded values
