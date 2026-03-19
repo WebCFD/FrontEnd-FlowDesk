@@ -12,7 +12,6 @@ for _p in [_PROJECT_ROOT, _PYTHON_STEPS]:
         sys.path.insert(0, _p)
 
 from src.components.solve.local import solve_local
-from src.components.solve.inductiva import solve_inductiva
 from src.components.tools.performance import PerformanceMonitor
 
 logger = logging.getLogger(__name__)
@@ -24,13 +23,13 @@ def run(case_name: str = "cases/cfd_case", type: str = "local", wait: bool = Tru
 
     Args:
         case_name: Name of the simulation case
-        type: Execution platform — "local" or "inductiva"
+        type: Execution platform — "local" or "cloud"
         wait: If True (default), block until simulation finishes.
               If False, submit asynchronously and return the cloud task_id.
               Only relevant for cloud platforms (ignored for "local").
 
     Returns:
-        task_id (str) when type="inductiva" and wait=False.
+        task_id (str) when type="cloud" and wait=False.
         None in all other cases.
     """
     performance_monitor = PerformanceMonitor()
@@ -46,19 +45,7 @@ def run(case_name: str = "cases/cfd_case", type: str = "local", wait: bool = Tru
     logger.info(f"2 - Executing CFD simulation on platform: {type} (wait={wait})")
     performance_monitor.update_memory()
 
-    if type == "inductiva":
-        logger.info("Running CFD simulation on INDUCTIVA cloud platform")
-        task_id = solve_inductiva(sim_path, machine_type="c2d-highcpu-16", wait=wait)
-        performance_monitor.update_memory()
-        performance_summary = performance_monitor.get_summary()
-        logger.info(f"Total processing time so far: {performance_summary['total_time']:.2f}s")
-        if not wait:
-            logger.info(f"Task submitted asynchronously — task_id: {task_id}")
-            return str(task_id) if task_id else None
-        logger.info("Inductiva simulation completed (synchronous)")
-        return None
-
-    elif type == "local":
+    if type == "local":
         logger.info(f"Running CFD simulation locally in {sim_path}")
         solve_local(sim_path)
         performance_monitor.update_memory()
@@ -67,6 +54,13 @@ def run(case_name: str = "cases/cfd_case", type: str = "local", wait: bool = Tru
         logger.info(f"Peak memory usage: {performance_summary['peak_memory_mb']:.1f}MB")
         logger.info("CFD simulation completed successfully")
         return None
+
+    elif type == "cloud":
+        raise NotImplementedError(
+            "Cloud solver not yet configured. "
+            "Set SOLVER_TYPE=local for pipeline testing, "
+            "or implement a cloud solver module."
+        )
 
     else:
         logger.error(f"Unknown solve location: {type}")
