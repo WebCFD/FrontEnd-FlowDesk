@@ -32,6 +32,7 @@ Download flow:
 """
 
 import os
+import tarfile
 import zipfile
 import tempfile
 import logging
@@ -69,12 +70,12 @@ def _url(path: str) -> str:
 
 def upload_case(sim_path: str, api_key: str) -> str:
     """
-    Compress sim_path to a zip file and upload it to CFD FEA Service storage.
+    Compress sim_path to a tar.gz file and upload it to CFD FEA Service storage.
 
-    Uses the presigned-URL upload flow:
-      1. POST /api/v2/storage/upload-url → { response: { url: <presigned_put_url> } }
-      2. PUT <presigned_url> with the zip (no auth header — presigned URL is self-authenticating)
-      3. DELETE /api/v2/user/delete-cache
+    Mirrors the official bash script exactly:
+      - Archive format : tar.gz (files at root, no folder prefix)
+      - Upload payload : dirname + filename=upload.tar.gz
+      - Flow           : POST upload-url → PUT file → DELETE cache
 
     Args:
         sim_path: Local path to the OpenFOAM simulation directory.
@@ -88,24 +89,24 @@ def upload_case(sim_path: str, api_key: str) -> str:
 
     logger.info(f"    * Compressing simulation directory: {sim_path}")
 
-    with tempfile.NamedTemporaryFile(suffix='.zip', delete=False) as tmp:
-        zip_path = tmp.name
+    with tempfile.NamedTemporaryFile(suffix='.tar.gz', delete=False) as tmp:
+        tar_path = tmp.name
 
     try:
-        with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
-            base = Path(sim_path)
+        base = Path(sim_path)
+        with tarfile.open(tar_path, 'w:gz') as tf:
             for file in base.rglob('*'):
                 if file.is_file():
-                    arcname = Path(folder_name) / file.relative_to(base)
-                    zf.write(file, arcname)
+                    arcname = file.relative_to(base)   # no folder prefix — files at root
+                    tf.add(str(file), arcname=str(arcname))
 
-        zip_size_mb = Path(zip_path).stat().st_size / (1024 * 1024)
-        logger.info(f"    * Zip created: {zip_path} ({zip_size_mb:.1f} MB)")
+        tar_size_mb = Path(tar_path).stat().st_size / (1024 * 1024)
+        logger.info(f"    * tar.gz created: {tar_path} ({tar_size_mb:.1f} MB)")
 
         # Step 1: get presigned upload URL
         payload = {
-            'folder': folder_name,
-            'filename': f'{folder_name}.zip',
+            'dirname':     folder_name,
+            'filename':    'upload.tar.gz',
             'contentType': 'application/octet-stream',
         }
         logger.info(f"    * Requesting presigned upload URL for folder '{folder_name}'...")
@@ -122,8 +123,8 @@ def upload_case(sim_path: str, api_key: str) -> str:
             raise ValueError(f"No presigned URL in upload-url response: {data}")
 
         # Step 2: PUT file directly to presigned URL (no API key — presigned)
-        logger.info(f"    * Uploading zip to cloud storage...")
-        with open(zip_path, 'rb') as f:
+        logger.info(f"    * Uploading tar.gz to cloud storage...")
+        with open(tar_path, 'rb') as f:
             put_resp = requests.put(
                 upload_url,
                 data=f,
@@ -144,7 +145,7 @@ def upload_case(sim_path: str, api_key: str) -> str:
 
     finally:
         try:
-            Path(zip_path).unlink()
+            Path(tar_path).unlink()
         except Exception:
             pass
 
