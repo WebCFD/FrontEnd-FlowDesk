@@ -46,10 +46,15 @@ POLLING_INTERVAL = 10
 #              "cloud" submits async and worker_monitor handles step05
 SOLVER_TYPE = os.getenv('SOLVER_TYPE', 'cloud')
 
-# Debug mode: set PIPELINE_STOP_AFTER=N to run only steps 1..N and then stop.
-# Valid values: "1", "2", "3", "4". Unset (or empty) = run all steps normally.
-_stop_after_raw = os.getenv('PIPELINE_STOP_AFTER', '').strip()
-PIPELINE_STOP_AFTER: int | None = int(_stop_after_raw) if _stop_after_raw.isdigit() else None
+def _parse_stop_after() -> "int | None":
+    """
+    Read and parse PIPELINE_STOP_AFTER env var fresh on each call.
+    Returns an int (1-4) when debug mode is active, None otherwise.
+    Re-read per simulation so the value can be changed without restarting
+    the worker process.
+    """
+    raw = os.getenv('PIPELINE_STOP_AFTER', '').strip()
+    return int(raw) if raw.isdigit() else None
 
 logging.basicConfig(
     level=logging.INFO,
@@ -73,8 +78,9 @@ def log_startup_configuration():
     logger.info(f"NODE_ENV: {os.getenv('NODE_ENV', 'not set')}")
     logger.info(f"API_BASE: {API_BASE}")
     logger.info(f"SOLVER_TYPE: {SOLVER_TYPE}")
-    if PIPELINE_STOP_AFTER is not None:
-        logger.info(f"PIPELINE_STOP_AFTER: {PIPELINE_STOP_AFTER}  *** DEBUG MODE — pipeline will stop after step {PIPELINE_STOP_AFTER} ***")
+    _sa = _parse_stop_after()
+    if _sa is not None:
+        logger.info(f"PIPELINE_STOP_AFTER: {_sa}  *** DEBUG MODE — pipeline will stop after step {_sa} ***")
     else:
         logger.info("PIPELINE_STOP_AFTER: not set (full pipeline)")
     logger.info(f"Cases Directory: {os.path.join(os.getcwd(), 'cases')}")
@@ -189,6 +195,11 @@ def process_simulation(sim: Dict[str, Any]):
     if isinstance(json_config, str):
         json_config = json.loads(json_config)
 
+    # Read debug stop limit fresh per simulation (allows changing without restart)
+    stop_after = _parse_stop_after()
+    if stop_after is not None:
+        logger.info(f"[Sim {sim_id}] DEBUG MODE: PIPELINE_STOP_AFTER={stop_after} — will stop after step {stop_after}")
+
     logger.info(f"[Sim {sim_id}] Starting pipeline — case: {case_name}, type: {simulation_type}")
 
     try:
@@ -219,7 +230,7 @@ def process_simulation(sim: Dict[str, Any]):
                 {'case_name': case_name, 'suggestion': 'Check if room polygon is closed and valid'}
             )
         logger.info(f"[Sim {sim_id}] Step 1 complete")
-        if PIPELINE_STOP_AFTER == 1:
+        if stop_after == 1:
             _debug_stop(sim_id, 1)
             return
 
@@ -244,7 +255,7 @@ def process_simulation(sim: Dict[str, Any]):
                 {'case_name': case_name, 'suggestion': 'Check if geometry is valid for meshing'}
             )
         logger.info(f"[Sim {sim_id}] Step 2 complete")
-        if PIPELINE_STOP_AFTER == 2:
+        if stop_after == 2:
             _debug_stop(sim_id, 2)
             return
 
@@ -272,7 +283,7 @@ def process_simulation(sim: Dict[str, Any]):
                 {'case_name': case_name, 'suggestion': 'Check boundary conditions and solver settings'}
             )
         logger.info(f"[Sim {sim_id}] Step 3 complete")
-        if PIPELINE_STOP_AFTER == 3:
+        if stop_after == 3:
             _debug_stop(sim_id, 3)
             return
 
@@ -295,7 +306,7 @@ def process_simulation(sim: Dict[str, Any]):
                     {'case_name': case_name}
                 )
             logger.info(f"[Sim {sim_id}] Step 4 complete (local)")
-            if PIPELINE_STOP_AFTER == 4:
+            if stop_after == 4:
                 _debug_stop(sim_id, 4)
                 return
 
@@ -344,13 +355,18 @@ def process_simulation(sim: Dict[str, Any]):
                     {'case_name': case_name, 'suggestion': 'Check cloud solver configuration'}
                 )
 
+            logger.info(f"[Sim {sim_id}] Step 4 complete (cloud) — task_id: {task_id}")
+            if stop_after == 4:
+                _debug_stop(sim_id, 4)
+                return
+
             update_simulation(sim_id, {
                 'status': 'cloud_execution',
                 'taskId': str(task_id) if task_id else None,
                 'progress': 75,
                 'currentStep': 'Running on cloud...'
             })
-            logger.info(f"[Sim {sim_id}] Step 4 complete — task submitted, worker_monitor will handle the rest")
+            logger.info(f"[Sim {sim_id}] Handed off to worker_monitor for post-processing")
 
     except PipelineStepError as e:
         logger.error(f"[Sim {sim_id}] Pipeline step error: {e}")
