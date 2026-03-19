@@ -10,11 +10,20 @@ import gc
 sys.path.append('.')
 
 from src.components.tools.vtk_to_vtkjs import vtk_to_vtkjs
+from src.components.solve.cfdfeaservice import (
+    check_status,
+    download_results,
+    STATUS_COMPLETED,
+    STATUS_ERROR,
+    STATUS_RUNNING,
+    STATUS_PENDING,
+)
 
 # Config
 API_BASE = os.getenv('API_BASE_URL', 'http://localhost:5000')
 API_KEY = 'flowerpower-external-api'
 POLLING_INTERVAL = 30
+CFDFEASERVICE_API_KEY = os.getenv('CFDFEASERVICE_API_KEY')
 
 # Configure structured logging with clear prefix
 logging.basicConfig(
@@ -59,8 +68,19 @@ def log_startup_configuration():
         else:
             logger.warning("R2 not configured - VTK files will only be stored locally")
     
-    # Cloud solver status
-    logger.info("Cloud Solver: NOT CONFIGURED (use SOLVER_TYPE=local for testing)")
+    # CFD FEA Service configuration
+    cfd_configured = bool(CFDFEASERVICE_API_KEY)
+    cfd_status = "CONFIGURED" if cfd_configured else "NOT CONFIGURED"
+    logger.info(f"CFD FEA Service: {cfd_status}")
+    if cfd_configured:
+        key_preview = CFDFEASERVICE_API_KEY[:8] + "..." if len(CFDFEASERVICE_API_KEY) > 8 else "***"
+        logger.info(f"CFD FEA Service Key: {key_preview}")
+        logger.info(f"CFD FEA Service Base: {os.getenv('CFDFEASERVICE_BASE_URL', 'https://cloud.cfdfeaservice.it/api/v1')}")
+    else:
+        if os.getenv('SOLVER_TYPE', 'cloud') != 'local':
+            logger.warning("CFDFEASERVICE_API_KEY not set — cloud simulations will fail")
+        else:
+            logger.info("SOLVER_TYPE=local — cloud solver not needed")
     
     # Persistence warning for production
     if is_production:
@@ -125,17 +145,42 @@ def update_simulation(sim_id, data):
         logger.error(f"Failed to update sim {sim_id}: {e}")
         return False
 
+def check_task_status(task_id: str) -> int | None:
+    """
+    Check simulation status on CFD FEA Service.
+    Returns numeric status code (10/20/30/60) or None on error.
+    """
+    if not CFDFEASERVICE_API_KEY:
+        logger.error("CFDFEASERVICE_API_KEY not set — cannot check task status")
+        return None
+    try:
+        return check_status(task_id, CFDFEASERVICE_API_KEY)
+    except Exception as e:
+        logger.error(f"Failed to check task {task_id}: {e}")
+        return None
+
+def download_task_results(task_id: str, case_name: str) -> bool:
+    """
+    Download simulation results from CFD FEA Service to the local sim directory.
+    """
+    if not CFDFEASERVICE_API_KEY:
+        logger.error("CFDFEASERVICE_API_KEY not set — cannot download results")
+        return False
+    try:
+        sim_path = os.path.join(os.getcwd(), "cases", case_name, "sim")
+        logger.info(f"Downloading results for {case_name} (task: {task_id})")
+        return download_results(task_id, sim_path, CFDFEASERVICE_API_KEY)
+    except Exception as e:
+        logger.error(f"Failed to download results for task {task_id}: {e}")
+        return False
+
 def copy_results_to_public(case_name, sim_id):
     """
     Copia y convierte archivos VTK a carpeta pública para el visualizador web.
-    
-    NOTE: PDF and image generation removed to reduce memory usage.
-    Only VTK files are generated and converted to vtkjs format.
     """
     try:
         post_path = os.path.join(os.getcwd(), "cases", case_name, "post")
         
-        # Use production path if NODE_ENV=production, otherwise use public folder
         is_production = os.getenv('NODE_ENV') == 'production'
         if is_production:
             public_path = os.path.join("/tmp/uploads", f"sim_{sim_id}")
@@ -144,7 +189,6 @@ def copy_results_to_public(case_name, sim_id):
         
         os.makedirs(public_path, exist_ok=True)
         
-        # Copiar y convertir VTK desde post/obj (slices y volumen completo)
         obj_dir = os.path.join(post_path, "obj")
         obj_dest = os.path.join(public_path, "vtk")
         
@@ -158,7 +202,6 @@ def copy_results_to_public(case_name, sim_id):
                     vtkjs_name = vtk.replace('.vtk', '.vtkjs').replace('.vtu', '.vtkjs')
                     vtkjs_path = os.path.join(obj_dest, vtkjs_name)
                     
-                    # Convertir VTK/VTU a vtkjs
                     try:
                         vtk_to_vtkjs(vtk_path, vtkjs_path)
                         vtk_count += 1
@@ -170,7 +213,6 @@ def copy_results_to_public(case_name, sim_id):
         else:
             logger.warning(f"No VTK files found in {obj_dir}")
         
-        # Copiar y convertir VTK desde sim/VTK (archivos raw de OpenFOAM si existen)
         sim_path = os.path.join(os.getcwd(), "cases", case_name, "sim")
         sim_vtk_dir = os.path.join(sim_path, "VTK")
         
@@ -178,19 +220,15 @@ def copy_results_to_public(case_name, sim_id):
             os.makedirs(obj_dest, exist_ok=True)
             openfoam_count = 0
             
-            # Buscar recursivamente archivos VTK de OpenFOAM
             for root, dirs, files in os.walk(sim_vtk_dir):
                 for vtk_file in files:
                     if vtk_file.endswith('.vtk') or vtk_file.endswith('.vtu') or vtk_file.endswith('.vtp'):
                         vtk_path = os.path.join(root, vtk_file)
-                        
-                        # Generar nombre único basado en ruta relativa
                         rel_path = os.path.relpath(vtk_path, sim_vtk_dir)
                         safe_name = rel_path.replace(os.sep, '_').replace('.vtk', '').replace('.vtu', '').replace('.vtp', '')
                         vtkjs_name = f"openfoam_{safe_name}.vtkjs"
                         vtkjs_path = os.path.join(obj_dest, vtkjs_name)
                         
-                        # Convertir a vtkjs
                         try:
                             vtk_to_vtkjs(vtk_path, vtkjs_path)
                             openfoam_count += 1
@@ -201,15 +239,11 @@ def copy_results_to_public(case_name, sim_id):
             if openfoam_count > 0:
                 logger.info(f"Converted {openfoam_count} OpenFOAM VTK files for sim {sim_id}")
         
-        # Retornar solo archivos VTK
         vtk_list = []
         if os.path.exists(obj_dest):
             vtk_list = [f"/uploads/sim_{sim_id}/vtk/{vtk}" for vtk in os.listdir(obj_dest) if vtk.endswith('.vtkjs')]
         
-        result_paths = {
-            "vtk": vtk_list
-        }
-        
+        result_paths = {"vtk": vtk_list}
         logger.info(f"Total VTK files available: {len(vtk_list)}")
         return result_paths
         
@@ -219,12 +253,11 @@ def copy_results_to_public(case_name, sim_id):
 
 def process_completed_simulation(sim):
     """
-    Procesa simulación cuyo solver ya terminó (resultados en sim_path local).
-    
-    IMPORTANTE: Esta función DEBE ser llamada solo una vez por ciclo
-    para prevenir acumulación de memoria y OOM kills.
+    Procesa simulación cuyo cloud task ha completado (status 10).
+    Descarga resultados de CFD FEA Service, ejecuta step05 y sube a R2.
     """
     sim_id = sim['id']
+    task_id = sim.get('taskId')
     case_name = f"sim_{sim_id}"
     
     logger.info(f"=" * 60)
@@ -232,24 +265,21 @@ def process_completed_simulation(sim):
     logger.info(f"=" * 60)
     
     try:
-        # Update: post_processing
         update_simulation(sim_id, {
             'status': 'post_processing',
             'progress': 90,
-            'currentStep': 'Post-processing results...'
+            'currentStep': 'Downloading results...'
         })
         
-        # Verify sim directory exists (results must already be local)
-        sim_path = os.path.join(os.getcwd(), "cases", case_name, "sim")
-        if not os.path.exists(sim_path):
-            raise FileNotFoundError(
-                f"Simulation directory not found: {sim_path}. "
-                f"Cloud solver download is not implemented — use SOLVER_TYPE=local."
-            )
-        logger.info(f"[Sim {sim_id}] Simulation directory found: {sim_path}")
+        # Download results from CFD FEA Service
+        logger.info(f"[Sim {sim_id}] Step 1/4: Downloading results from CFD FEA Service...")
+        if task_id and not download_task_results(task_id, case_name):
+            raise Exception("Failed to download results from CFD FEA Service")
+        logger.info(f"[Sim {sim_id}] Results downloaded successfully")
         
-        # Create results.foam file for PyVista compatibility
-        logger.info(f"[Sim {sim_id}] Step 1/3: Creating results.foam marker...")
+        # Create results.foam marker for PyVista compatibility
+        logger.info(f"[Sim {sim_id}] Step 2/4: Creating results.foam marker...")
+        sim_path = os.path.join(os.getcwd(), "cases", case_name, "sim")
         foam_file = os.path.join(sim_path, "results.foam")
         try:
             with open(foam_file, 'w') as f:
@@ -258,13 +288,13 @@ def process_completed_simulation(sim):
         except Exception as e:
             logger.warning(f"[Sim {sim_id}] Failed to create results.foam: {e}")
         
-        # STEP 5: Post-processing (isolated subprocess to prevent memory leaks)
+        # Step 5: Post-processing in isolated subprocess
         update_simulation(sim_id, {
             'progress': 95,
             'currentStep': 'Generating visualizations...'
         })
         
-        logger.info(f"[Sim {sim_id}] Step 2/3: Running post-processing in isolated subprocess...")
+        logger.info(f"[Sim {sim_id}] Step 3/4: Running post-processing in isolated subprocess...")
         
         try:
             env = os.environ.copy()
@@ -299,9 +329,9 @@ def process_completed_simulation(sim):
             
             if e.returncode == -9 or e.returncode == 137:
                 error_msg = (
-                    f"Out of Memory: Post-processing was killed by the system (SIGKILL). "
-                    f"The simulation mesh may be too large for available memory. "
-                    f"Try reducing mesh resolution or simplifying the geometry."
+                    "Out of Memory: Post-processing was killed by the system (SIGKILL). "
+                    "The simulation mesh may be too large for available memory. "
+                    "Try reducing mesh resolution or simplifying the geometry."
                 )
                 logger.error(f"[Sim {sim_id}] OOM DETECTED: Process killed with signal SIGKILL")
                 raise Exception(error_msg)
@@ -309,7 +339,7 @@ def process_completed_simulation(sim):
                 raise Exception(f"Post-processing failed: {e.stderr}")
         
         # Copy to public folder
-        logger.info(f"[Sim {sim_id}] Step 3/3: Copying VTK files to public folder...")
+        logger.info(f"[Sim {sim_id}] Step 4/4: Copying VTK files to public folder...")
         result_paths = copy_results_to_public(case_name, sim_id)
         
         if not result_paths:
@@ -317,14 +347,12 @@ def process_completed_simulation(sim):
         
         logger.info(f"[Sim {sim_id}] VTK files copied ({len(result_paths.get('vtk', []))} files)")
         
-        # Upload VTK files to Cloudflare R2 (persistent external storage)
+        # Upload to Cloudflare R2
         is_production = os.getenv('NODE_ENV') == 'production'
         env_label = "PRODUCTION" if is_production else "DEVELOPMENT"
         vtk_dir = f'/tmp/uploads/sim_{sim_id}/vtk' if is_production else f'public/uploads/sim_{sim_id}/vtk'
         
-        logger.info(f"[Sim {sim_id}] Uploading VTK files to Cloudflare R2...")
-        logger.info(f"[Sim {sim_id}] Environment: {env_label}")
-        logger.info(f"[Sim {sim_id}] Local VTK directory: {vtk_dir}")
+        logger.info(f"[Sim {sim_id}] Uploading VTK files to Cloudflare R2... ({env_label})")
         
         r2_configured = all([
             os.getenv('R2_ENDPOINT'),
@@ -333,8 +361,7 @@ def process_completed_simulation(sim):
         ])
         
         if not r2_configured:
-            logger.error(f"[Sim {sim_id}] R2 CREDENTIALS MISSING - Cannot upload to persistent storage")
-            logger.error(f"[Sim {sim_id}] Required secrets: R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY")
+            logger.error(f"[Sim {sim_id}] R2 CREDENTIALS MISSING — Required: R2_ENDPOINT, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY")
             if is_production:
                 logger.critical(f"[Sim {sim_id}] CRITICAL: VTK files in {vtk_dir} will be LOST when container restarts!")
             else:
@@ -363,13 +390,13 @@ def process_completed_simulation(sim):
                 if upload_result.stderr:
                     logger.warning(f"[Sim {sim_id}] R2 Upload stderr:\n{upload_result.stderr}")
                 
-                logger.info(f"[Sim {sim_id}] VTK files uploaded to Cloudflare R2 successfully")
+                logger.info(f"[Sim {sim_id}] VTK files uploaded to Cloudflare R2 — PERSISTENT")
                 r2_upload_success = True
                 
             except subprocess.TimeoutExpired:
                 logger.error(f"[Sim {sim_id}] R2 UPLOAD TIMEOUT after 10 minutes")
             except subprocess.CalledProcessError as e:
-                logger.error(f"[Sim {sim_id}] R2 UPLOAD FAILED with exit code {e.returncode}")
+                logger.error(f"[Sim {sim_id}] R2 UPLOAD FAILED (exit code {e.returncode})")
                 if e.stdout:
                     logger.error(f"[Sim {sim_id}] stdout: {e.stdout}")
                 if e.stderr:
@@ -378,14 +405,12 @@ def process_completed_simulation(sim):
                 logger.error(f"[Sim {sim_id}] R2 UPLOAD ERROR: {type(e).__name__}: {e}")
         
         if not r2_upload_success:
-            logger.warning(f"[Sim {sim_id}] VTK PERSISTENCE STATUS: NOT GUARANTEED")
-            logger.warning(f"[Sim {sim_id}] Local files available at: {vtk_dir}")
+            logger.warning(f"[Sim {sim_id}] VTK PERSISTENCE STATUS: NOT GUARANTEED — local: {vtk_dir}")
             if is_production:
                 logger.warning(f"[Sim {sim_id}] PRODUCTION WARNING: Files in /tmp are EPHEMERAL")
         else:
             logger.info(f"[Sim {sim_id}] VTK PERSISTENCE STATUS: GUARANTEED (R2)")
         
-        # Update: completed
         update_simulation(sim_id, {
             'status': 'completed',
             'progress': 100,
@@ -407,7 +432,6 @@ def process_completed_simulation(sim):
         })
         return False
     finally:
-        # CRITICAL: Clean up temporary files to free disk space
         try:
             temp_case_path = os.path.join(os.getcwd(), "cases", case_name)
             if os.path.exists(temp_case_path):
@@ -423,10 +447,7 @@ def process_completed_simulation(sim):
             logger.warning(f"[Sim {sim_id}] Cleanup warning (non-critical): {cleanup_error}")
 
 def cleanup_old_uploads(keep_last_n=5):
-    """
-    Clean up old simulation uploads from /tmp/uploads to free disk space.
-    Keeps only the last N simulations in production.
-    """
+    """Clean up old simulation uploads from /tmp/uploads to free disk space."""
     try:
         is_production = os.getenv('NODE_ENV') == 'production'
         if not is_production:
@@ -480,38 +501,71 @@ def main():
             logger.info(f"POLLING CYCLE #{cycle_count}")
             logger.info(f"{'='*80}")
             
-            # Clean up old uploads to prevent disk space issues (only every 10 cycles)
             if cycle_count % 10 == 1:
                 cleanup_old_uploads(keep_last_n=5)
             
-            # Check for cloud_execution sims — cloud solver not implemented yet
+            # Poll cloud_execution sims via CFD FEA Service REST API
             sims = get_cloud_execution_sims()
-            if sims:
-                logger.warning(
-                    f"Found {len(sims)} simulation(s) in 'cloud_execution' state "
-                    f"but cloud solver is not configured. "
-                    f"Use SOLVER_TYPE=local for pipeline testing."
-                )
-                for sim in sims:
-                    logger.warning(f"  - Sim {sim.get('id')} (taskId: {sim.get('taskId', 'N/A')}) — skipped, no cloud solver")
-            else:
-                logger.info(f"Found 0 simulation(s) in 'cloud_execution' state")
+            logger.info(f"Found {len(sims)} simulation(s) in 'cloud_execution' state")
             
-            # Check for orphaned post_processing sims (recovery mode)
-            post_sims = get_post_processing_sims()
-            if post_sims:
-                logger.warning(f"RECOVERY MODE: Found {len(post_sims)} orphaned simulation(s) in 'post_processing' state")
-                sim = post_sims[0]
-                logger.info(f"Attempting to recover orphaned sim {sim['id']}")
+            processed_count = 0
+            
+            for sim in sims:
+                if processed_count >= 1:
+                    remaining = len(sims) - processed_count
+                    logger.info(f"MEMORY PROTECTION: Deferring {remaining} remaining simulation(s) to next cycle")
+                    break
                 
-                try:
-                    success = process_completed_simulation(sim)
-                    if success:
-                        processed_in_cycle = True
-                finally:
-                    logger.info(f"Forcing garbage collection after recovery...")
-                    gc.collect()
-                    logger.info(f"Memory cleanup completed after recovering sim {sim['id']}")
+                task_id = sim.get('taskId')
+                if not task_id:
+                    logger.warning(f"Sim {sim.get('id')} has no taskId, skipping")
+                    continue
+                
+                logger.info(f"Checking CFD FEA Service status for sim {sim.get('id')} (task: {task_id})")
+                status = check_task_status(task_id)
+                logger.info(f"Sim {sim.get('id')} status code: {status}")
+                
+                if status == STATUS_COMPLETED:
+                    logger.info(f"Sim {sim.get('id')} completed — starting post-processing")
+                    try:
+                        success = process_completed_simulation(sim)
+                        if success:
+                            processed_count += 1
+                            processed_in_cycle = True
+                    finally:
+                        logger.info(f"Forcing garbage collection...")
+                        gc.collect()
+                        logger.info(f"Memory cleanup completed after sim {sim.get('id')}")
+                    
+                elif status == STATUS_ERROR:
+                    logger.error(f"Sim {sim.get('id')} FAILED on CFD FEA Service (status {STATUS_ERROR})")
+                    update_simulation(sim['id'], {
+                        'status': 'failed',
+                        'errorMessage': f'CFD FEA Service simulation failed (status {STATUS_ERROR})'
+                    })
+                elif status == STATUS_RUNNING:
+                    logger.info(f"Sim {sim.get('id')} still running on CFD FEA Service")
+                elif status == STATUS_PENDING:
+                    logger.info(f"Sim {sim.get('id')} pending on CFD FEA Service")
+                elif status is None:
+                    logger.warning(f"Sim {sim.get('id')} — could not retrieve status (API key missing or request failed)")
+            
+            # Recovery: orphaned post_processing sims
+            if processed_count == 0:
+                post_sims = get_post_processing_sims()
+                if post_sims:
+                    logger.warning(f"RECOVERY MODE: Found {len(post_sims)} orphaned simulation(s) in 'post_processing' state")
+                    sim = post_sims[0]
+                    logger.info(f"Attempting to recover orphaned sim {sim['id']}")
+                    
+                    try:
+                        success = process_completed_simulation(sim)
+                        if success:
+                            processed_in_cycle = True
+                    finally:
+                        logger.info(f"Forcing garbage collection after recovery...")
+                        gc.collect()
+                        logger.info(f"Memory cleanup completed after recovering sim {sim['id']}")
             
             if not processed_in_cycle:
                 logger.info(f"No simulations processed this cycle")

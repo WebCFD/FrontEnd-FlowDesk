@@ -350,10 +350,10 @@ def process_simulation(sim: Dict[str, Any]):
                 'currentStep': 'Submitting to cloud...'
             })
             try:
-                # step04_run with type="cloud" and wait=False returns the
-                # cloud task_id immediately; worker_monitor handles step 5.
-                # NOTE: Cloud solver not yet implemented — use SOLVER_TYPE=local for testing.
-                task_id = step04_run(case_name, type="cloud", wait=False)
+                # step04_run with type="cfdfeaservice" and wait=False uploads the
+                # case, submits to CFD FEA Service, and returns the cloud task_id
+                # immediately. worker_monitor polls status and handles step 5.
+                task_id = step04_run(case_name, type="cfdfeaservice", wait=False)
             except Exception as e:
                 raise SubmissionError(
                     f"Cloud submission failed: {e}",
