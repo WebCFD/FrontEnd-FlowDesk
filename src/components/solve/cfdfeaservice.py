@@ -105,7 +105,7 @@ def upload_case(sim_path: str, api_key: str) -> str:
         # Step 1: get presigned upload URL
         payload = {
             'folder': folder_name,
-            'filename': 'upload.zip',
+            'filename': f'{folder_name}.zip',
             'contentType': 'application/octet-stream',
         }
         logger.info(f"    * Requesting presigned upload URL for folder '{folder_name}'...")
