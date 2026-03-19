@@ -97,13 +97,28 @@ def log_startup_configuration():
     except Exception:
         logger.info("Default Mesher: cfmesh (fallback)")
 
+    # CFD FEA Service configuration
+    if SOLVER_TYPE != 'local':
+        cfd_api_key = os.getenv('CFDFEASERVICE_API_KEY')
+        cfd_configured = bool(cfd_api_key)
+        cfd_status = "CONFIGURED" if cfd_configured else "NOT CONFIGURED"
+        logger.info(f"CFD FEA Service: {cfd_status}")
+        if cfd_configured:
+            key_preview = cfd_api_key[:8] + "..." if len(cfd_api_key) > 8 else "***"
+            logger.info(f"CFD FEA Service Key: {key_preview}")
+            logger.info(f"CFD FEA Service Host: {os.getenv('CFDFEASERVICE_HOST', 'https://cloud.cfdfeaservice.it')}")
+        else:
+            logger.warning("CFDFEASERVICE_API_KEY not set — cloud submissions will fail")
+    else:
+        logger.info("CFD FEA Service: not needed (SOLVER_TYPE=local)")
+
     if is_production:
         logger.info("-" * 60)
         logger.info("PRODUCTION MODE NOTES:")
         if SOLVER_TYPE == 'local':
             logger.info("  - Steps 1-5 run fully local (blocking)")
         else:
-            logger.info("  - Steps 1-3 local, step 4 submits to cloud")
+            logger.info("  - Steps 1-3 local, step 4 submits to CFD FEA Service")
             logger.info("  - Results monitored by worker_monitor")
         logger.info("-" * 60)
 
