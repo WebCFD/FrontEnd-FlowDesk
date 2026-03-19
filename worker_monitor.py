@@ -11,6 +11,7 @@ sys.path.append('.')
 
 from src.components.tools.vtk_to_vtkjs import vtk_to_vtkjs
 from src.components.solve.cfdfeaservice import (
+    STATUS_QUEUED,
     check_status,
     download_results,
     STATUS_COMPLETED,

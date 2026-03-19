@@ -214,7 +214,7 @@ def submit_simulation(folder: str, api_key: str) -> str:
 
 def check_status(task_id: str, api_key: str) -> int:
     """
-    Check simulation status via GET /api/v2/simulation/{id}.
+    Check simulation status via GET /api/v2/simulation/view/{id}.
 
     Returns:
         Numeric status code:
@@ -229,7 +229,7 @@ def check_status(task_id: str, api_key: str) -> int:
         ValueError if status field is missing.
     """
     resp = requests.get(
-        _url(f'/api/v2/simulation/{task_id}'),
+        _url(f'/api/v2/simulation/view/{task_id}'),
         headers=_headers(api_key),
         timeout=30,
     )
@@ -296,7 +296,7 @@ def download_results(task_id: str, sim_path: str, api_key: str) -> bool:
         # Step 1: get folder name from simulation record
         logger.info(f"    * Getting simulation record for task {task_id}...")
         resp = requests.get(
-            _url(f'/api/v2/simulation/{task_id}'),
+            _url(f'/api/v2/simulation/view/{task_id}'),
             headers=_headers(api_key),
             timeout=30,
         )
@@ -304,7 +304,7 @@ def download_results(task_id: str, sim_path: str, api_key: str) -> bool:
         sim_data = resp.json().get('response') or resp.json()
         folder_name = sim_data.get('folder') if isinstance(sim_data, dict) else None
         if not folder_name:
-            raise ValueError(f"No folder in GET /api/v2/simulation/{task_id}: {resp.json()}")
+            raise ValueError(f"No folder in GET /api/v2/simulation/view/{task_id}: {resp.json()}")
         logger.info(f"    * Results folder: {folder_name}")
 
         # Step 2: list root storage folders with pagination to find folder_id
