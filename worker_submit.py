@@ -56,9 +56,9 @@ def _parse_stop_after() -> "int | None":
     raw = os.getenv('PIPELINE_STOP_AFTER', '').strip()
     if raw.isdigit():
         value = int(raw)
-        if 1 <= value <= 4:
+        if 1 <= value <= 5:
             return value
-        logger.warning(f"PIPELINE_STOP_AFTER={raw} is out of valid range (1-4), ignoring")
+        logger.warning(f"PIPELINE_STOP_AFTER={raw} is out of valid range (1-5), ignoring")
     return None
 
 logging.basicConfig(
