@@ -307,31 +307,41 @@ def download_results(task_id: str, sim_path: str, api_key: str) -> bool:
             raise ValueError(f"No folder in GET /api/v1/simulation/{task_id}: {resp.json()}")
         logger.info(f"    * Results folder: {folder_name}")
 
-        # Step 2: list root storage folders to find folder_id
-        resp = requests.get(
-            _url('/api/v1/storage/index/name/asc/1'),
-            headers=_headers(api_key),
-            timeout=30,
-        )
-        resp.raise_for_status()
-        folders = resp.json().get('response', [])
+        # Step 2: list root storage folders with pagination to find folder_id
         folder_id = None
-        for f in folders:
-            if f.get('basename') == folder_name or f.get('name') == folder_name:
-                folder_id = f.get('id')
+        for page in range(1, 20):  # paginate up to 20 pages (each page ~50 items)
+            resp = requests.get(
+                _url(f'/api/v1/storage/index/name/asc/{page}'),
+                headers=_headers(api_key),
+                timeout=30,
+            )
+            resp.raise_for_status()
+            page_folders = resp.json().get('response', [])
+            if not page_folders:
+                break  # no more pages
+            for f in page_folders:
+                if f.get('basename') == folder_name or f.get('name') == folder_name:
+                    folder_id = f.get('id')
+                    break
+            if folder_id is not None:
                 break
         if folder_id is None:
             raise ValueError(f"Folder '{folder_name}' not found in storage index")
         logger.info(f"    * Found folder_id: {folder_id}")
 
-        # Step 3: list files in folder
-        resp = requests.get(
-            _url(f'/api/v1/storage/index/size/desc/parent_id/{folder_id}/1'),
-            headers=_headers(api_key),
-            timeout=30,
-        )
-        resp.raise_for_status()
-        files = resp.json().get('response', [])
+        # Step 3: list files in folder with pagination
+        files = []
+        for page in range(1, 20):  # paginate up to 20 pages
+            resp = requests.get(
+                _url(f'/api/v1/storage/index/size/desc/parent_id/{folder_id}/{page}'),
+                headers=_headers(api_key),
+                timeout=30,
+            )
+            resp.raise_for_status()
+            page_files = resp.json().get('response', [])
+            if not page_files:
+                break  # no more pages
+            files.extend(page_files)
 
         # Filter result archives; fall back to all files if no known extension found
         result_files = [

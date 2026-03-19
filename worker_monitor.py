@@ -545,6 +545,8 @@ def main():
                     })
                 elif status == STATUS_RUNNING:
                     logger.info(f"Sim {sim.get('id')} still running on CFD FEA Service")
+                elif status == STATUS_QUEUED:
+                    logger.info(f"Sim {sim.get('id')} queued/preparing on CFD FEA Service (status {STATUS_QUEUED})")
                 elif status == STATUS_PENDING:
                     logger.info(f"Sim {sim.get('id')} pending on CFD FEA Service")
                 elif status is None:
