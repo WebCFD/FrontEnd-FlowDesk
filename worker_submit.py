@@ -54,7 +54,12 @@ def _parse_stop_after() -> "int | None":
     the worker process.
     """
     raw = os.getenv('PIPELINE_STOP_AFTER', '').strip()
-    return int(raw) if raw.isdigit() else None
+    if raw.isdigit():
+        value = int(raw)
+        if 1 <= value <= 4:
+            return value
+        logger.warning(f"PIPELINE_STOP_AFTER={raw} is out of valid range (1-4), ignoring")
+    return None
 
 logging.basicConfig(
     level=logging.INFO,
@@ -164,7 +169,7 @@ def _debug_stop(sim_id: int, step: int):
     Mark simulation as completed in debug mode and signal the caller to stop.
     Called when PIPELINE_STOP_AFTER == step.
     """
-    msg = f"[DEBUG] Pipeline stopped after step {step} (PIPELINE_STOP_AFTER={step})"
+    msg = f"Debug: stopped after step {step} (PIPELINE_STOP_AFTER={step})"
     logger.info(f"[Sim {sim_id}] {msg}")
     update_simulation(sim_id, {
         'status': 'completed',
