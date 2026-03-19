@@ -17,16 +17,21 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-# Add current directory to path
-sys.path.append('.')
+# Add project root and PYTHON_STEPS to path
+from pathlib import Path
+_PROJECT_ROOT = str(Path(__file__).parent)
+_PYTHON_STEPS = str(Path(__file__).parent / "PYTHON_STEPS")
+for _p in [_PROJECT_ROOT, _PYTHON_STEPS]:
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 
 # Import pipeline steps
-from step01_json2geo import run as json2geo
-from step02_geo2mesh import run as geo2mesh
-from step03_mesh2cfd import run as mesh2cfd
-from mesher_config import get_default_mesher
-from step04_cfd2result import run as cfd2result
-from step05_results2post import run as results2post
+from PYTHON_STEPS.step01_json2geo import run as json2geo
+from PYTHON_STEPS.step02_geo2mesh import run as geo2mesh
+from PYTHON_STEPS.step03_mesh2cfd import run as mesh2cfd
+from PYTHON_STEPS.mesher_config import get_default_mesher
+from PYTHON_STEPS.step04_cfd2result import run as cfd2result
+from PYTHON_STEPS.step05_results2post import run as results2post
 
 def test_pipeline_inductiva():
     """

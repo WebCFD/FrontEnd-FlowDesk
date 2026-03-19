@@ -6,8 +6,17 @@ Run this on the worker before submitting to Inductiva.
 import json
 import sys
 import re
-from step01_json2geo import run as json2geo
-from step02_geo2mesh import run as geo2mesh
+from pathlib import Path
+
+# Add project root and PYTHON_STEPS to path
+_PROJECT_ROOT = str(Path(__file__).parent)
+_PYTHON_STEPS = str(Path(__file__).parent / "PYTHON_STEPS")
+for _p in [_PROJECT_ROOT, _PYTHON_STEPS]:
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+
+from PYTHON_STEPS.step01_json2geo import run as json2geo
+from PYTHON_STEPS.step02_geo2mesh import run as geo2mesh
 
 def verify_locationinmesh(json_file, expected_coords):
     """
