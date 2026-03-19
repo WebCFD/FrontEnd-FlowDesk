@@ -46,6 +46,11 @@ POLLING_INTERVAL = 10
 #              "cloud" submits async and worker_monitor handles step05
 SOLVER_TYPE = os.getenv('SOLVER_TYPE', 'cloud')
 
+# Debug mode: set PIPELINE_STOP_AFTER=N to run only steps 1..N and then stop.
+# Valid values: "1", "2", "3", "4". Unset (or empty) = run all steps normally.
+_stop_after_raw = os.getenv('PIPELINE_STOP_AFTER', '').strip()
+PIPELINE_STOP_AFTER: int | None = int(_stop_after_raw) if _stop_after_raw.isdigit() else None
+
 logging.basicConfig(
     level=logging.INFO,
     format='[WORKER_SUBMIT] [%(asctime)s] %(levelname)s - %(message)s',
@@ -68,6 +73,10 @@ def log_startup_configuration():
     logger.info(f"NODE_ENV: {os.getenv('NODE_ENV', 'not set')}")
     logger.info(f"API_BASE: {API_BASE}")
     logger.info(f"SOLVER_TYPE: {SOLVER_TYPE}")
+    if PIPELINE_STOP_AFTER is not None:
+        logger.info(f"PIPELINE_STOP_AFTER: {PIPELINE_STOP_AFTER}  *** DEBUG MODE — pipeline will stop after step {PIPELINE_STOP_AFTER} ***")
+    else:
+        logger.info("PIPELINE_STOP_AFTER: not set (full pipeline)")
     logger.info(f"Cases Directory: {os.path.join(os.getcwd(), 'cases')}")
     logger.info(f"PYTHON_STEPS: {_PYTHON_STEPS_DIR}")
 
@@ -144,6 +153,21 @@ def update_simulation_failure(sim_id: int, step: str, error: Exception):
 # ---------------------------------------------------------------------------
 # Pipeline execution
 # ---------------------------------------------------------------------------
+def _debug_stop(sim_id: int, step: int):
+    """
+    Mark simulation as completed in debug mode and signal the caller to stop.
+    Called when PIPELINE_STOP_AFTER == step.
+    """
+    msg = f"[DEBUG] Pipeline stopped after step {step} (PIPELINE_STOP_AFTER={step})"
+    logger.info(f"[Sim {sim_id}] {msg}")
+    update_simulation(sim_id, {
+        'status': 'completed',
+        'progress': 100,
+        'currentStep': msg,
+        'completedAt': datetime.utcnow().isoformat()
+    })
+
+
 def process_simulation(sim: Dict[str, Any]):
     """
     Execute the 5-step CFD pipeline sequentially for a single simulation.
@@ -152,6 +176,9 @@ def process_simulation(sim: Dict[str, Any]):
     Step 4 behaviour depends on SOLVER_TYPE env var:
       - "local"  → runs the solver blocking in this process, then runs step 5
       - "cloud"  → submits to cloud asynchronously; worker_monitor handles step 5
+
+    Debug mode: if PIPELINE_STOP_AFTER=N is set, the pipeline stops after step N
+    and marks the simulation as completed with a debug message.
     """
     sim_id = sim['id']
     case_name = f"sim_{sim_id}"
@@ -192,6 +219,9 @@ def process_simulation(sim: Dict[str, Any]):
                 {'case_name': case_name, 'suggestion': 'Check if room polygon is closed and valid'}
             )
         logger.info(f"[Sim {sim_id}] Step 1 complete")
+        if PIPELINE_STOP_AFTER == 1:
+            _debug_stop(sim_id, 1)
+            return
 
         # -----------------------------------------------------------------
         # Step 2: Geometry → Mesh
@@ -214,6 +244,9 @@ def process_simulation(sim: Dict[str, Any]):
                 {'case_name': case_name, 'suggestion': 'Check if geometry is valid for meshing'}
             )
         logger.info(f"[Sim {sim_id}] Step 2 complete")
+        if PIPELINE_STOP_AFTER == 2:
+            _debug_stop(sim_id, 2)
+            return
 
         # -----------------------------------------------------------------
         # Step 3: Mesh → CFD setup
@@ -239,6 +272,9 @@ def process_simulation(sim: Dict[str, Any]):
                 {'case_name': case_name, 'suggestion': 'Check boundary conditions and solver settings'}
             )
         logger.info(f"[Sim {sim_id}] Step 3 complete")
+        if PIPELINE_STOP_AFTER == 3:
+            _debug_stop(sim_id, 3)
+            return
 
         # -----------------------------------------------------------------
         # Step 4: CFD execution
@@ -259,6 +295,9 @@ def process_simulation(sim: Dict[str, Any]):
                     {'case_name': case_name}
                 )
             logger.info(f"[Sim {sim_id}] Step 4 complete (local)")
+            if PIPELINE_STOP_AFTER == 4:
+                _debug_stop(sim_id, 4)
+                return
 
             # -----------------------------------------------------------------
             # Step 5: Post-processing (only when running locally)

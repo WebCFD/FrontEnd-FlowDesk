@@ -66,3 +66,6 @@ integrations = ["resend:1.0.0", "javascript_object_storage:1.0.0"]
 [userenv.shared]
 DEBUG_COPY_ALLRUN = "1"
 R2_BUCKET_NAME = "flowdesk-vtk-storage"
+
+[userenv.development]
+PIPELINE_STOP_AFTER = "1"
