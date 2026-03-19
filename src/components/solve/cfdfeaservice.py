@@ -96,7 +96,8 @@ def upload_case(sim_path: str, api_key: str) -> str:
             base = Path(sim_path)
             for file in base.rglob('*'):
                 if file.is_file():
-                    zf.write(file, file.relative_to(base.parent))
+                    arcname = Path(folder_name) / file.relative_to(base)
+                    zf.write(file, arcname)
 
         zip_size_mb = Path(zip_path).stat().st_size / (1024 * 1024)
         logger.info(f"    * Zip created: {zip_path} ({zip_size_mb:.1f} MB)")
