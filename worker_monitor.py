@@ -20,6 +20,14 @@ from src.components.solve.cfdfeaservice import (
     STATUS_PENDING,
 )
 
+STATUS_LABELS = {
+    STATUS_COMPLETED: 'COMPLETED',
+    STATUS_PENDING:   'PENDING',
+    STATUS_RUNNING:   'RUNNING',
+    STATUS_QUEUED:    'QUEUED',
+    STATUS_ERROR:     'ERROR',
+}
+
 # Config
 API_BASE = os.getenv('API_BASE_URL', 'http://localhost:5000')
 API_KEY = 'flowerpower-external-api'
@@ -524,7 +532,8 @@ def main():
                 
                 logger.info(f"Checking CFD FEA Service status for sim {sim.get('id')} (task: {task_id})")
                 status = check_task_status(task_id)
-                logger.info(f"Sim {sim.get('id')} status code: {status}")
+                label = STATUS_LABELS.get(status, 'UNKNOWN')
+                logger.info(f"Sim {sim.get('id')} status: {status} ({label})")
                 
                 if status == STATUS_COMPLETED:
                     logger.info(f"Sim {sim.get('id')} completed — starting post-processing")
