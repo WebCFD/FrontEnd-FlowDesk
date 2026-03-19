@@ -174,7 +174,7 @@ def submit_simulation(folder: str, api_key: str) -> str:
 
     payload = {
         'data': {
-            'cpu':    cpu,
+            'cpu':    int(cpu),
             'ram':    ram,
             'folder': folder,
             'script': script,
@@ -192,6 +192,8 @@ def submit_simulation(folder: str, api_key: str) -> str:
         json=payload,
         timeout=60,
     )
+    if not resp.ok:
+        logger.error(f"    * Simulation submit error {resp.status_code}: {resp.text[:500]}")
     resp.raise_for_status()
     data = resp.json()
 
