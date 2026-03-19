@@ -322,7 +322,7 @@ def process_completed_simulation(sim):
             logger.info(f"[Sim {sim_id}]   LANG={env.get('LANG')}")
             
             result = subprocess.run(
-                ["python3", "-u", "step05_results2post.py", case_name],
+                ["python3", "-u", "PYTHON_STEPS/step05_results2post.py", case_name],
                 capture_output=True,
                 text=True,
                 timeout=600,  # 10 minute timeout for post-processing

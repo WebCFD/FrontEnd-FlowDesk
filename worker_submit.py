@@ -295,9 +295,10 @@ def process_simulation(sim: Dict[str, Any]):
                 'currentStep': 'Submitting to cloud...'
             })
             try:
-                # step04_run with type="inductiva" returns a task_id
-                # NOTE: Cloud provider integration (CFD FEA Service) is task #1
-                task_id = step04_run(case_name, type="inductiva")
+                # step04_run with type="inductiva" and wait=False returns the
+                # cloud task_id immediately; worker_monitor handles step 5.
+                # NOTE: Cloud provider (CFD FEA Service) integration is task #1.
+                task_id = step04_run(case_name, type="inductiva", wait=False)
             except Exception as e:
                 raise SubmissionError(
                     f"Cloud submission failed: {e}",

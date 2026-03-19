@@ -3,10 +3,19 @@ Geometry to mesh conversion with parallel processing and memory management.
 """
 
 import os
+import sys
 import logging
+from pathlib import Path
 from typing import List, Optional
 import pyvista as pv
 import pandas as pd
+
+# Ensure project root and PYTHON_STEPS are in sys.path
+_PROJECT_ROOT = str(Path(__file__).parent.parent)
+_PYTHON_STEPS = str(Path(__file__).parent)
+for _p in [_PROJECT_ROOT, _PYTHON_STEPS]:
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 
 from src.components.tools.load_geo import load_geo_files
 from src.components.tools.performance import PerformanceMonitor

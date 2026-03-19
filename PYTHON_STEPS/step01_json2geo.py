@@ -1,8 +1,17 @@
 import os
+import sys
 import json
 import logging
 import pandas as pd
 import pyvista as pv
+from pathlib import Path
+
+# Ensure project root and PYTHON_STEPS are in sys.path
+_PROJECT_ROOT = str(Path(__file__).parent.parent)
+_PYTHON_STEPS = str(Path(__file__).parent)
+for _p in [_PROJECT_ROOT, _PYTHON_STEPS]:
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 
 from typing import Tuple, Dict, Any
 from src.components.tools.clear_case import clear_case_all
