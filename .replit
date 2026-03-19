@@ -68,3 +68,4 @@ DEBUG_COPY_ALLRUN = "1"
 R2_BUCKET_NAME = "flowdesk-vtk-storage"
 
 [userenv.development]
+PIPELINE_STOP_AFTER = "1"
