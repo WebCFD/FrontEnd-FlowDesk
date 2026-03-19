@@ -1,20 +1,31 @@
 import os
 import sys
 import time
+import json
 import logging
 import traceback
 from datetime import datetime
-from typing import Callable, Dict, Any, List
+from typing import Dict, Any
 import requests
 
-# Add project root to Python path for module imports
-project_root = os.path.dirname(os.path.abspath(__file__))
-if project_root not in sys.path:
-    sys.path.insert(0, project_root)
+# ---------------------------------------------------------------------------
+# sys.path setup: must be done BEFORE importing PYTHON_STEPS modules so that
+#   - src.components.* resolves from the project root
+#   - pipeline_exceptions resolves from PYTHON_STEPS/
+# ---------------------------------------------------------------------------
+_PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+_PYTHON_STEPS_DIR = os.path.join(_PROJECT_ROOT, 'PYTHON_STEPS')
 
-from step01_json2geo import run as json2geo
-from step02_geo2mesh import run as geo2mesh
-from step03_mesh2cfd import run as mesh2cfd
+for _p in [_PROJECT_ROOT, _PYTHON_STEPS_DIR]:
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
+
+# Import step runners directly (PYTHON_STEPS/ is in sys.path)
+from step01_json2geo import run as step01_run
+from step02_geo2mesh import run as step02_run
+from step03_mesh2cfd import run as step03_run
+from step04_cfd2result import run as step04_run
+from step05_results2post import run as step05_run
 from mesher_config import get_default_mesher
 from pipeline_exceptions import (
     PipelineStepError,
@@ -24,76 +35,65 @@ from pipeline_exceptions import (
     SubmissionError
 )
 
-# Config
+# ---------------------------------------------------------------------------
+# Configuration
+# ---------------------------------------------------------------------------
 API_BASE = os.getenv('API_BASE_URL', 'http://localhost:5000')
 API_KEY = 'flowerpower-external-api'
 POLLING_INTERVAL = 10
 
-# Configure structured logging with clear prefix
+# Solver type: "local" runs step04 blocking locally;
+#              "cloud" submits async and worker_monitor handles step05
+SOLVER_TYPE = os.getenv('SOLVER_TYPE', 'cloud')
+
 logging.basicConfig(
-    level=logging.INFO, 
+    level=logging.INFO,
     format='[WORKER_SUBMIT] [%(asctime)s] %(levelname)s - %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 logger = logging.getLogger(__name__)
 
-# Inductiva configuration
-INDUCTIVA_API_KEY = os.getenv('INDUCTIVA_API_KEY')
 
+# ---------------------------------------------------------------------------
+# Startup diagnostics
+# ---------------------------------------------------------------------------
 def log_startup_configuration():
-    """Log environment and configuration at startup for debugging."""
     is_production = os.getenv('NODE_ENV') == 'production'
     env_label = "PRODUCTION" if is_production else "DEVELOPMENT"
-    
+
     logger.info("=" * 60)
-    logger.info(f"🚀 WORKER_SUBMIT STARTING")
+    logger.info("WORKER_SUBMIT STARTING")
     logger.info("=" * 60)
     logger.info(f"Environment: {env_label}")
     logger.info(f"NODE_ENV: {os.getenv('NODE_ENV', 'not set')}")
     logger.info(f"API_BASE: {API_BASE}")
-    
-    # Cases directory
-    cases_dir = os.path.join(os.getcwd(), 'cases')
-    logger.info(f"Cases Directory: {cases_dir}")
-    
-    # Inductiva configuration
-    inductiva_configured = bool(INDUCTIVA_API_KEY)
-    inductiva_status = "✓ CONFIGURED" if inductiva_configured else "❌ NOT CONFIGURED"
-    logger.info(f"Inductiva API: {inductiva_status}")
-    if inductiva_configured:
-        key_preview = INDUCTIVA_API_KEY[:8] + "..." if len(INDUCTIVA_API_KEY) > 8 else "***"
-        logger.info(f"Inductiva Key: {key_preview}")
-        
-        # Try to get machine group info
-        try:
-            import inductiva
-            machine_group = os.getenv('INDUCTIVA_MACHINE_GROUP', 'default')
-            logger.info(f"Machine Group: {machine_group}")
-        except Exception:
-            pass
-    else:
-        logger.error("⚠️ Inductiva API key not set - job submission will fail!")
-    
-    # Default mesher
+    logger.info(f"SOLVER_TYPE: {SOLVER_TYPE}")
+    logger.info(f"Cases Directory: {os.path.join(os.getcwd(), 'cases')}")
+    logger.info(f"PYTHON_STEPS: {_PYTHON_STEPS_DIR}")
+
     try:
         default_mesher = get_default_mesher()
         logger.info(f"Default Mesher: {default_mesher}")
     except Exception:
         logger.info("Default Mesher: cfmesh (fallback)")
-    
-    # Production notes
+
     if is_production:
         logger.info("-" * 60)
         logger.info("PRODUCTION MODE NOTES:")
-        logger.info("  - Jobs submitted to Inductiva cloud")
-        logger.info("  - Results monitored by worker_monitor")
+        if SOLVER_TYPE == 'local':
+            logger.info("  - Steps 1-5 run fully local (blocking)")
+        else:
+            logger.info("  - Steps 1-3 local, step 4 submits to cloud")
+            logger.info("  - Results monitored by worker_monitor")
         logger.info("-" * 60)
-    
+
     logger.info("=" * 60)
 
 
+# ---------------------------------------------------------------------------
+# API helpers
+# ---------------------------------------------------------------------------
 def get_pending_simulations():
-    """Obtiene sims con status='pending'"""
     try:
         response = requests.get(
             f"{API_BASE}/api/external/simulations/pending",
@@ -104,8 +104,7 @@ def get_pending_simulations():
             if isinstance(data, dict) and 'simulations' in data:
                 return data['simulations']
             return data if isinstance(data, list) else []
-        else:
-            logger.error(f"Request failed: {response.status_code}")
+        logger.error(f"Request failed: {response.status_code}")
         return []
     except Exception as e:
         logger.error(f"Failed to fetch pending sims: {e}")
@@ -113,7 +112,6 @@ def get_pending_simulations():
 
 
 def update_simulation(sim_id: int, data: Dict[str, Any]):
-    """Actualiza status/progress de simulación"""
     try:
         requests.patch(
             f"{API_BASE}/api/external/simulations/{sim_id}/status",
@@ -125,287 +123,224 @@ def update_simulation(sim_id: int, data: Dict[str, Any]):
 
 
 def update_simulation_failure(sim_id: int, step: str, error: Exception):
-    """
-    Utility to update DB with consistent failure information.
-    
-    Args:
-        sim_id: Simulation ID
-        step: Pipeline step where failure occurred
-        error: Exception that caused the failure
-    """
     error_message = str(error)
-    
-    # Build comprehensive error payload
     payload = {
         'status': 'failed',
         'errorMessage': error_message,
         'currentStep': f'Failed at {step}',
         'completedAt': datetime.utcnow().isoformat(),
-        'failedStep': step,  # CRITICAL: Record which step failed
+        'failedStep': step,
         'errorType': type(error).__name__
     }
-    
-    # Add domain-specific details from PipelineStepError
-    if isinstance(error, PipelineStepError):
-        # Serialize error.details for DB storage
-        if error.details:
-            payload['failureDetails'] = error.details
-            # Extract suggestion if available for easier frontend access
-            if 'suggestion' in error.details:
-                payload['suggestion'] = error.details['suggestion']
-    
+    if isinstance(error, PipelineStepError) and error.details:
+        payload['failureDetails'] = error.details
+        if 'suggestion' in error.details:
+            payload['suggestion'] = error.details['suggestion']
+
     update_simulation(sim_id, payload)
-    
     logger.error(f"Simulation {sim_id} failed at {step}: {error_message}")
-    if isinstance(error, PipelineStepError):
-        logger.debug(f"Error details: {error.details}")
 
 
-def submit_to_inductiva(case_name: str, sim_path: str) -> str:
-    """Submit a Inductiva y retorna task_id"""
+# ---------------------------------------------------------------------------
+# Pipeline execution
+# ---------------------------------------------------------------------------
+def process_simulation(sim: Dict[str, Any]):
+    """
+    Execute the 5-step CFD pipeline sequentially for a single simulation.
+
+    Steps 1-3 always run locally.
+    Step 4 behaviour depends on SOLVER_TYPE env var:
+      - "local"  → runs the solver blocking in this process, then runs step 5
+      - "cloud"  → submits to cloud asynchronously; worker_monitor handles step 5
+    """
+    sim_id = sim['id']
+    case_name = f"sim_{sim_id}"
+    simulation_type = sim.get('simulationType', 'SteadySim')
+
+    # Parse jsonConfig if it came as a string
+    json_config = sim.get('jsonConfig', {})
+    if isinstance(json_config, str):
+        json_config = json.loads(json_config)
+
+    logger.info(f"[Sim {sim_id}] Starting pipeline — case: {case_name}, type: {simulation_type}")
+
     try:
-        from src.components.solve.inductiva import solve_inductiva
-        task_id = solve_inductiva(sim_path, machine_type="c2d-standard-8", wait=False)
-        return task_id
-    except Exception as e:
-        raise SubmissionError(f"Failed to submit to Inductiva: {str(e)}", {
-            'case_name': case_name,
-            'sim_path': sim_path
+        # Initialize
+        update_simulation(sim_id, {
+            'status': 'processing',
+            'progress': 10,
+            'currentStep': 'Initializing...',
+            'startedAt': datetime.utcnow().isoformat()
         })
 
-
-class SimulationPipeline:
-    """
-    Orchestrator for CFD simulation pipeline with fail-fast error handling.
-    
-    Executes steps sequentially: geometry → meshing → cfd_setup → submit
-    Stops immediately on first error and updates DB with diagnostic info.
-    """
-    
-    def __init__(self, sim: Dict[str, Any]):
-        self.sim = sim
-        self.sim_id = sim['id']
-        self.case_name = f"sim_{self.sim_id}"
-        self.simulation_type = sim.get('simulationType', 'SteadySim')  # Default to Steady
-        
-        # Parse jsonConfig if string
-        if isinstance(sim.get('jsonConfig'), str):
-            import json as json_module
-            self.sim['jsonConfig'] = json_module.loads(sim['jsonConfig'])
-        
-        # Pipeline step definitions
-        self.steps = [
-            {
-                'id': 'geometry',
-                'status': 'geometry',
-                'progress': 20,
-                'label': 'Generating 3D geometry...',
-                'callable': self._step_geometry,
-                'error_class': GeometryStepError
-            },
-            {
-                'id': 'meshing',
-                'status': 'meshing',
-                'progress': 40,
-                'label': 'Creating computational mesh...',
-                'callable': self._step_meshing,
-                'error_class': MeshingStepError
-            },
-            {
-                'id': 'cfd_setup',
-                'status': 'cfd_setup',
-                'progress': 60,
-                'label': 'Setting up CFD case...',
-                'callable': self._step_cfd_setup,
-                'error_class': CFDSetupError
-            },
-            {
-                'id': 'submission',
-                'status': 'cloud_execution',
-                'progress': 75,
-                'label': 'Submitting to cloud...',
-                'callable': self._step_submit,
-                'error_class': SubmissionError
-            }
-        ]
-        
-        # State storage for intermediate results
-        self.state = {}
-    
-    def run(self):
-        """
-        Execute pipeline steps sequentially.
-        Stops on first error and updates DB accordingly.
-        """
-        try:
-            logger.info(f"[Pipeline] Starting simulation {self.sim_id}")
-            
-            # Initialize
-            update_simulation(self.sim_id, {
-                'status': 'processing',
-                'progress': 10,
-                'currentStep': 'Initializing...',
-                'startedAt': datetime.utcnow().isoformat()
-            })
-            
-            # Execute each step
-            for step in self.steps:
-                self._execute_step(step)
-            
-            logger.info(f"[Pipeline] Simulation {self.sim_id} submitted successfully")
-            
-        except PipelineStepError as e:
-            # Domain-specific error - already logged and DB updated
-            logger.error(f"[Pipeline] Simulation {self.sim_id} failed at {e.step_name}")
-            update_simulation_failure(self.sim_id, e.step_name, e)
-            
-        except Exception as e:
-            # Unexpected error
-            logger.error(f"[Pipeline] Unexpected error in simulation {self.sim_id}: {e}")
-            logger.error(traceback.format_exc())
-            update_simulation_failure(self.sim_id, 'unknown', e)
-    
-    def _execute_step(self, step: Dict[str, Any]):
-        """
-        Execute a single pipeline step with error handling.
-        
-        Updates DB before/after execution and captures errors with context.
-        """
-        step_id = step['id']
-        step_label = step['label']
-        
-        logger.info(f"[Pipeline][{step_id}] Starting: {step_label}")
-        
-        # Update DB: step started
-        update_simulation(self.sim_id, {
-            'status': step['status'],
-            'progress': step['progress'],
-            'currentStep': step_label
+        # -----------------------------------------------------------------
+        # Step 1: JSON → Geometry
+        # -----------------------------------------------------------------
+        logger.info(f"[Sim {sim_id}] Step 1/5: Generating 3D geometry...")
+        update_simulation(sim_id, {
+            'status': 'geometry',
+            'progress': 20,
+            'currentStep': 'Generating 3D geometry...'
         })
-        
         try:
-            # Execute step callable
-            result = step['callable']()
-            
-            # Store result in state for next steps
-            self.state[step_id] = result
-            
-            logger.info(f"[Pipeline][{step_id}] Completed successfully")
-            
+            geo_mesh, geo_df = step01_run(json_config, case_name)
         except PipelineStepError:
-            # Re-raise pipeline errors without wrapping
             raise
-            
-        except Exception as e:
-            # Wrap unexpected errors in appropriate domain exception
-            error_class = step['error_class']
-            error_msg = f"{step_label} failed: {str(e)}"
-            
-            logger.error(f"[Pipeline][{step_id}] ERROR: {error_msg}")
-            logger.error(traceback.format_exc())
-            
-            raise error_class(error_msg, {
-                'original_error': str(e),
-                'traceback': traceback.format_exc()
-            })
-    
-    # Step implementations
-    
-    def _step_geometry(self):
-        """Step 1: JSON → Geometry"""
-        try:
-            geo_mesh, geo_df = json2geo(self.sim['jsonConfig'], self.case_name)
-            return {'geo_mesh': geo_mesh, 'geo_df': geo_df}
         except Exception as e:
             raise GeometryStepError(
-                f"Geometry generation failed: {str(e)}",
-                {
-                    'case_name': self.case_name,
-                    'suggestion': 'Check if room polygon is closed and valid'
-                }
+                f"Geometry generation failed: {e}",
+                {'case_name': case_name, 'suggestion': 'Check if room polygon is closed and valid'}
             )
-    
-    def _step_meshing(self):
-        """Step 2: Geometry → Mesh"""
+        logger.info(f"[Sim {sim_id}] Step 1 complete")
+
+        # -----------------------------------------------------------------
+        # Step 2: Geometry → Mesh
+        # -----------------------------------------------------------------
+        logger.info(f"[Sim {sim_id}] Step 2/5: Creating computational mesh...")
+        update_simulation(sim_id, {
+            'status': 'meshing',
+            'progress': 40,
+            'currentStep': 'Creating computational mesh...'
+        })
         try:
-            geo_data = self.state['geometry']
             mesher_type = get_default_mesher()
-            logger.info(f"Using mesher: {mesher_type}")
-            mesh_script = geo2mesh(
-                self.case_name,
-                geo_data['geo_mesh'],
-                geo_data['geo_df'],
-                type=mesher_type
-            )
-            return {'mesh_script': mesh_script}
+            logger.info(f"[Sim {sim_id}] Using mesher: {mesher_type}")
+            mesh_scripts = step02_run(case_name, geo_mesh, geo_df, type=mesher_type)
+        except PipelineStepError:
+            raise
         except Exception as e:
             raise MeshingStepError(
-                f"Mesh generation failed: {str(e)}",
-                {
-                    'case_name': self.case_name,
-                    'suggestion': 'Check if geometry is valid for meshing'
-                }
+                f"Mesh generation failed: {e}",
+                {'case_name': case_name, 'suggestion': 'Check if geometry is valid for meshing'}
             )
-    
-    def _step_cfd_setup(self):
-        """Step 3: Mesh → CFD"""
+        logger.info(f"[Sim {sim_id}] Step 2 complete")
+
+        # -----------------------------------------------------------------
+        # Step 3: Mesh → CFD setup
+        # -----------------------------------------------------------------
+        logger.info(f"[Sim {sim_id}] Step 3/5: Setting up CFD case...")
+        update_simulation(sim_id, {
+            'status': 'cfd_setup',
+            'progress': 60,
+            'currentStep': 'Setting up CFD case...'
+        })
         try:
-            mesh_data = self.state['meshing']
-            mesh2cfd(
-                self.case_name,
+            step03_run(
+                case_name,
                 type="hvac",
-                mesh_script=mesh_data['mesh_script'],
-                simulation_type=self.simulation_type  # Pass simulation type for iteration config
+                mesh_script=mesh_scripts,
+                simulation_type=simulation_type
             )
-            return {'cfd_ready': True}
+        except PipelineStepError:
+            raise
         except Exception as e:
             raise CFDSetupError(
-                f"CFD setup failed: {str(e)}",
-                {
-                    'case_name': self.case_name,
-                    'suggestion': 'Check boundary conditions and solver settings'
-                }
+                f"CFD setup failed: {e}",
+                {'case_name': case_name, 'suggestion': 'Check boundary conditions and solver settings'}
             )
-    
-    def _step_submit(self):
-        """Step 4: Submit to Inductiva"""
-        sim_path = os.path.join(os.getcwd(), "cases", self.case_name, "sim")
-        task_id = submit_to_inductiva(self.case_name, sim_path)
-        
-        # Update with task ID
-        update_simulation(self.sim_id, {
-            'status': 'cloud_execution',
-            'taskId': task_id,
-            'progress': 75,
-            'currentStep': 'Running on Inductiva cloud...'
-        })
-        
-        return {'task_id': task_id}
+        logger.info(f"[Sim {sim_id}] Step 3 complete")
+
+        # -----------------------------------------------------------------
+        # Step 4: CFD execution
+        # -----------------------------------------------------------------
+        if SOLVER_TYPE == 'local':
+            # Run solver blocking and then post-process in this same worker
+            logger.info(f"[Sim {sim_id}] Step 4/5: Running CFD locally (blocking)...")
+            update_simulation(sim_id, {
+                'status': 'cloud_execution',
+                'progress': 70,
+                'currentStep': 'Running CFD solver locally...'
+            })
+            try:
+                step04_run(case_name, type="local")
+            except Exception as e:
+                raise SubmissionError(
+                    f"CFD execution failed: {e}",
+                    {'case_name': case_name}
+                )
+            logger.info(f"[Sim {sim_id}] Step 4 complete (local)")
+
+            # -----------------------------------------------------------------
+            # Step 5: Post-processing (only when running locally)
+            # -----------------------------------------------------------------
+            logger.info(f"[Sim {sim_id}] Step 5/5: Post-processing results...")
+            update_simulation(sim_id, {
+                'status': 'post_processing',
+                'progress': 85,
+                'currentStep': 'Post-processing results...'
+            })
+            try:
+                step05_run(case_name)
+            except Exception as e:
+                raise SubmissionError(
+                    f"Post-processing failed: {e}",
+                    {'case_name': case_name}
+                )
+            logger.info(f"[Sim {sim_id}] Step 5 complete")
+
+            update_simulation(sim_id, {
+                'status': 'completed',
+                'progress': 100,
+                'currentStep': 'Completed',
+                'completedAt': datetime.utcnow().isoformat()
+            })
+            logger.info(f"[Sim {sim_id}] Pipeline completed successfully (local)")
+
+        else:
+            # Cloud mode: submit async, worker_monitor handles steps 5+
+            logger.info(f"[Sim {sim_id}] Step 4/5: Submitting to cloud...")
+            update_simulation(sim_id, {
+                'status': 'cloud_execution',
+                'progress': 75,
+                'currentStep': 'Submitting to cloud...'
+            })
+            try:
+                # step04_run with type="inductiva" returns a task_id
+                # NOTE: Cloud provider integration (CFD FEA Service) is task #1
+                task_id = step04_run(case_name, type="inductiva")
+            except Exception as e:
+                raise SubmissionError(
+                    f"Cloud submission failed: {e}",
+                    {'case_name': case_name, 'suggestion': 'Check cloud solver configuration'}
+                )
+
+            update_simulation(sim_id, {
+                'status': 'cloud_execution',
+                'taskId': str(task_id) if task_id else None,
+                'progress': 75,
+                'currentStep': 'Running on cloud...'
+            })
+            logger.info(f"[Sim {sim_id}] Step 4 complete — task submitted, worker_monitor will handle the rest")
+
+    except PipelineStepError as e:
+        logger.error(f"[Sim {sim_id}] Pipeline step error: {e}")
+        update_simulation_failure(sim_id, getattr(e, 'step_name', 'unknown'), e)
+
+    except Exception as e:
+        logger.error(f"[Sim {sim_id}] Unexpected error: {e}")
+        logger.error(traceback.format_exc())
+        update_simulation_failure(sim_id, 'unknown', e)
 
 
-def process_simulation(sim: Dict[str, Any]):
-    """Process a single simulation through the pipeline"""
-    pipeline = SimulationPipeline(sim)
-    pipeline.run()
-
-
+# ---------------------------------------------------------------------------
+# Main polling loop
+# ---------------------------------------------------------------------------
 def main():
-    # Log startup configuration for debugging
     log_startup_configuration()
-    
+
     while True:
         try:
             sims = get_pending_simulations()
-            
-            # Filter only HVAC simulations (SteadySim/TransientSim)
+
+            # Only process HVAC simulations
             sims = [s for s in sims if s.get('simulationType') in ['SteadySim', 'TransientSim']]
             logger.info(f"Found {len(sims)} HVAC simulations to process")
-            
+
             for sim in sims:
                 process_simulation(sim)
-            
+
             time.sleep(POLLING_INTERVAL)
-            
+
         except KeyboardInterrupt:
             logger.info("Worker stopped")
             break

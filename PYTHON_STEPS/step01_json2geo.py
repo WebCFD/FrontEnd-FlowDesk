@@ -10,6 +10,8 @@ from src.components.geo.create_volumes import create_volumes
 from src.components.geo.boolean_operations import perform_boolean_operations
 from src.components.geo.finalise_geometry import finalise_geometry
 from src.components.geo.export_result import export_geo
+from src.components.geo.geometry_validator import log_validation
+from src.components.geo.json_validator import validate_building_json, JSONValidationError
 from pipeline_exceptions import GeometryStepError
 
 logger = logging.getLogger(__name__)
@@ -20,20 +22,48 @@ def run(json_payload: Dict[str, Any], case_name: str) -> Tuple[pv.PolyData, pd.D
     Convert JSON building data to 3D geometry with parallel processing and memory management.
     
     This function orchestrates the complete geometry creation pipeline:
-    1. Loads building configuration from JSON
-    2. Creates room volumes (walls, floors, ceilings)
-    3. Adds furniture objects
-    4. Performs boolean operations to combine geometry
-    5. Applies boundary conditions and exports results
+    1. Validates JSON structure and floor sequence
+    2. Loads building configuration from JSON
+    3. Creates room volumes (walls, floors, ceilings)
+    4. Adds furniture objects
+    5. Performs boolean operations to combine geometry
+    6. Applies boundary conditions and exports results
     
     Args:
-        input_json: Path to input JSON file containing building configuration
+        json_payload: Building configuration JSON data
+        case_name: Name of the case for output files
         
     Returns:
         Tuple of (final_geometry_mesh, boundary_conditions_dataframe)
     """
     
     logger.info("\n=========== RUNNING JSON TO GEOMETRY CONVERSION ===========")
+
+    # Step 0: Validate JSON structure
+    logger.info("0 - Validating JSON structure")
+    try:
+        validation_results = validate_building_json(json_payload)
+    except Exception as e:
+        raise GeometryStepError(
+            f"JSON validation failed: {str(e)}",
+            {
+                'case_name': case_name,
+                'error_type': 'json_validation',
+                'suggestion': 'Check JSON structure and fix validation errors'
+            }
+        )
+    
+    # Check if validation passed
+    if not validation_results['valid']:
+        error_messages = [f"{err['location']}: {err['message']}" for err in validation_results['errors']]
+        raise JSONValidationError(
+            f"JSON validation failed with {len(validation_results['errors'])} errors",
+            validation_results['errors']
+        )
+    
+    # Extract valid floors from validation results
+    valid_floors = validation_results['valid_floors']
+    logger.info(f"   → Processing {len(valid_floors)} valid floors: {', '.join(valid_floors)}\n")
 
     # Step 1: Initialize case directory
     logger.info(f"1 - Initializing case directory: {case_name}")
@@ -42,7 +72,7 @@ def run(json_payload: Dict[str, Any], case_name: str) -> Tuple[pv.PolyData, pd.D
     # Step 2: Create room geometry (walls, floors, ceilings) and furniture
     logger.info("2 - Creating room geometry and furniture")
     try:
-        room_geometry_meshes, furniture_meshes, boundary_conditions_df = create_volumes(json_payload)
+        room_geometry_meshes, furniture_meshes, boundary_conditions_df = create_volumes(json_payload, valid_floors)
     except Exception as e:
         raise GeometryStepError(
             f"Failed to create room geometry: {str(e)}",
@@ -63,6 +93,34 @@ def run(json_payload: Dict[str, Any], case_name: str) -> Tuple[pv.PolyData, pd.D
                 'suggestion': 'Ensure the JSON contains valid room definitions with closed polygons'
             }
         )
+    
+    # Step 2.5: Validate geometry (basic checks)
+    logger.info("2.5 - Validating geometry")
+    logger.info("-" * 70)
+    
+    # Validar que cada room tiene puntos y celdas
+    for i, room_mesh in enumerate(room_geometry_meshes):
+        room_id = f"room_{i}"
+        n_points = room_mesh.n_points
+        n_cells = room_mesh.n_cells
+        
+        if n_points > 0 and n_cells > 0:
+            logger.info(f"✓ {room_id}: {n_points} points, {n_cells} cells")
+        else:
+            logger.warning(f"⚠️  {room_id}: Invalid geometry (points={n_points}, cells={n_cells})")
+    
+    # Validar que cada furniture tiene puntos y celdas
+    for i, furniture_mesh in enumerate(furniture_meshes):
+        furniture_id = f"furniture_{i}"
+        n_points = furniture_mesh.n_points
+        n_cells = furniture_mesh.n_cells
+        
+        if n_points > 0 and n_cells > 0:
+            logger.info(f"✓ {furniture_id}: {n_points} points, {n_cells} cells")
+        else:
+            logger.warning(f"⚠️  {furniture_id}: Invalid geometry (points={n_points}, cells={n_cells})")
+    
+    logger.info("-" * 70)
 
     # Step 3: Combine room geometry and subtract furniture using boolean operations
     logger.info("3 - Combining room geometry and applying furniture subtractions")
@@ -86,6 +144,12 @@ def run(json_payload: Dict[str, Any], case_name: str) -> Tuple[pv.PolyData, pd.D
     # Step 5: Export geometry and boundary condition data
     logger.info("5 - Exporting final geometry and boundary condition information")
     export_geo(case_name, final_geometry_mesh, boundary_conditions_df)
+
+    # Step 6: Save input JSON to geo folder for traceability
+    json_dest = os.path.join(os.getcwd(), 'cases', case_name, 'geo', 'building_config.json')
+    with open(json_dest, 'w', encoding='utf-8') as _f:
+        json.dump(json_payload, _f, indent=2, ensure_ascii=False)
+    logger.info(f"6 - Input JSON saved to: {json_dest}")
 
     logger.info(f"✅ Geometry creation pipeline completed successfully:")
     return final_geometry_mesh, boundary_conditions_df

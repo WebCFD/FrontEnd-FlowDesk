@@ -6,16 +6,16 @@ FoamFile
     object      controlDict;
 }
 
-application       buoyantBoussinesqSimpleFoam;
+application       buoyantBoussinesqPimpleFoam;
 startFrom         startTime;
 startTime         0;
 stopAt            endTime;
-endTime           300;
+endTime           5000;
 deltaT            1;
 writeControl      timeStep;    // Write by iteration number
-writeInterval     300;          // Write at final iteration
+writeInterval     500;          // Write only at final iteration
 adjustTimeStep    no;
-purgeWrite        0;            // Keep all timesteps (0 and 300)
+purgeWrite        0;            // Keep all timesteps (0 and 500)
 writeFormat       ascii;
 writePrecision    6;
 writeCompression  off;
@@ -44,7 +44,7 @@ functions
         // NO reiniciar en cada timestep
         resetOnStartUp  false;
         
-        // Escribir CO2 cuando solver escribe (tiempo 300)
+        // Escribir CO2 cuando solver escribe (cada writeInterval)
         executeControl  timeStep;
         executeInterval 1;
         writeControl    writeTime;
@@ -64,3 +64,4 @@ functions
         writeControl    none;
     }
 }
+

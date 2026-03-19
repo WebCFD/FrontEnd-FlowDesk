@@ -470,7 +470,7 @@ def export_to_stl(geo_mesh_dict, sim_path, stl_filename):
         f.write("    endloop\n")
         f.write("  endfacet\n")
 
-    with open(stl_path, 'w', encoding='utf-8') as f:
+    with open(stl_path, 'w') as f:
         for solid_name, mesh in geo_mesh_dict.items():
             f.write(f"solid {solid_name}\n")
 
@@ -632,35 +632,8 @@ def prepare_snappy(geo_mesh, sim_path, geo_df, stl_filename = "geometry.stl"):
     expected_patches_str = ", ".join(expected_patches)
     
     script_commands = [
-        '#!/bin/bash',
+        '#!/bin/sh', 
         'cd "${0%/*}" || exit',
-        '',
-        '# Source OpenFOAM environment - try multiple possible paths',
-        'BASHRC_PATHS=(',
-        '    "/opt/openfoam/openfoam2412_dev/etc/bashrc"',
-        '    "/opt/openfoam/openfoam2412/etc/bashrc"',
-        '    "/usr/lib/openfoam/openfoam2412_dev/etc/bashrc"',
-        '    "/usr/lib/openfoam/openfoam2412/etc/bashrc"',
-        '    "/opt/openfoam/etc/bashrc"',
-        '    "/usr/local/openfoam/etc/bashrc"',
-        ')',
-        '',
-        'BASHRC_FOUND=0',
-        'for bashrc in "${BASHRC_PATHS[@]}"; do',
-        '    if [ -f "$bashrc" ]; then',
-        '        echo "Sourcing OpenFOAM environment from: $bashrc"',
-        '        . "$bashrc"',
-        '        BASHRC_FOUND=1',
-        '        break',
-        '    fi',
-        'done',
-        '',
-        'if [ $BASHRC_FOUND -eq 0 ]; then',
-        '    echo "ERROR: OpenFOAM bashrc not found in any known location"',
-        '    echo "Tried paths: ${BASHRC_PATHS[@]}"',
-        '    exit 1',
-        'fi',
-        '',
         '. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions',
 
         'decompDict="-decomposeParDict system/decomposeParDict"',
@@ -722,7 +695,7 @@ def prepare_snappy(geo_mesh, sim_path, geo_df, stl_filename = "geometry.stl"):
         "    print('='*80 + '\\n')",
         "    exit(1)",
         "",
-        "print('[OK] Mesh validation passed - no background patches found')",
+        "print('✅ Mesh validation passed - no background patches found')",
         "print(f'Valid patches: {\", \".join(patches.keys())}')",
         "VALIDATION_EOF",
         'echo "==================== MESH VALIDATION PASSED ===================="',

@@ -140,7 +140,7 @@ relaxationFactors
     equations
     {
         U               0.25;  // Extreme stability for strong buoyancy
-        T               0.55;  // Increased for faster convergence
+        T               0.35;  // Extreme stability for thermal coupling
         "(k|omega)"     0.5;   // Turbulence model stability
         CO2             0.7;   // Conservadurismo scalar transport para evitar undershoots
         G               0.3;   // Under-relaxation for radiation convergence

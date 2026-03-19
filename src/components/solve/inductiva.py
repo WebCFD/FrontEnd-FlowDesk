@@ -10,16 +10,11 @@ def create_decomposeParDict(template_path, sim_path, machine_type):
     input_path = os.path.join(template_path, "system", "decomposeParDict") 
     output_path = os.path.join(sim_path, "system", "decomposeParDict") 
 
-    # Map machine types to CPU count
-    machine_cpu_map = {
-        "c2d-standard-8": 8,
-        "c2d-highcpu-16": 16
-    }
-    
-    if machine_type not in machine_cpu_map:
-        raise BaseException(f"Unknown machine type: {machine_type}. Supported: {list(machine_cpu_map.keys())}")
-    
-    n_cpu = machine_cpu_map[machine_type]
+    # TODO: When running using inductiva, this needs to be done with
+    if(machine_type == "c2d-highcpu-16"):
+        n_cpu = 16
+    else:
+        raise BaseException("This type of machine is unkwown.")
     n_cpu_available, (n_x, n_y, n_z) = best_cpu_partition(n_cpu)
 
     str_replace_dict = dict()
@@ -53,39 +48,17 @@ def solve_inductiva(sim_path, machine_type, wait=True):
     logger.info(f"    * Setting up parallel decomposition from template: {template_path}")
     create_decomposeParDict(template_path, sim_path, machine_type)
 
-    # Allocate cloud machine (using Inductiva recommended config)
-    logger.info(f"    * Allocating cloud machine: {machine_type}")
-    cloud_machine = inductiva.resources.MachineGroup(machine_type)
+    #  Allocate cloud machine on Google Cloud Platform
+    logger.info("    * Allocating cloud machine on Google Cloud Platform")
+    cloud_machine = inductiva.resources.MachineGroup(provider="GCP", machine_type="c2d-highcpu-16", spot=True)
 
-    # Initialize custom cfMesh image
-    logger.info("    * Initializing custom cfMesh image (OpenFOAM v2412)")
-    cf_mesh = inductiva.simulators.CustomImage("inductiva/kutu:openfoam-cfmesh_v2412_dev")
+    # Initialize the Simulator
+    logger.info("    * Initializing OpenFOAM simulator (ESI distribution v2406)")
+    OpenFOAM = inductiva.simulators.OpenFOAM(distribution="esi",  version="2406")
 
-    # DEBUG: Copy Allrun before upload to compare local vs Inductiva (set DEBUG_COPY_ALLRUN=1 to enable)
-    if os.getenv('DEBUG_COPY_ALLRUN', '0') == '1':
-        import shutil
-        from datetime import datetime
-        allrun_path = os.path.join(sim_path, "Allrun")
-        if os.path.exists(allrun_path):
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            backup_path = os.path.join(sim_path, f"Allrun_LOCAL_{timestamp}")
-            shutil.copy2(allrun_path, backup_path)
-            logger.info(f"    * [DEBUG] Allrun copied to: {backup_path}")
-            # Log first 20 lines
-            with open(allrun_path, 'r', encoding='utf-8') as f:
-                lines = f.readlines()[:20]
-                logger.info(f"    * [DEBUG] Allrun content (first 20 lines):")
-                for i, line in enumerate(lines, 1):
-                    logger.info(f"    *   {i}: {line.rstrip()}")
-
-    # Run simulation with Allrun script
-    # Note: Use 'bash ./Allrun' to execute with proper path resolution
+    # Run simulation
     logger.info("    * Submitting CFD simulation task to cloud")
-    task = cf_mesh.run(
-        on=cloud_machine,
-        input_dir=sim_path,
-        commands=["bash ./Allrun"]
-    )
+    task = OpenFOAM.run(input_dir=sim_path, shell_script="./Allrun", on=cloud_machine)
     
     task_id = task.id
     

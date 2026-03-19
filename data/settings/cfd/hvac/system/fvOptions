@@ -1,0 +1,48 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2412                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvOptions;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// ============================================================================
+// PHYSICAL LIMITS FOR SOLUTION STABILITY (OpenFOAM v2412 ESI format)
+// ============================================================================
+// These limits prevent non-physical values that can cause divergence
+// and ensure solutions remain within realistic HVAC operating ranges
+// ============================================================================
+
+limitU
+{
+    type            limitVelocity;
+    active          yes;
+    selectionMode   all;
+    
+    // VELOCITY LIMIT: 20 m/s maximum magnitude
+    // Physical context:
+    // - Typical HVAC: 0.5-5 m/s
+    // - High velocity diffusers: up to 10-15 m/s
+    // - 20 m/s conservative safety margin
+    max             20;  // m/s
+}
+
+// NOTE: limitTemperature removed - incompatible with buoyantBoussinesqSimpleFoam
+// This solver doesn't use thermophysicalProperties in the required format
+// Temperature is handled directly via T field with boundary conditions
+
+// NOTE: limitG removed - limitTemperature requires thermophysicalProperties
+// which is incompatible with buoyantBoussinesqSimpleFoam
+// Solution: Initialize G=100 (not zero) to prevent matrix singularity
+// GAMG solver + relaxation (G=0.7) provide sufficient numerical stability
+
+
+// ************************************************************************* //

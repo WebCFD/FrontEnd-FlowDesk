@@ -38,11 +38,12 @@ def run(case_name: str = "cases/cfd_case", type: str = "local") -> None:
 
     # Step 2: Execute CFD simulation
     logger.info(f"2 - Executing CFD simulation on {type} platform")
+    logger.info(f"   Platform: {type}")
     performance_monitor.update_memory()
     
     if(type == "inductiva"):
         logger.info(f"Running CFD simulation in INDUCTIVA cloud platform")
-        solve_inductiva(sim_path, machine_type="c2d-standard-8")
+        solve_inductiva(sim_path, machine_type="c2d-highcpu-16")
     elif(type == "local"):
         logger.info(f"Running CFD simulation locally in {sim_path}") 
         solve_local(sim_path)

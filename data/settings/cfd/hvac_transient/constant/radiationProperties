@@ -1,0 +1,54 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2412                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      radiationProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+radiation       on;
+
+radiationModel  P1;ok
+
+P1Coeffs
+{
+}
+
+// How often to solve radiation (1 = every timestep, 5-10 = every 5-10 steps for efficiency)
+solverFreq      5;
+
+// ============================================================================
+// VOLUMETRIC PROPERTIES OF THE FLUID MEDIUM
+// These define how the FLUID (air, smoke, etc.) absorbs/emits radiation
+// NOT the walls/surfaces (those are defined in boundary conditions of field G)
+// ============================================================================
+
+// ============================================================================
+// SLIGHTLY PARTICIPATING AIR (for P1 model stability + realistic G field)
+// Small absorptivity prevents singular equation and allows G to evolve spatially
+// ============================================================================
+absorptionEmissionModel constantAbsorptionEmission;
+
+constantAbsorptionEmissionCoeffs
+{
+    // Small absorptivity for P1 stability + spatial evolution of G
+    absorptivity    absorptivity [0 -1 0 0 0 0 0] 0.01;
+    emissivity      emissivity   [0 -1 0 0 0 0 0] 0.01;
+    E               E            [1 -1 -3 0 0 0 0] 0;
+}
+
+// Scattering model (none for air or smoke - scattering negligible in thermal radiation)
+scatterModel    none;
+
+// Soot model (none - not modeling combustion products)
+sootModel       none;
+
+// ************************************************************************* //

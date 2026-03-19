@@ -20,7 +20,7 @@ $STL_FILENAME
 
     extractFromSurfaceCoeffs
     {
-        includedAngle   150;
+        includedAngle   45;
     }
 
     writeObj            yes;

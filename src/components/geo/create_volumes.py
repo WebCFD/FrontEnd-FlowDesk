@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import pyvista as pv
 import logging
+from pathlib import Path
 
 from typing import List, Tuple, Dict, Any
 from src.components.tools.performance import (
@@ -13,8 +14,15 @@ from src.components.tools.performance import (
 
 logger = logging.getLogger(__name__)
 
+# PROJECT_ROOT: Absolute path to project root (3 levels up from this file)
+# This ensures correct paths regardless of execution directory
+PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
+
 VOLUMES_TOLERANCE = 1e-5
 DEFAULT_TEMPERATURE = 20
+
+# Furniture positioning constants
+FURNITURE_FLOOR_PENETRATION = -0.000  # m, negative offset to ensure floor intersection
 
 # Flow value mapping for different boundary condition types
 FLOW_VALUES = {
@@ -31,10 +39,11 @@ FLOW_VALUES = {
         'high': 400.0
     },
     # Pressure boundary conditions (Pa)
+    # DIAGNOSTIC TEST: All set to 0 to test if ΔP is causing the crash
     'pressure': {
-        'low': 0.3,
-        'medium': 2.5,
-        'high': 5.0
+        'low': 0.3,     # Pa - Low pressure differential
+        'medium': 5,    # Pa - Medium pressure differential  
+        'high': 25      # Pa - High pressure differential
     }
 }
 
@@ -43,6 +52,14 @@ FLOW_LEVELS = {
     'low':      0.5,
     'medium':   1.0,
     'high':     2.0,
+}
+
+# ── Central normalisation map: accepts any front-end casing ──────────────────
+_FLOW_TYPE_NORMALIZE: Dict[str, str] = {
+    'velocity':  'velocity',
+    'massflow':  'massFlow',
+    'massFlow':  'massFlow',
+    'pressure':  'pressure',
 }
 
 
@@ -69,65 +86,108 @@ def get_flow_value(flow_intensity: str, flow_type: str, custom_value: float = No
     return flow_type_values.get(flow_intensity, flow_type_values['medium'])
 
 
+def _build_vent_bc(
+    patch_id: str,
+    temperature: float,
+    air_direction: str,
+    flow_type_raw: str,
+    flow_intensity: str,
+    custom_value: float = None,
+) -> dict:
+    """
+    Single source of truth for open-vent BC dicts.
+
+    Supports flowType: velocity | massFlow | pressure.
+    Supports airDirection: inflow | outflow | equilibrium.
+    Used by both wall/floor/ceiling airEntries (get_entry_bc_dict)
+    and face-based furniture vents (create_face_based_mesh).
+    """
+    flow_type = _FLOW_TYPE_NORMALIZE.get(flow_type_raw, 'pressure')
+    bc = {'id': patch_id.replace(' ', '_'), 'T': temperature, 'open': True}
+
+    if air_direction == 'inflow':
+        if flow_type == 'massFlow':
+            bc['type']     = 'mass_flow_inlet'
+            bc['massFlow'] = get_flow_value(flow_intensity, 'massFlow', custom_value)
+            bc['U']        = np.nan
+        elif flow_type == 'velocity':
+            bc['type'] = 'velocity_inlet'
+            bc['U']    = get_flow_value(flow_intensity, 'velocity', custom_value)
+        else:  # pressure
+            bc['type']     = 'pressure_inlet'
+            bc['pressure'] = get_flow_value(flow_intensity, 'pressure', custom_value)
+            bc['U']        = np.nan
+    elif air_direction == 'equilibrium':
+        # Neutral boundary: 0 Pa gauge, allows bidirectional flow driven by internal dynamics.
+        # Equivalent to pressure_outlet at 0 Pa: pressureDirectedInletOutletVelocity handles
+        # both inflow (constrained to inletDirection) and outflow (zeroGradient) automatically.
+        bc['type']     = 'pressure_outlet'
+        bc['pressure'] = 0.0
+        bc['U']        = np.nan
+    else:  # outflow → always pressure_outlet as reference boundary
+        bc['type']     = 'pressure_outlet'
+        bc['pressure'] = (
+            -get_flow_value(flow_intensity, 'pressure', custom_value)
+            if flow_type == 'pressure' else 0.0
+        )
+        bc['U'] = np.nan
+
+    return bc
+
+
 def angles_to_direction_vector(vertical_angle: float, horizontal_angle: float, wall_normal: np.ndarray) -> np.ndarray:
     """
     Convert orientation angles to 3D direction vector for air flow.
-    
-    Applies vertical and horizontal angle rotations to the wall normal vector
-    to compute the actual flow direction for HVAC vents/grilles.
-    
+
+    Local coordinate system at the vent face (wall_normal = inward direction):
+        forward  = wall_normal (inward, perpendicular to wall)
+        up_wall  = vertical tangent of the wall surface (≈ global Z for vertical walls)
+        right    = cross(forward, up_wall)  (horizontal tangent)
+
+    Angle conventions:
+        vertical_angle   > 0 → downward deflection (chorro baja)
+                         < 0 → upward  deflection (chorro sube)
+        horizontal_angle > 0 → leftward  deflection (chorro gira a la izquierda)
+                         < 0 → rightward deflection (chorro gira a la derecha)
+
     Args:
-        vertical_angle: Vertical tilt angle in degrees (-45 to +45)
-                       Positive = upward tilt, Negative = downward tilt
-        horizontal_angle: Horizontal rotation angle in degrees (-45 to +45)
-                         Positive = clockwise, Negative = counterclockwise
-        wall_normal: Base normal vector of the wall [nx, ny, nz]
-    
+        vertical_angle:   Vertical  tilt  in degrees (–45 … +45)
+        horizontal_angle: Horizontal yaw   in degrees (–45 … +45)
+        wall_normal:      Inward normal vector [nx, ny, nz] (toward room interior)
+
     Returns:
         Normalized 3D direction vector for the air flow
     """
-    # Convert angles from degrees to radians
     v_rad = np.deg2rad(vertical_angle)
     h_rad = np.deg2rad(horizontal_angle)
-    
-    # Ensure wall_normal is a numpy array and normalized
+
+    # Normalise inward normal
     normal = np.array(wall_normal, dtype=float)
     normal = normal / np.linalg.norm(normal)
-    
-    # Find perpendicular vectors to create local coordinate system
-    # Choose an arbitrary vector not parallel to normal
-    if abs(normal[2]) < 0.9:
-        up = np.array([0, 0, 1])
-    else:
-        up = np.array([1, 0, 0])
-    
-    # Create orthogonal basis vectors
-    # right vector (tangent to wall, horizontal direction)
-    right = np.cross(normal, up)
-    right = right / np.linalg.norm(right)
-    
-    # up vector (tangent to wall, vertical direction)
-    up_wall = np.cross(right, normal)
-    up_wall = up_wall / np.linalg.norm(up_wall)
-    
-    # Apply rotations using rotation matrices
-    # Step 1: Rotate around the 'right' axis for vertical angle (pitch)
+
+    # Build local orthogonal frame at the vent face
+    world_up = np.array([0, 0, 1]) if abs(normal[2]) < 0.9 else np.array([1, 0, 0])
+    right    = np.cross(normal, world_up);  right    /= np.linalg.norm(right)
+    up_wall  = np.cross(right,  normal);    up_wall  /= np.linalg.norm(up_wall)
+
+    # ── Step 1: Vertical pitch (rotate around 'right' axis) ─────────────────
+    # v > 0 → down  →  subtract up_wall component
+    # v < 0 → up    →  add      up_wall component
     cos_v = np.cos(v_rad)
     sin_v = np.sin(v_rad)
-    direction = cos_v * normal + sin_v * up_wall
-    
-    # Step 2: Rotate around the 'normal' axis for horizontal angle (yaw)
-    # Use Rodrigues' rotation formula to preserve normal component
+    direction = cos_v * normal - sin_v * up_wall
+
+    # ── Step 2: Horizontal yaw (rotate around 'up_wall' axis) ───────────────
+    # Rodrigues' formula around up_wall (≈ Z for vertical walls):
+    #   cross(up_wall, forward) = right-like vector → h > 0 adds a component
+    #   that points LEFT (positive convention).
     cos_h = np.cos(h_rad)
     sin_h = np.sin(h_rad)
-    direction = (direction * cos_h + 
-                 np.cross(normal, direction) * sin_h + 
-                 normal * np.dot(normal, direction) * (1 - cos_h))
-    
-    # Normalize the final direction vector
-    direction = direction / np.linalg.norm(direction)
-    
-    return direction
+    direction = (direction * cos_h
+                 + np.cross(up_wall, direction) * sin_h
+                 + up_wall * np.dot(up_wall, direction) * (1 - cos_h))
+
+    return direction / np.linalg.norm(direction)
 
 
 ELEMENTS_MESHES = {
@@ -155,44 +215,330 @@ ELEMENTS_MESHES = {
    153: ('set_h_sitting_N4_Mouth',              'SETS'),
 }
 
+# Object type mapping for furniture IDs: "object_{FLOOR}_{TYPE}_{NUMBER}"
+# None = no STL needed (programmatic or face-based)
+OBJECT_TYPE_MAPPING = {
+    'person':      2,    # h_standing (HUMANS)
+    'block':       None, # box from position + dimensions (new format) or scale (legacy)
+    'table':       12,   # table_round (TABLES)
+    'armchair':    21,   # chair_basic (CHAIRS)
+    'rack':        None, # face-based → create_face_based_mesh
+    'topVentBox':  None, # face-based → create_face_based_mesh
+    'sideVentBox': None, # face-based → create_face_based_mesh
+}
 
-def create_furniture_mesh(patch_df: pd.DataFrame, data: Dict[str, Any]) -> Tuple[pd.DataFrame, pv.PolyData]:
-    """Create furniture mesh from FDM_iter2.json format."""
-    # Sanitize patch ID for OpenFOAM compatibility
+# Face-based object types (have explicit face vertices + per-face BCs)
+FACE_BASED_TYPES = {'rack', 'topVentBox', 'sideVentBox'}
+
+
+def create_cube_mesh(width=1.0, height=1.0, depth=1.0):
+    """Create a programmatic cube mesh with specified dimensions."""
+    cube = pv.Cube(x_length=width, y_length=depth, z_length=height)
+    return cube.triangulate().clean()
+
+
+def create_block_mesh(patch_df: pd.DataFrame, data: Dict[str, Any]) -> Tuple[pd.DataFrame, pv.PolyData]:
+    """
+    Create a box mesh for 'block' type furniture using the new JSON format.
+
+    New format: position + dimensions{width, height, depth} + simulationProperties
+    Legacy format: position + scale{x, y, z}  (still supported for backward compatibility)
+
+    Physical convention:
+        - position.{x,y,z}: corner at bottom face (z = floor level)
+        - dimensions.width  → X dimension
+        - dimensions.depth  → Y dimension
+        - dimensions.height → Z dimension (vertical)
+
+    All 6 faces share a single patch_id (uniform wall BC).
+    """
     patch_id = data['id'].replace(' ', '_')
-    
-    # Add patch info
-    new_patch = get_wall_bc_dict(patch_id)
+
+    # --- Boundary condition (all faces are wall) ---
+    sim = data.get('simulationProperties', {})
+    new_patch = get_wall_bc_dict(
+        patch_id,
+        temperature=sim.get('temperature', DEFAULT_TEMPERATURE),
+        emissivity=sim.get('emissivity', 0.9),
+        material=sim.get('material', 'default')
+    )
     patch_df = pd.concat([patch_df, pd.DataFrame([new_patch])], ignore_index=True)
     patch_idx = patch_df.index[patch_df['id'] == patch_id][0].astype(np.int16)
 
-    # Extract position, rotation, and scale
-    translation = np.array([data['position']['x'], data['position']['y'], data['position']['z']])
-    rotation = data['rotation']['z']
-    scale = data.get('scale', {'x': 1, 'y': 1, 'z': 1})
-    
-    # Determine mesh ID from furniture type
-    if 'table' in data['id'].lower():
-        mesh_id = 11  # table_round
-    elif 'chair' in data['id'].lower():
-        mesh_id = 21  # chair_basic
+    # --- Dimensions: prefer new 'dimensions' field, fall back to legacy 'scale' ---
+    if 'dimensions' in data:
+        dims = data['dimensions']
+        w = dims['width']
+        d = dims['depth']
+        h = dims['height']
     else:
-        mesh_id = 11  # default to table_round
+        # Legacy: scale → {x, y, z}
+        scale = data.get('scale', {'x': 1.0, 'y': 1.0, 'z': 1.0})
+        w, d, h = scale['x'], scale['y'], scale['z']
 
-    # Load and transform mesh
+    # --- Position ---
+    pos = data['position']
+    cx, cy, cz = pos['x'], pos['y'], pos['z']
+
+    # --- Rotation (radians → degrees for PyVista) ---
+    rot = data.get('rotation', {})
+    rx_rad = rot.get('x', 0.0)
+    ry_rad = rot.get('y', 0.0)
+    rz_rad = rot.get('z', 0.0)
+    rx_deg = np.degrees(rx_rad)
+    ry_deg = np.degrees(ry_rad)
+    rz_deg = np.degrees(rz_rad)
+
+    # Ceiling-mounted detection: rotation.x ≈ π means object is upside-down
+    # position.z = TOP face (ceiling attachment) → center goes DOWN from cz
+    ceiling_mounted = abs(rx_rad) > (np.pi / 2)
+    if ceiling_mounted:
+        center_z = cz - h / 2
+        logger.info(f"      ↑ ceiling-mounted block (rx={rx_rad:.4f} rad): center_z={center_z:.3f}")
+    else:
+        center_z = cz + h / 2 + FURNITURE_FLOOR_PENETRATION
+
+    # pv.Cube is centred at origin → build at (cx, cy, center_z) then rotate
+    cube = pv.Cube(x_length=w, y_length=d, z_length=h)
+    cube.translate([cx, cy, center_z], inplace=True)
+
+    # Apply rotations around the block center (cx, cy, center_z)
+    center_pt = [cx, cy, center_z]
+    if rx_deg:
+        cube.rotate_x(rx_deg, point=center_pt, inplace=True)
+    if ry_deg:
+        cube.rotate_y(ry_deg, point=center_pt, inplace=True)
+    if rz_deg:
+        cube.rotate_z(rz_deg, point=center_pt, inplace=True)
+
+    cube = cube.triangulate().clean().extract_surface()
+    cube.compute_normals(
+        inplace=True, auto_orient_normals=True,
+        consistent_normals=True, split_vertices=True, point_normals=False
+    )
+    cube.cell_data['patch_id'] = [patch_idx] * cube.n_cells
+
+    logger.info(f"      ✓ Block mesh: {w:.2f}×{d:.2f}×{h:.2f}m, {cube.n_cells} cells")
+    return patch_df, optimize_mesh_memory(cube)
+
+
+def _make_quad_mesh(vertices: list) -> pv.PolyData:
+    """Create a quad face from 4 ordered vertices (2 triangles)."""
+    pts = np.array(vertices, dtype=float)  # (4, 3)
+    faces = np.array([3, 0, 1, 2,  3, 0, 2, 3])
+    return pv.PolyData(pts, faces)
+
+
+def create_face_based_mesh(patch_df: pd.DataFrame, data: Dict[str, Any]) -> Tuple[pd.DataFrame, pv.PolyData]:
+    """
+    Create mesh for face-based furniture: rack, topVentBox, sideVentBox.
+
+    Each face in data['faces'] has explicit vertices and a 'role' that determines
+    the OpenFOAM BC type:
+
+        wall    → wall BC with temperature, emissivity, material
+        inlet   → pressure_outlet (rack sucks cold air FROM room)
+        outlet  → mass_flow_inlet (rack blows hot air INTO room)
+        vent    → pressure_inlet / pressure_outlet based on airDirection
+
+    Each face gets its own patch_id: "{obj_id}_{face_name}"
+    """
+    obj_id = data['id'].replace(' ', '_')
+    faces_data = data['faces']
+    face_meshes = []
+
+    for face_name, fd in faces_data.items():
+        role        = fd['role']
+        temperature = fd.get('temperature', DEFAULT_TEMPERATURE)
+        face_pid    = f"{obj_id}_{face_name}"
+
+        # --- Build BC dict based on role ---
+        if role == 'wall':
+            new_patch = get_wall_bc_dict(
+                face_pid,
+                temperature=temperature,
+                emissivity=fd.get('emissivity', 0.9),
+                material=fd.get('material', 'default')
+            )
+
+        elif role == 'inlet':
+            # Rack cold-air intake: air LEAVES the room domain through this face.
+            # flowRateInletVelocity with negative volumetricFlowRate = outflow from domain.
+            # T: zeroGradient — takes temperature from the interior flow.
+            new_patch = {
+                'id':       face_pid,
+                'type':     'rack_inlet',
+                'T':        temperature,
+                'massFlow': fd.get('airFlow', 0),   # m³/h — used for U BC
+                'open':     True,
+            }
+
+        elif role == 'outlet':
+            # Rack hot-air exhaust: hot air ENTERS the room domain from the rack.
+            # flowRateInletVelocity with positive volumetricFlowRate = inflow into domain.
+            # T: codedFixedValue that reads average T of corresponding inlet patch and adds ΔT.
+            # Find the inlet face name in this rack (first face with role='inlet')
+            inlet_face_name = next(
+                (name for name, fdata in faces_data.items() if fdata.get('role') == 'inlet'),
+                'front'  # fallback if no explicit inlet face
+            )
+            inlet_patch_id = f"{obj_id}_{inlet_face_name}"
+            new_patch = {
+                'id':           face_pid,
+                'type':         'rack_outlet',
+                'T':            temperature,
+                'massFlow':     fd.get('airFlow', 0),                  # m³/h
+                'thermalPower': fd.get('thermalPower_kW', 0) * 1000.0, # W
+                'inlet_id':     inlet_patch_id,                        # ref to corresponding inlet
+                'open':         True,
+            }
+
+        elif role == 'vent':
+            # Closed vent face → wall BC (same as closed airEntry)
+            if fd.get('state', 'open') == 'closed':
+                new_patch = get_wall_bc_dict(
+                    face_pid,
+                    temperature=temperature,
+                    emissivity=fd.get('emissivity', 0.9),
+                    material=fd.get('material', 'default')
+                )
+                logger.info(f"      • face {face_name} (vent/closed) → wall BC")
+            else:
+                # Open vent – delegate to shared helper
+                new_patch = _build_vent_bc(
+                    patch_id       = face_pid,
+                    temperature    = temperature,
+                    air_direction  = fd.get('airDirection', 'inflow'),
+                    flow_type_raw  = fd.get('flowType', 'pressure'),
+                    flow_intensity = fd.get('flowIntensity', 'low'),
+                    custom_value   = fd.get('customIntensityValue', None),
+                )
+        else:
+            logger.warning(f"Unknown face role '{role}' in {face_pid}, treating as wall")
+            new_patch = get_wall_bc_dict(face_pid, temperature=temperature)
+
+        # Add to DataFrame and get index
+        patch_df  = pd.concat([patch_df, pd.DataFrame([new_patch])], ignore_index=True)
+        patch_idx = patch_df.index[patch_df['id'] == face_pid][0].astype(np.int16)
+
+        # Build quad mesh for this face and tag it
+        face_mesh = _make_quad_mesh(fd['vertices'])
+        face_mesh.cell_data['patch_id'] = [patch_idx, patch_idx]
+        face_meshes.append(face_mesh)
+
+        logger.info(f"      • face {face_name} ({role}) → patch '{face_pid}'")
+
+    # Merge all faces into a single PolyData
+    result = pv.merge(face_meshes)
+    result = result.triangulate().extract_surface()
+    result.compute_normals(
+        inplace=True, auto_orient_normals=True,
+        consistent_normals=True, split_vertices=True, point_normals=False
+    )
+    logger.info(f"      ✓ Face-based mesh '{obj_id}': {result.n_cells} cells, {len(faces_data)} faces")
+    return patch_df, optimize_mesh_memory(result)
+
+
+def create_furniture_mesh(patch_df: pd.DataFrame, data: Dict[str, Any]) -> Tuple[pd.DataFrame, pv.PolyData]:
+    """
+    Dispatcher: routes furniture to the appropriate mesh builder based on JSON structure.
+
+    Routing rules (checked in order):
+      1. data has 'faces' key  → create_face_based_mesh  (rack, topVentBox, sideVentBox)
+      2. object type is 'block' (from ID)  → create_block_mesh  (box geometry)
+      3. otherwise  → STL-based legacy path (person, table, armchair)
+    """
+    # Parse object type from ID: "object_0F_rack_1" → "rack"
+    id_parts    = data['id'].split('_')
+    object_type = id_parts[2] if len(id_parts) >= 3 else 'unknown'
+
+    logger.info(f"    * Creating furniture: {data['id']} (type: {object_type})")
+
+    # Route 1: face-based objects
+    if 'faces' in data or object_type in FACE_BASED_TYPES:
+        return create_face_based_mesh(patch_df, data)
+
+    # Route 2: block with position + dimensions (new) or position + scale (legacy)
+    if object_type == 'block':
+        return create_block_mesh(patch_df, data)
+
+    # Route 3: STL-based legacy objects (person, table, armchair, …)
+    patch_id = data['id'].replace(' ', '_')
+    sim = data.get('simulationProperties', {})
+    new_patch = get_wall_bc_dict(
+        patch_id,
+        temperature=sim.get('temperature', DEFAULT_TEMPERATURE),
+        emissivity=sim.get('emissivity', 0.9),
+        material=sim.get('material', 'default')
+    )
+    patch_df  = pd.concat([patch_df, pd.DataFrame([new_patch])], ignore_index=True)
+    patch_idx = patch_df.index[patch_df['id'] == patch_id][0].astype(np.int16)
+
+    pos = data['position']
+    translation = np.array([pos['x'], pos['y'], pos['z']])
+
+    # Rotation: JSON stores radians, PyVista expects degrees
+    rot = data.get('rotation', {})
+    rz_deg = np.degrees(rot.get('z', 0.0))
+
+    mesh_id = OBJECT_TYPE_MAPPING.get(object_type)
+    if mesh_id is None:
+        logger.warning(f"      ⚠️  Unknown type '{object_type}', defaulting to table_round (id=11)")
+        mesh_id = 11
+
     mesh_path_info = ELEMENTS_MESHES[mesh_id]
-    mesh_path = os.path.join(os.getcwd(), 'data', 'meshes', mesh_path_info[1], mesh_path_info[0] + '.stl')
-    
+    mesh_path = PROJECT_ROOT / 'data' / 'CAD_database' / mesh_path_info[1] / f"{mesh_path_info[0]}.stl"
+    logger.info(f"      → Loading STL: {mesh_path_info[0]} from {mesh_path_info[1]}")
+
+    if not os.path.exists(mesh_path):
+        raise FileNotFoundError(f"Furniture STL not found: {mesh_path}")
+
     obj_mesh = pv.read(mesh_path)
-    obj_mesh.rotate_z(rotation, inplace=True)
-    obj_mesh.translate(xyz=translation, inplace=True)
-    obj_mesh.scale([scale['x'], scale['y'], scale['z']], inplace=True)
-    
-    # Clean and prepare mesh
+
+    # Step 1: Normalize – translate STL base to origin (z_min → 0)
+    bounds = obj_mesh.bounds  # (xmin, xmax, ymin, ymax, zmin, zmax)
+    obj_mesh.translate(
+        [-((bounds[0] + bounds[1]) / 2),   # centre X
+         -((bounds[2] + bounds[3]) / 2),   # centre Y
+         -bounds[4]],                        # base Z → 0
+        inplace=True
+    )
+
+    # Step 2: Scale to target dimensions
+    if 'dimensions' in data:
+        dims = data['dimensions']
+        target_w = dims['width']
+        target_d = dims['depth']
+        target_h = dims['height']
+        b = obj_mesh.bounds
+        stl_w = b[1] - b[0]  # X extent after normalisation
+        stl_d = b[3] - b[2]  # Y extent
+        stl_h = b[5] - b[4]  # Z extent
+        sx = target_w / stl_w if stl_w > 1e-9 else 1.0
+        sy = target_d / stl_d if stl_d > 1e-9 else 1.0
+        sz = target_h / stl_h if stl_h > 1e-9 else 1.0
+        obj_mesh.scale([sx, sy, sz], inplace=True)
+        logger.info(f"      → Scaled STL to {target_w:.2f}×{target_d:.2f}×{target_h:.2f}m")
+    else:
+        # Legacy: explicit scale dict or default 1:1:1
+        scale = data.get('scale', {'x': 1.0, 'y': 1.0, 'z': 1.0})
+        obj_mesh.scale([scale['x'], scale['y'], scale['z']], inplace=True)
+
+    # Step 3: Rotate around Z (degrees), then translate to final position
+    if rz_deg:
+        obj_mesh.rotate_z(rz_deg, inplace=True)
+    obj_mesh.translate(
+        xyz=[translation[0], translation[1], translation[2] + FURNITURE_FLOOR_PENETRATION],
+        inplace=True
+    )
+
     obj_mesh = obj_mesh.clean().triangulate().extract_surface()
-    obj_mesh.compute_normals(inplace=True, auto_orient_normals=True, consistent_normals=True, split_vertices=True, point_normals=False)
+    obj_mesh.compute_normals(
+        inplace=True, auto_orient_normals=True,
+        consistent_normals=True, split_vertices=True, point_normals=False
+    )
     obj_mesh.cell_data['patch_id'] = [patch_idx] * obj_mesh.n_cells
-    
+    logger.info(f"      ✓ STL mesh created: {obj_mesh.n_points} pts, {obj_mesh.n_cells} cells")
     return patch_df, optimize_mesh_memory(obj_mesh)
 
 
@@ -216,11 +562,13 @@ def get_entry_bc_dict(data):
     }
     
     if not new_patch['open']:
-        # Closed entry behaves like a wall
+        # Closed entry behaves like a wall - use emissivity/material from simulation if available
         return {
             'id': patch_id,
             'type': 'wall',
-            'T': simulation.get('temperature', DEFAULT_TEMPERATURE)
+            'T': simulation.get('temperature', DEFAULT_TEMPERATURE),
+            'emissivity': simulation.get('emissivity', 0.9),
+            'material': simulation.get('material', 'default')
         }
     
     # Determine entry type: windows/doors always use pressure BCs, vents allow user choice
@@ -238,6 +586,11 @@ def get_entry_bc_dict(data):
             # Pressure inlet: p = p_internal + ΔP (higher pressure pushes air in)
             new_patch['type'] = 'pressure_inlet'
             new_patch['pressure'] = delta_p  # Positive pressure differential
+        elif air_direction == 'equilibrium':
+            # Neutral boundary: 0 Pa gauge, lets internal dynamics determine flow direction.
+            # pressureDirectedInletOutletVelocity handles bidirectional flow automatically.
+            new_patch['type'] = 'pressure_outlet'
+            new_patch['pressure'] = 0.0
         else:  # outflow
             # Pressure outlet: p = p_internal - ΔP (lower pressure pulls air out)
             new_patch['type'] = 'pressure_outlet'
@@ -247,84 +600,86 @@ def get_entry_bc_dict(data):
     
     # For vents: User specifies flowType (velocity, massFlow, or pressure)
     else:
-        flow_type_raw = simulation.get('flowType', 'velocity')
-        
-        # Normalize flow_type to handle case variations (massflow → massFlow)
-        flow_type_map = {
-            'massflow': 'massFlow',
-            'massFlow': 'massFlow',
-            'velocity': 'velocity',
-            'pressure': 'pressure'
-        }
-        flow_type = flow_type_map.get(flow_type_raw, 'velocity')
-        
-        if air_direction == 'inflow':
-            # Handle different flow types for inlet
-            if flow_type == 'massFlow':
-                new_patch['type'] = 'mass_flow_inlet'
-                new_patch['massFlow'] = get_flow_value(flow_intensity, 'massFlow', custom_value)
-                new_patch['U'] = np.nan
-            elif flow_type == 'pressure':
-                # Pressure inlet with positive differential
-                new_patch['type'] = 'pressure_inlet'
-                delta_p = get_flow_value(flow_intensity, 'pressure', custom_value)
-                new_patch['pressure'] = delta_p
-                new_patch['U'] = np.nan
-            else:  # velocity
-                new_patch['type'] = 'velocity_inlet'
-                new_patch['U'] = get_flow_value(flow_intensity, 'velocity', custom_value)
-                
-        else:  # outflow
-            if flow_type == 'pressure':
-                # Pressure outlet with negative differential
-                new_patch['type'] = 'pressure_outlet'
-                delta_p = get_flow_value(flow_intensity, 'pressure', custom_value)
-                new_patch['pressure'] = -delta_p
-            else:
-                # Velocity/massFlow outlets use atmospheric pressure
-                new_patch['type'] = 'pressure_outlet'
-                new_patch['pressure'] = 0
-            
-            new_patch['U'] = np.nan
+        new_patch.update(_build_vent_bc(
+            patch_id       = patch_id,
+            temperature    = simulation.get('temperature', DEFAULT_TEMPERATURE),
+            air_direction  = air_direction,
+            flow_type_raw  = simulation.get('flowType', 'velocity'),
+            flow_intensity = flow_intensity,
+            custom_value   = custom_value,
+        ))
     
     new_patch['T'] = simulation.get('temperature', DEFAULT_TEMPERATURE)
-    
-    # Extract wall normal vector
+
+    # Compute geometric area of the entry [m²] from dimensions
+    # Used in hvac.py to convert massFlow [m³/h] → velocity [m/s] with prescribed direction
+    dims_for_area = data.get('dimensions', {})
+    if dims_for_area.get('shape') == 'circular':
+        import math
+        new_patch['area'] = math.pi * (dims_for_area['diameter'] / 2.0) ** 2
+    else:
+        w = dims_for_area.get('width', 1.0)
+        h = dims_for_area.get('height', 1.0)
+        new_patch['area'] = w * h  # [m²]
+
+    # Face normal (from JSON position.normal) — OUTWARD (pointing toward exterior)
     wall_normal = np.array([
         data['position']['normal']['x'],
         data['position']['normal']['y'],
         data['position']['normal']['z']
     ])
-    
-    # Extract orientation angles from simulation data
-    air_orientation = simulation.get('airOrientation', None)
-    if air_orientation and air_orientation.get('verticalAngle') is not None and air_orientation.get('horizontalAngle') is not None:
-        # Use orientation angles to compute directional flow vector
-        vertical_angle = air_orientation.get('verticalAngle', 0.0)
-        horizontal_angle = air_orientation.get('horizontalAngle', 0.0)
-        
-        # Convert angles to directional vector
-        direction_vector = angles_to_direction_vector(vertical_angle, horizontal_angle, wall_normal)
-        
-        # Store directional components
-        new_patch['nx'] = direction_vector[0]
-        new_patch['ny'] = direction_vector[1]
-        new_patch['nz'] = direction_vector[2]
-    else:
-        # No orientation angles specified, use wall normal directly
-        new_patch['nx'] = wall_normal[0]
-        new_patch['ny'] = wall_normal[1]
-        new_patch['nz'] = wall_normal[2]
-    
+
+    # nx/ny/nz = JSON outward normal placeholders.
+    # finalise_geometry.py overwrites them with mesh-computed INWARD normals (single source of truth).
+    new_patch['nx']      = wall_normal[0]
+    new_patch['ny']      = wall_normal[1]
+    new_patch['nz']      = wall_normal[2]
+    # json_nx/ny/nz = raw JSON outward normal kept for coherence check in finalise_geometry.py
+    new_patch['json_nx'] = wall_normal[0]
+    new_patch['json_ny'] = wall_normal[1]
+    new_patch['json_nz'] = wall_normal[2]
+
+    # ── Flow direction — required field for all open entries ─────────────────
+    # simulation.flowDirection {x, y, z} must be exported by the frontend and
+    # must match the green arrows drawn on the canvas.
+    # Raises ValueError immediately if missing — no silent fallback.
+    flow_dir = simulation.get('flowDirection', None)
+    if (not flow_dir
+            or flow_dir.get('x') is None
+            or flow_dir.get('y') is None
+            or flow_dir.get('z') is None):
+        raise ValueError(
+            f"Open entry '{patch_id}' is missing simulation.flowDirection. "
+            f"All open airEntries must export flowDirection {{x, y, z}} from the frontend."
+        )
+    new_patch['fd_x'] = float(flow_dir['x'])
+    new_patch['fd_y'] = float(flow_dir['y'])
+    new_patch['fd_z'] = float(flow_dir['z'])
+
+    # fluid_nx/ny/nz: NaN placeholders — written by finalise_geometry.py
+    new_patch['fluid_nx'] = np.nan
+    new_patch['fluid_ny'] = np.nan
+    new_patch['fluid_nz'] = np.nan
+
     return new_patch
 
 
-def get_wall_bc_dict(id, temperature=DEFAULT_TEMPERATURE):
+def get_wall_bc_dict(id, temperature=DEFAULT_TEMPERATURE, emissivity=0.9, material='default'):
+    """Create boundary condition dictionary for wall patches.
+    
+    Args:
+        id: Patch identifier (will be sanitized for OpenFOAM)
+        temperature: Wall surface temperature in °C
+        emissivity: Surface emissivity for radiation model (0-1), default 0.9
+        material: Material name for reference, default 'default'
+    """
     # Sanitize patch ID for OpenFOAM compatibility
     new_patch = dict()
     new_patch['id'] = id.replace(' ', '_')
     new_patch['type'] = 'wall'
     new_patch['T'] = temperature
+    new_patch['emissivity'] = emissivity
+    new_patch['material'] = material
     return new_patch
 
 
@@ -362,10 +717,19 @@ def from_3d_to_wall2d(points_3d, p_origin, udir, vdir):
 
 
 def from_wall2d_to_3d(points_2d, p_origin, udir, vdir):
+    # DEBUG: Log para entender el problema
+    logger.info(f"    [DEBUG] from_wall2d_to_3d:")
+    logger.info(f"      - Input shape: {points_2d.shape}")
+    logger.info(f"      - Input dtype: {points_2d.dtype}")
+    if len(points_2d) > 0:
+        logger.info(f"      - First point: {points_2d[0]}")
+    
     if points_2d.ndim == 1:
         points_2d = points_2d[np.newaxis, :]
 
     if points_2d.shape[1] != 2:
+        logger.error(f"      ❌ ERROR: Expected 2 columns but got {points_2d.shape[1]}")
+        logger.error(f"      - Full shape: {points_2d.shape}")
         raise ValueError("Each point in 'points_2d' must be a 2D point")
 
     return p_origin + np.outer(points_2d[:, 0], udir) + np.outer(points_2d[:, 1], vdir)
@@ -381,10 +745,21 @@ def create_single_entry(entry_data: Dict, base_height: float, p0: np.ndarray, ud
     ])
     centre_2d = from_3d_to_wall2d(centre_3d, p0, udir, vdir)
 
-    # Create rectangular polygon
+    # Create polygon based on shape (circular or rectangular)
     dimensions = entry_data['dimensions']
-    width, height = dimensions['width'], dimensions['height']
-    polygon = shapely.box(-width/2, -height/2, +width/2, +height/2)
+    shape = dimensions.get('shape', 'rectangular')
+    rotation_deg = entry_data.get('position', {}).get('rotation', 0.0)  # in-plane rotation [degrees]
+
+    if shape == 'circular':
+        radius = dimensions['diameter'] / 2.0
+        polygon = shapely.Point(0, 0).buffer(radius, resolution=32)
+    else:  # rectangular (default)
+        width = dimensions['width']
+        height = dimensions['height']
+        polygon = shapely.box(-width/2, -height/2, +width/2, +height/2)
+        if rotation_deg != 0.0:
+            polygon = shapely.affinity.rotate(polygon, rotation_deg, origin=(0, 0))
+
     polygon = shapely.affinity.translate(polygon, xoff=centre_2d[0, 0], yoff=centre_2d[0, 1])
     
     return get_entry_bc_dict(entry_data), polygon
@@ -396,7 +771,12 @@ def create_entries(patch_df, entries_data, base_height, p0, udir, vdir):
     for entry_data in entries_data:
         new_patch, polygon = create_single_entry(entry_data, base_height, p0, udir, vdir)
         patch_df = pd.concat([patch_df, pd.DataFrame([new_patch])], ignore_index=True)
-        entries_dict[entry_data['id']] = polygon
+        
+        # ✅ FIX: Use sanitized ID (same as in patch_df) to avoid lookup errors
+        # get_entry_bc_dict() sanitizes IDs by replacing spaces with underscores
+        sanitized_id = entry_data['id'].replace(' ', '_')
+        entries_dict[sanitized_id] = polygon
+    
     return patch_df, entries_dict
 
 
@@ -414,7 +794,12 @@ def create_wall(patch_df: pd.DataFrame, data: Dict[str, Any], height: float, bas
     wall_points_2d = from_3d_to_wall2d(wall_points_3d, p0, udir, vdir)
     wall_polygon = shapely.Polygon(wall_points_2d)
 
-    new_patch = get_wall_bc_dict(data['id'], temperature=data['temp'])
+    new_patch = get_wall_bc_dict(
+        data['id'],
+        temperature=data['temp'],
+        emissivity=data.get('emissivity', 0.9),
+        material=data.get('material', 'default')
+    )
     patch_df = pd.concat([patch_df, pd.DataFrame([new_patch])], ignore_index=True)
     patch_df, entries_dict = create_entries(patch_df, data['airEntries'], base_height, p0, udir, vdir)
 
@@ -434,7 +819,12 @@ def create_wall(patch_df: pd.DataFrame, data: Dict[str, Any], height: float, bas
 
 def create_bound_surface(str_type: str, patch_df: pd.DataFrame, polygon: pv.PolyData, level_name: str, data: Dict[str, Any]) -> Tuple[pd.DataFrame, pv.PolyData]:
     floor_id = f"{str_type}_{level_name}F"
-    new_patch = get_wall_bc_dict(floor_id, temperature=data['temp'])
+    new_patch = get_wall_bc_dict(
+        floor_id,
+        temperature=data['temp'],
+        emissivity=data.get('emissivity', 0.9),
+        material=data.get('material', 'default')
+    )
     patch_df = pd.concat([patch_df, pd.DataFrame([new_patch])], ignore_index=True)
 
     z_floor = np.mean(polygon.points[:,2])
@@ -448,8 +838,18 @@ def create_bound_surface(str_type: str, patch_df: pd.DataFrame, polygon: pv.Poly
     patch_df, entries_dict = create_entries(patch_df, data['airEntries'], 0, p0, udir, vdir)
 
     wall_meshes = []
+    
+    # CORRECT FIX: Usar unary_union para combinar todas las ventanas/puertas
+    # Esto evita auto-intersecciones que ocurren con múltiples diferencias sucesivas
+    if entries_dict:
+        # Combinar todos los polígonos de ventanas/puertas en uno solo
+        all_entries_union = shapely.unary_union(list(entries_dict.values()))
+        
+        # Hacer UNA sola operación de diferencia
+        floor_polygon = floor_polygon.difference(all_entries_union)
+    
+    # Crear meshes para cada ventana/puerta
     for entry_id, entry_polygon in entries_dict.items():
-        floor_polygon = floor_polygon.difference(entry_polygon)
         entry_mesh = create_mesh_from_polygon(patch_df, entry_id, entry_polygon, p0, udir, vdir)
         wall_meshes.append(entry_mesh)
 
@@ -461,18 +861,95 @@ def create_bound_surface(str_type: str, patch_df: pd.DataFrame, polygon: pv.Poly
     return patch_df, result_mesh
 
 
-def create_polygon_from_mesh(mesh):
-    edges = mesh.cells.reshape(-1,3)[:,1:]
-    u, v = edges.T
-    adj = np.empty(u.shape, dtype=u.dtype)
-    adj[u] = v
-
-    v = edges[0,0]
-    vert_idxs = [v]
-    for _ in range(len(edges)):
-        v = adj[v]
-        vert_idxs.append(v)
-    return shapely.force_2d(shapely.Polygon(mesh.points[vert_idxs]))
+def create_polygon_from_mesh(mesh, target_z=None):
+    """
+    Extract a 2D polygon from a mesh boundary, filtering by Z coordinate.
+    
+    ROBUST FIX: Filtra puntos por su coordenada Z para evitar duplicados
+    cuando el mesh contiene puntos de múltiples alturas (ej: floor y ceiling
+    de las paredes que van de Z=0 a Z=height).
+    
+    Args:
+        mesh: PyVista PolyData mesh
+        target_z: Altura Z objetivo para filtrar puntos. Si es None, usa la mediana.
+    
+    Returns:
+        Polígono 2D válido
+    """
+    # Detectar el Z objetivo si no se proporciona
+    if target_z is None:
+        z_values = mesh.points[:, 2]
+        target_z = np.median(z_values)
+        logger.info(f"    [DEBUG] target_z detectado: {target_z:.4f}")
+    
+    # Filtrar puntos con el Z objetivo (tolerancia pequeña)
+    tolerance = 0.01
+    mask = np.abs(mesh.points[:, 2] - target_z) < tolerance
+    filtered_points = mesh.points[mask]
+    
+    logger.info(f"    [DEBUG] Puntos totales: {len(mesh.points)}, Puntos filtrados (Z≈{target_z:.4f}): {len(filtered_points)}")
+    
+    if len(filtered_points) < 3:
+        logger.error(f"Insuficientes puntos después de filtrar por Z. Retornando polígono vacío.")
+        return shapely.Polygon()
+    
+    try:
+        # Extraer edges del mesh original pero usar solo los puntos filtrados
+        edges = mesh.cells.reshape(-1,3)[:,1:]
+        u, v = edges.T
+        
+        # Mapear índices originales a índices filtrados
+        original_to_filtered = {}
+        filtered_idx = 0
+        for orig_idx in range(len(mesh.points)):
+            if mask[orig_idx]:
+                original_to_filtered[orig_idx] = filtered_idx
+                filtered_idx += 1
+        
+        # Filtrar edges para que solo contengan puntos filtrados
+        valid_edges = []
+        for edge_u, edge_v in zip(u, v):
+            if edge_u in original_to_filtered and edge_v in original_to_filtered:
+                valid_edges.append((original_to_filtered[edge_u], original_to_filtered[edge_v]))
+        
+        if len(valid_edges) < 3:
+            logger.warning(f"Insuficientes edges válidos. Usando convex_hull...")
+            raise ValueError("Insuficientes edges")
+        
+        # Construir polígono desde edges filtrados
+        adj = {}
+        for u_idx, v_idx in valid_edges:
+            adj[u_idx] = v_idx
+        
+        v = valid_edges[0][0]
+        vert_idxs = [v]
+        for _ in range(len(valid_edges)):
+            v = adj[v]
+            vert_idxs.append(v)
+        
+        polygon = shapely.force_2d(shapely.Polygon(filtered_points[vert_idxs]))
+        
+        # Validar que el polígono extraído es válido y tiene área significativa
+        if polygon.is_valid and polygon.area > 1e-10:
+            logger.info(f"    [DEBUG] Polígono extraído exitosamente: área={polygon.area:.6f}")
+            return polygon
+        else:
+            logger.warning(f"Polígono extraído inválido o con área negligible ({polygon.area:.6f}). Usando convex_hull...")
+            raise ValueError("Polígono inválido")
+    
+    except Exception as e:
+        # Fallback: usar convex_hull de los puntos filtrados 2D
+        logger.warning(f"Error extrayendo polígono: {e}. Usando convex_hull como fallback...")
+        points_2d = filtered_points[:, :2]
+        multipoint = shapely.MultiPoint(points_2d)
+        polygon = shapely.convex_hull(multipoint)
+        
+        if polygon.is_valid and polygon.area > 1e-10:
+            logger.info(f"    [DEBUG] Convex_hull exitoso: área={polygon.area:.6f}")
+            return polygon
+        else:
+            logger.error(f"Convex_hull también falló. Retornando polígono vacío.")
+            return shapely.Polygon()
 
 
 def create_mesh_from_polygon(patch_df, entry_id, entry_polygon, p0, udir, vdir):
@@ -481,7 +958,25 @@ def create_mesh_from_polygon(patch_df, entry_id, entry_polygon, p0, udir, vdir):
     point_index = {}
     next_index = 0
 
+    # ROBUST FIX 1: Validar y reparar polígono inválido
+    if not entry_polygon.is_valid:
+        print(f"[WARNING] Polígono {entry_id} inválido. Reparando con make_valid()...")
+        entry_polygon = shapely.make_valid(entry_polygon)
+    
+    # ROBUST FIX 2: Manejar polígonos vacíos o con área negligible
+    if entry_polygon.is_empty or entry_polygon.area < 1e-10:
+        print(f"[WARNING] Polígono {entry_id} vacío o con área negligible. Creando mesh vacío.")
+        # Retornar mesh vacío
+        points_2d = np.array([]).reshape(0, 2)
+        faces = np.array([], dtype=int)
+        points_3d = from_wall2d_to_3d(points_2d, p0, udir, vdir)
+        mesh = pv.PolyData(points_3d, faces)
+        patch_idx = patch_df.index[patch_df['id'] == entry_id][0].astype(np.int16)
+        mesh.cell_data['patch_id'] = []
+        return mesh
+    
     triangles  = shapely.constrained_delaunay_triangles(entry_polygon)
+    
     for triangle in triangles.geoms:
         coords = list(triangle.exterior.coords)[:-1]  # omit duplicate closing point
         face = [3]  # number of points in the triangle
@@ -502,7 +997,7 @@ def create_mesh_from_polygon(patch_df, entry_id, entry_polygon, p0, udir, vdir):
     mesh = pv.PolyData(points_3d, faces)
     patch_idx = patch_df.index[patch_df['id'] == entry_id][0].astype(np.int16)
     mesh.cell_data['patch_id'] = [patch_idx] * mesh.n_cells
-    return mesh 
+    return mesh
 
 
 def create_floor_mesh(patch_df: pd.DataFrame, level_name: str, level_data: Dict[str, Any], base_height: float = 0) -> Tuple[pd.DataFrame, pv.PolyData]:
@@ -600,7 +1095,7 @@ def create_stair_mesh(patch_df: pd.DataFrame, data: Dict[str, Any], current_base
     return patch_df, stair_mesh
 
 
-def create_volumes(building_config_data: Dict[str, Any]) -> Tuple[List[pv.PolyData], List[pv.PolyData], pd.DataFrame]:
+def create_volumes(building_config_data: Dict[str, Any], valid_floors: List[str] = None) -> Tuple[List[pv.PolyData], List[pv.PolyData], pd.DataFrame]:
     """
     Create 3D room geometry and furniture from building configuration data.
     
@@ -611,12 +1106,19 @@ def create_volumes(building_config_data: Dict[str, Any]) -> Tuple[List[pv.PolyDa
     
     Args:
         building_config_data: JSON data containing building floor definitions
+        valid_floors: List of valid floor names to process (from JSON validation).
+                     If None, processes all floors (backward compatibility).
         
     Returns:
         Tuple of (room_geometry_meshes, furniture_meshes, boundary_conditions_df)
     """
     performance_monitor = PerformanceMonitor()
     performance_monitor.start()
+    
+    # If valid_floors not provided, process all floors (backward compatibility)
+    if valid_floors is None:
+        valid_floors = sorted(building_config_data['levels'].keys(), key=lambda x: int(x))
+        logger.info(f"    * No valid_floors provided, processing all {len(valid_floors)} floors")
     
     # Track current floor elevation for proper stacking
     current_floor_elevation = 0.0
@@ -625,30 +1127,38 @@ def create_volumes(building_config_data: Dict[str, Any]) -> Tuple[List[pv.PolyDa
     boundary_conditions_df = pd.DataFrame()
     room_geometry_meshes = []
     furniture_meshes = []
+    
+    # Track stair tubes from previous floor for subtraction
+    previous_stair_tubes = []
 
-    total_floors = len(building_config_data['levels'])
-    logger.info(f"    * Processing {total_floors} floor levels")
+    logger.info(f"    * Processing {len(valid_floors)} valid floor levels")
+    logger.info(f"    * Using LAYER-BASED ARCHITECTURE for robust geometry creation\n")
 
-    for floor_name, floor_config in building_config_data["levels"].items():
+    for idx, floor_name in enumerate(valid_floors):
+        floor_config = building_config_data["levels"][floor_name]
         logger.info(f"    * Creating geometry for floor #{floor_name}")
         performance_monitor.update_memory()
         
         floor_deck_thickness = floor_config["deck"]
         floor_height = floor_config["height"]
         
-        # CREATE ROOM GEOMETRY (walls, floors, ceilings)
-        boundary_conditions_df, room_mesh = create_floor_mesh(
-            boundary_conditions_df, floor_name, floor_config, base_height=current_floor_elevation
+        # Detect if this is the top floor
+        is_top_floor = (idx == len(valid_floors) - 1)
+        
+        # CREATE ROOM GEOMETRY using layer-based architecture
+        # This replaces create_floor_mesh() and integrates stair creation
+        from src.components.geo.create_volumes_layered import create_floor_mesh_layered
+        
+        boundary_conditions_df, room_mesh, current_stair_tubes = create_floor_mesh_layered(
+            boundary_conditions_df, floor_name, floor_config, 
+            base_height=current_floor_elevation,
+            previous_stair_tubes=previous_stair_tubes,
+            is_top_floor=is_top_floor
         )
         room_geometry_meshes.append(room_mesh)
-
-        # CREATE STAIR CONNECTIONS (FDM_iter2.json format - always upward direction)
-        for stair_config in floor_config["stairs"]:
-            boundary_conditions_df, stair_mesh = create_stair_mesh(
-                boundary_conditions_df, stair_config, 
-                current_floor_elevation + floor_height, floor_deck_thickness
-            )
-            room_geometry_meshes.append(stair_mesh)
+        
+        # Save stair tubes for next floor
+        previous_stair_tubes = current_stair_tubes
 
         # ADD FURNITURE OBJECTS
         for furniture_config in floor_config.get("furniture", []):
