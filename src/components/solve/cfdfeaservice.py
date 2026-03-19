@@ -158,9 +158,10 @@ def submit_simulation(folder: str, api_key: str) -> str:
     Submit a simulation via POST /api/v2/simulation/add.
 
     Env vars (all optional, service defaults apply if not set):
-        CFDFEASERVICE_CPU    — number of vCPUs (default: 8)
-        CFDFEASERVICE_RAM    — RAM label as expected by the service (default: standard)
-        CFDFEASERVICE_SCRIPT — script name registered in the platform (default: openfoam2406esi_Allrun)
+        CFDFEASERVICE_CPU    — number of vCPUs (default: 2)
+        CFDFEASERVICE_RAM    — RAM label as expected by the service (default: highcpu)
+        CFDFEASERVICE_SCRIPT — script name registered in the platform (default: openFoam-v2412)
+        CFDFEASERVICE_SPOT   — 0=SPOT instance (cheaper), 1=regular instance (default: 0)
 
     Args:
         folder:  Remote folder name returned by upload_case().
@@ -172,17 +173,21 @@ def submit_simulation(folder: str, api_key: str) -> str:
     cpu    = os.getenv('CFDFEASERVICE_CPU', '2')
     ram    = os.getenv('CFDFEASERVICE_RAM', 'highcpu')
     script = os.getenv('CFDFEASERVICE_SCRIPT', 'openFoam-v2412')
+    nopre  = os.getenv('CFDFEASERVICE_SPOT', '0')
 
     payload = {
         'cpu':    int(cpu),
         'ram':    ram,
         'folder': folder,
         'script': script,
+        'nopre':  nopre,
+        'mesh':   '',
     }
 
+    spot_label = 'SPOT' if nopre == '0' else 'REGULAR'
     logger.info(
         f"    * Submitting simulation — folder={folder}, cpu={cpu}, "
-        f"ram={ram}, script={script}"
+        f"ram={ram}, script={script}, instance={spot_label}"
     )
 
     resp = requests.post(
