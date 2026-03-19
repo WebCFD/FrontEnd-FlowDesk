@@ -170,7 +170,7 @@ def submit_simulation(folder: str, api_key: str) -> str:
     """
     cpu    = os.getenv('CFDFEASERVICE_CPU', '8')
     ram    = os.getenv('CFDFEASERVICE_RAM', 'standard')
-    script = os.getenv('CFDFEASERVICE_SCRIPT', 'openfoam2406esi_Allrun')
+    script = os.getenv('CFDFEASERVICE_SCRIPT', 'openFoam-v2412')
 
     payload = {
         'cpu':    int(cpu),
