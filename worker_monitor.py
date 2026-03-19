@@ -75,7 +75,7 @@ def log_startup_configuration():
     if cfd_configured:
         key_preview = CFDFEASERVICE_API_KEY[:8] + "..." if len(CFDFEASERVICE_API_KEY) > 8 else "***"
         logger.info(f"CFD FEA Service Key: {key_preview}")
-        logger.info(f"CFD FEA Service Base: {os.getenv('CFDFEASERVICE_BASE_URL', 'https://cloud.cfdfeaservice.it/api/v1')}")
+        logger.info(f"CFD FEA Service Host: {os.getenv('CFDFEASERVICE_HOST', 'https://cloud.cfdfeaservice.it')}")
     else:
         if os.getenv('SOLVER_TYPE', 'cloud') != 'local':
             logger.warning("CFDFEASERVICE_API_KEY not set — cloud simulations will fail")
