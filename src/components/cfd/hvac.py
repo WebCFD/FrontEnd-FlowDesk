@@ -1010,12 +1010,12 @@ def setup(case_path: str, simulation_type: str = 'comfortTest', transient: bool 
         # Process all timesteps (no -latestTime flag)
         # -excludePatches: Skip internal patches to reduce file size
         # Note: Generates VTK/ directory with subdirs for each timestep
-        'runApplication foamToVTK -fields "(T U p p_rgh PMV PPD G qr)" -excludePatches "(.*_master|.*_slave)"',
+        'runApplication foamToVTK -fields "(T U p p_rgh G qr)" -excludePatches "(.*_master|.*_slave)"',
         'echo "==================== VTK GENERATION COMPLETED ===================="',
         
         # Also generate lightweight surface-only VTK for quick preview
         'echo "==================== GENERATING SURFACE VTK (QUICK PREVIEW) ===================="',
-        'foamToVTK -latestTime -surfaceFields -fields "(T U p p_rgh PMV PPD G qr)" 2>&1 | tee log.foamToVTK_surface',
+        'foamToVTK -latestTime -surfaceFields -fields "(T U p p_rgh G qr)" 2>&1 | tee log.foamToVTK_surface',
         'echo "==================== SURFACE VTK COMPLETED ===================="',
 
         # Clean processors
