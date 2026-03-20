@@ -916,7 +916,11 @@ def setup(case_path: str, simulation_type: str = 'comfortTest', transient: bool 
         'echo "==================== TIME 0 VTK COMPLETED ===================="',
         
         # Decompose for parallel execution
+        # cfmesh (cartesianMesh) running in serial mode overwrites system/decomposeParDict
+        # with numberOfSubdomains 1 (full OpenFOAM header format). Restore the correct
+        # value before decomposePar so it creates the right number of processor directories.
         'rm -rf processor*',
+        f'foamDictionary -entry numberOfSubdomains -set {n_cpu_available} system/decomposeParDict',
         'runApplication decomposePar',
         
         # potentialFoam REMOVED: Incompatible with buoyant solvers (variable density)
