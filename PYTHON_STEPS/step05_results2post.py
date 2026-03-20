@@ -84,50 +84,28 @@ def run_indoor_spaces(case_name: str, sim_path: str, post_path: str) -> None:
     logger.info(f"Simulation path: {sim_path}")
     logger.info(f"Post-processing output: {post_path}")
 
-    # Calculate PMV/PPD fields (skip if cloud already computed them)
+    # Calculate PMV/PPD fields locally from downloaded OpenFOAM results
     logger.info("\n1 - Calculating PMV/PPD comfort fields")
+    comfort_script = os.path.join(project_root, 'src', 'components', 'post', 'calculate_comfort.py')
+    logger.info(f"   Running: python3 {comfort_script} {sim_path}")
 
-    # Check if PMV/PPD fields already exist from cloud computation
-    try:
-        all_entries = os.listdir(sim_path)
-        time_dirs = sorted([
-            d for d in all_entries
-            if os.path.isdir(os.path.join(sim_path, d))
-            and d not in ('0', '0.orig', 'constant', 'system')
-            and not d.startswith('processor')
-            and d.replace('.', '', 1).isdigit()
-        ], key=float)
-    except Exception:
-        time_dirs = []
-
-    pmv_exists = any(
-        os.path.isfile(os.path.join(sim_path, t, 'PMV'))
-        for t in time_dirs
+    result = subprocess.run(
+        ['python3', comfort_script, sim_path],
+        capture_output=True,
+        text=True,
+        encoding='utf-8'
     )
 
-    if pmv_exists:
-        logger.info("   ✓ PMV/PPD fields already computed by cloud solver — skipping local calculation")
-    else:
-        comfort_script = os.path.join(project_root, 'src', 'components', 'post', 'calculate_comfort.py')
-        logger.info(f"   Running: python3 {comfort_script} {sim_path}")
+    if result.returncode != 0:
+        logger.error(f"   calculate_comfort.py failed with exit code {result.returncode}")
+        logger.error(f"   STDERR: {result.stderr}")
+        raise RuntimeError(f"PMV/PPD calculation failed: {result.stderr}")
 
-        result = subprocess.run(
-            ['python3', comfort_script, sim_path],
-            capture_output=True,
-            text=True,
-            encoding='utf-8'
-        )
+    if result.stdout:
+        for line in result.stdout.strip().split('\n'):
+            logger.info(f"   {line}")
 
-        if result.returncode != 0:
-            logger.error(f"   calculate_comfort.py failed with exit code {result.returncode}")
-            logger.error(f"   STDERR: {result.stderr}")
-            raise RuntimeError(f"PMV/PPD calculation failed: {result.stderr}")
-
-        if result.stdout:
-            for line in result.stdout.strip().split('\n'):
-                logger.info(f"   {line}")
-
-        logger.info("   ✓ PMV/PPD fields calculated successfully")
+    logger.info("   ✓ PMV/PPD fields calculated successfully")
     
     # Analyze comfort in horizontal planes
     logger.info("\n2 - Analyzing PMV/PPD thermal comfort in horizontal planes")

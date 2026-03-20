@@ -929,13 +929,6 @@ def setup(case_path: str, simulation_type: str = 'comfortTest', transient: bool 
     # logger.info(f"    * Updating controlDict iterations based on simulation type: {simulation_type}")
     # update_controldict_iterations(case_path, simulation_type, transient=transient)
 
-    # Copy calculate_comfort.py script to case directory for PMV/PPD calculations (use PROJECT_ROOT)
-    logger.info("    * Copying calculate_comfort.py script to case directory")
-    comfort_script_source = str(PROJECT_ROOT / "src" / "components" / "post" / "calculate_comfort.py")
-    comfort_script_dest = os.path.join(sim_path, "calculate_comfort.py")
-    shutil.copy(src=comfort_script_source, dst=comfort_script_dest)
-    logger.info(f"    * Comfort script copied to: {comfort_script_dest}")
-
     # Build script commands dynamically based on solver type
     script_commands = [
         # Copy initial conditions from 0.orig to 0
@@ -1011,11 +1004,6 @@ def setup(case_path: str, simulation_type: str = 'comfortTest', transient: bool 
         'echo "==================== RECONSTRUCTING ALL ITERATIONS ===================="',
         'reconstructPar > log.reconstructPar 2>&1',  # Default behavior = reconstruct ALL timesteps
         'echo "==================== RECONSTRUCTION COMPLETED ===================="',
-
-        # 3.5. Calculate PMV/PPD thermal comfort fields from T and U (latest timestep only)
-        'echo "==================== CALCULATING PMV/PPD THERMAL COMFORT ===================="',
-        'python3 ./calculate_comfort.py . --all-times 2>&1 | tee log.comfort',
-        'echo "==================== PMV/PPD CALCULATION COMPLETED ===================="',
 
         # 4. Generate VTK files for ALL timesteps with VOLUMETRIC data
         'echo "==================== GENERATING VTK FOR ALL ITERATIONS ===================="',
