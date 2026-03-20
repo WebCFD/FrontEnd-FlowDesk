@@ -87,10 +87,10 @@ def run_indoor_spaces(case_name: str, sim_path: str, post_path: str) -> None:
     # Calculate PMV/PPD fields first (required for comfort analysis)
     logger.info("\n1 - Calculating PMV/PPD comfort fields")
     comfort_script = os.path.join(project_root, 'src', 'components', 'post', 'calculate_comfort.py')
-    logger.info(f"   Running: python3.12 {comfort_script} {sim_path}")
+    logger.info(f"   Running: python3 {comfort_script} {sim_path}")
     
     result = subprocess.run(
-        ['python3.12', comfort_script, sim_path],
+        ['python3', comfort_script, sim_path],
         capture_output=True,
         text=True,
         encoding='utf-8'  # Fix: Explicit UTF-8 encoding for subprocess output
