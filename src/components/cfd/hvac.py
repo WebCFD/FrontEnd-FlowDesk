@@ -807,7 +807,7 @@ def define_initial_files(sim_path, patch_df):
         logger.info("    * Rack T boundary conditions post-processed successfully")
 
 
-def setup(case_path: str, simulation_type: str = 'comfortTest', transient: bool = False) -> list:
+def setup(case_path: str, simulation_type: str = 'comfortTest', transient: bool = False, n_cpu: int = 2) -> list:
     """
     Set up HVAC CFD simulation case with boundary conditions and solver configuration.
     
@@ -899,8 +899,8 @@ def setup(case_path: str, simulation_type: str = 'comfortTest', transient: bool 
         logger.info("    * Mass flow functions added to controlDict")
     
     # Write decomposeParDict for scotch method with correct numberOfSubdomains
-    # n_cpu_available: matches the CPU count sent in the API payload (used in Allrun -np)
-    n_cpu_available = int(os.environ.get('CFDFEASERVICE_CPU', '2'))
+    # n_cpu_available: matches the CPU count passed explicitly from worker_submit (used in Allrun -np)
+    n_cpu_available = n_cpu
     output_path = os.path.join(sim_path, "system", "decomposeParDict")
     decompose_content = (
         'FoamFile\n'
@@ -959,12 +959,6 @@ def setup(case_path: str, simulation_type: str = 'comfortTest', transient: bool 
         'foamToVTK -time 0 -fields "(T U p p_rgh G qr)" 2>&1 | tee log.foamToVTK_time0',  # Added G, qr for radiation
         'echo "==================== TIME 0 VTK COMPLETED ===================="',
         
-        # Regenerate decomposeParDict: cfMesh overwrites it during mesh generation
-        # with numberOfSubdomains 1 (serial mode). Must restore before decomposePar.
-        f'echo "==================== RESTORING decomposeParDict ({n_cpu_available} subdomains) ===================="',
-        f'printf "FoamFile\\n{{\\n    version     2.0;\\n    format      ascii;\\n    class       dictionary;\\n    location    \\"system\\";\\n    object      decomposeParDict;\\n}}\\n\\nnumberOfSubdomains {n_cpu_available};\\n\\nmethod          scotch;\\n\\ndistributed     no;\\n\\nroots           ( );\\n" > system/decomposeParDict',
-        f'echo "  decomposeParDict: scotch method, {n_cpu_available} subdomains"',
-
         # Decompose for parallel execution
         'rm -rf processor*',
         'runApplication decomposePar',

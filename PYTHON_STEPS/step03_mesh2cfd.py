@@ -19,7 +19,7 @@ from pipeline_exceptions import CFDSetupError
 logger = logging.getLogger(__name__)
 
 
-def run(case_name: str, type: str, mesh_script: list = [], simulation_type: str = 'comfortTest', transient: bool = False) -> None:
+def run(case_name: str, type: str, mesh_script: list = [], simulation_type: str = 'comfortTest', transient: bool = False, n_cpu: int = 2) -> None:
     """
     Convert mesh to CFD simulation setup with parallel processing and memory management.
     
@@ -56,7 +56,7 @@ def run(case_name: str, type: str, mesh_script: list = [], simulation_type: str 
     
     try:
         if(type == "hvac"):
-            solve_script = hvac_setup(case_path, simulation_type=simulation_type, transient=transient)
+            solve_script = hvac_setup(case_path, simulation_type=simulation_type, transient=transient, n_cpu=n_cpu)
         else:
             raise CFDSetupError(
                 f"Unknown simulation type: {type}",

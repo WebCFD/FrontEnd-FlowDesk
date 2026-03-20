@@ -46,6 +46,10 @@ POLLING_INTERVAL = 10
 #              "cloud" submits async and worker_monitor handles step05
 SOLVER_TYPE = os.getenv('SOLVER_TYPE', 'cloud')
 
+# Number of CPUs to request on the cloud solver and use for domain decomposition.
+# Must match numberOfSubdomains in decomposeParDict and -np in Allrun.
+N_CPU = 2
+
 def _parse_stop_after() -> "int | None":
     """
     Read and parse PIPELINE_STOP_AFTER env var fresh on each call.
@@ -293,7 +297,8 @@ def process_simulation(sim: Dict[str, Any]):
                 case_name,
                 type="hvac",
                 mesh_script=mesh_scripts,
-                simulation_type=simulation_type
+                simulation_type=simulation_type,
+                n_cpu=N_CPU
             )
         except PipelineStepError:
             raise
