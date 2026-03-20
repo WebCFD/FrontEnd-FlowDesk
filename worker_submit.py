@@ -324,7 +324,7 @@ def process_simulation(sim: Dict[str, Any]):
                 'currentStep': 'Running CFD solver locally...'
             })
             try:
-                step04_run(case_name, type="local")
+                step04_run(case_name, type="local", n_cpu=N_CPU)
             except Exception as e:
                 raise SubmissionError(
                     f"CFD execution failed: {e}",
@@ -373,7 +373,7 @@ def process_simulation(sim: Dict[str, Any]):
                 # step04_run with type="cfdfeaservice" and wait=False uploads the
                 # case, submits to CFD FEA Service, and returns the cloud task_id
                 # immediately. worker_monitor polls status and handles step 5.
-                task_id = step04_run(case_name, type="cfdfeaservice", wait=False)
+                task_id = step04_run(case_name, type="cfdfeaservice", wait=False, n_cpu=N_CPU)
             except Exception as e:
                 raise SubmissionError(
                     f"Cloud submission failed: {e}",

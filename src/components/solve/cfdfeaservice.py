@@ -154,30 +154,31 @@ def upload_case(sim_path: str, api_key: str) -> str:
 # Submit
 # ---------------------------------------------------------------------------
 
-def submit_simulation(folder: str, api_key: str) -> str:
+def submit_simulation(folder: str, api_key: str, n_cpu: int = 2) -> str:
     """
     Submit a simulation via POST /api/v2/simulation/add.
-
-    Env vars (all optional, service defaults apply if not set):
-        CFDFEASERVICE_CPU    — number of vCPUs (default: 2)
-        CFDFEASERVICE_RAM    — RAM label as expected by the service (default: highcpu)
-        CFDFEASERVICE_SCRIPT — script name registered in the platform (default: openFoam-v2412)
-        CFDFEASERVICE_SPOT   — 0=SPOT instance (cheaper), 1=regular instance (default: 0)
 
     Args:
         folder:  Remote folder name returned by upload_case().
         api_key: CFDFEASERVICE_API_KEY value.
+        n_cpu:   Number of vCPUs to request. Must match numberOfSubdomains in
+                 decomposeParDict. Passed explicitly from worker_submit.py (N_CPU)
+                 so there is a single source of truth for the CPU count.
+
+    Env vars (all optional, service defaults apply if not set):
+        CFDFEASERVICE_RAM    — RAM label as expected by the service (default: highcpu)
+        CFDFEASERVICE_SCRIPT — script name registered in the platform (default: openFoam-v2412)
+        CFDFEASERVICE_SPOT   — 0=SPOT instance (cheaper), 1=regular instance (default: 0)
 
     Returns:
         task_id (str) — the simulation ID returned by the service.
     """
-    cpu    = os.getenv('CFDFEASERVICE_CPU', '2')
     ram    = os.getenv('CFDFEASERVICE_RAM', 'highcpu')
     script = os.getenv('CFDFEASERVICE_SCRIPT', 'openFoam-v2412')
     nopre  = os.getenv('CFDFEASERVICE_SPOT', '0')
 
     payload = {
-        'cpu':    int(cpu),
+        'cpu':    n_cpu,
         'ram':    ram,
         'folder': folder,
         'script': script,
@@ -187,7 +188,7 @@ def submit_simulation(folder: str, api_key: str) -> str:
 
     spot_label = 'SPOT' if nopre == '0' else 'REGULAR'
     logger.info(
-        f"    * Submitting simulation — folder={folder}, cpu={cpu}, "
+        f"    * Submitting simulation — folder={folder}, cpu={n_cpu}, "
         f"ram={ram}, script={script}, instance={spot_label}"
     )
 

@@ -18,7 +18,7 @@ from src.components.tools.performance import PerformanceMonitor
 logger = logging.getLogger(__name__)
 
 
-def run(case_name: str = "cases/cfd_case", type: str = "local", wait: bool = True) -> Optional[str]:
+def run(case_name: str = "cases/cfd_case", type: str = "local", wait: bool = True, n_cpu: int = 2) -> Optional[str]:
     """
     Execute CFD simulation with parallel processing and memory management.
 
@@ -28,6 +28,9 @@ def run(case_name: str = "cases/cfd_case", type: str = "local", wait: bool = Tru
         wait: If True (default), block until simulation finishes.
               If False, submit asynchronously and return the cloud task_id.
               Only relevant for cloud platforms (ignored for "local").
+        n_cpu: Number of vCPUs to request on the cloud (cfdfeaservice only).
+               Must match numberOfSubdomains written in decomposeParDict by step03.
+               Passed explicitly from worker_submit.py (N_CPU constant).
 
     Returns:
         task_id (str) when type="cfdfeaservice" and wait=False.
@@ -72,7 +75,7 @@ def run(case_name: str = "cases/cfd_case", type: str = "local", wait: bool = Tru
 
         # Submit simulation
         logger.info(f"    * Submitting simulation job...")
-        task_id = submit_simulation(folder, api_key)
+        task_id = submit_simulation(folder, api_key, n_cpu=n_cpu)
 
         performance_monitor.update_memory()
         performance_summary = performance_monitor.get_summary()
