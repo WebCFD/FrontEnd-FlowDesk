@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Verification script to check if locationInMesh is calculated correctly.
-Run this on the worker before submitting to Inductiva.
+Run this on the worker before submitting to CFD FEA Service.
 """
 import json
 import sys

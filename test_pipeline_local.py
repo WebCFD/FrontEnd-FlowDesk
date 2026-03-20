@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test script for CFD pipeline - LOCAL execution only (no Inductiva)
+Test script for CFD pipeline - LOCAL execution only (no cloud submission)
 Tests: JSON → Geometry → Mesh config → CFD setup
 Does NOT execute mesh generation or CFD solving
 """
@@ -33,7 +33,7 @@ from PYTHON_STEPS.step03_mesh2cfd import run as mesh2cfd
 from PYTHON_STEPS.mesher_config import get_default_mesher
 
 def test_pipeline_local():
-    """Test complete pipeline locally without executing on Inductiva"""
+    """Test complete pipeline locally without executing on CFD FEA Service"""
     
     logger.info("="*60)
     logger.info("TESTING CFD PIPELINE LOCALLY")
@@ -116,7 +116,7 @@ def test_pipeline_local():
             logger.info(f"\nCase directory: {case_path}")
             logger.info("\nNext steps:")
             logger.info("1. Review the generated case in cases/test_simple_room/")
-            logger.info("2. If everything looks good, test with Inductiva")
+            logger.info("2. If everything looks good, test with CFD FEA Service")
             return True
         else:
             logger.error("\n" + "="*60)
