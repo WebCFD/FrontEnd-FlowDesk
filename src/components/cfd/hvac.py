@@ -946,15 +946,6 @@ def setup(case_path: str, simulation_type: str = 'comfortTest', transient: bool 
         'rm -rf processor*',
         'runApplication decomposePar',
         
-        # DEBUG: Copiar archivos de processor0 para inspección
-        'echo "==================== DEBUG: Copying processor0 files ===================="',
-        'mkdir -p debug_files',
-        # 'cp processor0/0/h debug_files/processor0_h',  # [COMMENTED - NO h FILE FOR TEST]
-        'cp processor0/0/U debug_files/processor0_U',
-        'cp processor0/0/p_rgh debug_files/processor0_p_rgh',
-        'cp processor0/constant/thermophysicalProperties debug_files/processor0_thermo',
-        'echo "==================== DEBUG FILES COPIED ===================="',
-        
         # potentialFoam REMOVED: Incompatible with buoyant solvers (variable density)
         # - potentialFoam assumes constant density (incompressible)
         # - buoyantPimpleFoam uses variable density ρ(T) with thermal buoyancy
