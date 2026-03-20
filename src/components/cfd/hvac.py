@@ -959,6 +959,12 @@ def setup(case_path: str, simulation_type: str = 'comfortTest', transient: bool 
         'foamToVTK -time 0 -fields "(T U p p_rgh G qr)" 2>&1 | tee log.foamToVTK_time0',  # Added G, qr for radiation
         'echo "==================== TIME 0 VTK COMPLETED ===================="',
         
+        # Regenerate decomposeParDict: cfMesh overwrites it during mesh generation
+        # with numberOfSubdomains 1 (serial mode). Must restore before decomposePar.
+        f'echo "==================== RESTORING decomposeParDict ({n_cpu_available} subdomains) ===================="',
+        f'printf "FoamFile\\n{{\\n    version     2.0;\\n    format      ascii;\\n    class       dictionary;\\n    location    \\"system\\";\\n    object      decomposeParDict;\\n}}\\n\\nnumberOfSubdomains {n_cpu_available};\\n\\nmethod          scotch;\\n\\ndistributed     no;\\n\\nroots           ( );\\n" > system/decomposeParDict',
+        f'echo "  decomposeParDict: scotch method, {n_cpu_available} subdomains"',
+
         # Decompose for parallel execution
         'rm -rf processor*',
         'runApplication decomposePar',
