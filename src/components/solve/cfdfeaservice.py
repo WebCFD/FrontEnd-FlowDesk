@@ -171,7 +171,7 @@ def submit_simulation(folder: str, api_key: str) -> str:
     Returns:
         task_id (str) — the simulation ID returned by the service.
     """
-    cpu    = os.getenv('CFDFEASERVICE_CPU', '1')
+    cpu    = os.getenv('CFDFEASERVICE_CPU', '2')
     ram    = os.getenv('CFDFEASERVICE_RAM', 'highcpu')
     script = os.getenv('CFDFEASERVICE_SCRIPT', 'openFoam-v2412')
     nopre  = os.getenv('CFDFEASERVICE_SPOT', '0')
