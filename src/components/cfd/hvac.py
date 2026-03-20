@@ -178,43 +178,6 @@ def define_boundary_radiation_properties(sim_path, patch_df):
     logger.info(f"    * File: {output_file}")
 
 
-def create_decomposeParDict_local(sim_path):
-    """
-    Create decomposeParDict for local parallel execution using available CPU cores - 1.
-    
-    Args:
-        sim_path: Path to simulation directory
-    """
-    # Detect available cores (use all available cores - 1 to leave one for system)
-    import os as os_module
-    total_cores = os_module.cpu_count()
-    if total_cores is None:
-        total_cores = 16  # Fallback if detection fails
-    
-    n_cores = max(total_cores - 1, 1)  # At least 1 core
-    logger.info(f"    * Detected {total_cores} CPU cores, using {n_cores} for parallel simulation")
-    
-    # Calculate best partition for the number of cores
-    n_cpu_available, (n_x, n_y, n_z) = best_cpu_partition(n_cores)
-    logger.info(f"    * Optimal partition: {n_cpu_available} cores = ({n_x}, {n_y}, {n_z})")
-    
-    # Use template from inductiva settings (use PROJECT_ROOT for robust path resolution)
-    template_path = str(PROJECT_ROOT / "data" / "settings" / "solve" / "inductiva")
-    input_path = os.path.join(template_path, "system", "decomposeParDict")
-    output_path = os.path.join(sim_path, "system", "decomposeParDict")
-    
-    # Replace placeholders with actual values
-    str_replace_dict = {
-        "$NUM_CPUS": str(n_cpu_available),
-        "$PARTITION_X": str(n_x),
-        "$PARTITION_Y": str(n_y),
-        "$PARTITION_Z": str(n_z)
-    }
-    
-    replace_in_file(input_path, output_path, str_replace_dict)
-    logger.info(f"    * decomposeParDict created: {n_cpu_available} subdomains")
-
-
 def generate_mass_flow_functions(patch_df):
     """
     Generate function objects to calculate mass flow rate at relevant boundaries.

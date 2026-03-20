@@ -746,5 +746,5 @@ def prepare_snappy(geo_mesh, sim_path, geo_df, stl_filename = "geometry.stl"):
     
     logger.info("    * SnappyHexMesh preparation completed successfully")
     logger.info(f"    * Mesh validation will check for patches: {expected_patches}")
-    logger.info("    * Validation will run in Inductiva after meshing completes")
+    logger.info("    * Validation will run in CFD FEA Service after meshing completes")
     return script_commands

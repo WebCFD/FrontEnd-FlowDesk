@@ -38,6 +38,6 @@ class CFDSetupError(PipelineStepError):
 
 
 class SubmissionError(PipelineStepError):
-    """Raised when cloud submission fails (Step 4: Submit to Inductiva)"""
+    """Raised when cloud submission fails (Step 4: Submit to CFD FEA Service)"""
     def __init__(self, message: str, details: dict = {}):
         super().__init__(message, 'cloud_execution', details if details else {})

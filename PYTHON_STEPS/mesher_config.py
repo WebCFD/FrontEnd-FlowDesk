@@ -17,7 +17,7 @@ DEFAULT_QUALITY_LEVEL = 1
 
 # =============================================================================
 # NOTE: 
-#   - "cfmesh" is now the recommended fast automatic mesher (available on Inductiva: inductiva/kutu:openfoam-cfmesh_v2412_dev)
+#   - "cfmesh" is now the recommended fast automatic mesher (cloud image: kutu:openfoam-cfmesh_v2412_dev)
 #   - "hvac_pro" is professional HVAC configuration using snappyHexMesh
 #   - "snappy" is the basic snappyHexMesh configuration
 
@@ -38,7 +38,7 @@ MESHER_INFO = {
     },
     "cfmesh": {
         "name": "cfMesh (OpenFOAM ESI v2412)",
-        "description": "⭐ RECOMMENDED - Fast automatic mesher (available on Inductiva: kutu:openfoam-cfmesh_v2412_dev)",
+        "description": "⭐ RECOMMENDED - Fast automatic mesher (cloud image: kutu:openfoam-cfmesh_v2412_dev)",
         "advantages": [
             "Automatic robust boundary layers (>90% coverage)",
             "Differentiated refinement (pressure boundaries 2x finer)",
