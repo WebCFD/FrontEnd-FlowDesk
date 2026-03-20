@@ -336,9 +336,11 @@ def download_results(task_id: str, sim_path: str, api_key: str) -> bool:
             raise ValueError(f"Folder '{folder_name}' not found in storage index")
         logger.info(f"    * Found folder_id: {folder_id}")
 
-        # Step 3: list files in folder with pagination
+        # Step 3: list files in folder — deduplicate by ID because the API
+        # repeats the same items on every page (no true pagination).
         files = []
-        for page in range(1, 20):  # paginate up to 20 pages
+        seen_ids: set = set()
+        for page in range(1, 20):
             resp = requests.get(
                 _url(f'/api/v2/storage/index/size/desc/parent_id/{folder_id}/{page}'),
                 headers=_headers(api_key),
@@ -347,62 +349,53 @@ def download_results(task_id: str, sim_path: str, api_key: str) -> bool:
             resp.raise_for_status()
             page_files = resp.json().get('response', [])
             if not page_files:
-                break  # no more pages
-            files.extend(page_files)
+                break
+            new_items = [f for f in page_files if f.get('id') not in seen_ids]
+            if not new_items:
+                break  # all items already seen — no real additional pages
+            for f in new_items:
+                seen_ids.add(f.get('id'))
+            files.extend(new_items)
 
-        # Filter result archives; fall back to all files if no known extension found
+        # Filter result archives by extension; fall back to all files
         result_files = [
             f for f in files
-            if any(
-                (f.get('name') or '').endswith(ext)
+            if f.get('type') == 'file' and any(
+                (f.get('basename') or f.get('name') or '').endswith(ext)
                 for ext in ('.zip', '.tar.gz', '.tgz', '.rmed', '.frd')
             )
         ]
         if not result_files:
-            result_files = files
+            result_files = [f for f in files if f.get('type') == 'file']
 
         logger.info(f"    * Found {len(result_files)} result file(s) to download")
 
         for file_entry in result_files:
-            file_name = file_entry.get('name') or file_entry.get('basename', 'result')
-            file_path_remote = file_entry.get('path') or f"{folder_name}/{file_name}"
+            # Use basename to avoid folder-prefix in local filename
+            file_name = file_entry.get('basename') or file_entry.get('name', 'result').split('/')[-1]
+            file_id = file_entry.get('id')
+            media_link = file_entry.get('mediaLink')
 
-            # Step 4a: resolve file ID via path
-            resp = requests.post(
-                _url('/api/v2/storage/view-by-path'),
-                headers=_headers(api_key),
-                json={'path': file_path_remote},
-                timeout=30,
-            )
-            resp.raise_for_status()
-            file_id = (resp.json().get('response') or {}).get('id')
-            if not file_id:
-                logger.warning(f"    * Could not resolve ID for {file_path_remote}, skipping")
-                continue
-
-            # Step 4b: get presigned download URL (retry until available)
-            import time as _time
-            media_link = None
-            for _ in range(5):
-                resp = requests.get(
-                    _url(f'/api/v2/storage/view-url/{file_id}'),
-                    headers=_headers(api_key),
-                    timeout=30,
-                )
-                resp.raise_for_status()
-                media_link = (resp.json().get('response') or {}).get('mediaLink')
-                if media_link:
-                    break
-                _time.sleep(2)
-
-            if not media_link:
-                logger.warning(f"    * Could not get download URL for {file_name}, skipping")
-                continue
-
-            # Step 4c: download the file
             dest = dest_dir / file_name
-            logger.info(f"    * Downloading {file_name}...")
-            dl = requests.get(media_link, timeout=600, stream=True)
+            logger.info(f"    * Downloading {file_name} ({file_entry.get('size', '?')} bytes)...")
+
+            # Prefer the authenticated download endpoint (/api/v2/storage/download/{id})
+            # which the CFD FEA server redirects to GCS with proper auth.
+            # Fall back to direct mediaLink if no file ID.
+            if file_id:
+                dl = requests.get(
+                    _url(f'/api/v2/storage/download/{file_id}'),
+                    headers=_headers(api_key),
+                    allow_redirects=True,
+                    timeout=600,
+                    stream=True,
+                )
+            elif media_link:
+                dl = requests.get(media_link, timeout=600, stream=True)
+            else:
+                logger.warning(f"    * No download URL for {file_name}, skipping")
+                continue
+
             dl.raise_for_status()
             with open(dest, 'wb') as fh:
                 for chunk in dl.iter_content(chunk_size=65536):

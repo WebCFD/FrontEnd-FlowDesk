@@ -898,14 +898,31 @@ def setup(case_path: str, simulation_type: str = 'comfortTest', transient: bool 
 
         logger.info("    * Mass flow functions added to controlDict")
     
-    # Copy decomposeParDict template (scotch method — CFD FEA Service auto-configures subdomains)
-    template_path_decomp = str(PROJECT_ROOT / "data" / "settings" / "solve" / "inductiva")
-    input_path  = os.path.join(template_path_decomp, "system", "decomposeParDict")
-    output_path = os.path.join(sim_path, "system", "decomposeParDict")
-    shutil.copy(src=input_path, dst=output_path)
+    # Write decomposeParDict for scotch method with correct numberOfSubdomains
     # n_cpu_available: matches the CPU count sent in the API payload (used in Allrun -np)
     n_cpu_available = int(os.environ.get('CFDFEASERVICE_CPU', '2'))
-    logger.info(f"    * decomposeParDict: scotch method, Allrun -np {n_cpu_available} (CFD FEA Service auto-configures subdomains)")
+    output_path = os.path.join(sim_path, "system", "decomposeParDict")
+    decompose_content = (
+        'FoamFile\n'
+        '{\n'
+        '    version     2.0;\n'
+        '    format      ascii;\n'
+        '    class       dictionary;\n'
+        '    location    "system";\n'
+        '    object      decomposeParDict;\n'
+        '}\n'
+        '\n'
+        f'numberOfSubdomains {n_cpu_available};\n'
+        '\n'
+        'method          scotch;\n'
+        '\n'
+        'distributed     no;\n'
+        '\n'
+        'roots           ( );\n'
+    )
+    with open(output_path, 'w') as f:
+        f.write(decompose_content)
+    logger.info(f"    * decomposeParDict: scotch method, {n_cpu_available} subdomains, Allrun -np {n_cpu_available}")
     
     # [DEPRECATED 2026-01-17] endTime is now configured in template controlDict files
     # No need to override template values with hardcoded values

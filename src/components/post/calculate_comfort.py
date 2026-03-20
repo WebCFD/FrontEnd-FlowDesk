@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.12
 """
 Calculate PMV/PPD thermal comfort fields from OpenFOAM T and U fields.
-Executes in Inductiva container after reconstructPar.
+Runs on cloud server — uses direct OpenFOAM file parsing (no foamlib required).
 
 Uses ISO 7730 standard with hardcoded parameters:
 - Met = 1.0 (sedentary office work)
@@ -16,393 +16,372 @@ Usage:
 
 import os
 import sys
+import re
 import argparse
 import numpy as np
-from foamlib import FoamCase
 import logging
 from pythermalcomfort.models import pmv_ppd_iso
 from pythermalcomfort.utilities import v_relative
 
-# HARDCODED COMFORT PARAMETERS (ISO 7730 standard office)
-MET = 1.0      # Metabolic rate [met] - sedentary office work
-CLO = 0.7      # Clothing insulation [clo] - light office clothing (shirt + trousers)
-RH = 50.0      # Relative humidity [%]
-# Tmrt = Tair (mean radiant temperature equals air temperature - valid for HVAC without radiation)
+MET = 1.0
+CLO = 0.7
+RH = 50.0
 
 logger = logging.getLogger(__name__)
 
 
-def calculate_pmv_fanger(tdb, tr, vel, rh, met, clo):
+# ---------------------------------------------------------------------------
+# OpenFOAM field I/O (no foamlib dependency)
+# ---------------------------------------------------------------------------
+
+def _parse_internal_field(content):
     """
-    Calculate PMV using ISO 7730 standard via pythermalcomfort library.
-    
-    This is a wrapper function that calls the validated pythermalcomfort.models.pmv_ppd_iso()
-    implementation, which is compliant with ISO 7730-2005 standard.
-    
-    Args:
-        tdb: Dry bulb air temperature [°C]
-        tr: Mean radiant temperature [°C]
-        vel: Air velocity [m/s]
-        rh: Relative humidity [%]
-        met: Metabolic rate [met]
-        clo: Clothing insulation [clo]
-    
-    Returns:
-        PMV value (Predicted Mean Vote)
+    Parse the internalField section from OpenFOAM field file content.
+    Returns float (uniform) or np.ndarray (nonuniform scalar or Nx3 vector).
     """
-    # Calculate relative velocity accounting for activity-generated air speed
-    vr = v_relative(v=vel, met=met)
-    
-    # Call validated pythermalcomfort implementation
-    # limit_inputs=False allows calculations outside standard ranges (for extreme conditions)
-    result = pmv_ppd_iso(
-        tdb=tdb, 
-        tr=tr, 
-        vr=vr, 
-        rh=rh, 
-        met=met, 
-        clo=clo,
-        wme=0.0,  # External work = 0 (standard assumption)
-        limit_inputs=False  # Accept values outside standard comfort range
+    # uniform scalar: internalField uniform 293.15;
+    m = re.search(r'internalField\s+uniform\s+([^\s;(]+)\s*;', content)
+    if m:
+        return float(m.group(1))
+
+    # nonuniform scalar list
+    m = re.search(
+        r'internalField\s+nonuniform\s+List<scalar>\s*\n\s*(\d+)\s*\n\s*\(',
+        content,
     )
-    
+    if m:
+        n = int(m.group(1))
+        paren_pos = content.index('(', m.end() - 1)
+        rest = content[paren_pos + 1:]
+        close_pos = rest.index(')')
+        data_str = rest[:close_pos].strip()
+        vals = [float(v) for v in data_str.split()]
+        return np.array(vals, dtype=np.float64)
+
+    # nonuniform vector list
+    m = re.search(
+        r'internalField\s+nonuniform\s+List<vector>\s*\n\s*(\d+)\s*\n\s*\(',
+        content,
+    )
+    if m:
+        n = int(m.group(1))
+        paren_pos = content.index('(', m.end() - 1)
+        rest = content[paren_pos + 1:]
+        close_pos = rest.index(')')
+        data_str = rest[:close_pos].strip()
+        rows = re.findall(r'\(\s*([\s\S]*?)\s*\)', data_str)
+        vecs = [[float(v) for v in row.split()] for row in rows]
+        return np.array(vecs, dtype=np.float64)
+
+    raise ValueError("Could not parse internalField")
+
+
+def _parse_boundary_patches(content):
+    """Return list of patch names from boundaryField section."""
+    m = re.search(r'boundaryField\s*\{', content)
+    if not m:
+        return []
+    start = m.end()
+    depth = 1
+    pos = start
+    while pos < len(content) and depth > 0:
+        if content[pos] == '{':
+            depth += 1
+        elif content[pos] == '}':
+            depth -= 1
+        pos += 1
+    bf_content = content[start:pos - 1]
+    return re.findall(r'(\w+)\s*\{', bf_content)
+
+
+def read_foam_field(filepath):
+    """
+    Read an OpenFOAM field file.
+    Returns (internal, boundary_patches) where:
+      internal = float (uniform) or np.ndarray
+      boundary_patches = list of patch name strings
+    """
+    with open(filepath, 'r', errors='replace') as f:
+        content = f.read()
+    internal = _parse_internal_field(content)
+    patches = _parse_boundary_patches(content)
+    return internal, patches
+
+
+def write_foam_scalar_field(filepath, field_array, boundary_patches, field_name):
+    """Write a volScalarField OpenFOAM file."""
+    n_cells = len(field_array)
+    values_str = '\n'.join(f'{v:.8g}' for v in field_array)
+    mean_val = float(np.nanmean(field_array))
+
+    boundary_str = ''
+    for patch in boundary_patches:
+        boundary_str += (
+            f'    {patch}\n'
+            f'    {{\n'
+            f'        type            calculated;\n'
+            f'        value           uniform {mean_val:.8g};\n'
+            f'    }}\n'
+        )
+
+    content = (
+        '/*--------------------------------*- C++ -*----------------------------------*\\\n'
+        '| =========                 |                                                 |\n'
+        '| \\\\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |\n'
+        '|  \\\\    /   O peration     | Version:  v2412                                 |\n'
+        '|   \\\\  /    A nd           | Website:  www.openfoam.com                      |\n'
+        '|    \\\\/     M anipulation  |                                                 |\n'
+        '\\*---------------------------------------------------------------------------*/\n'
+        'FoamFile\n'
+        '{\n'
+        '    version     2.0;\n'
+        '    format      ascii;\n'
+        '    class       volScalarField;\n'
+        f'    object      {field_name};\n'
+        '}\n'
+        '// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //\n'
+        '\n'
+        'dimensions      [0 0 0 0 0 0 0];\n'
+        '\n'
+        f'internalField   nonuniform List<scalar>\n'
+        f'{n_cells}\n'
+        '(\n'
+        f'{values_str}\n'
+        ')\n'
+        ';\n'
+        '\n'
+        'boundaryField\n'
+        '{\n'
+        f'{boundary_str}'
+        '}\n'
+        '\n'
+        '// ************************************************************************* //\n'
+    )
+
+    os.makedirs(os.path.dirname(os.path.abspath(filepath)), exist_ok=True)
+    with open(filepath, 'w') as f:
+        f.write(content)
+
+
+def get_n_cells_from_mesh(case_path):
+    """Count cells from polyMesh/owner file."""
+    owner_file = os.path.join(case_path, 'constant', 'polyMesh', 'owner')
+    with open(owner_file, 'r', errors='replace') as f:
+        content = f.read()
+    m = re.search(r'^\s*(\d+)\s*\n\s*\(', content, re.MULTILINE)
+    if not m:
+        raise ValueError("Cannot parse cell count from polyMesh/owner")
+    start = content.index('(', m.start()) + 1
+    end = content.index(')', start)
+    owners = [int(v) for v in content[start:end].split()]
+    return max(owners) + 1
+
+
+# ---------------------------------------------------------------------------
+# PMV/PPD calculation
+# ---------------------------------------------------------------------------
+
+def calculate_pmv_fanger(tdb, tr, vel, rh, met, clo):
+    """Calculate PMV using ISO 7730 via pythermalcomfort."""
+    vr = v_relative(v=vel, met=met)
+    result = pmv_ppd_iso(
+        tdb=tdb, tr=tr, vr=vr, rh=rh, met=met, clo=clo,
+        wme=0.0, limit_inputs=False,
+    )
     return result.pmv
 
 
 def calculate_ppd(pmv):
-    """
-    Calculate PPD (Predicted Percentage of Dissatisfied) from PMV (ISO 7730).
-    
-    Args:
-        pmv: Predicted Mean Vote
-    
-    Returns:
-        PPD value [%] (percentage of people dissatisfied with thermal environment)
-    """
-    ppd = 100.0 - 95.0 * np.exp(-0.03353 * pmv ** 4 - 0.2179 * pmv ** 2)
-    return ppd
+    """Calculate PPD from PMV (ISO 7730)."""
+    return 100.0 - 95.0 * np.exp(-0.03353 * pmv ** 4 - 0.2179 * pmv ** 2)
 
 
-def process_timestep(case, time_str):
-    """
-    Process a single timestep to calculate PMV/PPD fields.
-    
-    Args:
-        case: FoamCase object
-        time_str: Timestep string (e.g., "500", "1000")
-    """
+# ---------------------------------------------------------------------------
+# Per-timestep processing
+# ---------------------------------------------------------------------------
+
+def process_timestep(case_path, time_str):
+    """Process a single timestep: read T & U, compute PMV/PPD, write fields."""
     logger.info(f"\n{'='*70}")
     logger.info(f"Processing timestep: {time_str}")
     logger.info(f"{'='*70}")
-    
-    # Read temperature field [K]
-    logger.info("Reading temperature field (T)...")
-    with case[time_str]['T'] as T_field:
-        T_internal = T_field.internal_field  # [K]
-        T_boundary = T_field.boundary_field
-    
-    # Read velocity field [m/s]
-    logger.info("Reading velocity field (U)...")
-    with case[time_str]['U'] as U_field:
-        U_internal = U_field.internal_field  # [m/s]
-        U_boundary = U_field.boundary_field
-    
-    # Try to read incident radiation field G [W/m²] for accurate T_mrt calculation
-    logger.info("Reading incident radiation field (G)...")
+
+    time_dir = os.path.join(case_path, time_str)
+
+    # --- Read T ---
+    T_file = os.path.join(time_dir, 'T')
+    logger.info(f"Reading temperature field: {T_file}")
+    T_internal, T_patches = read_foam_field(T_file)
+
+    # --- Read U ---
+    U_file = os.path.join(time_dir, 'U')
+    logger.info(f"Reading velocity field: {U_file}")
+    U_internal, _ = read_foam_field(U_file)
+
+    # --- Optional: read G for T_mrt ---
+    G_file = os.path.join(time_dir, 'G')
     G_internal = None
+    if os.path.exists(G_file):
+        try:
+            G_internal, _ = read_foam_field(G_file)
+            logger.info("G field found — will calculate T_mrt from radiation")
+        except Exception as e:
+            logger.warning(f"Could not read G field: {e} — using T_mrt = T_air")
+    else:
+        logger.info("G field not found — using T_mrt = T_air (simplified)")
+
+    # --- Determine cell count ---
     try:
-        with case[time_str]['G'] as G_field:
-            G_internal = G_field.internal_field  # [W/m²]
-        logger.info("✓ G field found - will calculate T_mrt from radiation")
-    except:
-        logger.warning("✗ G field not found - will use T_mrt = T_air (simplified)")
-    
-    # Handle uniform fields (when solver writes "uniform <value>" instead of cell-by-cell data)
-    # This happens when the field didn't evolve or converged to uniform value
-    
-    # Get number of cells from a non-uniform field or from boundary file
-    # Strategy: Try to read from p field (should always be non-uniform after simulation)
-    # If that fails, count from mesh files
-    try:
-        with case[time_str]['p'] as p_field:
-            p_internal = p_field.internal_field
-            if isinstance(p_internal, (int, float)):
-                # p is also uniform, need to read from mesh
-                raise ValueError("p is uniform, need mesh method")
-            n_cells = len(p_internal)
-            logger.info(f"Detected {n_cells} cells from p field")
-    except:
-        # Fallback: read from polyMesh/owner header
-        owner_file = os.path.join(case.path, 'constant', 'polyMesh', 'owner')
-        with open(owner_file, 'r') as f:
-            in_header = True
-            for line in f:
-                line_stripped = line.strip()
-                # Skip empty lines and comments
-                if not line_stripped or line_stripped.startswith('//') or line_stripped.startswith('/*'):
-                    continue
-                # Skip FoamFile dictionary
-                if '{' in line or '}' in line or line_stripped in ['FoamFile', 'version', 'format', 'class', 'object', 'note']:
-                    continue
-                # Check if line starts with a digit (could be version number or data count)
-                if line_stripped[0].isdigit() and ';' not in line:
-                    # This is likely the count line (number before opening parenthesis)
-                    n_internal_faces = int(line_stripped)
-                    # Number of cells is approximately n_internal_faces (close estimate)
-                    # But we need to count unique cell indices from owner list
-                    break
-            
-            # Now read owner list to get max cell index
-            reading_data = False
-            max_owner = -1
-            for line in f:
-                line_stripped = line.strip()
-                if line_stripped == '(':
-                    reading_data = True
-                    continue
-                if line_stripped == ')':
-                    break
-                if reading_data and line_stripped and not line_stripped.startswith('//'):
-                    owner_idx = int(line_stripped)
-                    if owner_idx > max_owner:
-                        max_owner = owner_idx
-            
-            n_cells = max_owner + 1
-            logger.info(f"Detected {n_cells} cells from polyMesh/owner")
-    
+        p_file = os.path.join(time_dir, 'p')
+        p_internal, _ = read_foam_field(p_file)
+        if isinstance(p_internal, (int, float)):
+            raise ValueError("p is uniform")
+        n_cells = len(p_internal)
+        logger.info(f"Cell count from p field: {n_cells}")
+    except Exception:
+        n_cells = get_n_cells_from_mesh(case_path)
+        logger.info(f"Cell count from polyMesh/owner: {n_cells}")
+
+    # --- Expand uniform fields ---
     if isinstance(T_internal, (int, float)):
-        logger.info(f"  T is uniform field (value={T_internal:.2f} K), expanding to {n_cells} cells...")
+        logger.info(f"T is uniform ({T_internal:.2f} K), expanding to {n_cells} cells")
         T_internal = np.full(n_cells, T_internal)
-    
+
     if isinstance(U_internal, (int, float)):
-        logger.info(f"  U is uniform field (value={U_internal:.2e} m/s), expanding to {n_cells} cells...")
-        U_internal = np.full((n_cells, 3), U_internal)
-    elif len(U_internal.shape) == 1 and U_internal.shape[0] == 3:
-        # U is a single 3D vector, expand to all cells
-        logger.info(f"  U is uniform 3D vector, expanding to {n_cells} cells...")
+        logger.info(f"U is uniform, expanding to {n_cells} cells")
+        U_internal = np.zeros((n_cells, 3))
+    elif U_internal.ndim == 1 and U_internal.shape[0] == 3:
+        logger.info("U is single vector, tiling to all cells")
         U_internal = np.tile(U_internal, (n_cells, 1))
-    
+
     n_cells = len(T_internal)
-    logger.info(f"Number of cells: {n_cells}")
-    
-    # Convert temperature to Celsius
+    logger.info(f"Processing {n_cells} cells")
+
+    # --- Derived quantities ---
     T_celsius = T_internal - 273.15
-    
-    # Calculate velocity magnitude
-    U_mag = np.linalg.norm(U_internal, axis=1)
-    
-    logger.info("Calculating PMV/PPD fields...")
-    
-    # Debug: Sample first 5 cells
-    logger.info(f"\nDEBUG - Sample of first 5 cells:")
-    for i in range(min(5, n_cells)):
-        logger.info(f"  Cell {i}: T={T_celsius[i]:.2f}°C, U_mag={np.linalg.norm(U_internal[i]):.4f} m/s")
-    
-    # Initialize output arrays
-    pmv_field = np.zeros(n_cells)
-    ppd_field = np.zeros(n_cells)
-    
-    # Calculate PMV and PPD for each cell
-    # Apply valid range limits for PMV/PPD calculation (Fanger model is valid for thermal comfort zones)
-    VALID_TEMP_MIN = 10.0  # °C
-    VALID_TEMP_MAX = 40.0  # °C  
-    VALID_VEL_MAX = 5.0    # m/s
-    INVALID_VALUE = -1000.0  # Sentinel value for invalid/out-of-range cells
-    
-    # Theoretical valid ranges for PMV and PPD results
-    # NOTE: ISO 7730 comfort range is -0.5 to +0.5, but PMV model can give values beyond [-3, +3]
-    # We accept wider range to capture extreme conditions (very cold/hot)
-    PMV_MIN = -10.0  # Accept very cold conditions
-    PMV_MAX = 10.0   # Accept very hot conditions
-    PPD_MIN = 0.0    # PPD is a percentage from 0% to 100%
-    PPD_MAX = 100.0
-    
+    U_mag = np.linalg.norm(U_internal, axis=1) if U_internal.ndim == 2 else np.abs(U_internal)
+
+    # --- Compute PMV/PPD per cell ---
+    VALID_TEMP_MIN = 10.0
+    VALID_TEMP_MAX = 40.0
+    VALID_VEL_MAX = 5.0
+    INVALID_VALUE = -1000.0
+
+    pmv_field = np.full(n_cells, INVALID_VALUE)
+    ppd_field = np.full(n_cells, INVALID_VALUE)
     invalid_count = 0
+
     for i in range(n_cells):
-        tdb = T_celsius[i]
-        
-        # Calculate mean radiant temperature from incident radiation G
+        tdb = float(T_celsius[i])
+        vel = float(U_mag[i])
+
+        # T_mrt from G or fallback to T_air
         if G_internal is not None:
-            # G [W/m²] = 4σT_mrt⁴ (isotropic radiation equilibrium)
-            # σ = 5.67e-8 W/(m²·K⁴) (Stefan-Boltzmann constant)
-            # Solve for T_mrt: T_mrt = (G / (4σ))^0.25
-            sigma = 5.67e-8  # Stefan-Boltzmann constant [W/(m²·K⁴)]
-            
-            # Handle G expansion if uniform
-            if isinstance(G_internal, (int, float)):
-                G_val = G_internal
-            else:
-                G_val = G_internal[i]
-            
-            # Ensure G is positive (radiation intensity cannot be negative)
-            G_val = max(G_val, 0.1)  # Minimum 0.1 W/m² to avoid singularity
-            
-            # Calculate T_mrt [K] from incident radiation (CORRECTED with factor 4)
+            sigma = 5.67e-8
+            G_val = float(G_internal) if isinstance(G_internal, (int, float)) else float(G_internal[i])
+            G_val = max(G_val, 0.1)
             T_mrt_K = (G_val / (4 * sigma)) ** 0.25
-            tr = T_mrt_K - 273.15  # Convert to °C
-            
-            # Sanity check: T_mrt should be in reasonable range
-            tr = np.clip(tr, -10, 80)  # Clip to physical range [-10°C, 80°C]
+            tr = float(np.clip(T_mrt_K - 273.15, -10, 80))
         else:
-            # Fallback: T_mrt = T_air (simplified - no radiation data)
             tr = tdb
-        
-        vel = U_mag[i]
-        
-        # Check if values are within valid range for PMV/PPD calculation
-        if (VALID_TEMP_MIN <= tdb <= VALID_TEMP_MAX and 
-            VALID_TEMP_MIN <= tr <= VALID_TEMP_MAX and 
-            vel <= VALID_VEL_MAX):
-            # Calculate PMV
+
+        if (VALID_TEMP_MIN <= tdb <= VALID_TEMP_MAX and
+                VALID_TEMP_MIN <= tr <= VALID_TEMP_MAX and
+                vel <= VALID_VEL_MAX):
             try:
-                pmv_val = calculate_pmv_fanger(tdb, tr, vel, RH, MET, CLO)
-                ppd_val = calculate_ppd(pmv_val)
-                
-                # Check if results are finite (not NaN, not inf) AND within theoretical ranges
+                pmv_val = float(calculate_pmv_fanger(tdb, tr, vel, RH, MET, CLO))
+                ppd_val = float(calculate_ppd(pmv_val))
                 if (np.isfinite(pmv_val) and np.isfinite(ppd_val) and
-                    PMV_MIN <= pmv_val <= PMV_MAX and
-                    PPD_MIN <= ppd_val <= PPD_MAX):
-                    # Valid result - use calculated values
+                        -10.0 <= pmv_val <= 10.0 and 0.0 <= ppd_val <= 100.0):
                     pmv_field[i] = pmv_val
                     ppd_field[i] = ppd_val
                 else:
-                    # Result is finite but outside theoretical range OR infinite - use sentinel
-                    pmv_field[i] = INVALID_VALUE
-                    ppd_field[i] = INVALID_VALUE
                     invalid_count += 1
             except (OverflowError, ValueError):
-                # Handle numerical errors - use sentinel value
-                pmv_field[i] = INVALID_VALUE
-                ppd_field[i] = INVALID_VALUE
                 invalid_count += 1
         else:
-            # Input conditions out of valid range - use sentinel value
-            pmv_field[i] = INVALID_VALUE
-            ppd_field[i] = INVALID_VALUE
             invalid_count += 1
-    
-    # Statistics
-    logger.info("")
-    logger.info("Results:")
-    valid_cells = n_cells - invalid_count
-    valid_pct = (valid_cells / n_cells) * 100
-    logger.info(f"  Valid cells for PMV/PPD: {valid_cells}/{n_cells} ({valid_pct:.1f}%)")
-    logger.info(f"  Invalid/out-of-range cells (marked as {INVALID_VALUE}): {invalid_count} ({(invalid_count/n_cells)*100:.1f}%)")
-    
-    # Only calculate stats on valid values (exclude INVALID_VALUE sentinel)
+
+    # --- Statistics ---
     valid_pmv = pmv_field[pmv_field != INVALID_VALUE]
     valid_ppd = ppd_field[ppd_field != INVALID_VALUE]
-    
+    valid_pct = 100.0 * len(valid_pmv) / n_cells
+    logger.info(f"\nResults:")
+    logger.info(f"  Valid cells: {len(valid_pmv)}/{n_cells} ({valid_pct:.1f}%)")
+    logger.info(f"  Invalid/out-of-range: {invalid_count}")
     if len(valid_pmv) > 0:
-        logger.info(f"  PMV: min={valid_pmv.min():.2f}, max={valid_pmv.max():.2f}, mean={valid_pmv.mean():.2f}")
-        logger.info(f"  PPD: min={valid_ppd.min():.1f}%, max={valid_ppd.max():.1f}%, mean={valid_ppd.mean():.1f}%")
-    else:
-        logger.info(f"  PMV: No valid values (all marked as {INVALID_VALUE})")
-        logger.info(f"  PPD: No valid values (all marked as {INVALID_VALUE})")
-    
-    # Comfort classification (ISO 7730)
+        logger.info(f"  PMV: min={valid_pmv.min():.2f}  max={valid_pmv.max():.2f}  mean={valid_pmv.mean():.2f}")
+        logger.info(f"  PPD: min={valid_ppd.min():.1f}%  max={valid_ppd.max():.1f}%  mean={valid_ppd.mean():.1f}%")
     comfortable = np.sum((pmv_field >= -0.5) & (pmv_field <= 0.5))
-    comfortable_pct = 100.0 * comfortable / n_cells
-    logger.info(f"  Cells in comfort zone (-0.5 < PMV < 0.5): {comfortable_pct:.1f}%")
-    
-    # Write PMV field
-    logger.info("\nWriting PMV field...")
-    with case[time_str]['PMV'] as pmv_out:
-        pmv_out.internal_field = pmv_field
-        # Keep existing boundary fields (type: 'calculated')
-        pmv_out.boundary_field = {}
-        for patch_name, patch_data in T_boundary.items():
-            pmv_out.boundary_field[patch_name] = {
-                'type': 'calculated',
-                'value': pmv_field.mean()  # Use mean value for boundaries
-            }
-    
-    # Write PPD field
-    logger.info("Writing PPD field...")
-    with case[time_str]['PPD'] as ppd_out:
-        ppd_out.internal_field = ppd_field
-        # Keep existing boundary fields (type: 'calculated')
-        ppd_out.boundary_field = {}
-        for patch_name, patch_data in T_boundary.items():
-            ppd_out.boundary_field[patch_name] = {
-                'type': 'calculated',
-                'value': ppd_field.mean()  # Use mean value for boundaries
-            }
-    
-    logger.info(f"✓ PMV/PPD calculated for timestep {time_str}")
+    logger.info(f"  Comfort zone (-0.5 < PMV < 0.5): {100.0 * comfortable / n_cells:.1f}%")
 
+    # --- Write PMV field ---
+    pmv_path = os.path.join(time_dir, 'PMV')
+    logger.info(f"\nWriting PMV field to {pmv_path}")
+    write_foam_scalar_field(pmv_path, pmv_field, T_patches, 'PMV')
+
+    # --- Write PPD field ---
+    ppd_path = os.path.join(time_dir, 'PPD')
+    logger.info(f"Writing PPD field to {ppd_path}")
+    write_foam_scalar_field(ppd_path, ppd_field, T_patches, 'PPD')
+
+    logger.info(f"✓ PMV/PPD written for timestep {time_str}")
+
+
+# ---------------------------------------------------------------------------
+# main
+# ---------------------------------------------------------------------------
 
 def main():
-    """
-    Main function to calculate PMV/PPD fields from OpenFOAM case.
-    """
-    # Setup argument parser
-    parser = argparse.ArgumentParser(description='Calculate PMV/PPD thermal comfort fields from OpenFOAM results')
+    parser = argparse.ArgumentParser(
+        description='Calculate PMV/PPD thermal comfort fields from OpenFOAM results'
+    )
     parser.add_argument('case_path', nargs='?', default='.', help='Path to OpenFOAM case directory')
-    parser.add_argument('--all-times', action='store_true', 
-                        help='Calculate PMV/PPD for all timesteps (excluding t=0)')
+    parser.add_argument('--all-times', action='store_true',
+                        help='Process all timesteps (excluding t=0)')
     args = parser.parse_args()
-    
+
     logging.basicConfig(level=logging.INFO, format='%(message)s')
-    logger.info("=" * 70)
-    logger.info("THERMAL COMFORT CALCULATION (PMV/PPD)")
-    logger.info("=" * 70)
-    logger.info(f"Comfort parameters:")
-    logger.info(f"  - Metabolic rate (Met): {MET} met")
-    logger.info(f"  - Clothing insulation (Clo): {CLO} clo")
-    logger.info(f"  - Relative humidity (RH): {RH} %")
-    logger.info(f"  - Mean radiant temp (Tmrt): Equal to air temperature")
-    
-    # Open OpenFOAM case
-    case = FoamCase(args.case_path)
-    
-    # Find all timesteps
-    time_dirs = [d for d in os.listdir(args.case_path) if d.replace('.', '').replace('-', '').isdigit()]
-    if len(time_dirs) == 0:
-        logger.error("\nNo timesteps found in case!")
+    logger.info('=' * 70)
+    logger.info('THERMAL COMFORT CALCULATION (PMV/PPD)')
+    logger.info('=' * 70)
+    logger.info(f'  Met={MET} met  Clo={CLO} clo  RH={RH}%  Tmrt=Tair')
+
+    case_path = args.case_path
+
+    # Find timestep directories (numeric names, skip 0 for all-times mode)
+    all_entries = os.listdir(case_path)
+    time_dirs = [d for d in all_entries if re.match(r'^\d+(\.\d+)?$', d)]
+    if not time_dirs:
+        logger.error('No timestep directories found!')
         sys.exit(1)
-    
-    # Sort timesteps
-    time_values = [float(t) for t in time_dirs]
-    time_values.sort()
-    
-    # Determine which timesteps to process
+
+    time_values = sorted(float(t) for t in time_dirs)
+
     if args.all_times:
-        # Process all timesteps except 0
         times_to_process = [t for t in time_values if t > 0]
-        logger.info(f"\nMode: Processing ALL timesteps (excluding t=0)")
-        logger.info(f"Timesteps to process: {times_to_process}")
+        logger.info(f'\nMode: ALL timesteps (excluding t=0): {times_to_process}')
     else:
-        # Process only latest timestep (backward compatibility)
         times_to_process = [time_values[-1]]
-        logger.info(f"\nMode: Processing ONLY latest timestep")
-        logger.info(f"Latest timestep: {times_to_process[0]}")
-    
-    if len(times_to_process) == 0:
-        logger.error("\nNo timesteps to process!")
+        logger.info(f'\nMode: Latest timestep only: {times_to_process[0]}')
+
+    if not times_to_process:
+        logger.error('No timesteps to process!')
         sys.exit(1)
-    
-    # Process each timestep
+
     for time_val in times_to_process:
-        # Convert to string: use integer format if it's a whole number
-        if time_val.is_integer():
-            time_str = str(int(time_val))
-        else:
-            time_str = str(time_val)
-        
+        time_str = str(int(time_val)) if float(time_val).is_integer() else str(time_val)
         try:
-            process_timestep(case, time_str)
+            process_timestep(case_path, time_str)
         except Exception as e:
-            logger.error(f"\n❌ Error processing timestep {time_str}: {str(e)}")
             import traceback
+            logger.error(f'\n❌ Error at timestep {time_str}: {e}')
             logger.error(traceback.format_exc())
-            # Continue with next timestep instead of failing completely
-            continue
-    
-    logger.info("\n" + "=" * 70)
-    logger.info(f"✅ PMV/PPD calculation completed for {len(times_to_process)} timestep(s)")
-    logger.info("=" * 70)
+
+    logger.info('\n' + '=' * 70)
+    logger.info(f'✅ Done — {len(times_to_process)} timestep(s) processed')
+    logger.info('=' * 70)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
