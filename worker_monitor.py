@@ -6,6 +6,8 @@ import shutil
 import requests
 import subprocess
 import gc
+import traceback
+from datetime import datetime, timezone
 
 sys.path.append('.')
 
@@ -18,6 +20,7 @@ from src.components.solve.cfdfeaservice import (
     STATUS_ERROR,
     STATUS_RUNNING,
     STATUS_PENDING,
+    STATUS_STOPPED,
 )
 
 STATUS_LABELS = {
@@ -25,6 +28,7 @@ STATUS_LABELS = {
     STATUS_PENDING:   'PENDING',
     STATUS_RUNNING:   'RUNNING',
     STATUS_QUEUED:    'QUEUED',
+    STATUS_STOPPED:   'STOPPED',
     STATUS_ERROR:     'ERROR',
 }
 
@@ -49,6 +53,8 @@ def log_startup_configuration():
     
     logger.info("=" * 60)
     logger.info("WORKER_MONITOR STARTING")
+    logger.info("Process manager: supervisord (supervisord.conf)")
+    logger.info("Operate with: supervisorctl start/stop/restart worker_monitor")
     logger.info("=" * 60)
     logger.info(f"Environment: {env_label}")
     logger.info(f"NODE_ENV: {os.getenv('NODE_ENV', 'not set')}")
@@ -157,31 +163,58 @@ def update_simulation(sim_id, data):
 def check_task_status(task_id: str) -> int | None:
     """
     Check simulation status on CFD FEA Service.
-    Returns numeric status code (10/20/30/60) or None on error.
+    Returns numeric status code (10/20/30/40/50/60) or None on error.
+    STATUS_COMPLETED=10, STATUS_PENDING=20, STATUS_RUNNING=30,
+    STATUS_QUEUED=40, STATUS_STOPPED=50, STATUS_ERROR=60
     """
     if not CFDFEASERVICE_API_KEY:
         logger.error("CFDFEASERVICE_API_KEY not set — cannot check task status")
         return None
     try:
         return check_status(task_id, CFDFEASERVICE_API_KEY)
+    except requests.HTTPError as e:
+        code = e.response.status_code if e.response is not None else "?"
+        body = (e.response.text[:500] if e.response is not None else "") or ""
+        logger.error(f"HTTP {code} checking task {task_id}: {body}")
+        return None
     except Exception as e:
         logger.error(f"Failed to check task {task_id}: {e}")
         return None
 
-def download_task_results(task_id: str, case_name: str) -> bool:
+def _download_with_retry(task_id: str, case_name: str, max_attempts: int = 3, wait_seconds: int = 60) -> bool:
     """
-    Download simulation results from CFD FEA Service to the local sim directory.
+    Download simulation results from CFD FEA Service with retry/backoff.
+    Retries up to max_attempts times with wait_seconds between attempts.
+    Only returns False after all attempts are exhausted.
     """
     if not CFDFEASERVICE_API_KEY:
         logger.error("CFDFEASERVICE_API_KEY not set — cannot download results")
         return False
-    try:
-        sim_path = os.path.join(os.getcwd(), "cases", case_name, "sim")
-        logger.info(f"Downloading results for {case_name} (task: {task_id})")
-        return download_results(task_id, sim_path, CFDFEASERVICE_API_KEY)
-    except Exception as e:
-        logger.error(f"Failed to download results for task {task_id}: {e}")
-        return False
+
+    sim_path = os.path.join(os.getcwd(), "cases", case_name, "sim")
+
+    for attempt in range(1, max_attempts + 1):
+        try:
+            logger.info(f"[{case_name}] Download attempt {attempt}/{max_attempts} for task {task_id}")
+            result = download_results(task_id, sim_path, CFDFEASERVICE_API_KEY)
+            if result:
+                logger.info(f"[{case_name}] Download succeeded on attempt {attempt}")
+                return True
+            logger.warning(f"[{case_name}] download_results returned False on attempt {attempt}")
+        except requests.HTTPError as e:
+            code = e.response.status_code if e.response is not None else "?"
+            body = (e.response.text[:500] if e.response is not None else "") or ""
+            logger.error(f"[{case_name}] HTTP {code} on download attempt {attempt}: {body}")
+        except Exception as e:
+            logger.error(f"[{case_name}] Download attempt {attempt} failed: {type(e).__name__}: {e}")
+            logger.error(traceback.format_exc())
+
+        if attempt < max_attempts:
+            logger.info(f"[{case_name}] Waiting {wait_seconds}s before retry {attempt + 1}...")
+            time.sleep(wait_seconds)
+
+    logger.error(f"[{case_name}] All {max_attempts} download attempts failed for task {task_id}")
+    return False
 
 def copy_results_to_public(case_name, sim_id):
     """
@@ -280,10 +313,25 @@ def process_completed_simulation(sim):
             'currentStep': 'Downloading results...'
         })
         
-        # Download results from CFD FEA Service
+        # ── Download results from CFD FEA Service ─────────────────────────────
         logger.info(f"[Sim {sim_id}] Step 1/4: Downloading results from CFD FEA Service...")
-        if task_id and not download_task_results(task_id, case_name):
-            raise Exception("Failed to download results from CFD FEA Service")
+        sim_path = os.path.join(os.getcwd(), "cases", case_name, "sim")
+        try:
+            pre_files = os.listdir(sim_path) if os.path.exists(sim_path) else []
+        except Exception:
+            pre_files = []
+        logger.info(f"[Sim {sim_id}] sim/ contents BEFORE download: {pre_files}")
+
+        t0 = time.time()
+        if task_id and not _download_with_retry(task_id, case_name):
+            raise Exception("Failed to download results from CFD FEA Service after 3 attempts")
+        logger.info(f"[Sim {sim_id}] [download] took {time.time() - t0:.1f}s")
+
+        try:
+            post_files = os.listdir(sim_path) if os.path.exists(sim_path) else []
+        except Exception:
+            post_files = []
+        logger.info(f"[Sim {sim_id}] sim/ contents AFTER download: {post_files}")
         logger.info(f"[Sim {sim_id}] Results downloaded successfully")
         
         # Create results.foam marker for PyVista compatibility
@@ -297,14 +345,14 @@ def process_completed_simulation(sim):
         except Exception as e:
             logger.warning(f"[Sim {sim_id}] Failed to create results.foam: {e}")
         
-        # Step 5: Post-processing in isolated subprocess
+        # ── Step 5: Post-processing in isolated subprocess ────────────────────
         update_simulation(sim_id, {
             'progress': 95,
             'currentStep': 'Generating visualizations...'
         })
         
         logger.info(f"[Sim {sim_id}] Step 3/4: Running post-processing in isolated subprocess...")
-        
+        t0 = time.time()
         try:
             env = os.environ.copy()
             env['PYTHONIOENCODING'] = 'utf-8'
@@ -326,15 +374,17 @@ def process_completed_simulation(sim):
             if result.stderr:
                 logger.warning(f"[Sim {sim_id}] Post-processing stderr:\n{result.stderr}")
             
-            logger.info(f"[Sim {sim_id}] Post-processing subprocess completed successfully")
+            logger.info(f"[Sim {sim_id}] [step05] took {time.time() - t0:.1f}s — completed successfully")
             
         except subprocess.TimeoutExpired as e:
-            logger.error(f"[Sim {sim_id}] Post-processing timeout after 10 minutes")
+            logger.error(f"[Sim {sim_id}] [step05] took {time.time() - t0:.1f}s — TIMEOUT after 10 minutes")
+            logger.error(traceback.format_exc())
             raise Exception(f"Post-processing timeout: {str(e)}")
         except subprocess.CalledProcessError as e:
-            logger.error(f"[Sim {sim_id}] Post-processing failed with exit code {e.returncode}")
+            logger.error(f"[Sim {sim_id}] [step05] took {time.time() - t0:.1f}s — FAILED (exit code {e.returncode})")
             logger.error(f"[Sim {sim_id}] Subprocess stdout: {e.stdout}")
             logger.error(f"[Sim {sim_id}] Subprocess stderr: {e.stderr}")
+            logger.error(traceback.format_exc())
             
             if e.returncode == -9 or e.returncode == 137:
                 error_msg = (
@@ -347,14 +397,20 @@ def process_completed_simulation(sim):
             else:
                 raise Exception(f"Post-processing failed: {e.stderr}")
         
-        # Copy to public folder
+        # ── Copy to public folder ──────────────────────────────────────────────
         logger.info(f"[Sim {sim_id}] Step 4/4: Copying VTK files to public folder...")
-        result_paths = copy_results_to_public(case_name, sim_id)
+        t0 = time.time()
+        try:
+            result_paths = copy_results_to_public(case_name, sim_id)
+        except Exception as e:
+            logger.error(f"[Sim {sim_id}] [copy] took {time.time() - t0:.1f}s — FAILED: {type(e).__name__}: {e}")
+            logger.error(traceback.format_exc())
+            raise
         
         if not result_paths:
             raise Exception("Failed to copy results")
         
-        logger.info(f"[Sim {sim_id}] VTK files copied ({len(result_paths.get('vtk', []))} files)")
+        logger.info(f"[Sim {sim_id}] [copy] took {time.time() - t0:.1f}s — {len(result_paths.get('vtk', []))} VTK files copied")
         
         # Upload to Cloudflare R2
         is_production = os.getenv('NODE_ENV') == 'production'
@@ -433,7 +489,8 @@ def process_completed_simulation(sim):
         return True
         
     except Exception as e:
-        logger.error(f"ERROR PROCESSING SIMULATION #{sim_id}: {e}")
+        logger.error(f"ERROR PROCESSING SIMULATION #{sim_id}: {type(e).__name__}: {e}")
+        logger.error(traceback.format_exc())
         logger.error(f"=" * 60)
         update_simulation(sim_id, {
             'status': 'failed',
@@ -517,6 +574,8 @@ def main():
             sims = get_cloud_execution_sims()
             logger.info(f"Found {len(sims)} simulation(s) in 'cloud_execution' state")
             
+            STALE_TIMEOUT_HOURS = 4
+            STALE_TIMEOUT_SECONDS = STALE_TIMEOUT_HOURS * 3600
             processed_count = 0
             
             for sim in sims:
@@ -525,18 +584,42 @@ def main():
                     logger.info(f"MEMORY PROTECTION: Deferring {remaining} remaining simulation(s) to next cycle")
                     break
                 
+                sim_id = sim.get('id')
                 task_id = sim.get('taskId')
                 if not task_id:
-                    logger.warning(f"Sim {sim.get('id')} has no taskId, skipping")
+                    logger.warning(f"Sim {sim_id} has no taskId, skipping")
                     continue
                 
-                logger.info(f"Checking CFD FEA Service status for sim {sim.get('id')} (task: {task_id})")
+                logger.info(f"Checking CFD FEA Service status for sim {sim_id} (task: {task_id})")
                 status = check_task_status(task_id)
                 label = STATUS_LABELS.get(status, 'UNKNOWN')
-                logger.info(f"Sim {sim.get('id')} status: {status} ({label})")
-                
+                logger.info(f"Sim {sim_id} cloud status: {status} ({label})")
+
+                # ── Stale sim timeout ──────────────────────────────────────────
+                if status in (STATUS_STOPPED, STATUS_ERROR, None):
+                    updated_at_str = sim.get('updatedAt') or sim.get('updated_at')
+                    if updated_at_str:
+                        try:
+                            # Handle both "Z" suffix and "+00:00" offset formats
+                            updated_at_str_clean = updated_at_str.replace('Z', '+00:00')
+                            updated_at = datetime.fromisoformat(updated_at_str_clean)
+                            age_seconds = (datetime.now(timezone.utc) - updated_at).total_seconds()
+                            if age_seconds > STALE_TIMEOUT_SECONDS:
+                                logger.error(
+                                    f"Sim {sim_id} stuck in cloud_execution for "
+                                    f"{age_seconds/3600:.1f}h (>{STALE_TIMEOUT_HOURS}h) with "
+                                    f"cloud status={status} ({label}) — marking as failed"
+                                )
+                                update_simulation(sim_id, {
+                                    'status': 'failed',
+                                    'errorMessage': f'Timeout: simulation stuck in cloud_execution for >{STALE_TIMEOUT_HOURS}h'
+                                })
+                                continue
+                        except Exception as parse_err:
+                            logger.warning(f"Sim {sim_id} could not parse updatedAt '{updated_at_str}': {parse_err}")
+
                 if status == STATUS_COMPLETED:
-                    logger.info(f"Sim {sim.get('id')} completed — starting post-processing")
+                    logger.info(f"Sim {sim_id} completed on cloud — starting post-processing")
                     try:
                         success = process_completed_simulation(sim)
                         if success:
@@ -545,22 +628,28 @@ def main():
                     finally:
                         logger.info(f"Forcing garbage collection...")
                         gc.collect()
-                        logger.info(f"Memory cleanup completed after sim {sim.get('id')}")
+                        logger.info(f"Memory cleanup completed after sim {sim_id}")
                     
+                elif status == STATUS_STOPPED:
+                    logger.error(f"Sim {sim_id} was STOPPED on CFD FEA Service (status {STATUS_STOPPED})")
+                    update_simulation(sim_id, {
+                        'status': 'failed',
+                        'errorMessage': 'Cloud simulation was stopped (STOPPED)'
+                    })
                 elif status == STATUS_ERROR:
-                    logger.error(f"Sim {sim.get('id')} FAILED on CFD FEA Service (status {STATUS_ERROR})")
-                    update_simulation(sim['id'], {
+                    logger.error(f"Sim {sim_id} FAILED on CFD FEA Service (status {STATUS_ERROR})")
+                    update_simulation(sim_id, {
                         'status': 'failed',
                         'errorMessage': f'CFD FEA Service simulation failed (status {STATUS_ERROR})'
                     })
                 elif status == STATUS_RUNNING:
-                    logger.info(f"Sim {sim.get('id')} still running on CFD FEA Service")
+                    logger.info(f"Sim {sim_id} still running on CFD FEA Service")
                 elif status == STATUS_QUEUED:
-                    logger.info(f"Sim {sim.get('id')} queued/preparing on CFD FEA Service (status {STATUS_QUEUED})")
+                    logger.info(f"Sim {sim_id} queued/preparing on CFD FEA Service (status {STATUS_QUEUED})")
                 elif status == STATUS_PENDING:
-                    logger.info(f"Sim {sim.get('id')} pending on CFD FEA Service")
+                    logger.info(f"Sim {sim_id} pending on CFD FEA Service")
                 elif status is None:
-                    logger.warning(f"Sim {sim.get('id')} — could not retrieve status (API key missing or request failed)")
+                    logger.warning(f"Sim {sim_id} — could not retrieve status (API key missing or request failed)")
             
             # Recovery: orphaned post_processing sims
             if processed_count == 0:
@@ -568,16 +657,31 @@ def main():
                 if post_sims:
                     logger.warning(f"RECOVERY MODE: Found {len(post_sims)} orphaned simulation(s) in 'post_processing' state")
                     sim = post_sims[0]
-                    logger.info(f"Attempting to recover orphaned sim {sim['id']}")
-                    
-                    try:
-                        success = process_completed_simulation(sim)
-                        if success:
-                            processed_in_cycle = True
-                    finally:
-                        logger.info(f"Forcing garbage collection after recovery...")
-                        gc.collect()
-                        logger.info(f"Memory cleanup completed after recovering sim {sim['id']}")
+                    sim_id = sim['id']
+                    task_id = sim.get('taskId')
+                    logger.info(f"Attempting to recover orphaned sim {sim_id} (task: {task_id})")
+
+                    # Verify cloud task is truly COMPLETED before attempting recovery
+                    if task_id:
+                        cloud_status = check_task_status(task_id)
+                        cloud_label = STATUS_LABELS.get(cloud_status, 'UNKNOWN')
+                        if cloud_status != STATUS_COMPLETED:
+                            logger.warning(
+                                f"RECOVERY MODE: sim {sim_id} cloud task {task_id} is {cloud_status} ({cloud_label}), "
+                                f"not COMPLETED — skipping recovery to avoid incorrect processing"
+                            )
+                        else:
+                            logger.info(f"RECOVERY MODE: sim {sim_id} cloud task is COMPLETED — proceeding")
+                            try:
+                                success = process_completed_simulation(sim)
+                                if success:
+                                    processed_in_cycle = True
+                            finally:
+                                logger.info(f"Forcing garbage collection after recovery...")
+                                gc.collect()
+                                logger.info(f"Memory cleanup completed after recovering sim {sim_id}")
+                    else:
+                        logger.warning(f"RECOVERY MODE: sim {sim_id} has no taskId — cannot verify cloud status, skipping")
             
             if not processed_in_cycle:
                 logger.info(f"No simulations processed this cycle")

@@ -82,6 +82,8 @@ def log_startup_configuration():
 
     logger.info("=" * 60)
     logger.info("WORKER_SUBMIT STARTING")
+    logger.info("Process manager: supervisord (supervisord.conf)")
+    logger.info("Operate with: supervisorctl start/stop/restart worker_submit")
     logger.info("=" * 60)
     logger.info(f"Environment: {env_label}")
     logger.info(f"NODE_ENV: {os.getenv('NODE_ENV', 'not set')}")
