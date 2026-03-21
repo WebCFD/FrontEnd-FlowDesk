@@ -369,6 +369,7 @@ def main():
         logger.error('No timesteps to process!')
         sys.exit(1)
 
+    failed = []
     for time_val in times_to_process:
         time_str = str(int(time_val)) if float(time_val).is_integer() else str(time_val)
         try:
@@ -377,8 +378,13 @@ def main():
             import traceback
             logger.error(f'\n❌ Error at timestep {time_str}: {e}')
             logger.error(traceback.format_exc())
+            failed.append(time_str)
 
     logger.info('\n' + '=' * 70)
+    if failed:
+        logger.error(f'❌ Failed timesteps: {failed}')
+        logger.info('=' * 70)
+        sys.exit(1)
     logger.info(f'✅ Done — {len(times_to_process)} timestep(s) processed')
     logger.info('=' * 70)
 

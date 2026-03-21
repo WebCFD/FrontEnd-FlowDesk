@@ -96,14 +96,17 @@ def run_indoor_spaces(case_name: str, sim_path: str, post_path: str) -> None:
         encoding='utf-8'
     )
 
-    if result.returncode != 0:
-        logger.error(f"   calculate_comfort.py failed with exit code {result.returncode}")
-        logger.error(f"   STDERR: {result.stderr}")
-        raise RuntimeError(f"PMV/PPD calculation failed: {result.stderr}")
-
     if result.stdout:
         for line in result.stdout.strip().split('\n'):
             logger.info(f"   {line}")
+
+    if result.stderr:
+        for line in result.stderr.strip().split('\n'):
+            logger.warning(f"   [stderr] {line}")
+
+    if result.returncode != 0:
+        logger.error(f"   calculate_comfort.py failed with exit code {result.returncode}")
+        raise RuntimeError(f"PMV/PPD calculation failed (exit {result.returncode}): {result.stderr}")
 
     logger.info("   ✓ PMV/PPD fields calculated successfully")
     
