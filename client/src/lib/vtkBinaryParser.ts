@@ -70,12 +70,17 @@ function parseBinaryVTK(buffer: ArrayBuffer): ParsedPolyData {
     return r.line;
   }
 
-  nextLine();
+  const versionLine = nextLine();
+  if (!versionLine.startsWith('# vtk DataFile Version')) {
+    throw new Error(`Unsupported file format (not a VTK legacy file): ${versionLine.slice(0, 40)}`);
+  }
   nextLine();
   const formatLine = nextLine();
   if (formatLine !== 'BINARY') throw new Error(`Expected BINARY format, got: ${formatLine}`);
   const datasetLine = nextLine();
-  if (!datasetLine.includes('POLYDATA')) throw new Error(`Expected POLYDATA, got: ${datasetLine}`);
+  if (!datasetLine.includes('POLYDATA')) {
+    throw new Error(`Unsupported dataset type (expected POLYDATA): ${datasetLine}`);
+  }
 
   let nPoints = 0;
   let coordType = 'float';

@@ -1926,7 +1926,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const filename = req.params.filename;
 
-      if ((!filename.endsWith('.vtp') && !filename.endsWith('.vtk')) || filename.includes('..') || filename.includes('/')) {
+      if (!/^[A-Za-z0-9._-]+\.(vtk|vtp)$/.test(filename)) {
         return res.status(400).json({ message: 'Invalid filename' });
       }
 
