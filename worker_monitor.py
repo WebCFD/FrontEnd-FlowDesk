@@ -193,6 +193,8 @@ def _download_with_retry(task_id: str, case_name: str, max_attempts: int = 3, wa
 
     sim_path = os.path.join(os.getcwd(), "cases", case_name, "sim")
 
+    last_exc: Exception | None = None
+
     for attempt in range(1, max_attempts + 1):
         try:
             logger.info(f"[{case_name}] Download attempt {attempt}/{max_attempts} for task {task_id}")
@@ -201,11 +203,15 @@ def _download_with_retry(task_id: str, case_name: str, max_attempts: int = 3, wa
                 logger.info(f"[{case_name}] Download succeeded on attempt {attempt}")
                 return True
             logger.warning(f"[{case_name}] download_results returned False on attempt {attempt}")
+            last_exc = None  # not an exception, just a False return
         except requests.HTTPError as e:
+            last_exc = e
             code = e.response.status_code if e.response is not None else "?"
             body = (e.response.text[:500] if e.response is not None else "") or ""
             logger.error(f"[{case_name}] HTTP {code} on download attempt {attempt}: {body}")
+            logger.error(traceback.format_exc())
         except Exception as e:
+            last_exc = e
             logger.error(f"[{case_name}] Download attempt {attempt} failed: {type(e).__name__}: {e}")
             logger.error(traceback.format_exc())
 
@@ -213,7 +219,15 @@ def _download_with_retry(task_id: str, case_name: str, max_attempts: int = 3, wa
             logger.info(f"[{case_name}] Waiting {wait_seconds}s before retry {attempt + 1}...")
             time.sleep(wait_seconds)
 
-    logger.error(f"[{case_name}] All {max_attempts} download attempts failed for task {task_id}")
+    if last_exc is not None:
+        logger.error(
+            f"[{case_name}] All {max_attempts} download attempts failed for task {task_id}. "
+            f"Last error: {type(last_exc).__name__}: {last_exc}"
+        )
+    else:
+        logger.error(
+            f"[{case_name}] All {max_attempts} download attempts returned False for task {task_id}"
+        )
     return False
 
 def copy_results_to_public(case_name, sim_id):

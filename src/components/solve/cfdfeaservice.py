@@ -231,6 +231,7 @@ def check_status(task_id: str, api_key: str) -> int:
             STATUS_PENDING   = 20
             STATUS_RUNNING   = 30
             STATUS_QUEUED    = 40
+            STATUS_STOPPED   = 50
             STATUS_ERROR     = 60
 
     Raises:
@@ -423,6 +424,9 @@ def download_results(task_id: str, sim_path: str, api_key: str) -> bool:
         logger.info(f"    * All results downloaded to {sim_path}")
         return True
 
+    except requests.HTTPError:
+        # Re-raise HTTP errors so callers can log status_code + response body
+        raise
     except Exception as e:
         logger.error(f"    * Failed to download results for task {task_id}: {e}")
         return False
