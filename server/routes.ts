@@ -1877,7 +1877,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/simulations/:id/post/vtk-list", async (req, res) => {
     try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
       const simId = parseInt(req.params.id);
+      const simulation = await storage.getSimulation(simId);
+      if (!simulation) {
+        return res.status(404).json({ message: "Simulation not found" });
+      }
+      if (simulation.userId !== req.user.id) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
       const postVtkDir = path.join(process.cwd(), 'cases', `sim_${simId}`, 'post', 'vtk');
 
       if (!fsSync.existsSync(postVtkDir)) {
@@ -1899,7 +1911,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/simulations/:id/post/vtk/:filename", async (req, res) => {
     try {
+      if (!req.isAuthenticated()) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
       const simId = parseInt(req.params.id);
+      const simulation = await storage.getSimulation(simId);
+      if (!simulation) {
+        return res.status(404).json({ message: "Simulation not found" });
+      }
+      if (simulation.userId !== req.user.id) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+
       const filename = req.params.filename;
 
       if ((!filename.endsWith('.vtp') && !filename.endsWith('.vtk')) || filename.includes('..') || filename.includes('/')) {
