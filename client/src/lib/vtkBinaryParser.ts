@@ -21,6 +21,12 @@
  *
  * Not supported: UNSTRUCTURED_GRID, STRUCTURED_GRID, CELL_DATA, ASCII body data.
  * Fallback: ASCII .vtk → vtkPolyDataReader.parseAsText(); .vtp → vtkXMLPolyDataReader
+ *
+ * Why a custom parser?
+ *   vtk.js vtkPolyDataReader only exposes parseAsText() — no binary support exists
+ *   in the JS package. vtkXMLPolyDataReader supports binary but only for VTK XML (.vtp).
+ *   Since PyVista's default save() generates VTK Legacy Binary (BINARY), a custom
+ *   big-endian ArrayBuffer parser is required for browser-side rendering.
  */
 import '@kitware/vtk.js/Rendering/Profiles/Geometry';
 // @ts-ignore
