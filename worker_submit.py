@@ -154,11 +154,15 @@ def get_pending_simulations():
 
 def update_simulation(sim_id: int, data: Dict[str, Any]):
     try:
-        requests.patch(
+        resp = requests.patch(
             f"{API_BASE}/api/external/simulations/{sim_id}/status",
             json=data,
             headers={'x-api-key': API_KEY}
         )
+        if not resp.ok:
+            logger.warning(
+                f"update_simulation({sim_id}) got HTTP {resp.status_code}: {resp.text[:300]}"
+            )
     except Exception as e:
         logger.error(f"Failed to update sim {sim_id}: {e}")
 
@@ -365,10 +369,13 @@ def process_simulation(sim: Dict[str, Any]):
 
         else:
             # Cloud mode: submit async, worker_monitor handles steps 5+
+            # NOTE: do NOT call update_simulation with status='cloud_execution' here.
+            # The state machine only allows each transition once. The single PATCH
+            # below (after we have the task_id) makes the cfd_setup→cloud_execution
+            # transition AND saves the taskId atomically.
             logger.info(f"[Sim {sim_id}] Step 4/5: Submitting to cloud...")
             update_simulation(sim_id, {
-                'status': 'cloud_execution',
-                'progress': 75,
+                'progress': 70,
                 'currentStep': 'Submitting to cloud...'
             })
             try:
@@ -387,6 +394,7 @@ def process_simulation(sim: Dict[str, Any]):
                 _debug_stop(sim_id, 4)
                 return
 
+            # Single transition: cfd_setup → cloud_execution WITH taskId in same call
             update_simulation(sim_id, {
                 'status': 'cloud_execution',
                 'taskId': str(task_id) if task_id else None,
