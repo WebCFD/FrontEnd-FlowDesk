@@ -13,7 +13,9 @@ import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
 import vtkMapper from '@kitware/vtk.js/Rendering/Core/Mapper';
 import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 import vtkColorTransferFunction from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction';
-// @ts-ignore - vtk.js XMLPolyDataReader lacks type definitions
+// @ts-ignore - no bundled type declarations for legacy PolyDataReader
+import vtkPolyDataReader from '@kitware/vtk.js/IO/Legacy/PolyDataReader';
+// @ts-ignore - no bundled type declarations for XML PolyDataReader
 import vtkXMLPolyDataReader from '@kitware/vtk.js/IO/XML/XMLPolyDataReader';
 
 interface VTKViewerProps {
@@ -120,7 +122,7 @@ function buildColormap(
   lut.updateRange();
 }
 
-function getScalarArray(polyData: ReturnType<typeof vtkXMLPolyDataReader.newInstance>, field: FieldName): ScalarResult | null {
+function getScalarArray(polyData: ReturnType<typeof vtkPolyDataReader.newInstance>, field: FieldName): ScalarResult | null {
   const pointData = polyData.getPointData();
 
   if (FIELD_CONFIG[field].isVector) {
@@ -165,6 +167,23 @@ function getScalarArray(polyData: ReturnType<typeof vtkXMLPolyDataReader.newInst
   }
   if (!isFinite(mn) || !isFinite(mx)) return null;
   return { array: data, min: mn, max: mx };
+}
+
+async function parsePolyData(url: string, filename: string) {
+  const resp = await fetch(url);
+  if (!resp.ok) throw new Error(`Plane not available: ${filename}`);
+
+  if (filename.endsWith('.vtp')) {
+    const buffer = await resp.arrayBuffer();
+    const reader = vtkXMLPolyDataReader.newInstance();
+    reader.parseAsArrayBuffer(buffer);
+    return reader.getOutputData(0);
+  } else {
+    const text = await resp.text();
+    const reader = vtkPolyDataReader.newInstance();
+    reader.parseAsText(text);
+    return reader.getOutputData(0);
+  }
 }
 
 function ColormapBar({ field, min, max }: { field: FieldName; min: number; max: number }) {
@@ -252,21 +271,21 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     };
   }, [hasFiles]);
 
-  const loadVtp = useCallback(async () => {
+  const loadPlane = useCallback(async () => {
     if (!vtkRef.current || !lutRef.current) return;
     const { rw, renderer } = vtkRef.current;
     const lut = lutRef.current;
 
     const z = HEIGHT_CONFIG[height].z;
     const base = `${category}_plane_${height}_${z}m`;
-    const vtpFilename = `${base}.vtp`;
-    const vtk2Filename = `${base}.vtk`;
+    const vtpName = `${base}.vtp`;
+    const vtkName = `${base}.vtk`;
 
-    const filename = availableFiles.has(vtpFilename)
-      ? vtpFilename
-      : availableFiles.has(vtk2Filename)
-      ? vtk2Filename
-      : vtpFilename;
+    const filename = availableFiles.has(vtpName)
+      ? vtpName
+      : availableFiles.has(vtkName)
+      ? vtkName
+      : vtkName;
 
     const url = `/api/simulations/${simulationId}/post/vtk/${filename}`;
 
@@ -274,23 +293,15 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     setError(null);
 
     try {
-      const resp = await fetch(url);
-      if (!resp.ok) {
-        throw new Error(`Plane not available: ${base} (${filename} not found)`);
-      }
-      const buffer = await resp.arrayBuffer();
-
-      const reader = vtkXMLPolyDataReader.newInstance();
-      reader.parseAsArrayBuffer(buffer);
-      const polyData = reader.getOutputData(0);
+      const polyData = await parsePolyData(url, filename);
 
       if (!polyData || polyData.getNumberOfPoints() === 0) {
-        throw new Error('Empty mesh — no geometry data in file');
+        throw new Error('Empty geometry — no points in this plane file');
       }
 
       const scalarInfo = getScalarArray(polyData, field);
       if (!scalarInfo) {
-        throw new Error(`Field "${field}" not available in this plane`);
+        throw new Error(`Field "${field}" not available in ${filename}`);
       }
 
       const { array, min, max } = scalarInfo;
@@ -328,7 +339,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       renderer.resetCamera();
       rw.render();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to load VTP file';
+      const message = err instanceof Error ? err.message : 'Failed to load plane file';
       setError(message);
     } finally {
       setLoading(false);
@@ -337,9 +348,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
   useEffect(() => {
     if (hasFiles && vtkRef.current) {
-      loadVtp();
+      loadPlane();
     }
-  }, [loadVtp, hasFiles]);
+  }, [loadPlane, hasFiles]);
 
   const handleCategoryChange = (cat: Category) => {
     const catCfg = CATEGORIES[cat];
@@ -363,7 +374,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       <div className={`flex items-center justify-center h-64 bg-muted/20 rounded-lg ${className ?? ''}`}>
         <div className="text-center">
           <AlertCircle className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">No VTP results available for this simulation.</p>
+          <p className="text-sm text-muted-foreground">No results available for this simulation.</p>
           <p className="text-xs text-muted-foreground mt-1">Post-processing must complete first.</p>
         </div>
       </div>
@@ -426,7 +437,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         <Button
           variant="ghost"
           size="sm"
-          onClick={loadVtp}
+          onClick={loadPlane}
           className="ml-auto h-7 px-2"
           disabled={loading}
         >

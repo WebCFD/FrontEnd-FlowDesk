@@ -706,9 +706,9 @@ def analyze_ventilation_planes(sim_path, post_path):
         results[name] = metrics
         
         # Save VTK slice
-        vtk_path = os.path.join(vtk_dir, f'ventilation_plane_{name}_{z_height}m.vtp')
-        slice_mesh.save(vtk_path)
-        logger.info(f"       Saved VTP: {os.path.basename(vtk_path)}")
+        vtk_path = os.path.join(vtk_dir, f'ventilation_plane_{name}_{z_height}m.vtk')
+        slice_mesh.save(vtk_path, binary=False)
+        logger.info(f"       Saved VTK: {os.path.basename(vtk_path)}")
         
         # Render CO2 image if available
         if has_co2:

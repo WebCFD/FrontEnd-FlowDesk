@@ -307,10 +307,10 @@ def analyze_comfort_planes(sim_path, post_path):
         
         results[name] = metrics
         
-        # Save VTP slice (VTK XML PolyData for browser compatibility)
-        vtk_path = os.path.join(vtk_dir, f'comfort_plane_{name}_{z_height}m.vtp')
-        slice_mesh.save(vtk_path)
-        logger.info(f"       Saved VTP: {os.path.basename(vtk_path)}")
+        # Save VTK slice as ASCII for browser viewer compatibility
+        vtk_path = os.path.join(vtk_dir, f'comfort_plane_{name}_{z_height}m.vtk')
+        slice_mesh.save(vtk_path, binary=False)
+        logger.info(f"       Saved VTK: {os.path.basename(vtk_path)}")
         
         # Render PMV image
         render_isometric_png(slice_mesh, name, z_height, post_path, variable='PMV')
@@ -1380,10 +1380,10 @@ def analyze_flow_planes(sim_path, post_path):
         
         results[name] = metrics
         
-        # Save VTP slice (VTK XML PolyData for browser compatibility)
-        vtk_path = os.path.join(vtk_dir, f'flow_plane_{name}_{z_height}m.vtp')
-        slice_mesh.save(vtk_path)
-        logger.info(f"       Saved VTP: {os.path.basename(vtk_path)}")
+        # Save VTK slice as ASCII for browser viewer compatibility
+        vtk_path = os.path.join(vtk_dir, f'flow_plane_{name}_{z_height}m.vtk')
+        slice_mesh.save(vtk_path, binary=False)
+        logger.info(f"       Saved VTK: {os.path.basename(vtk_path)}")
         
         # Render T image (with boundary patches)
         render_flow_png(slice_mesh, name, z_height, post_path, variable='T', surfaces_mesh=boundary_patches)
