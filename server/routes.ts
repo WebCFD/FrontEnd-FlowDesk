@@ -1885,7 +1885,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const files = fsSync.readdirSync(postVtkDir)
-        .filter(f => f.endsWith('.vtk'))
+        .filter(f => f.endsWith('.vtp') || f.endsWith('.vtk'))
         .map(filename => {
           const stats = fsSync.statSync(path.join(postVtkDir, filename));
           return { filename, size: stats.size };
@@ -1902,7 +1902,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const simId = parseInt(req.params.id);
       const filename = req.params.filename;
 
-      if (!filename.endsWith('.vtk') || filename.includes('..') || filename.includes('/')) {
+      if ((!filename.endsWith('.vtp') && !filename.endsWith('.vtk')) || filename.includes('..') || filename.includes('/')) {
         return res.status(400).json({ message: 'Invalid filename' });
       }
 

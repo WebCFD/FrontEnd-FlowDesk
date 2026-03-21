@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Loader2, AlertCircle, Thermometer, Wind, Leaf, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { LucideIcon } from 'lucide-react';
 
 import '@kitware/vtk.js/Rendering/Profiles/Geometry';
 import vtkRenderWindow from '@kitware/vtk.js/Rendering/Core/RenderWindow';
@@ -13,8 +13,8 @@ import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
 import vtkMapper from '@kitware/vtk.js/Rendering/Core/Mapper';
 import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 import vtkColorTransferFunction from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction';
-// @ts-ignore
-import vtkPolyDataReader from '@kitware/vtk.js/IO/Legacy/PolyDataReader';
+// @ts-ignore - vtk.js XMLPolyDataReader lacks type definitions
+import vtkXMLPolyDataReader from '@kitware/vtk.js/IO/XML/XMLPolyDataReader';
 
 interface VTKViewerProps {
   simulationId: number;
@@ -25,7 +25,40 @@ type Category = 'comfort' | 'flow' | 'ventilation';
 type HeightName = 'ankle' | 'seated' | 'standing' | 'head';
 type FieldName = 'PMV' | 'PPD' | 'T' | 'U' | 'CO2';
 
-const CATEGORIES: Record<Category, { label: string; icon: any; heights: HeightName[]; fields: FieldName[] }> = {
+interface CategoryConfig {
+  label: string;
+  icon: LucideIcon;
+  heights: HeightName[];
+  fields: FieldName[];
+}
+
+interface HeightConfig {
+  label: string;
+  z: number;
+}
+
+interface FieldConfig {
+  label: string;
+  unit: string;
+  isVector?: boolean;
+  kelvinOffset?: boolean;
+  sentinel?: number;
+}
+
+interface ScalarResult {
+  array: Float32Array;
+  min: number;
+  max: number;
+}
+
+interface VtkContext {
+  rw: ReturnType<typeof vtkRenderWindow.newInstance>;
+  glRW: ReturnType<typeof vtkOpenGLRenderWindow.newInstance>;
+  renderer: ReturnType<typeof vtkRenderer.newInstance>;
+  interactor: ReturnType<typeof vtkRenderWindowInteractor.newInstance>;
+}
+
+const CATEGORIES: Record<Category, CategoryConfig> = {
   comfort: {
     label: 'Thermal Comfort',
     icon: Thermometer,
@@ -46,14 +79,14 @@ const CATEGORIES: Record<Category, { label: string; icon: any; heights: HeightNa
   },
 };
 
-const HEIGHT_CONFIG: Record<HeightName, { label: string; z: number }> = {
+const HEIGHT_CONFIG: Record<HeightName, HeightConfig> = {
   ankle:    { label: 'Ankle',    z: 0.1 },
   seated:   { label: 'Seated',   z: 0.6 },
   standing: { label: 'Standing', z: 1.1 },
   head:     { label: 'Head',     z: 1.7 },
 };
 
-const FIELD_CONFIG: Record<FieldName, { label: string; unit: string; isVector?: boolean; kelvinOffset?: boolean; sentinel?: number }> = {
+const FIELD_CONFIG: Record<FieldName, FieldConfig> = {
   PMV: { label: 'PMV Index',    unit: '',     sentinel: -100 },
   PPD: { label: 'PPD',          unit: '%' },
   T:   { label: 'Temperature',  unit: '°C',   kelvinOffset: true },
@@ -61,7 +94,12 @@ const FIELD_CONFIG: Record<FieldName, { label: string; unit: string; isVector?: 
   CO2: { label: 'CO2 Level',    unit: '' },
 };
 
-function buildColormap(field: FieldName, lut: any, minVal: number, maxVal: number) {
+function buildColormap(
+  field: FieldName,
+  lut: ReturnType<typeof vtkColorTransferFunction.newInstance>,
+  minVal: number,
+  maxVal: number
+): void {
   lut.removeAllPoints();
   const mid = (minVal + maxVal) / 2;
   if (field === 'PMV' || field === 'PPD') {
@@ -69,13 +107,12 @@ function buildColormap(field: FieldName, lut: any, minVal: number, maxVal: numbe
     lut.addRGBPoint(mid,    0.87, 0.87, 0.87);
     lut.addRGBPoint(maxVal, 0.71, 0.12, 0.15);
   } else {
-    const steps = 7;
-    const colors = [
+    const colors: [number, number, number][] = [
       [0, 0, 0.5], [0, 0, 1], [0, 1, 1],
       [0, 1, 0], [1, 1, 0], [1, 0, 0], [0.5, 0, 0],
-    ] as [number, number, number][];
+    ];
     colors.forEach(([r, g, b], i) => {
-      const t = minVal + (i / (steps - 1)) * (maxVal - minVal);
+      const t = minVal + (i / (colors.length - 1)) * (maxVal - minVal);
       lut.addRGBPoint(t, r, g, b);
     });
   }
@@ -83,28 +120,29 @@ function buildColormap(field: FieldName, lut: any, minVal: number, maxVal: numbe
   lut.updateRange();
 }
 
-function getScalarArray(polyData: any, field: FieldName): { array: Float32Array; min: number; max: number } | null {
+function getScalarArray(polyData: ReturnType<typeof vtkXMLPolyDataReader.newInstance>, field: FieldName): ScalarResult | null {
   const pointData = polyData.getPointData();
 
   if (FIELD_CONFIG[field].isVector) {
     const raw = pointData.getArrayByName('U');
     if (!raw) return null;
-    const data = raw.getData();
-    const n = raw.getNumberOfTuples();
+    const data: Float32Array = raw.getData();
+    const n: number = raw.getNumberOfTuples();
     const mag = new Float32Array(n);
+    let mn = Infinity, mx = -Infinity;
     for (let i = 0; i < n; i++) {
       const vx = data[i * 3], vy = data[i * 3 + 1], vz = data[i * 3 + 2];
       mag[i] = Math.sqrt(vx * vx + vy * vy + vz * vz);
+      if (mag[i] < mn) mn = mag[i];
+      if (mag[i] > mx) mx = mag[i];
     }
-    let mn = Infinity, mx = -Infinity;
-    for (let i = 0; i < n; i++) { if (mag[i] < mn) mn = mag[i]; if (mag[i] > mx) mx = mag[i]; }
     return { array: mag, min: mn, max: mx };
   }
 
   if (FIELD_CONFIG[field].kelvinOffset) {
     const raw = pointData.getArrayByName('T');
     if (!raw) return null;
-    const data = raw.getData();
+    const data: Float32Array = raw.getData();
     const celsius = new Float32Array(data.length);
     let mn = Infinity, mx = -Infinity;
     for (let i = 0; i < data.length; i++) {
@@ -117,7 +155,7 @@ function getScalarArray(polyData: any, field: FieldName): { array: Float32Array;
 
   const raw = pointData.getArrayByName(field);
   if (!raw) return null;
-  const data = raw.getData();
+  const data: Float32Array = raw.getData();
   const sentinel = FIELD_CONFIG[field].sentinel;
   let mn = Infinity, mx = -Infinity;
   for (let i = 0; i < data.length; i++) {
@@ -131,7 +169,7 @@ function getScalarArray(polyData: any, field: FieldName): { array: Float32Array;
 
 function ColormapBar({ field, min, max }: { field: FieldName; min: number; max: number }) {
   const unit = FIELD_CONFIG[field].unit;
-  const fmt = (v: number) => Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(1);
+  const fmt = (v: number) => (Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(1));
   const isCoolwarm = field === 'PMV' || field === 'PPD';
   const gradient = isCoolwarm
     ? 'linear-gradient(to top, #3b4fbf, #dddddd, #b61e26)'
@@ -142,12 +180,13 @@ function ColormapBar({ field, min, max }: { field: FieldName; min: number; max: 
       <span className="text-xs font-semibold text-white drop-shadow bg-black/40 px-1 rounded">
         {FIELD_CONFIG[field].label}
       </span>
-      <span className="text-xs text-white drop-shadow bg-black/40 px-1 rounded">{fmt(max)}{unit}</span>
-      <div
-        className="w-4 rounded"
-        style={{ height: 120, background: gradient }}
-      />
-      <span className="text-xs text-white drop-shadow bg-black/40 px-1 rounded">{fmt(min)}{unit}</span>
+      <span className="text-xs text-white drop-shadow bg-black/40 px-1 rounded">
+        {fmt(max)}{unit}
+      </span>
+      <div className="w-4 rounded" style={{ height: 120, background: gradient }} />
+      <span className="text-xs text-white drop-shadow bg-black/40 px-1 rounded">
+        {fmt(min)}{unit}
+      </span>
     </div>
   );
 }
@@ -162,19 +201,21 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [dataRange, setDataRange] = useState<[number, number]>([0, 1]);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const vtkRef = useRef<{ rw: any; glRW: any; renderer: any; interactor: any } | null>(null);
-  const actorRef = useRef<any>(null);
-  const lutRef = useRef<any>(null);
+  const vtkRef = useRef<VtkContext | null>(null);
+  const actorRef = useRef<ReturnType<typeof vtkActor.newInstance> | null>(null);
+  const lutRef = useRef<ReturnType<typeof vtkColorTransferFunction.newInstance> | null>(null);
 
   useEffect(() => {
     fetch(`/api/simulations/${simulationId}/post/vtk-list`)
       .then(r => r.json())
-      .then(data => setHasFiles(data.files && data.files.length > 0))
+      .then((data: { files: { filename: string; size: number }[] }) =>
+        setHasFiles(data.files && data.files.length > 0)
+      )
       .catch(() => setHasFiles(false));
   }, [simulationId]);
 
   useEffect(() => {
-    if (!containerRef.current || hasFiles === null || !hasFiles) return;
+    if (!containerRef.current || !hasFiles) return;
 
     const container = containerRef.current;
 
@@ -194,8 +235,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     interactor.initialize();
     interactor.bindEvents(container);
 
-    const lut = vtkColorTransferFunction.newInstance();
-    lutRef.current = lut;
+    lutRef.current = vtkColorTransferFunction.newInstance();
     vtkRef.current = { rw, glRW, renderer, interactor };
 
     return () => {
@@ -207,14 +247,15 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       lutRef.current = null;
       actorRef.current = null;
     };
-  }, [hasFiles, simulationId]);
+  }, [hasFiles]);
 
-  const loadVtk = useCallback(async () => {
+  const loadVtp = useCallback(async () => {
     if (!vtkRef.current || !lutRef.current) return;
     const { rw, renderer } = vtkRef.current;
+    const lut = lutRef.current;
 
     const z = HEIGHT_CONFIG[height].z;
-    const filename = `${category}_plane_${height}_${z}m.vtk`;
+    const filename = `${category}_plane_${height}_${z}m.vtp`;
     const url = `/api/simulations/${simulationId}/post/vtk/${filename}`;
 
     setLoading(true);
@@ -222,20 +263,20 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
     try {
       const resp = await fetch(url);
-      if (!resp.ok) throw new Error(`VTK file not found: ${filename}`);
-      const text = await resp.text();
+      if (!resp.ok) throw new Error(`File not found: ${filename}`);
+      const buffer = await resp.arrayBuffer();
 
-      const reader = vtkPolyDataReader.newInstance();
-      reader.parseAsText(text);
+      const reader = vtkXMLPolyDataReader.newInstance();
+      reader.parseAsArrayBuffer(buffer);
       const polyData = reader.getOutputData(0);
 
       if (!polyData || polyData.getNumberOfPoints() === 0) {
-        throw new Error('Empty mesh — no points found in VTK file');
+        throw new Error('Empty mesh — no geometry data in file');
       }
 
       const scalarInfo = getScalarArray(polyData, field);
       if (!scalarInfo) {
-        throw new Error(`Field "${field}" not found in ${filename}`);
+        throw new Error(`Field "${field}" not available in this plane`);
       }
 
       const { array, min, max } = scalarInfo;
@@ -244,17 +285,17 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       setDataRange([safeMin, safeMax]);
 
       const scalarArray = vtkDataArray.newInstance({
-        name: '__active_scalar__',
+        name: '__active__',
         values: array,
         numberOfComponents: 1,
       });
       polyData.getPointData().setScalars(scalarArray);
 
-      buildColormap(field, lutRef.current, safeMin, safeMax);
+      buildColormap(field, lut, safeMin, safeMax);
 
       const mapper = vtkMapper.newInstance();
       mapper.setInputData(polyData);
-      mapper.setLookupTable(lutRef.current);
+      mapper.setLookupTable(lut);
       mapper.setScalarRange(safeMin, safeMax);
       mapper.setColorModeToMapScalars();
       mapper.setScalarModeToUsePointData();
@@ -272,9 +313,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       renderer.addActor(actor);
       renderer.resetCamera();
       rw.render();
-
-    } catch (err: any) {
-      setError(err.message || 'Failed to load VTK');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to load VTP file';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -282,33 +323,33 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
   useEffect(() => {
     if (hasFiles && vtkRef.current) {
-      loadVtk();
+      loadVtp();
     }
-  }, [loadVtk, hasFiles]);
+  }, [loadVtp, hasFiles]);
 
   const handleCategoryChange = (cat: Category) => {
-    setCategory(cat);
     const catCfg = CATEGORIES[cat];
-    const newHeight = catCfg.heights.includes(height) ? height : catCfg.heights[0];
+    const newHeight: HeightName = catCfg.heights.includes(height) ? height : catCfg.heights[0];
     const newField = catCfg.fields[0];
+    setCategory(cat);
     setHeight(newHeight);
     setField(newField);
   };
 
   if (hasFiles === null) {
     return (
-      <div className={`flex items-center justify-center h-64 ${className}`}>
+      <div className={`flex items-center justify-center h-64 ${className ?? ''}`}>
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
-  if (hasFiles === false) {
+  if (!hasFiles) {
     return (
-      <div className={`flex items-center justify-center h-64 bg-muted/20 rounded-lg ${className}`}>
+      <div className={`flex items-center justify-center h-64 bg-muted/20 rounded-lg ${className ?? ''}`}>
         <div className="text-center">
           <AlertCircle className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">No VTK results available for this simulation.</p>
+          <p className="text-sm text-muted-foreground">No VTP results available for this simulation.</p>
           <p className="text-xs text-muted-foreground mt-1">Post-processing must complete first.</p>
         </div>
       </div>
@@ -316,9 +357,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   }
 
   return (
-    <div className={`flex flex-col gap-3 ${className}`}>
+    <div className={`flex flex-col gap-3 ${className ?? ''}`}>
       <div className="flex flex-wrap gap-2 items-center">
-        {(Object.entries(CATEGORIES) as [Category, any][]).map(([cat, cfg]) => {
+        {(Object.entries(CATEGORIES) as [Category, CategoryConfig][]).map(([cat, cfg]) => {
           const Icon = cfg.icon;
           return (
             <button
@@ -353,7 +394,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         </div>
       </div>
 
-      <div className="flex gap-1.5">
+      <div className="flex gap-1.5 flex-wrap">
         {CATEGORIES[category].heights.map(h => (
           <button
             key={h}
@@ -364,10 +405,17 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                 : 'text-muted-foreground hover:bg-muted/60'
             }`}
           >
-            {HEIGHT_CONFIG[h].label} <span className="opacity-60">({HEIGHT_CONFIG[h].z}m)</span>
+            {HEIGHT_CONFIG[h].label}{' '}
+            <span className="opacity-60">({HEIGHT_CONFIG[h].z}m)</span>
           </button>
         ))}
-        <Button variant="ghost" size="sm" onClick={loadVtk} className="ml-auto h-7 px-2" disabled={loading}>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={loadVtp}
+          className="ml-auto h-7 px-2"
+          disabled={loading}
+        >
           <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
         </Button>
       </div>
@@ -379,7 +427,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
           <div className="absolute inset-0 flex items-center justify-center bg-black/40">
             <div className="flex items-center gap-2 text-white">
               <Loader2 className="h-5 w-5 animate-spin" />
-              <span className="text-sm">Loading {HEIGHT_CONFIG[height].label.toLowerCase()} plane…</span>
+              <span className="text-sm">
+                Loading {HEIGHT_CONFIG[height].label.toLowerCase()} plane…
+              </span>
             </div>
           </div>
         )}
