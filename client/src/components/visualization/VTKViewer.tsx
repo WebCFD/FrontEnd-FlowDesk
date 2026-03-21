@@ -265,7 +265,12 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       ? vtpName
       : availableFiles.has(vtkName)
       ? vtkName
-      : vtkName;
+      : null;
+
+    if (!filename) {
+      setError(`No result file found for ${HEIGHT_CONFIG[height].label.toLowerCase()} plane (${z}m).`);
+      return;
+    }
 
     const url = `/api/simulations/${simulationId}/post/vtk/${filename}`;
 
