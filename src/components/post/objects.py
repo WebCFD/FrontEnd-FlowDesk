@@ -307,7 +307,7 @@ def analyze_comfort_planes(sim_path, post_path):
         
         results[name] = metrics
         
-        # Save VTK slice (binary legacy format)
+        # Save VTK slice
         vtk_path = os.path.join(vtk_dir, f'comfort_plane_{name}_{z_height}m.vtk')
         slice_mesh.save(vtk_path)
         logger.info(f"       Saved VTK: {os.path.basename(vtk_path)}")
@@ -1380,7 +1380,7 @@ def analyze_flow_planes(sim_path, post_path):
         
         results[name] = metrics
         
-        # Save VTK slice (binary legacy format)
+        # Save VTK slice
         vtk_path = os.path.join(vtk_dir, f'flow_plane_{name}_{z_height}m.vtk')
         slice_mesh.save(vtk_path)
         logger.info(f"       Saved VTK: {os.path.basename(vtk_path)}")
