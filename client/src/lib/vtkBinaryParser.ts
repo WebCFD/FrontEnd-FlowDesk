@@ -106,19 +106,22 @@ function parseBinaryVTK(buffer: ArrayBuffer): ParsedPolyData {
 
     if (line.startsWith('POLYGONS ')) {
       const parts = line.split(/\s+/);
-      const nCells = parseInt(parts[1]);
+      // VTK 5.1 POLYGONS header: "POLYGONS nOffsets totalConn"
+      // nOffsets = nRealCells + 1 (start-offset per cell + 1 sentinel = totalConn)
+      const nOffsets = parseInt(parts[1]);
       const totalConn = parseInt(parts[2]);
+      const nRealCells = nOffsets - 1;
 
       const offsetLine = nextLine();
       const useInt64 = offsetLine.includes('int64');
 
       let offsets: number[];
       if (useInt64) {
-        offsets = readInt64sAsNumber(view, pos, nCells);
-        pos += nCells * 8;
+        offsets = readInt64sAsNumber(view, pos, nOffsets);
+        pos += nOffsets * 8;
       } else {
-        offsets = readInt32BE(view, pos, nCells);
-        pos += nCells * 4;
+        offsets = readInt32BE(view, pos, nOffsets);
+        pos += nOffsets * 4;
       }
       pos = skipNewline(bytes, pos);
 
@@ -134,14 +137,15 @@ function parseBinaryVTK(buffer: ArrayBuffer): ParsedPolyData {
       }
       pos = skipNewline(bytes, pos);
 
+      // Build vtk.js CellArray: [nVerts, v0, v1, ..., nVerts, v0, v1, ...]
+      // offsets[i] = start of cell i, offsets[i+1] = start of cell i+1 (exclusive end)
       const cellArr: number[] = [];
-      let prevEnd = 0;
-      for (let c = 0; c < nCells; c++) {
-        const end = offsets[c];
-        const count = end - prevEnd;
+      for (let c = 0; c < nRealCells; c++) {
+        const start = offsets[c];
+        const end = offsets[c + 1];
+        const count = end - start;
         cellArr.push(count);
-        for (let j = prevEnd; j < end; j++) cellArr.push(connectivity[j]);
-        prevEnd = end;
+        for (let j = start; j < end; j++) cellArr.push(connectivity[j]);
       }
       polyCellArray = new Uint32Array(cellArr);
       continue;
