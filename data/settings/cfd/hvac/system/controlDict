@@ -10,10 +10,10 @@ application       buoyantBoussinesqSimpleFoam;
 startFrom         latestTime;
 startTime         0;
 stopAt            endTime;
-endTime           300;
+endTime           30;
 deltaT            1;
 writeControl      timeStep;    // Write by iteration number
-writeInterval     300;          // Write at final iteration
+writeInterval     30;           // Write at final iteration
 adjustTimeStep    no;
 purgeWrite        5;            // Keep only 5 most recent timesteps (SPOT restart safe)
 writeFormat       ascii;
@@ -44,7 +44,7 @@ functions
         // NO reiniciar en cada timestep
         resetOnStartUp  false;
         
-        // Escribir CO2 cuando solver escribe (tiempo 300)
+        // Escribir CO2 cuando solver escribe (tiempo 30)
         executeControl  timeStep;
         executeInterval 1;
         writeControl    writeTime;
