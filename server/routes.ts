@@ -1873,6 +1873,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ===== POST-PROCESSING: VTK FILES =====
+
+  app.get("/api/simulations/:id/post/vtk-list", async (req, res) => {
+    try {
+      const simId = parseInt(req.params.id);
+      const postVtkDir = path.join(process.cwd(), 'cases', `sim_${simId}`, 'post', 'vtk');
+
+      if (!fsSync.existsSync(postVtkDir)) {
+        return res.json({ files: [] });
+      }
+
+      const files = fsSync.readdirSync(postVtkDir)
+        .filter(f => f.endsWith('.vtk'))
+        .map(filename => {
+          const stats = fsSync.statSync(path.join(postVtkDir, filename));
+          return { filename, size: stats.size };
+        });
+
+      res.json({ files });
+    } catch (err: any) {
+      res.status(500).json({ message: 'Failed to list VTK files', error: err.message });
+    }
+  });
+
+  app.get("/api/simulations/:id/post/vtk/:filename", async (req, res) => {
+    try {
+      const simId = parseInt(req.params.id);
+      const filename = req.params.filename;
+
+      if (!filename.endsWith('.vtk') || filename.includes('..') || filename.includes('/')) {
+        return res.status(400).json({ message: 'Invalid filename' });
+      }
+
+      const filePath = path.join(process.cwd(), 'cases', `sim_${simId}`, 'post', 'vtk', filename);
+
+      if (!fsSync.existsSync(filePath)) {
+        return res.status(404).json({ message: 'VTK file not found' });
+      }
+
+      res.setHeader('Content-Type', 'application/octet-stream');
+      res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      const stream = fsSync.createReadStream(filePath);
+      stream.pipe(res);
+    } catch (err: any) {
+      res.status(500).json({ message: 'Failed to serve VTK file', error: err.message });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
