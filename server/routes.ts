@@ -12,6 +12,22 @@ import { db } from "./db";
 import { eq } from "drizzle-orm";
 import { ObjectStorageService } from "./objectStorage";
 import { r2Storage, R2NotFoundError } from "./r2Storage";
+import { ConcurrentUpdateError } from "./storage";
+
+// State machine: valid status transitions.
+// Each key is a "from" status; the array lists all allowed "to" statuses.
+// Progress-only updates (no status change) bypass this map entirely.
+export const VALID_TRANSITIONS: Record<string, string[]> = {
+  'pending':          ['processing', 'failed'],
+  'processing':       ['geometry', 'failed'],
+  'geometry':         ['meshing', 'failed'],
+  'meshing':          ['cfd_setup', 'failed'],
+  'cfd_setup':        ['cloud_execution', 'failed'],
+  'cloud_execution':  ['post_processing', 'failed'],
+  'post_processing':  ['completed', 'failed'],
+  'completed':        [],           // terminal — no further transitions allowed
+  'failed':           ['pending'],  // manual retry resets to pending
+};
 // ========== TEMPORARY PASSWORD PROTECTION - TO BE REMOVED SOON ==========
 // Importar crypto para validación de contraseña con hash SHA-256
 // Esta funcionalidad será eliminada próximamente
@@ -1703,21 +1719,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // State machine: valid status transitions.
-  // Each key is a "from" status; the array lists all allowed "to" statuses.
-  // Progress-only updates (no status change) bypass this map entirely.
-  const VALID_TRANSITIONS: Record<string, string[]> = {
-    'pending':          ['processing', 'failed'],
-    'processing':       ['geometry', 'failed'],
-    'geometry':         ['meshing', 'failed'],
-    'meshing':          ['cfd_setup', 'failed'],
-    'cfd_setup':        ['cloud_execution', 'failed'],
-    'cloud_execution':  ['post_processing', 'failed'],
-    'post_processing':  ['completed', 'failed'],
-    'completed':        [],           // terminal — no further transitions allowed
-    'failed':           ['pending'],  // manual retry resets to pending
-  };
-
   // External API for simulation status updates (for external servers)
   app.patch("/api/external/simulations/:id/status", async (req, res) => {
     try {
@@ -1787,7 +1788,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             `[STATE_MACHINE] Rejected transition for sim ${id}: '${current.status}' → '${status}'`
           );
           return res.status(409).json({
-            message: `Invalid transition: '${current.status}' → '${status}'`,
+            message: `Invalid transition: ${current.status} → ${status}`,
             currentStatus: current.status,
             requestedStatus: status,
             allowedTransitions: allowed,
@@ -1797,11 +1798,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`[STATE_MACHINE] sim ${id}: '${current.status}' → '${status}'`);
         try {
           simulation = await storage.updateSimulationStatusAtomic(id, current.status, statusUpdate);
-        } catch (err: any) {
-          if (err.code === 'CONCURRENT_UPDATE') {
+        } catch (err) {
+          if (err instanceof ConcurrentUpdateError) {
             console.warn(`[STATE_MACHINE] Concurrent update for sim ${id}: ${err.message}`);
             return res.status(409).json({
-              message: 'Concurrent update detected: simulation status changed between read and write',
+              message: 'Concurrent update detected',
               detail: err.message,
             });
           }

@@ -4,6 +4,13 @@ import { eq, and, desc, lt } from "drizzle-orm";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 
+export class ConcurrentUpdateError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ConcurrentUpdateError';
+  }
+}
+
 const PostgresSessionStore = connectPg(session);
 
 export interface IStorage {
@@ -160,9 +167,9 @@ export class DatabaseStorage implements IStorage {
       .where(and(eq(simulations.id, id), eq(simulations.status, fromStatus)))
       .returning();
     if (!simulation) {
-      const err: any = new Error(`Concurrent update detected: simulation ${id} was no longer in status '${fromStatus}'`);
-      err.code = 'CONCURRENT_UPDATE';
-      throw err;
+      throw new ConcurrentUpdateError(
+        `Simulation ${id} was no longer in status '${fromStatus}' when the update was attempted`
+      );
     }
     return simulation;
   }
