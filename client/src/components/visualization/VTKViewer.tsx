@@ -87,10 +87,10 @@ const HEIGHT_CONFIG: Record<HeightName, HeightConfig> = {
 
 const FIELD_CONFIG: Record<FieldName, FieldConfig> = {
   PMV: { label: 'PMV Index',   unit: '',    sentinel: -100 },
-  PPD: { label: 'PPD',         unit: '%' },
+  PPD: { label: 'PPD',         unit: '%',   sentinel: -1 },
   T:   { label: 'Temperature', unit: '°C',  kelvinOffset: true },
   U:   { label: 'Velocity',    unit: 'm/s', isVector: true },
-  CO2: { label: 'CO2 Level',   unit: '' },
+  CO2: { label: 'CO2 Level',   unit: '',    sentinel: -1 },
 };
 
 function buildColormap(
