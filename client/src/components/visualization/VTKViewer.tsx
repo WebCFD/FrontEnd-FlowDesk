@@ -160,7 +160,7 @@ function getScalarArray(polyData: PolyDataLike, field: FieldName): ScalarResult 
   const sentinel = FIELD_CONFIG[field].sentinel;
   let mn = Infinity, mx = -Infinity;
   for (let i = 0; i < data.length; i++) {
-    if (sentinel !== undefined && data[i] < sentinel) continue;
+    if (sentinel !== undefined && data[i] <= sentinel) continue;
     if (data[i] < mn) mn = data[i];
     if (data[i] > mx) mx = data[i];
   }

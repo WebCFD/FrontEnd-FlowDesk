@@ -1898,6 +1898,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const files = fsSync.readdirSync(postVtkDir)
         .filter(f => f.endsWith('.vtp') || f.endsWith('.vtk'))
+        .sort()
         .map(filename => {
           const stats = fsSync.statSync(path.join(postVtkDir, filename));
           return { filename, size: stats.size };
