@@ -198,6 +198,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasFiles, setHasFiles] = useState<boolean | null>(null);
+  const [availableFiles, setAvailableFiles] = useState<Set<string>>(new Set());
   const [dataRange, setDataRange] = useState<[number, number]>([0, 1]);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -208,9 +209,11 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   useEffect(() => {
     fetch(`/api/simulations/${simulationId}/post/vtk-list`)
       .then(r => r.json())
-      .then((data: { files: { filename: string; size: number }[] }) =>
-        setHasFiles(data.files && data.files.length > 0)
-      )
+      .then((data: { files: { filename: string; size: number }[] }) => {
+        const files = data.files ?? [];
+        setHasFiles(files.length > 0);
+        setAvailableFiles(new Set(files.map(f => f.filename)));
+      })
       .catch(() => setHasFiles(false));
   }, [simulationId]);
 
@@ -255,7 +258,16 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     const lut = lutRef.current;
 
     const z = HEIGHT_CONFIG[height].z;
-    const filename = `${category}_plane_${height}_${z}m.vtp`;
+    const base = `${category}_plane_${height}_${z}m`;
+    const vtpFilename = `${base}.vtp`;
+    const vtk2Filename = `${base}.vtk`;
+
+    const filename = availableFiles.has(vtpFilename)
+      ? vtpFilename
+      : availableFiles.has(vtk2Filename)
+      ? vtk2Filename
+      : vtpFilename;
+
     const url = `/api/simulations/${simulationId}/post/vtk/${filename}`;
 
     setLoading(true);
@@ -263,7 +275,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
     try {
       const resp = await fetch(url);
-      if (!resp.ok) throw new Error(`File not found: ${filename}`);
+      if (!resp.ok) {
+        throw new Error(`Plane not available: ${base} (${filename} not found)`);
+      }
       const buffer = await resp.arrayBuffer();
 
       const reader = vtkXMLPolyDataReader.newInstance();
@@ -319,7 +333,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     } finally {
       setLoading(false);
     }
-  }, [simulationId, category, height, field]);
+  }, [simulationId, category, height, field, availableFiles]);
 
   useEffect(() => {
     if (hasFiles && vtkRef.current) {

@@ -1914,7 +1914,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.setHeader('Content-Type', 'application/octet-stream');
       res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
-      res.setHeader('Access-Control-Allow-Origin', '*');
       const stream = fsSync.createReadStream(filePath);
       stream.pipe(res);
     } catch (err: any) {
