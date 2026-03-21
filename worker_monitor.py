@@ -337,7 +337,14 @@ def process_completed_simulation(sim):
         logger.info(f"[Sim {sim_id}] sim/ contents BEFORE download: {pre_files}")
 
         t0 = time.time()
-        if task_id and not _download_with_retry(task_id, case_name):
+        try:
+            download_ok = task_id and _download_with_retry(task_id, case_name)
+        except Exception as e:
+            logger.error(f"[Sim {sim_id}] [download] took {time.time() - t0:.1f}s — FAILED: {type(e).__name__}: {e}")
+            logger.error(traceback.format_exc())
+            raise
+        if not download_ok:
+            logger.error(f"[Sim {sim_id}] [download] took {time.time() - t0:.1f}s — FAILED (all retries exhausted)")
             raise Exception("Failed to download results from CFD FEA Service after 3 attempts")
         logger.info(f"[Sim {sim_id}] [download] took {time.time() - t0:.1f}s")
 
