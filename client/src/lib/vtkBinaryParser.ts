@@ -1,3 +1,27 @@
+/**
+ * vtkBinaryParser — VTK Legacy Binary POLYDATA parser for vtk.js
+ *
+ * Accepted format:
+ *   Header: "# vtk DataFile Version 5.x" (ASCII text lines)
+ *   Format: BINARY (big-endian IEEE 754)
+ *   Dataset: DATASET POLYDATA
+ *   Sections: POINTS N float|double
+ *             POLYGONS nOffsets totalConn
+ *               OFFSETS vtktypeint64  (nOffsets values = nCells+1: start-offsets + sentinel)
+ *               CONNECTIVITY vtktypeint64  (totalConn values)
+ *             POINT_DATA N
+ *               SCALARS name float [nComp]
+ *               LOOKUP_TABLE default
+ *               VECTORS name float
+ *               FIELD FieldData nArrays
+ *                 name nComp nTuples float
+ *
+ * Used for: vtk.js browser rendering of PyVista-generated post-processing planes
+ * (comfort/flow/ventilation planes from step05 pipeline).
+ *
+ * Not supported: UNSTRUCTURED_GRID, STRUCTURED_GRID, CELL_DATA, ASCII body data.
+ * Fallback: ASCII .vtk → vtkPolyDataReader.parseAsText(); .vtp → vtkXMLPolyDataReader
+ */
 import '@kitware/vtk.js/Rendering/Profiles/Geometry';
 // @ts-ignore
 import vtkPolyData from '@kitware/vtk.js/Common/DataModel/PolyData';
@@ -228,8 +252,16 @@ function parseBinaryVTK(buffer: ArrayBuffer): ParsedPolyData {
     }
   }
 
-  if (!pointCoords || !polyCellArray) {
-    throw new Error('Binary VTK parse failed: missing POINTS or POLYGONS data');
+  if (!pointCoords) {
+    console.error('[vtkBinaryParser] Parse failed: POINTS section not found or empty');
+    throw new Error('Binary VTK parse failed: missing POINTS data');
+  }
+  if (!polyCellArray) {
+    console.error('[vtkBinaryParser] Parse failed: POLYGONS/OFFSETS/CONNECTIVITY section not found');
+    throw new Error('Binary VTK parse failed: missing POLYGONS data');
+  }
+  if (pointArrays.size === 0) {
+    console.warn('[vtkBinaryParser] Warning: no POINT_DATA arrays found; file may be geometry-only');
   }
 
   const pd = vtkPolyData.newInstance();
