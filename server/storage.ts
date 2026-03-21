@@ -26,6 +26,7 @@ export interface IStorage {
   getSimulationsByUserId(userId: number): Promise<Simulation[]>;
   getSimulation(id: number): Promise<Simulation | undefined>;
   updateSimulationStatus(id: number, status: UpdateSimulationStatus): Promise<Simulation>;
+  updateSimulationStatusAtomic(id: number, fromStatus: string, statusUpdate: UpdateSimulationStatus): Promise<Simulation>;
   getCompletedSimulationsByUserId(userId: number): Promise<Simulation[]>;
   deleteSimulation(id: number, userId: number): Promise<boolean>;
 
@@ -149,6 +150,20 @@ export class DatabaseStorage implements IStorage {
       .set(statusUpdate)
       .where(eq(simulations.id, id))
       .returning();
+    return simulation;
+  }
+
+  async updateSimulationStatusAtomic(id: number, fromStatus: string, statusUpdate: UpdateSimulationStatus): Promise<Simulation> {
+    const [simulation] = await db
+      .update(simulations)
+      .set(statusUpdate)
+      .where(and(eq(simulations.id, id), eq(simulations.status, fromStatus)))
+      .returning();
+    if (!simulation) {
+      const err: any = new Error(`Concurrent update detected: simulation ${id} was no longer in status '${fromStatus}'`);
+      err.code = 'CONCURRENT_UPDATE';
+      throw err;
+    }
     return simulation;
   }
 

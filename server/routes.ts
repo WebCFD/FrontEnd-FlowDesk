@@ -1703,6 +1703,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // State machine: valid status transitions.
+  // Each key is a "from" status; the array lists all allowed "to" statuses.
+  // Progress-only updates (no status change) bypass this map entirely.
+  const VALID_TRANSITIONS: Record<string, string[]> = {
+    'pending':          ['processing', 'failed'],
+    'processing':       ['geometry', 'failed'],
+    'geometry':         ['meshing', 'failed'],
+    'meshing':          ['cfd_setup', 'failed'],
+    'cfd_setup':        ['cloud_execution', 'failed'],
+    'cloud_execution':  ['post_processing', 'failed'],
+    'post_processing':  ['completed', 'failed'],
+    'completed':        [],           // terminal — no further transitions allowed
+    'failed':           ['pending'],  // manual retry resets to pending
+  };
+
   // External API for simulation status updates (for external servers)
   app.patch("/api/external/simulations/:id/status", async (req, res) => {
     try {
@@ -1719,8 +1734,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Validate request body
       const { status, result, completedAt, taskId, progress, currentStep, errorMessage, startedAt } = req.body;
-      const validStatuses = ['pending', 'processing', 'geometry', 'meshing', 'cfd_setup', 'cloud_execution', 'post_processing', 'completed', 'failed'];
-      
+      const validStatuses = Object.keys(VALID_TRANSITIONS);
+
       // Status is optional for progress-only updates
       if (status && !validStatuses.includes(status)) {
         return res.status(400).json({ 
@@ -1734,7 +1749,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         statusUpdate.status = status;
       }
       if (result !== undefined) {
-        statusUpdate.result = result; // Store result from external processing (e.g., Inductiva)
+        statusUpdate.result = result;
       }
       if (taskId !== undefined) {
         statusUpdate.taskId = taskId;
@@ -1754,14 +1769,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (completedAt) {
         statusUpdate.completedAt = new Date(completedAt);
       } else if (status === 'completed') {
-        statusUpdate.completedAt = new Date(); // Auto-set completion time
+        statusUpdate.completedAt = new Date();
       }
-      
-      console.log('[EXPRESS] Updating simulation:', { id, status: status || '(progress only)', hasResult: !!result });
-      const simulation = await storage.updateSimulationStatus(id, statusUpdate);
-      
-      if (!simulation) {
-        return res.status(404).json({ message: "Simulation not found" });
+
+      let simulation;
+
+      if (status) {
+        // State-machine path: read current status, validate transition, atomic CAS update.
+        const current = await storage.getSimulation(id);
+        if (!current) {
+          return res.status(404).json({ message: "Simulation not found" });
+        }
+
+        const allowed = VALID_TRANSITIONS[current.status] ?? [];
+        if (!allowed.includes(status)) {
+          console.warn(
+            `[STATE_MACHINE] Rejected transition for sim ${id}: '${current.status}' → '${status}'`
+          );
+          return res.status(409).json({
+            message: `Invalid transition: '${current.status}' → '${status}'`,
+            currentStatus: current.status,
+            requestedStatus: status,
+            allowedTransitions: allowed,
+          });
+        }
+
+        console.log(`[STATE_MACHINE] sim ${id}: '${current.status}' → '${status}'`);
+        try {
+          simulation = await storage.updateSimulationStatusAtomic(id, current.status, statusUpdate);
+        } catch (err: any) {
+          if (err.code === 'CONCURRENT_UPDATE') {
+            console.warn(`[STATE_MACHINE] Concurrent update for sim ${id}: ${err.message}`);
+            return res.status(409).json({
+              message: 'Concurrent update detected: simulation status changed between read and write',
+              detail: err.message,
+            });
+          }
+          throw err;
+        }
+      } else {
+        // Progress-only path: no transition validation needed.
+        console.log(`[EXPRESS] Progress update for sim ${id} (no status change)`);
+        simulation = await storage.updateSimulationStatus(id, statusUpdate);
+        if (!simulation) {
+          return res.status(404).json({ message: "Simulation not found" });
+        }
       }
 
       res.json({ 
