@@ -63,16 +63,17 @@ const FIELD_CONFIG: Record<FieldName, { label: string; unit: string; isVector?: 
 
 function buildColormap(field: FieldName, lut: any, minVal: number, maxVal: number) {
   lut.removeAllPoints();
-  if (field === 'PMV') {
-    lut.addRGBPoint(minVal,  0.23, 0.30, 0.75);
-    lut.addRGBPoint((minVal + maxVal) / 2, 0.87, 0.87, 0.87);
-    lut.addRGBPoint(maxVal,  0.71, 0.12, 0.15);
+  const mid = (minVal + maxVal) / 2;
+  if (field === 'PMV' || field === 'PPD') {
+    lut.addRGBPoint(minVal, 0.23, 0.30, 0.75);
+    lut.addRGBPoint(mid,    0.87, 0.87, 0.87);
+    lut.addRGBPoint(maxVal, 0.71, 0.12, 0.15);
   } else {
     const steps = 7;
     const colors = [
       [0, 0, 0.5], [0, 0, 1], [0, 1, 1],
       [0, 1, 0], [1, 1, 0], [1, 0, 0], [0.5, 0, 0],
-    ];
+    ] as [number, number, number][];
     colors.forEach(([r, g, b], i) => {
       const t = minVal + (i / (steps - 1)) * (maxVal - minVal);
       lut.addRGBPoint(t, r, g, b);
@@ -131,7 +132,8 @@ function getScalarArray(polyData: any, field: FieldName): { array: Float32Array;
 function ColormapBar({ field, min, max }: { field: FieldName; min: number; max: number }) {
   const unit = FIELD_CONFIG[field].unit;
   const fmt = (v: number) => Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(1);
-  const gradient = field === 'PMV'
+  const isCoolwarm = field === 'PMV' || field === 'PPD';
+  const gradient = isCoolwarm
     ? 'linear-gradient(to top, #3b4fbf, #dddddd, #b61e26)'
     : 'linear-gradient(to top, #00008B, #0000FF, #00FFFF, #00FF00, #FFFF00, #FF0000, #800000)';
 
