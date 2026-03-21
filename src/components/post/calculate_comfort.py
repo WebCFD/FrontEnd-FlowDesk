@@ -66,9 +66,17 @@ def _parse_internal_field(content):
     if m:
         n = int(m.group(1))
         paren_pos = content.index('(', m.end() - 1)
-        rest = content[paren_pos + 1:]
-        close_pos = rest.index(')')
-        data_str = rest[:close_pos].strip()
+        # Use balanced parenthesis counting to find the outer closing )
+        # (simple rest.index(')') would stop at the first vector's closing paren)
+        depth = 1
+        pos = paren_pos + 1
+        while pos < len(content) and depth > 0:
+            if content[pos] == '(':
+                depth += 1
+            elif content[pos] == ')':
+                depth -= 1
+            pos += 1
+        data_str = content[paren_pos + 1:pos - 1].strip()
         rows = re.findall(r'\(\s*([\s\S]*?)\s*\)', data_str)
         vecs = [[float(v) for v in row.split()] for row in rows]
         return np.array(vecs, dtype=np.float64)
