@@ -402,7 +402,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       // Apply field visualization BEFORE setting up the actor
       applyVisualization(mapper, planeData, activeMode as VisualizationMode);
       
-      // CRITICAL FIX: Force mapper to use the correct scalar array
+      // Force mapper to use the correct scalar array
       // vtkPlaneSource adds TextureCoordinates which can override our field data
       // We need to explicitly tell the mapper which array to use for coloring
       const pointData = planeData.getPointData();
@@ -1351,7 +1351,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
       const dataset = polyData;
       
-      // CRITICAL FIX: Wire sourceDataRef
+      // Wire sourceDataRef
       sourceDataRef.current = dataset;
       
       if (!dataset || dataset.getNumberOfPoints() === 0) {
