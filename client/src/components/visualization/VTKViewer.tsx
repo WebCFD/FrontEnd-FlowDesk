@@ -13,10 +13,7 @@ import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
 import vtkMapper from '@kitware/vtk.js/Rendering/Core/Mapper';
 import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 import vtkColorTransferFunction from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction';
-// @ts-ignore - no bundled type declarations for legacy PolyDataReader
-import vtkPolyDataReader from '@kitware/vtk.js/IO/Legacy/PolyDataReader';
-// @ts-ignore - no bundled type declarations for XML PolyDataReader
-import vtkXMLPolyDataReader from '@kitware/vtk.js/IO/XML/XMLPolyDataReader';
+import { loadPolyData } from '@/lib/vtkBinaryParser';
 
 interface VTKViewerProps {
   simulationId: number;
@@ -89,11 +86,11 @@ const HEIGHT_CONFIG: Record<HeightName, HeightConfig> = {
 };
 
 const FIELD_CONFIG: Record<FieldName, FieldConfig> = {
-  PMV: { label: 'PMV Index',    unit: '',     sentinel: -100 },
-  PPD: { label: 'PPD',          unit: '%' },
-  T:   { label: 'Temperature',  unit: '°C',   kelvinOffset: true },
-  U:   { label: 'Velocity',     unit: 'm/s',  isVector: true },
-  CO2: { label: 'CO2 Level',    unit: '' },
+  PMV: { label: 'PMV Index',   unit: '',    sentinel: -100 },
+  PPD: { label: 'PPD',         unit: '%' },
+  T:   { label: 'Temperature', unit: '°C',  kelvinOffset: true },
+  U:   { label: 'Velocity',    unit: 'm/s', isVector: true },
+  CO2: { label: 'CO2 Level',   unit: '' },
 };
 
 function buildColormap(
@@ -109,12 +106,12 @@ function buildColormap(
     lut.addRGBPoint(mid,    0.87, 0.87, 0.87);
     lut.addRGBPoint(maxVal, 0.71, 0.12, 0.15);
   } else {
-    const colors: [number, number, number][] = [
+    const stops: [number, number, number][] = [
       [0, 0, 0.5], [0, 0, 1], [0, 1, 1],
       [0, 1, 0], [1, 1, 0], [1, 0, 0], [0.5, 0, 0],
     ];
-    colors.forEach(([r, g, b], i) => {
-      const t = minVal + (i / (colors.length - 1)) * (maxVal - minVal);
+    stops.forEach(([r, g, b], i) => {
+      const t = minVal + (i / (stops.length - 1)) * (maxVal - minVal);
       lut.addRGBPoint(t, r, g, b);
     });
   }
@@ -122,14 +119,16 @@ function buildColormap(
   lut.updateRange();
 }
 
-function getScalarArray(polyData: ReturnType<typeof vtkPolyDataReader.newInstance>, field: FieldName): ScalarResult | null {
+type PolyDataLike = ReturnType<typeof loadPolyData> extends Promise<infer T> ? T : never;
+
+function getScalarArray(polyData: PolyDataLike, field: FieldName): ScalarResult | null {
   const pointData = polyData.getPointData();
 
   if (FIELD_CONFIG[field].isVector) {
     const raw = pointData.getArrayByName('U');
     if (!raw) return null;
-    const data: Float32Array = raw.getData();
-    const n: number = raw.getNumberOfTuples();
+    const data = raw.getData();
+    const n = raw.getNumberOfTuples();
     const mag = new Float32Array(n);
     let mn = Infinity, mx = -Infinity;
     for (let i = 0; i < n; i++) {
@@ -144,7 +143,7 @@ function getScalarArray(polyData: ReturnType<typeof vtkPolyDataReader.newInstanc
   if (FIELD_CONFIG[field].kelvinOffset) {
     const raw = pointData.getArrayByName('T');
     if (!raw) return null;
-    const data: Float32Array = raw.getData();
+    const data = raw.getData();
     const celsius = new Float32Array(data.length);
     let mn = Infinity, mx = -Infinity;
     for (let i = 0; i < data.length; i++) {
@@ -157,7 +156,7 @@ function getScalarArray(polyData: ReturnType<typeof vtkPolyDataReader.newInstanc
 
   const raw = pointData.getArrayByName(field);
   if (!raw) return null;
-  const data: Float32Array = raw.getData();
+  const data = raw.getData();
   const sentinel = FIELD_CONFIG[field].sentinel;
   let mn = Infinity, mx = -Infinity;
   for (let i = 0; i < data.length; i++) {
@@ -169,23 +168,6 @@ function getScalarArray(polyData: ReturnType<typeof vtkPolyDataReader.newInstanc
   return { array: data, min: mn, max: mx };
 }
 
-async function parsePolyData(url: string, filename: string) {
-  const resp = await fetch(url);
-  if (!resp.ok) throw new Error(`Plane not available: ${filename}`);
-
-  if (filename.endsWith('.vtp')) {
-    const buffer = await resp.arrayBuffer();
-    const reader = vtkXMLPolyDataReader.newInstance();
-    reader.parseAsArrayBuffer(buffer);
-    return reader.getOutputData(0);
-  } else {
-    const text = await resp.text();
-    const reader = vtkPolyDataReader.newInstance();
-    reader.parseAsText(text);
-    return reader.getOutputData(0);
-  }
-}
-
 function ColormapBar({ field, min, max }: { field: FieldName; min: number; max: number }) {
   const unit = FIELD_CONFIG[field].unit;
   const fmt = (v: number) => (Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(1));
@@ -193,7 +175,6 @@ function ColormapBar({ field, min, max }: { field: FieldName; min: number; max: 
   const gradient = isCoolwarm
     ? 'linear-gradient(to top, #3b4fbf, #dddddd, #b61e26)'
     : 'linear-gradient(to top, #00008B, #0000FF, #00FFFF, #00FF00, #FFFF00, #FF0000, #800000)';
-
   return (
     <div className="absolute right-3 top-3 flex flex-col items-center gap-1 select-none">
       <span className="text-xs font-semibold text-white drop-shadow bg-black/40 px-1 rounded">
@@ -238,7 +219,6 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
   useEffect(() => {
     if (!containerRef.current || !hasFiles) return;
-
     const container = containerRef.current;
 
     const rw = vtkRenderWindow.newInstance();
@@ -278,9 +258,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
     const z = HEIGHT_CONFIG[height].z;
     const base = `${category}_plane_${height}_${z}m`;
+
     const vtpName = `${base}.vtp`;
     const vtkName = `${base}.vtk`;
-
     const filename = availableFiles.has(vtpName)
       ? vtpName
       : availableFiles.has(vtkName)
@@ -293,9 +273,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     setError(null);
 
     try {
-      const polyData = await parsePolyData(url, filename);
+      const polyData = await loadPolyData(url, filename);
 
-      if (!polyData || polyData.getNumberOfPoints() === 0) {
+      if (polyData.getNumberOfPoints() === 0) {
         throw new Error('Empty geometry — no points in this plane file');
       }
 
