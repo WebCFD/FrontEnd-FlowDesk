@@ -247,11 +247,20 @@ def analyze_comfort_planes(sim_path, post_path):
     internal_mesh, _, _ = load_foam_results(sim_path)
     
     logger.info(f"    * Loaded mesh with {internal_mesh.n_cells:,} cells")
-    
-    # Check if PMV and PPD fields exist
+    logger.info(f"    * point_data fields: {list(internal_mesh.point_data.keys())}")
+    logger.info(f"    * cell_data  fields: {list(internal_mesh.cell_data.keys())}")
+
+    # OpenFOAM volScalarField → PyVista cell_data; convert to point_data so slices pick them up
+    if 'PMV' in internal_mesh.cell_data or 'PPD' in internal_mesh.cell_data:
+        logger.info("    * PMV/PPD found in cell_data — converting to point_data")
+        internal_mesh = internal_mesh.cell_data_to_point_data()
+        logger.info(f"    * point_data fields after conversion: {list(internal_mesh.point_data.keys())}")
+
+    # Check if PMV and PPD fields exist (either source)
     if 'PMV' not in internal_mesh.point_data or 'PPD' not in internal_mesh.point_data:
         logger.error("PMV/PPD fields not found in mesh!")
-        logger.error("Available fields: " + str(list(internal_mesh.point_data.keys())))
+        logger.error("point_data: " + str(list(internal_mesh.point_data.keys())))
+        logger.error("cell_data:  " + str(list(internal_mesh.cell_data.keys())))
         raise ValueError("PMV/PPD fields not found. Run calculate_comfort.py first.")
     
     # Define analysis planes (heights in meters)
