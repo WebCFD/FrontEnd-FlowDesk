@@ -162,23 +162,17 @@ def run_indoor_spaces(case_name: str, sim_path: str, post_path: str) -> None:
     setup_html_path = generate_setup_html_report(setup_summary, post_path, case_name=case_name)
     logger.info(f"Setup report: {setup_html_path}")
     
-    # Generate 3D boundary surface VTK for web viewer
+    # Generate 3D boundary surface VTK for web viewer (required output)
     logger.info("\n10 - Generating 3D boundary surface VTK (walls, floor, ceiling, door, window)")
     performance_monitor.update_memory()
-    try:
-        surface_3d_path = generate_surface_3d_vtk(sim_path, post_path)
-        logger.info(f"3D surface VTK: {surface_3d_path}")
-    except Exception as e:
-        logger.warning(f"   ⚠ generate_surface_3d_vtk failed (non-fatal): {e}")
+    surface_3d_path = generate_surface_3d_vtk(sim_path, post_path)
+    logger.info(f"3D surface VTK: {surface_3d_path}")
 
-    # Generate 3D internal volume VTK for web viewer
-    logger.info("\n11 - Generating 3D internal volume VTK (air volume surface)")
+    # Generate 3D internal volume VTK for web viewer (required output)
+    logger.info("\n11 - Generating 3D internal volume VTK (UnstructuredGrid internal air volume)")
     performance_monitor.update_memory()
-    try:
-        volume_internal_path = generate_volume_internal_vtk(sim_path, post_path)
-        logger.info(f"3D volume VTK: {volume_internal_path}")
-    except Exception as e:
-        logger.warning(f"   ⚠ generate_volume_internal_vtk failed (non-fatal): {e}")
+    volume_internal_path = generate_volume_internal_vtk(sim_path, post_path)
+    logger.info(f"3D volume VTK: {volume_internal_path}")
 
     # Summary
     logger.info("\n=========== COMFORT ANALYSIS SUMMARY ===========")

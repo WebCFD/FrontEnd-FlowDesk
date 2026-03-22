@@ -229,13 +229,15 @@ function parseVtkAscii(text: string): ReturnType<typeof vtkPolyData.newInstance>
   const polyData = vtkPolyData.newInstance();
   let numEntries = 0; // number of points (POINT_DATA) or cells (CELL_DATA) for current data section
   let dataMode: 'point' | 'cell' = 'point'; // tracks whether current arrays belong to point or cell data
+  let isUnstructuredGrid = false; // true when DATASET UNSTRUCTURED_GRID is detected
   let i = 0;
 
   while (i < tokens.length) {
     const tok = tokens[i];
 
     if (tok === 'DATASET') {
-      // Skip 'POLYDATA' (or other dataset type)
+      const datasetType = tokens[i + 1] || '';
+      isUnstructuredGrid = datasetType === 'UNSTRUCTURED_GRID';
       i += 2;
 
     } else if (tok === 'POINTS') {
@@ -302,6 +304,27 @@ function parseVtkAscii(text: string): ReturnType<typeof vtkPolyData.newInstance>
       cells.setData(legacyData);
       if (tok === 'POLYGONS') polyData.setPolys(cells);
       else polyData.setStrips(cells);
+
+    } else if (tok === 'CELLS') {
+      // UNSTRUCTURED_GRID CELLS section — skip all connectivity data.
+      // VTK 5.1 format: CELLS numOffsets total → OFFSETS type + numOffsets values + CONNECTIVITY type + total values
+      // Legacy format:  CELLS numCells total → total values inline
+      const headerNum = parseInt(tokens[i + 1]);
+      const total = parseInt(tokens[i + 2]);
+      i += 3;
+      if (tokens[i] === 'OFFSETS') {
+        i += 2; // skip 'OFFSETS' and type token
+        i += headerNum; // skip offset values
+        i += 2; // skip 'CONNECTIVITY' and type token
+        i += total; // skip connectivity values
+      } else {
+        i += total; // legacy: total values already inline
+      }
+
+    } else if (tok === 'CELL_TYPES') {
+      // UNSTRUCTURED_GRID CELL_TYPES section — skip N type integers
+      const nCells = parseInt(tokens[i + 1]);
+      i += 2 + nCells;
 
     } else if (tok === 'LINES') {
       const total = parseInt(tokens[i + 2]);
@@ -411,6 +434,25 @@ function parseVtkAscii(text: string): ReturnType<typeof vtkPolyData.newInstance>
     } else {
       // Unknown keyword or stray value — skip single token
       i++;
+    }
+  }
+
+  // For UNSTRUCTURED_GRID files: no POLYGONS were set since cells were skipped.
+  // Build a VERTICES (point cloud) array so every point renders as a vertex glyph.
+  // This gives a colour-coded 3D point cloud of the internal air volume, useful for
+  // visualising field distributions with the cutting-plane feature in the viewer.
+  if (isUnstructuredGrid && polyData.getPolys().getNumberOfCells() === 0) {
+    const nPts = polyData.getNumberOfPoints();
+    if (nPts > 0) {
+      // Legacy VTK cell format for N singleton vertices: [1, 0, 1, 1, 1, 2, …, 1, N-1]
+      const verts = new Uint32Array(nPts * 2);
+      for (let v = 0; v < nPts; v++) {
+        verts[v * 2] = 1;
+        verts[v * 2 + 1] = v;
+      }
+      const vertCells = vtkCellArray.newInstance();
+      vertCells.setData(verts);
+      polyData.setVerts(vertCells);
     }
   }
 
@@ -1499,15 +1541,29 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       console.log('[VTKViewer] Available VTK files:', files?.length || 0);
       console.log('[VTKViewer] Latest volume:', latestVolume);
       
-      // Preferir volumen de OpenFOAM, si no hay usar slice
+      // Prefer 3D volume/surface files over 2D slice planes.
+      // latestVolume priority (set by backend): surface_3d > volume_complete > volume_internal > volume
+      // surface_3d    = full 3D room boundary (walls/floor/ceiling/door/window) with CFD fields
+      // volume_internal = internal air volume mesh (UnstructuredGrid → point cloud rendering)
+      // volume_complete = legacy OpenFOAM converted vtkjs
+      // slice          = 2D horizontal cut plane (fallback)
       let vtkUrl;
       if (latestVolume) {
         vtkUrl = latestVolume.path;
-        console.log('[VTKViewer] Loading OpenFOAM volume from timestep:', latestVolume.timestep);
+        const typeLabel: Record<string, string> = {
+          surface_3d: '3D room surface (walls/floor/ceiling)',
+          volume_internal: '3D internal volume mesh',
+          volume_complete: 'OpenFOAM vtkjs volume',
+          boundary: 'OpenFOAM boundary patches',
+          volume: 'OpenFOAM volume',
+        };
+        console.log(
+          `[VTKViewer] Loading ${typeLabel[latestVolume.type] || latestVolume.type}: ${latestVolume.filename}`
+        );
       } else if (files && files.length > 0) {
-        // Fallback a primer archivo disponible (slice)
+        // Fallback to first available file (likely a 2D slice plane)
         vtkUrl = files[0].path;
-        console.log('[VTKViewer] No OpenFOAM volume found, loading slice:', files[0].filename);
+        console.log('[VTKViewer] No 3D volume file found — loading slice:', files[0].filename);
       } else {
         throw new Error('No VTK files available for this simulation');
       }

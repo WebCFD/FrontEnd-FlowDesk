@@ -2075,9 +2075,6 @@ def generate_volume_internal_vtk(sim_path, post_path):
 
     logger.info(f"    * Internal mesh: {internal_mesh.n_points} pts, {internal_mesh.n_cells} cells")
 
-    surface_mesh = internal_mesh.extract_surface()
-    logger.info(f"    * Surface extracted: {surface_mesh.n_points} pts, {surface_mesh.n_cells} cells")
-
     VTK_INTERNAL_KEYS = {
         'vtkOriginalPointIds', 'vtkOriginalCellIds',
         'vtkValidPointMask', 'vtkGhostType',
@@ -2086,23 +2083,55 @@ def generate_volume_internal_vtk(sim_path, post_path):
         'T', 'U', 'p', 'p_rgh', 'CO2', 'PMV', 'PPD',
         'G', 'qr', 'k', 'omega', 'nut', 'alphat', 'a',
     }
-    field_keys = list(surface_mesh.point_data.keys()) + list(surface_mesh.cell_data.keys())
+
+    # Determine whether real CFD field data is present in the internal mesh
+    field_keys = list(internal_mesh.point_data.keys()) + list(internal_mesh.cell_data.keys())
     real_cfd_fields = [k for k in field_keys if k in CFD_FIELDS]
 
     if real_cfd_fields:
-        logger.info(f"    * CFD fields in extracted surface: {real_cfd_fields} — using directly")
-        if surface_mesh.cell_data.keys():
-            surface_mesh = surface_mesh.cell_data_to_point_data()
+        logger.info(f"    * CFD fields in internal mesh: {real_cfd_fields} — using directly")
+        if internal_mesh.cell_data.keys():
+            internal_mesh = internal_mesh.cell_data_to_point_data()
     else:
-        logger.info("    * No CFD field data — projecting from 2D slice VTK files")
-        surface_mesh = _map_slice_fields_to_mesh(surface_mesh, vtk_dir)
+        logger.info("    * No CFD field data in internal mesh — projecting from 2D slice VTK files")
+        internal_mesh = _map_slice_fields_to_mesh(internal_mesh, vtk_dir)
 
-    for key in list(surface_mesh.point_data.keys()):
+    # Strip VTK-internal arrays from point_data before saving
+    for key in list(internal_mesh.point_data.keys()):
         if key in VTK_INTERNAL_KEYS:
-            surface_mesh.point_data.remove(key)
+            internal_mesh.point_data.remove(key)
 
-    surface_mesh.save(output_path, binary=False)
+    # Estimate full UnstructuredGrid ASCII file size before writing.
+    # If the estimate exceeds 20 MB, fall back to a decimated surface extraction
+    # so the web viewer can still load the file without excessive parse time.
+    FALLBACK_SIZE_BYTES = 20 * 1024 * 1024  # 20 MB
+    n_pts = internal_mesh.n_points
+    n_fields = len(internal_mesh.point_data.keys())
+    # Rough estimate: 8 bytes per float value; geometry + CELLS + CELL_TYPES + fields
+    estimated_bytes = n_pts * 3 * 8 + internal_mesh.n_cells * 9 * 8 + n_pts * n_fields * 8
+
+    if estimated_bytes > FALLBACK_SIZE_BYTES:
+        logger.warning(
+            f"    * Estimated UnstructuredGrid size {estimated_bytes//1024//1024}MB exceeds threshold "
+            f"({FALLBACK_SIZE_BYTES//1024//1024}MB) — falling back to surface extraction"
+        )
+        mesh_to_save = internal_mesh.extract_surface()
+        logger.info(f"    * Surface (fallback): {mesh_to_save.n_points} pts, {mesh_to_save.n_cells} cells")
+        # Strip VTK-internal keys from surface too
+        for key in list(mesh_to_save.point_data.keys()):
+            if key in VTK_INTERNAL_KEYS:
+                mesh_to_save.point_data.remove(key)
+    else:
+        logger.info(
+            f"    * Estimated size {estimated_bytes//1024//1024}MB within threshold — "
+            f"saving full UnstructuredGrid (true internal volume mesh)"
+        )
+        mesh_to_save = internal_mesh
+
+    mesh_to_save.save(output_path, binary=False)
     size_kb = os.path.getsize(output_path) // 1024
-    logger.info(f"    * ✓ volume_internal.vtk saved: {output_path} ({size_kb} KB)")
+    dataset_type = 'UnstructuredGrid' if hasattr(mesh_to_save, 'celltypes') or \
+        'UNSTRUCTURED' in str(type(mesh_to_save)).upper() else 'PolyData'
+    logger.info(f"    * ✓ volume_internal.vtk saved ({dataset_type}): {output_path} ({size_kb} KB)")
 
     return output_path
