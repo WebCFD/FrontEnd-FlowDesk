@@ -215,7 +215,8 @@ function parseVtkAscii(text: string): any {
   }
 
   const polyData = vtkPolyData.newInstance();
-  let numPoints = 0;
+  let numEntries = 0; // number of points (POINT_DATA) or cells (CELL_DATA) for current data section
+  let dataMode: 'point' | 'cell' = 'point'; // tracks whether current arrays belong to point or cell data
   let i = 0;
 
   while (i < tokens.length) {
@@ -299,7 +300,8 @@ function parseVtkAscii(text: string): any {
       i += 3 + total;
 
     } else if (tok === 'POINT_DATA' || tok === 'CELL_DATA') {
-      numPoints = parseInt(tokens[i + 1]);
+      numEntries = parseInt(tokens[i + 1]);
+      dataMode = tok === 'CELL_DATA' ? 'cell' : 'point';
       i += 2;
 
     } else if (tok === 'SCALARS') {
@@ -317,13 +319,13 @@ function parseVtkAscii(text: string): any {
       if (tokens[i] === 'LOOKUP_TABLE') {
         i += 2; // skip 'LOOKUP_TABLE' and table_name
       }
-      const n = numPoints * ncomp;
+      const n = numEntries * ncomp;
       const vals = new Float32Array(n);
       for (let j = 0; j < n; j++) {
         vals[j] = parseFloat(tokens[i++]);
       }
       const arr = vtkDataArray.newInstance({ name, values: vals, numberOfComponents: ncomp });
-      polyData.getPointData().addArray(arr);
+      (dataMode === 'cell' ? polyData.getCellData() : polyData.getPointData()).addArray(arr);
 
     } else if (tok === 'LOOKUP_TABLE') {
       // Standalone LOOKUP_TABLE definition (rare, but handle gracefully)
@@ -339,21 +341,21 @@ function parseVtkAscii(text: string): any {
       const name = tokens[i + 1];
       // tokens[i+2] = type
       i += 3;
-      const n = numPoints * 3;
+      const n = numEntries * 3;
       const vals = new Float32Array(n);
       for (let j = 0; j < n; j++) {
         vals[j] = parseFloat(tokens[i++]);
       }
       if (tok === 'VECTORS') {
         const arr = vtkDataArray.newInstance({ name, values: vals, numberOfComponents: 3 });
-        polyData.getPointData().addArray(arr);
+        (dataMode === 'cell' ? polyData.getCellData() : polyData.getPointData()).addArray(arr);
       }
       // NORMALS are discarded — not needed for scalar visualization
 
     } else if (tok === 'TEXTURE_COORDINATES' || tok === 'TCOORDS') {
       const ncomp = parseInt(tokens[i + 2]) || 2;
       i += 3;
-      i += numPoints * ncomp; // skip data values
+      i += numEntries * ncomp; // skip data values
 
     } else if (tok === 'FIELD') {
       // Format: FIELD FieldData K
@@ -372,14 +374,14 @@ function parseVtkAscii(text: string): any {
           vals[j] = parseFloat(tokens[i++]);
         }
         const arr = vtkDataArray.newInstance({ name, values: vals, numberOfComponents: ncomp });
-        polyData.getPointData().addArray(arr);
+        (dataMode === 'cell' ? polyData.getCellData() : polyData.getPointData()).addArray(arr);
       }
 
     } else if (tok === 'COLOR_SCALARS') {
       // COLOR_SCALARS name ncomp — values are in [0,1] per component, no LOOKUP_TABLE
       const ncomp = parseInt(tokens[i + 2]);
       i += 3;
-      i += numPoints * ncomp;
+      i += numEntries * ncomp;
 
     } else if (tok === 'METADATA') {
       // VTK 5.1 metadata block — skip until a known section keyword is found
