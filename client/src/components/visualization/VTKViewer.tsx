@@ -23,7 +23,9 @@ import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 import vtkColorTransferFunction from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction';
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
 import vtkPlane from '@kitware/vtk.js/Common/DataModel/Plane';
-import vtkPolyDataReader from '@kitware/vtk.js/IO/Legacy/PolyDataReader';
+import vtkPolyData from '@kitware/vtk.js/Common/DataModel/PolyData';
+import vtkPoints from '@kitware/vtk.js/Common/Core/Points';
+import vtkCellArray from '@kitware/vtk.js/Common/Core/CellArray';
 // @ts-ignore - vtkCutter doesn't have type declarations but works fine
 import vtkCutter from '@kitware/vtk.js/Filters/Core/Cutter';
 import vtkPlaneSource from '@kitware/vtk.js/Filters/Sources/PlaneSource';
@@ -192,6 +194,173 @@ function normalizeScalarRange(
     isUniform: false,
     isInvalid: false
   };
+}
+
+/**
+ * Custom VTK Legacy ASCII parser for POLYDATA format.
+ * Replaces vtkPolyDataReader which has a bug with VTK 5.1 files (unbound setData callback).
+ * Token-based: splits all content into a flat token array and walks with a cursor,
+ * handling POINTS, POLYGONS, SCALARS, VECTORS, and FIELD sections.
+ */
+function parseVtkAscii(text: string): any {
+  const lines = text.split(/\r?\n/);
+
+  // Collect all tokens starting from line 3 (skip: version, title, ASCII/BINARY lines)
+  const tokens: string[] = [];
+  for (let lineIdx = 3; lineIdx < lines.length; lineIdx++) {
+    const parts = lines[lineIdx].trim().split(/\s+/);
+    for (const p of parts) {
+      if (p.length > 0) tokens.push(p);
+    }
+  }
+
+  const polyData = vtkPolyData.newInstance();
+  let numPoints = 0;
+  let i = 0;
+
+  while (i < tokens.length) {
+    const tok = tokens[i];
+
+    if (tok === 'DATASET') {
+      // Skip 'POLYDATA' (or other dataset type)
+      i += 2;
+
+    } else if (tok === 'POINTS') {
+      numPoints = parseInt(tokens[i + 1]);
+      // tokens[i+2] = type (float/double)
+      i += 3;
+      const n = numPoints * 3;
+      const vals = new Float32Array(n);
+      for (let j = 0; j < n; j++) {
+        vals[j] = parseFloat(tokens[i++]);
+      }
+      const pts = vtkPoints.newInstance();
+      pts.setData(vals, 3);
+      polyData.setPoints(pts);
+
+    } else if (tok === 'POLYGONS' || tok === 'TRIANGLE_STRIPS') {
+      const total = parseInt(tokens[i + 2]);
+      i += 3;
+      const vals = new Uint32Array(total);
+      for (let j = 0; j < total; j++) {
+        vals[j] = parseInt(tokens[i++]);
+      }
+      const cells = vtkCellArray.newInstance();
+      cells.setData(vals);
+      if (tok === 'POLYGONS') polyData.setPolys(cells);
+      else polyData.setStrips(cells);
+
+    } else if (tok === 'LINES') {
+      const total = parseInt(tokens[i + 2]);
+      i += 3 + total;
+
+    } else if (tok === 'VERTICES') {
+      const total = parseInt(tokens[i + 2]);
+      i += 3 + total;
+
+    } else if (tok === 'POINT_DATA' || tok === 'CELL_DATA') {
+      numPoints = parseInt(tokens[i + 1]);
+      i += 2;
+
+    } else if (tok === 'SCALARS') {
+      const name = tokens[i + 1];
+      // tokens[i+2] = type, tokens[i+3] might be ncomp (integer) or 'LOOKUP_TABLE'
+      let ncomp = 1;
+      let skip = 3;
+      const possible_ncomp = tokens[i + 3];
+      if (possible_ncomp && possible_ncomp !== 'LOOKUP_TABLE' && !isNaN(parseInt(possible_ncomp))) {
+        ncomp = parseInt(possible_ncomp);
+        skip = 4;
+      }
+      i += skip;
+      // Skip LOOKUP_TABLE line (always present after SCALARS)
+      if (tokens[i] === 'LOOKUP_TABLE') {
+        i += 2; // skip 'LOOKUP_TABLE' and table_name
+      }
+      const n = numPoints * ncomp;
+      const vals = new Float32Array(n);
+      for (let j = 0; j < n; j++) {
+        vals[j] = parseFloat(tokens[i++]);
+      }
+      const arr = vtkDataArray.newInstance({ name, values: vals, numberOfComponents: ncomp });
+      polyData.getPointData().addArray(arr);
+
+    } else if (tok === 'LOOKUP_TABLE') {
+      // Standalone LOOKUP_TABLE definition (rare, but handle gracefully)
+      // Format: LOOKUP_TABLE name n  then n RGBA entries
+      const n = parseInt(tokens[i + 2]);
+      if (!isNaN(n)) {
+        i += 3 + n * 4;
+      } else {
+        i += 2;
+      }
+
+    } else if (tok === 'VECTORS' || tok === 'NORMALS') {
+      const name = tokens[i + 1];
+      // tokens[i+2] = type
+      i += 3;
+      const n = numPoints * 3;
+      const vals = new Float32Array(n);
+      for (let j = 0; j < n; j++) {
+        vals[j] = parseFloat(tokens[i++]);
+      }
+      if (tok === 'VECTORS') {
+        const arr = vtkDataArray.newInstance({ name, values: vals, numberOfComponents: 3 });
+        polyData.getPointData().addArray(arr);
+      }
+      // NORMALS are discarded — not needed for scalar visualization
+
+    } else if (tok === 'TEXTURE_COORDINATES' || tok === 'TCOORDS') {
+      const ncomp = parseInt(tokens[i + 2]) || 2;
+      i += 3;
+      i += numPoints * ncomp; // skip data values
+
+    } else if (tok === 'FIELD') {
+      // Format: FIELD FieldData K
+      // Then K arrays, each: name ncomp ntuples type\nvalues...
+      const numArrays = parseInt(tokens[i + 2]);
+      i += 3;
+      for (let k = 0; k < numArrays; k++) {
+        const name = tokens[i];
+        const ncomp = parseInt(tokens[i + 1]);
+        const ntuples = parseInt(tokens[i + 2]);
+        // tokens[i+3] = type (float/double/int)
+        i += 4;
+        const n = ncomp * ntuples;
+        const vals = new Float32Array(n);
+        for (let j = 0; j < n; j++) {
+          vals[j] = parseFloat(tokens[i++]);
+        }
+        const arr = vtkDataArray.newInstance({ name, values: vals, numberOfComponents: ncomp });
+        polyData.getPointData().addArray(arr);
+      }
+
+    } else if (tok === 'COLOR_SCALARS') {
+      // COLOR_SCALARS name ncomp — values are in [0,1] per component, no LOOKUP_TABLE
+      const ncomp = parseInt(tokens[i + 2]);
+      i += 3;
+      i += numPoints * ncomp;
+
+    } else if (tok === 'METADATA') {
+      // VTK 5.1 metadata block — skip until a known section keyword is found
+      i++;
+      while (i < tokens.length) {
+        const t = tokens[i];
+        if (t === 'INFORMATION' || t === 'NAME' || t === 'DATA' || t === 'LOCATION' ||
+            t === 'LENGTH' || t === 'COMPONENT_NAMES') {
+          i++;
+        } else {
+          break; // next known section
+        }
+      }
+
+    } else {
+      // Unknown keyword or stray value — skip single token
+      i++;
+    }
+  }
+
+  return polyData;
 }
 
 export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
@@ -1297,14 +1466,13 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         throw new Error(`File not found: ${response.status}`);
       }
 
-      // Parsear archivo VTK Legacy ASCII usando el lector nativo de vtk.js
+      // Parsear archivo VTK Legacy ASCII con nuestro propio parser
+      // (vtkPolyDataReader de vtk.js falla con VTK 5.1 — bug en setData callback sin bind)
       const vtkText = await response.text();
-      const reader = vtkPolyDataReader.newInstance();
-      reader.parseAsText(vtkText);
-      const polyData = reader.getOutputData(0);
+      const polyData = parseVtkAscii(vtkText);
 
       if (!polyData) {
-        throw new Error('Failed to parse VTK file — reader returned no data');
+        throw new Error('Failed to parse VTK file — parser returned no data');
       }
 
       const numArrays = polyData.getPointData().getNumberOfArrays();
