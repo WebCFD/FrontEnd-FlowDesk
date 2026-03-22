@@ -537,7 +537,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
             let type = 'slice';
             
             // Detect file type and priority
-            if (filename === 'internal_mesh_complete.vtkjs') {
+            if (filename === 'surface_3d.vtk') {
+              type = 'surface_3d';
+              timestep = 0;
+            } else if (filename === 'volume_internal.vtk') {
+              type = 'volume_internal';
+              timestep = 0;
+            } else if (filename === 'internal_mesh_complete.vtkjs') {
               type = 'volume_complete';
               timestep = 0;
             } else if (filename.startsWith('openfoam_')) {
@@ -565,13 +571,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
             };
           })
           .sort((a, b) => {
-            // Sort: volume_complete > boundary > volume > volume_internal > slices, then by timestep
+            // Sort: surface_3d > volume_complete > boundary > volume > volume_internal > slices
             const typeOrder: Record<string, number> = { 
-              volume_complete: 0, 
-              boundary: 1, 
-              volume: 2, 
-              volume_internal: 3, 
-              slice: 4 
+              surface_3d: 0,
+              volume_complete: 1, 
+              boundary: 2, 
+              volume: 3, 
+              volume_internal: 4, 
+              slice: 5 
             };
             const orderDiff = (typeOrder[a.type] || 99) - (typeOrder[b.type] || 99);
             if (orderDiff !== 0) return orderDiff;
@@ -628,7 +635,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
               let timestep = null;
               let type = 'slice';
 
-              if (filename === 'internal_mesh_complete.vtkjs') {
+              if (filename === 'surface_3d.vtk') {
+                type = 'surface_3d';
+                timestep = 0;
+              } else if (filename === 'volume_internal.vtk') {
+                type = 'volume_internal';
+                timestep = 0;
+              } else if (filename === 'internal_mesh_complete.vtkjs') {
                 type = 'volume_complete';
                 timestep = 0;
               } else if (filename.startsWith('openfoam_')) {
@@ -672,11 +685,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         files = files.sort((a, b) => {
           const typeOrder: Record<string, number> = {
-            volume_complete: 0,
-            boundary: 1,
-            volume: 2,
-            volume_internal: 3,
-            slice: 4,
+            surface_3d: 0,
+            volume_complete: 1,
+            boundary: 2,
+            volume: 3,
+            volume_internal: 4,
+            slice: 5,
           };
           const orderDiff = (typeOrder[a.type] || 99) - (typeOrder[b.type] || 99);
           if (orderDiff !== 0) return orderDiff;
@@ -687,9 +701,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Get latest volume file (prioritize volume_complete from post-processing)
-      // Since files are already sorted by priority, just find first volume
-      const latestVolume = files.find(f => 
+      // Get latest volume file — prefer surface_3d (full 3D room) then older volume types
+      const latestVolume = files.find(f =>
+        f.type === 'surface_3d'
+      ) || files.find(f =>
         f.type === 'volume_complete'
       ) || files.find(f =>
         f.type === 'volume_internal'

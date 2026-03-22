@@ -9,7 +9,11 @@ from pathlib import Path
 project_root = str(Path(__file__).parent.parent)
 sys.path.insert(0, project_root)
 
-from src.components.post.objects import analyze_comfort_planes, generate_html_report, analyze_flow_planes, generate_flow_html_report
+from src.components.post.objects import (
+    analyze_comfort_planes, generate_html_report,
+    analyze_flow_planes, generate_flow_html_report,
+    generate_surface_3d_vtk, generate_volume_internal_vtk,
+)
 from src.components.post.ventilation import analyze_ventilation_planes, generate_ventilation_html_report
 from src.components.post.setup_summary import analyze_setup_summary, generate_setup_html_report
 from src.components.post.datacenter import run_data_centers
@@ -158,6 +162,24 @@ def run_indoor_spaces(case_name: str, sim_path: str, post_path: str) -> None:
     setup_html_path = generate_setup_html_report(setup_summary, post_path, case_name=case_name)
     logger.info(f"Setup report: {setup_html_path}")
     
+    # Generate 3D boundary surface VTK for web viewer
+    logger.info("\n10 - Generating 3D boundary surface VTK (walls, floor, ceiling, door, window)")
+    performance_monitor.update_memory()
+    try:
+        surface_3d_path = generate_surface_3d_vtk(sim_path, post_path)
+        logger.info(f"3D surface VTK: {surface_3d_path}")
+    except Exception as e:
+        logger.warning(f"   ⚠ generate_surface_3d_vtk failed (non-fatal): {e}")
+
+    # Generate 3D internal volume VTK for web viewer
+    logger.info("\n11 - Generating 3D internal volume VTK (air volume surface)")
+    performance_monitor.update_memory()
+    try:
+        volume_internal_path = generate_volume_internal_vtk(sim_path, post_path)
+        logger.info(f"3D volume VTK: {volume_internal_path}")
+    except Exception as e:
+        logger.warning(f"   ⚠ generate_volume_internal_vtk failed (non-fatal): {e}")
+
     # Summary
     logger.info("\n=========== COMFORT ANALYSIS SUMMARY ===========")
     for plane_name, metrics in results.items():

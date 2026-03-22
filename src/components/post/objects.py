@@ -1909,3 +1909,200 @@ def generate_flow_html_report(results, post_path, case_name='CFD_Case'):
     logger.info(f"    * Open in browser: file://{html_path}")
     
     return html_path
+
+
+def _map_slice_fields_to_mesh(mesh, vtk_dir):
+    """
+    Map CFD fields from existing 2D slice VTK files onto a mesh using nearest-neighbour
+    interpolation (scipy cKDTree).  Called when the OpenFOAM reader returns an empty field
+    set (fields were computed on cloud HPC and not downloaded locally).
+
+    Args:
+        mesh:    PyVista PolyData / UnstructuredGrid (geometry-only, no field arrays)
+        vtk_dir: Directory that contains flow_plane_*.vtk files from analyze_flow_planes()
+
+    Returns:
+        The same mesh with CFD fields added to point_data (in-place modification + return).
+    """
+    import glob
+    from scipy.spatial import cKDTree
+
+    slice_pattern = os.path.join(vtk_dir, 'flow_plane_*.vtk')
+    slice_files = sorted(glob.glob(slice_pattern))
+
+    if not slice_files:
+        logger.warning(f"    * _map_slice_fields_to_mesh: no flow_plane_*.vtk in {vtk_dir}")
+        return mesh
+
+    slice_data = pv.read(slice_files[0])
+    for f in slice_files[1:]:
+        slice_data = slice_data.merge(pv.read(f), merge_points=False)
+
+    logger.info(f"    * Loaded {len(slice_files)} slice files — {slice_data.n_points} pts, "
+                f"fields: {list(slice_data.point_data.keys())}")
+
+    tree = cKDTree(slice_data.points)
+    _, idxs = tree.query(mesh.points, k=1)
+
+    for field_name in slice_data.point_data.keys():
+        arr = slice_data.point_data[field_name]
+        mesh.point_data[field_name] = arr[idxs]
+
+    logger.info(f"    * Mapped {len(slice_data.point_data.keys())} fields onto {mesh.n_points} pts "
+                f"(max NN dist = {tree.query(mesh.points, k=1)[0].max():.3f} m)")
+    return mesh
+
+
+def generate_surface_3d_vtk(sim_path, post_path):
+    """
+    Generate a 3D boundary surface VTK file covering all room patches
+    (walls, floor, ceiling, doors, windows) with CFD field data.
+
+    Strategy:
+      1. Read every boundary patch from OpenFOAM case.foam / results.foam.
+      2. Merge all patches into a single PolyData.
+      3. If the mesh reader returns CFD fields → use them directly.
+         Otherwise → nearest-neighbour projection from existing flow_plane_*.vtk
+         slice files that were already written by analyze_flow_planes().
+      4. Write ASCII VTK to post_path/vtk/surface_3d.vtk.
+
+    Args:
+        sim_path:  Path to the OpenFOAM simulation directory.
+        post_path: Path to the post-processing output directory.
+
+    Returns:
+        str: Absolute path to the generated VTK file.
+    """
+    vtk_dir = os.path.join(post_path, 'vtk')
+    os.makedirs(vtk_dir, exist_ok=True)
+    output_path = os.path.join(vtk_dir, 'surface_3d.vtk')
+
+    logger.info("    * generate_surface_3d_vtk: reading boundary patches from OpenFOAM case")
+
+    foam_file = os.path.join(sim_path, 'results.foam')
+    if not os.path.exists(foam_file):
+        foam_file = os.path.join(sim_path, 'case.foam')
+    if not os.path.exists(foam_file):
+        raise FileNotFoundError(f"No results.foam / case.foam found in {sim_path}")
+
+    reader = pv.get_reader(foam_file)
+    reader.set_active_time_value(reader.time_values[-1])
+    mesh_raw = reader.read()
+
+    boundary_block = mesh_raw.get('boundary', None)
+    if boundary_block is None or not isinstance(boundary_block, pv.MultiBlock):
+        raise ValueError("No 'boundary' MultiBlock found in OpenFOAM reader output")
+
+    patches = []
+    for i in range(boundary_block.n_blocks):
+        patch = boundary_block[i]
+        if patch is not None and hasattr(patch, 'n_cells') and patch.n_cells > 0:
+            logger.info(f"       Patch '{boundary_block.keys()[i]}': {patch.n_cells} cells")
+            patches.append(patch)
+
+    if not patches:
+        raise ValueError("No non-empty boundary patches found in OpenFOAM case")
+
+    surface_mesh = patches[0]
+    for p in patches[1:]:
+        surface_mesh = surface_mesh.merge(p, merge_points=False)
+
+    logger.info(f"    * Merged {len(patches)} patches → {surface_mesh.n_points} pts, "
+                f"{surface_mesh.n_cells} cells")
+
+    has_fields = bool(surface_mesh.point_data.keys()) or bool(surface_mesh.cell_data.keys())
+
+    if has_fields:
+        logger.info("    * Field data present in mesh reader — using directly")
+        if surface_mesh.cell_data.keys():
+            surface_mesh = surface_mesh.cell_data_to_point_data()
+    else:
+        logger.info("    * No field data from reader — projecting from 2D slice VTK files")
+        surface_mesh = _map_slice_fields_to_mesh(surface_mesh, vtk_dir)
+
+    for key in ('vtkValidPointMask', 'vtkGhostType', 'vtkOriginalPointIds'):
+        if key in surface_mesh.point_data:
+            surface_mesh.point_data.remove(key)
+
+    surface_mesh.save(output_path, binary=False)
+    size_kb = os.path.getsize(output_path) // 1024
+    logger.info(f"    * ✓ surface_3d.vtk saved: {output_path} ({size_kb} KB)")
+
+    return output_path
+
+
+def generate_volume_internal_vtk(sim_path, post_path):
+    """
+    Generate a 3D internal air volume VTK file (the exterior shell of the
+    internal mesh) with CFD field data.
+
+    Strategy:
+      1. Read the internalMesh from OpenFOAM case.foam / results.foam.
+      2. Extract its surface (PolyData) — gives the complete room envelope from
+         the internal mesh perspective, including finer mesh detail than the
+         boundary patches alone.
+      3. Map CFD field data (same logic as generate_surface_3d_vtk).
+      4. Write ASCII VTK to post_path/vtk/volume_internal.vtk.
+
+    Args:
+        sim_path:  Path to the OpenFOAM simulation directory.
+        post_path: Path to the post-processing output directory.
+
+    Returns:
+        str: Absolute path to the generated VTK file.
+    """
+    vtk_dir = os.path.join(post_path, 'vtk')
+    os.makedirs(vtk_dir, exist_ok=True)
+    output_path = os.path.join(vtk_dir, 'volume_internal.vtk')
+
+    logger.info("    * generate_volume_internal_vtk: reading internal mesh from OpenFOAM case")
+
+    foam_file = os.path.join(sim_path, 'results.foam')
+    if not os.path.exists(foam_file):
+        foam_file = os.path.join(sim_path, 'case.foam')
+    if not os.path.exists(foam_file):
+        raise FileNotFoundError(f"No results.foam / case.foam found in {sim_path}")
+
+    reader = pv.get_reader(foam_file)
+    reader.set_active_time_value(reader.time_values[-1])
+    mesh_raw = reader.read()
+
+    internal_block = mesh_raw.get('internalMesh', None)
+    if internal_block is not None:
+        internal_mesh = internal_block
+    else:
+        internal_mesh = mesh_raw.combine()
+
+    logger.info(f"    * Internal mesh: {internal_mesh.n_points} pts, {internal_mesh.n_cells} cells")
+
+    surface_mesh = internal_mesh.extract_surface()
+    logger.info(f"    * Surface extracted: {surface_mesh.n_points} pts, {surface_mesh.n_cells} cells")
+
+    VTK_INTERNAL_KEYS = {
+        'vtkOriginalPointIds', 'vtkOriginalCellIds',
+        'vtkValidPointMask', 'vtkGhostType',
+    }
+    CFD_FIELDS = {
+        'T', 'U', 'p', 'p_rgh', 'CO2', 'PMV', 'PPD',
+        'G', 'qr', 'k', 'omega', 'nut', 'alphat', 'a',
+    }
+    field_keys = list(surface_mesh.point_data.keys()) + list(surface_mesh.cell_data.keys())
+    real_cfd_fields = [k for k in field_keys if k in CFD_FIELDS]
+
+    if real_cfd_fields:
+        logger.info(f"    * CFD fields in extracted surface: {real_cfd_fields} — using directly")
+        if surface_mesh.cell_data.keys():
+            surface_mesh = surface_mesh.cell_data_to_point_data()
+    else:
+        logger.info("    * No CFD field data — projecting from 2D slice VTK files")
+        surface_mesh = _map_slice_fields_to_mesh(surface_mesh, vtk_dir)
+
+    for key in list(surface_mesh.point_data.keys()):
+        if key in VTK_INTERNAL_KEYS:
+            surface_mesh.point_data.remove(key)
+
+    surface_mesh.save(output_path, binary=False)
+    size_kb = os.path.getsize(output_path) // 1024
+    logger.info(f"    * ✓ volume_internal.vtk saved: {output_path} ({size_kb} KB)")
+
+    return output_path
