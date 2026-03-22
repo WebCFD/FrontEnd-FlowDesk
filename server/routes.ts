@@ -580,7 +580,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               volume_internal: 4, 
               slice: 5 
             };
-            const orderDiff = (typeOrder[a.type] || 99) - (typeOrder[b.type] || 99);
+            const orderDiff = (typeOrder[a.type] ?? 99) - (typeOrder[b.type] ?? 99);
             if (orderDiff !== 0) return orderDiff;
             
             // Within same type, sort by timestep (descending)
@@ -692,7 +692,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             volume_internal: 4,
             slice: 5,
           };
-          const orderDiff = (typeOrder[a.type] || 99) - (typeOrder[b.type] || 99);
+          const orderDiff = (typeOrder[a.type] ?? 99) - (typeOrder[b.type] ?? 99);
           if (orderDiff !== 0) return orderDiff;
           if (a.timestep !== null && b.timestep !== null) {
             return b.timestep - a.timestep;
