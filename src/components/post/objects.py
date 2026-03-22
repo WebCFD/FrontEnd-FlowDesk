@@ -307,9 +307,9 @@ def analyze_comfort_planes(sim_path, post_path):
         
         results[name] = metrics
         
-        # Save VTK slice
+        # Save VTK slice — ASCII format required for vtk.js web viewer
         vtk_path = os.path.join(vtk_dir, f'comfort_plane_{name}_{z_height}m.vtk')
-        slice_mesh.save(vtk_path)
+        slice_mesh.save(vtk_path, binary=False)
         logger.info(f"       Saved VTK: {os.path.basename(vtk_path)}")
         
         # Render PMV image
@@ -1380,9 +1380,9 @@ def analyze_flow_planes(sim_path, post_path):
         
         results[name] = metrics
         
-        # Save VTK slice
+        # Save VTK slice — ASCII format required for vtk.js web viewer
         vtk_path = os.path.join(vtk_dir, f'flow_plane_{name}_{z_height}m.vtk')
-        slice_mesh.save(vtk_path)
+        slice_mesh.save(vtk_path, binary=False)
         logger.info(f"       Saved VTK: {os.path.basename(vtk_path)}")
         
         # Render T image (with boundary patches)

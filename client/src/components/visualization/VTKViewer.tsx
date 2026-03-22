@@ -1298,9 +1298,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       }
 
       // Parsear archivo VTK Legacy ASCII usando el lector nativo de vtk.js
-      const arrayBuffer = await response.arrayBuffer();
+      const vtkText = await response.text();
       const reader = vtkPolyDataReader.newInstance();
-      reader.parseAsArrayBuffer(arrayBuffer);
+      reader.parseAsText(vtkText);
       const polyData = reader.getOutputData(0);
 
       if (!polyData) {

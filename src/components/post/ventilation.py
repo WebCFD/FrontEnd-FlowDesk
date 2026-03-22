@@ -705,9 +705,9 @@ def analyze_ventilation_planes(sim_path, post_path):
         
         results[name] = metrics
         
-        # Save VTK slice
+        # Save VTK slice — ASCII format required for vtk.js web viewer
         vtk_path = os.path.join(vtk_dir, f'ventilation_plane_{name}_{z_height}m.vtk')
-        slice_mesh.save(vtk_path)
+        slice_mesh.save(vtk_path, binary=False)
         logger.info(f"       Saved VTK: {os.path.basename(vtk_path)}")
         
         # Render CO2 image if available
