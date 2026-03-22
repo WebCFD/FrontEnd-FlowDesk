@@ -201,9 +201,15 @@ function normalizeScalarRange(
  * Replaces vtkPolyDataReader which has a bug with VTK 5.1 files (unbound setData callback).
  * Token-based: splits all content into a flat token array and walks with a cursor,
  * handling POINTS, POLYGONS, SCALARS, VECTORS, and FIELD sections.
+ * Supports both legacy VTK and VTK 5.1 OFFSETS/CONNECTIVITY polygon format.
  */
-function parseVtkAscii(text: string): any {
+function parseVtkAscii(text: string): ReturnType<typeof vtkPolyData.newInstance> {
   const lines = text.split(/\r?\n/);
+
+  // Validate header: line 2 must be ASCII (binary files are unsupported here)
+  if (lines[2] && !lines[2].trim().toUpperCase().startsWith('ASCII')) {
+    throw new Error(`parseVtkAscii: expected ASCII format, got: ${lines[2].trim()}`);
+  }
 
   // Collect all tokens starting from line 3 (skip: version, title, ASCII/BINARY lines)
   const tokens: string[] = [];
@@ -211,6 +217,12 @@ function parseVtkAscii(text: string): any {
     const parts = lines[lineIdx].trim().split(/\s+/);
     for (const p of parts) {
       if (p.length > 0) tokens.push(p);
+    }
+  }
+
+  function need(cursor: number, count: number, section: string) {
+    if (cursor + count > tokens.length) {
+      throw new Error(`parseVtkAscii: insufficient tokens in ${section} (need ${count}, have ${tokens.length - cursor})`);
     }
   }
 
