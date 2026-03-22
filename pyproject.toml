@@ -19,6 +19,7 @@ dependencies = [
     "matplotlib>=3.10.7",
     "boto3>=1.41.5",
     "pythermalcomfort>=3.8.0",
+    "scipy>=1.11.0",
     "botocore>=1.41.5",
     "supervisor>=4.3.0",
 ]

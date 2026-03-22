@@ -2010,14 +2010,22 @@ def generate_surface_3d_vtk(sim_path, post_path):
     logger.info(f"    * Merged {len(patches)} patches → {surface_mesh.n_points} pts, "
                 f"{surface_mesh.n_cells} cells")
 
-    has_fields = bool(surface_mesh.point_data.keys()) or bool(surface_mesh.cell_data.keys())
+    # Detect real CFD arrays only (not VTK-internal geometry metadata like
+    # vtkOriginalPointIds, vtkGhostType which may be present even when CFD
+    # has not converged or when the mesh is opened in geometry-only mode).
+    CFD_FIELDS = {
+        'T', 'U', 'p', 'p_rgh', 'CO2', 'PMV', 'PPD',
+        'G', 'qr', 'k', 'omega', 'nut', 'alphat', 'a',
+    }
+    field_keys = list(surface_mesh.point_data.keys()) + list(surface_mesh.cell_data.keys())
+    real_cfd_fields = [k for k in field_keys if k in CFD_FIELDS]
 
-    if has_fields:
-        logger.info("    * Field data present in mesh reader — using directly")
+    if real_cfd_fields:
+        logger.info(f"    * Real CFD fields present in mesh reader ({real_cfd_fields}) — using directly")
         if surface_mesh.cell_data.keys():
             surface_mesh = surface_mesh.cell_data_to_point_data()
     else:
-        logger.info("    * No field data from reader — projecting from 2D slice VTK files")
+        logger.info("    * No real CFD field data from reader — projecting from 2D slice VTK files")
         surface_mesh = _map_slice_fields_to_mesh(surface_mesh, vtk_dir)
 
     for key in ('vtkValidPointMask', 'vtkGhostType', 'vtkOriginalPointIds'):
@@ -2102,21 +2110,27 @@ def generate_volume_internal_vtk(sim_path, post_path):
             internal_mesh.point_data.remove(key)
 
     # Estimate full UnstructuredGrid ASCII file size before writing.
-    # If the estimate exceeds 20 MB, fall back to a decimated surface extraction
-    # so the web viewer can still load the file without excessive parse time.
-    FALLBACK_SIZE_BYTES = 20 * 1024 * 1024  # 20 MB
+    # The threshold is set to 500 MB: only truly enormous meshes (HPC-refined
+    # grids with millions of cells) would exceed this.  Normal room simulations
+    # (~100 k cells) typically produce 15–80 MB ASCII files.
+    # Fallback strategy: extract the boundary surface of the mesh and apply 50%
+    # Quadric decimation so the file remains a useful 3D representation rather
+    # than a flat reconstruction.
+    FALLBACK_SIZE_BYTES = 500 * 1024 * 1024  # 500 MB
     n_pts = internal_mesh.n_points
     n_fields = len(internal_mesh.point_data.keys())
-    # Rough estimate: 8 bytes per float value; geometry + CELLS + CELL_TYPES + fields
+    # Rough estimate: 8 chars per float value; geometry + CELLS + CELL_TYPES + fields
     estimated_bytes = n_pts * 3 * 8 + internal_mesh.n_cells * 9 * 8 + n_pts * n_fields * 8
 
     if estimated_bytes > FALLBACK_SIZE_BYTES:
         logger.warning(
             f"    * Estimated UnstructuredGrid size {estimated_bytes//1024//1024}MB exceeds threshold "
-            f"({FALLBACK_SIZE_BYTES//1024//1024}MB) — falling back to surface extraction"
+            f"({FALLBACK_SIZE_BYTES//1024//1024}MB) — falling back to decimated surface extraction"
         )
-        mesh_to_save = internal_mesh.extract_surface()
-        logger.info(f"    * Surface (fallback): {mesh_to_save.n_points} pts, {mesh_to_save.n_cells} cells")
+        surface = internal_mesh.extract_surface()
+        # Decimate to 50 % of triangles to keep file manageable
+        mesh_to_save = surface.decimate(0.5)
+        logger.info(f"    * Decimated surface (fallback): {mesh_to_save.n_points} pts, {mesh_to_save.n_cells} cells")
         # Strip VTK-internal keys from surface too
         for key in list(mesh_to_save.point_data.keys()):
             if key in VTK_INTERNAL_KEYS:
