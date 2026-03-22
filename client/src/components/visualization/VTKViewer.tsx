@@ -19,12 +19,11 @@ import vtkInteractorStyleTrackballCamera from '@kitware/vtk.js/Interaction/Style
 import vtkOpenGLRenderWindow from '@kitware/vtk.js/Rendering/OpenGL/RenderWindow';
 import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
 import vtkMapper from '@kitware/vtk.js/Rendering/Core/Mapper';
-import vtkPolyData from '@kitware/vtk.js/Common/DataModel/PolyData';
-import vtkPoints from '@kitware/vtk.js/Common/Core/Points';
 import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 import vtkColorTransferFunction from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction';
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
 import vtkPlane from '@kitware/vtk.js/Common/DataModel/Plane';
+import vtkPolyDataReader from '@kitware/vtk.js/IO/Legacy/PolyDataReader';
 // @ts-ignore - vtkCutter doesn't have type declarations but works fine
 import vtkCutter from '@kitware/vtk.js/Filters/Core/Cutter';
 import vtkPlaneSource from '@kitware/vtk.js/Filters/Sources/PlaneSource';
@@ -1298,56 +1297,27 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         throw new Error(`File not found: ${response.status}`);
       }
 
-      // Parsear archivo JSON .vtkjs manualmente (no es VTK legacy)
-      const vtkData = await response.json();
-      console.log('[VTKViewer] Parsed VTK JSON:', {
-        pointsSize: vtkData.points?.size || 0,
-        polysSize: vtkData.polys?.size || 0,
-        pointDataArrays: vtkData.pointData?.arrays?.length || 0
+      // Parsear archivo VTK Legacy ASCII usando el lector nativo de vtk.js
+      const arrayBuffer = await response.arrayBuffer();
+      const reader = vtkPolyDataReader.newInstance();
+      reader.parseAsArrayBuffer(arrayBuffer);
+      const polyData = reader.getOutputData(0);
+
+      if (!polyData) {
+        throw new Error('Failed to parse VTK file — reader returned no data');
+      }
+
+      const numArrays = polyData.getPointData().getNumberOfArrays();
+      const arrayNames: string[] = [];
+      for (let i = 0; i < numArrays; i++) {
+        const arr = polyData.getPointData().getArray(i);
+        if (arr) arrayNames.push(`${arr.getName()} (${arr.getNumberOfComponents()} components)`);
+      }
+      console.log('[VTKViewer] Parsed VTK legacy file:', {
+        points: polyData.getNumberOfPoints(),
+        cells: polyData.getNumberOfCells(),
+        pointDataArrays: arrayNames,
       });
-
-      // Crear PolyData desde el JSON
-      const polyData = vtkPolyData.newInstance();
-      const points = vtkPoints.newInstance();
-
-      // Cargar puntos
-      if (vtkData.points?.values) {
-        const pointsData = new Float32Array(vtkData.points.values);
-        points.setData(pointsData);
-        polyData.setPoints(points);
-      }
-
-      // Cargar polígonos
-      if (vtkData.polys?.values) {
-        const polysData = new Uint32Array(vtkData.polys.values);
-        polyData.getPolys().setData(polysData);
-      }
-
-      // Cargar datos de punto (presión, velocidad, etc.)
-      if (vtkData.pointData?.arrays) {
-        const arrayNames: string[] = [];
-        for (const arrayInfo of vtkData.pointData.arrays) {
-          if (arrayInfo.data?.values) {
-            const dataArray = vtkDataArray.newInstance({
-              name: arrayInfo.data.name,
-              dataType: arrayInfo.data.dataType,
-              numberOfComponents: arrayInfo.data.numberOfComponents || 1,
-              values: arrayInfo.data.values
-            });
-
-            arrayNames.push(`${arrayInfo.data.name} (${arrayInfo.data.numberOfComponents || 1} components)`);
-
-            // Si es el primer array o es presión, usarlo como scalars
-            if (arrayInfo.data.name === 'p' || arrayInfo.data.name === 'pressure' || 
-                polyData.getPointData().getNumberOfArrays() === 0) {
-              polyData.getPointData().setScalars(dataArray);
-            } else {
-              polyData.getPointData().addArray(dataArray);
-            }
-          }
-        }
-        console.log('[VTKViewer] Available point data arrays:', arrayNames);
-      }
 
       const dataset = polyData;
       
