@@ -227,10 +227,10 @@ function parseVtkAscii(text: string): any {
       i += 2;
 
     } else if (tok === 'POINTS') {
-      numPoints = parseInt(tokens[i + 1]);
+      numEntries = parseInt(tokens[i + 1]);
       // tokens[i+2] = type (float/double)
       i += 3;
-      const n = numPoints * 3;
+      const n = numEntries * 3;
       const vals = new Float32Array(n);
       for (let j = 0; j < n; j++) {
         vals[j] = parseFloat(tokens[i++]);
