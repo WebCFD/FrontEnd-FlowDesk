@@ -239,14 +239,54 @@ function parseVtkAscii(text: string): any {
       polyData.setPoints(pts);
 
     } else if (tok === 'POLYGONS' || tok === 'TRIANGLE_STRIPS') {
+      // In VTK 5.1 format (OFFSETS/CONNECTIVITY), the first number in the POLYGONS
+      // header is the number of OFFSETS entries (= actual cell count + 1).
+      // In legacy format, it is the number of cells.
+      const headerNum = parseInt(tokens[i + 1]);
       const total = parseInt(tokens[i + 2]);
       i += 3;
-      const vals = new Uint32Array(total);
-      for (let j = 0; j < total; j++) {
-        vals[j] = parseInt(tokens[i++]);
+
+      let legacyData: Uint32Array;
+
+      if (tokens[i] === 'OFFSETS') {
+        // VTK 5.1 format: OFFSETS vtktypeXXX (numOffsets = headerNum values) + CONNECTIVITY vtktypeXXX (total values)
+        // numOffsets = headerNum, actual cells = numOffsets - 1
+        const numOffsets = headerNum;
+        const nActualCells = numOffsets - 1;
+        i += 2; // skip 'OFFSETS' and type token (e.g. 'vtktypeint64')
+        const offsets = new Uint32Array(numOffsets);
+        for (let j = 0; j < numOffsets; j++) {
+          offsets[j] = parseInt(tokens[i++]);
+        }
+        // Skip 'CONNECTIVITY' and type token
+        i += 2;
+        const connectivity = new Uint32Array(total);
+        for (let j = 0; j < total; j++) {
+          connectivity[j] = parseInt(tokens[i++]);
+        }
+        // Convert to vtk.js legacy cell format: [n, v0, v1, ..., n, v0, ...]
+        const legacySize = total + nActualCells;
+        legacyData = new Uint32Array(legacySize);
+        let li = 0;
+        for (let c = 0; c < nActualCells; c++) {
+          const start = offsets[c];
+          const end = offsets[c + 1];
+          const cellSize = end - start;
+          legacyData[li++] = cellSize;
+          for (let j = start; j < end; j++) {
+            legacyData[li++] = connectivity[j];
+          }
+        }
+      } else {
+        // Legacy VTK format: total values already in [n, v0, v1, ..., n, v0, ...] form
+        legacyData = new Uint32Array(total);
+        for (let j = 0; j < total; j++) {
+          legacyData[j] = parseInt(tokens[i++]);
+        }
       }
+
       const cells = vtkCellArray.newInstance();
-      cells.setData(vals);
+      cells.setData(legacyData);
       if (tok === 'POLYGONS') polyData.setPolys(cells);
       else polyData.setStrips(cells);
 
