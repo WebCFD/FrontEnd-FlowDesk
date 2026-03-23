@@ -588,7 +588,7 @@ def calculate_global_ventilation_metrics(internal_mesh, sim_path, multiblock=Non
     }
 
 
-def analyze_ventilation_planes(sim_path, post_path):
+def analyze_ventilation_planes(sim_path, post_path, internal_mesh=None, surfaces_mesh=None, multiblock=None):
     """
     Analyze ventilation metrics in 3 horizontal planes.
     
@@ -600,6 +600,9 @@ def analyze_ventilation_planes(sim_path, post_path):
     Args:
         sim_path: Path to simulation directory
         post_path: Path to post-processing output directory
+        internal_mesh: Pre-loaded combined mesh (optional — skips load_foam_results if provided)
+        surfaces_mesh: Pre-loaded boundary surface mesh (optional)
+        multiblock: Pre-loaded MultiBlock (optional)
         
     Returns:
         dict: Ventilation metrics for all planes + global metrics
@@ -610,9 +613,12 @@ def analyze_ventilation_planes(sim_path, post_path):
     logger.info("    * Attempting to load transient data for εv calculation")
     mesh_t0, mesh_tf, multiblock_t0, multiblock_tf, time_values = load_foam_results_transient(sim_path)
     
-    # Load 3D mesh (final timestep for plane analysis)
-    logger.info("    * Loading CFD results (final timestep)")
-    internal_mesh, surfaces_mesh, multiblock = load_foam_results(sim_path)
+    if internal_mesh is None:
+        # Load 3D mesh (final timestep for plane analysis)
+        logger.info("    * Loading CFD results (final timestep)")
+        internal_mesh, surfaces_mesh, multiblock = load_foam_results(sim_path)
+    else:
+        logger.info("    * Using pre-loaded CFD mesh (skipping load_foam_results)")
     
     logger.info(f"    * Loaded mesh with {internal_mesh.n_cells:,} cells")
     

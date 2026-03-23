@@ -160,7 +160,12 @@ def run_indoor_spaces(case_name: str, sim_path: str, post_path: str) -> None:
     logger.info("\n6 - Analyzing ventilation metrics in horizontal planes")
     performance_monitor.update_memory()
     
-    ventilation_results = analyze_ventilation_planes(sim_path, post_path)
+    ventilation_results = analyze_ventilation_planes(
+        sim_path, post_path,
+        internal_mesh=internal_mesh,
+        surfaces_mesh=surfaces_mesh,
+        multiblock=multiblock,
+    )
     performance_monitor.update_memory()
     
     # Generate HTML ventilation report
