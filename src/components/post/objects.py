@@ -1951,13 +1951,14 @@ def _map_slice_fields_to_mesh(mesh, vtk_dir):
     return mesh
 
 
-def generate_surface_3d_vtk(sim_path, post_path):
+def generate_surface_3d_vtk(sim_path, post_path, preloaded_multiblock=None):
     """
     Generate a 3D boundary surface VTK file covering all room patches
     (walls, floor, ceiling, doors, windows) with CFD field data.
 
     Strategy:
       1. Read every boundary patch from OpenFOAM case.foam / results.foam.
+         (Skipped when preloaded_multiblock is provided — avoids redundant I/O.)
       2. Merge all patches into a single PolyData.
       3. If the mesh reader returns CFD fields → use them directly.
          Otherwise → nearest-neighbour projection from existing flow_plane_*.vtk
@@ -1965,8 +1966,11 @@ def generate_surface_3d_vtk(sim_path, post_path):
       4. Write ASCII VTK to post_path/vtk/surface_3d.vtk.
 
     Args:
-        sim_path:  Path to the OpenFOAM simulation directory.
-        post_path: Path to the post-processing output directory.
+        sim_path:             Path to the OpenFOAM simulation directory.
+        post_path:            Path to the post-processing output directory.
+        preloaded_multiblock: Pre-loaded raw MultiBlock from pv.get_reader().read()
+                              (optional — as returned by load_foam_results multiblock).
+                              When provided the reader step is skipped.
 
     Returns:
         str: Absolute path to the generated VTK file.
@@ -1975,22 +1979,24 @@ def generate_surface_3d_vtk(sim_path, post_path):
     os.makedirs(vtk_dir, exist_ok=True)
     output_path = os.path.join(vtk_dir, 'surface_3d.vtk')
 
-    logger.info("    * generate_surface_3d_vtk: reading boundary patches from OpenFOAM case")
-
-    foam_file = os.path.join(sim_path, 'results.foam')
-    if not os.path.exists(foam_file):
-        foam_file = os.path.join(sim_path, 'case.foam')
-    if not os.path.exists(foam_file):
-        raise FileNotFoundError(f"No results.foam / case.foam found in {sim_path}")
-
-    reader = pv.get_reader(foam_file)
-    if not reader.time_values:
-        raise ValueError(
-            f"No time steps found in OpenFOAM case at {foam_file} — "
-            "simulation results may be incomplete or not downloaded correctly"
-        )
-    reader.set_active_time_value(reader.time_values[-1])
-    mesh_raw = reader.read()
+    if preloaded_multiblock is not None:
+        logger.info("    * generate_surface_3d_vtk: using pre-loaded MultiBlock (skipping reader)")
+        mesh_raw = preloaded_multiblock
+    else:
+        logger.info("    * generate_surface_3d_vtk: reading boundary patches from OpenFOAM case")
+        foam_file = os.path.join(sim_path, 'results.foam')
+        if not os.path.exists(foam_file):
+            foam_file = os.path.join(sim_path, 'case.foam')
+        if not os.path.exists(foam_file):
+            raise FileNotFoundError(f"No results.foam / case.foam found in {sim_path}")
+        reader = pv.get_reader(foam_file)
+        if not reader.time_values:
+            raise ValueError(
+                f"No time steps found in OpenFOAM case at {foam_file} — "
+                "simulation results may be incomplete or not downloaded correctly"
+            )
+        reader.set_active_time_value(reader.time_values[-1])
+        mesh_raw = reader.read()
 
     boundary_block = mesh_raw.get('boundary', None)
     if boundary_block is None or not isinstance(boundary_block, pv.MultiBlock):
@@ -2042,22 +2048,26 @@ def generate_surface_3d_vtk(sim_path, post_path):
     return output_path
 
 
-def generate_volume_internal_vtk(sim_path, post_path):
+def generate_volume_internal_vtk(sim_path, post_path, preloaded_multiblock=None):
     """
     Generate a 3D internal air volume VTK file (the exterior shell of the
     internal mesh) with CFD field data.
 
     Strategy:
       1. Read the internalMesh from OpenFOAM case.foam / results.foam.
+         (Skipped when preloaded_multiblock is provided — avoids redundant I/O.)
       2. Extract its surface (PolyData) — gives the complete room envelope from
          the internal mesh perspective, including finer mesh detail than the
          boundary patches alone.
       3. Map CFD field data (same logic as generate_surface_3d_vtk).
-      4. Write ASCII VTK to post_path/vtk/volume_internal.vtk.
+      4. Write binary VTK to post_path/vtk/volume_internal.vtk.
 
     Args:
-        sim_path:  Path to the OpenFOAM simulation directory.
-        post_path: Path to the post-processing output directory.
+        sim_path:             Path to the OpenFOAM simulation directory.
+        post_path:            Path to the post-processing output directory.
+        preloaded_multiblock: Pre-loaded raw MultiBlock from pv.get_reader().read()
+                              (optional — as returned by load_foam_results multiblock).
+                              When provided the reader step is skipped.
 
     Returns:
         str: Absolute path to the generated VTK file.
@@ -2066,22 +2076,24 @@ def generate_volume_internal_vtk(sim_path, post_path):
     os.makedirs(vtk_dir, exist_ok=True)
     output_path = os.path.join(vtk_dir, 'volume_internal.vtk')
 
-    logger.info("    * generate_volume_internal_vtk: reading internal mesh from OpenFOAM case")
-
-    foam_file = os.path.join(sim_path, 'results.foam')
-    if not os.path.exists(foam_file):
-        foam_file = os.path.join(sim_path, 'case.foam')
-    if not os.path.exists(foam_file):
-        raise FileNotFoundError(f"No results.foam / case.foam found in {sim_path}")
-
-    reader = pv.get_reader(foam_file)
-    if not reader.time_values:
-        raise ValueError(
-            f"No time steps found in OpenFOAM case at {foam_file} — "
-            "simulation results may be incomplete or not downloaded correctly"
-        )
-    reader.set_active_time_value(reader.time_values[-1])
-    mesh_raw = reader.read()
+    if preloaded_multiblock is not None:
+        logger.info("    * generate_volume_internal_vtk: using pre-loaded MultiBlock (skipping reader)")
+        mesh_raw = preloaded_multiblock
+    else:
+        logger.info("    * generate_volume_internal_vtk: reading internal mesh from OpenFOAM case")
+        foam_file = os.path.join(sim_path, 'results.foam')
+        if not os.path.exists(foam_file):
+            foam_file = os.path.join(sim_path, 'case.foam')
+        if not os.path.exists(foam_file):
+            raise FileNotFoundError(f"No results.foam / case.foam found in {sim_path}")
+        reader = pv.get_reader(foam_file)
+        if not reader.time_values:
+            raise ValueError(
+                f"No time steps found in OpenFOAM case at {foam_file} — "
+                "simulation results may be incomplete or not downloaded correctly"
+            )
+        reader.set_active_time_value(reader.time_values[-1])
+        mesh_raw = reader.read()
 
     internal_block = mesh_raw.get('internalMesh', None)
     if internal_block is not None:

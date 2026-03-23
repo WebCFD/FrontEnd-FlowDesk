@@ -189,7 +189,7 @@ def run_indoor_spaces(case_name: str, sim_path: str, post_path: str) -> None:
     logger.info("\n10 - Generating 3D boundary surface VTK (walls, floor, ceiling, door, window)")
     performance_monitor.update_memory()
     try:
-        surface_3d_path = generate_surface_3d_vtk(sim_path, post_path)
+        surface_3d_path = generate_surface_3d_vtk(sim_path, post_path, preloaded_multiblock=multiblock)
         logger.info(f"3D surface VTK: {surface_3d_path}")
     except Exception as _e:
         logger.error(f"10 - FAILED: generate_surface_3d_vtk raised {type(_e).__name__}: {_e}")
@@ -202,7 +202,7 @@ def run_indoor_spaces(case_name: str, sim_path: str, post_path: str) -> None:
     logger.info("\n11 - Generating 3D internal volume VTK (UnstructuredGrid internal air volume)")
     performance_monitor.update_memory()
     try:
-        volume_internal_path = generate_volume_internal_vtk(sim_path, post_path)
+        volume_internal_path = generate_volume_internal_vtk(sim_path, post_path, preloaded_multiblock=multiblock)
         logger.info(f"3D volume VTK: {volume_internal_path}")
     except Exception as _e:
         logger.error(f"11 - FAILED: generate_volume_internal_vtk raised {type(_e).__name__}: {_e}")
