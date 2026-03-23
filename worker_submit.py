@@ -214,7 +214,10 @@ def update_simulation(sim_id: int, data: Dict[str, Any]) -> bool:
 
 
 def _get_current_sim_status(sim_id: int) -> str:
-    """Read the simulation's current status from the API (best-effort, no retries)."""
+    """Read the simulation's current status from the API (best-effort, no retries).
+
+    The endpoint returns { success: true, simulation: { status: ..., ... } }.
+    """
     try:
         resp = requests.get(
             f"{API_BASE}/api/external/simulations/{sim_id}",
@@ -223,7 +226,9 @@ def _get_current_sim_status(sim_id: int) -> str:
         )
         if resp.ok:
             data = resp.json()
-            return data.get('status', 'unknown')
+            # Response shape: { success: true, simulation: { status: "...", ... } }
+            sim = data.get('simulation') or {}
+            return sim.get('status', 'unknown')
     except Exception:
         pass
     return 'unknown'
@@ -256,7 +261,12 @@ def update_simulation_failure(sim_id: int, step: str, error: Exception):
 
     ok = update_simulation(sim_id, payload)
 
-    if not ok:
+    if ok:
+        logger.info(
+            f"[Sim {sim_id}] Successfully marked as failed in DB "
+            f"(failedStep='{step}', errorType={type(error).__name__})"
+        )
+    else:
         # PATCH never landed — read DB state and emit a clear emergency log
         current_status = _get_current_sim_status(sim_id)
         logger.error(
