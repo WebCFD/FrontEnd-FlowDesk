@@ -524,11 +524,40 @@ def process_simulation(sim: Dict[str, Any]):
 # ---------------------------------------------------------------------------
 # SIGTERM / SIGINT handler
 # ---------------------------------------------------------------------------
+def _shutdown_update_simulation(sim_id: int, data: Dict[str, Any]) -> bool:
+    """Lightweight PATCH used only inside the SIGTERM handler.
+
+    Uses a single attempt with a 4-second timeout so the update completes well
+    within Cloud Run's default 10-second termination grace period.
+    """
+    target_status = data.get('status', '(no status)')
+    try:
+        resp = requests.patch(
+            f"{API_BASE}/api/external/simulations/{sim_id}/status",
+            json=data,
+            headers={'x-api-key': API_KEY},
+            timeout=4,
+        )
+        if resp.ok:
+            return True
+        logger.error(
+            f"[SHUTDOWN] PATCH sim {sim_id} status={target_status} "
+            f"failed HTTP {resp.status_code}"
+        )
+    except Exception as exc:
+        logger.error(
+            f"[SHUTDOWN] PATCH sim {sim_id} status={target_status} "
+            f"raised {type(exc).__name__}: {exc}"
+        )
+    return False
+
+
 def _handle_shutdown(signum, frame):
     """Graceful shutdown handler for SIGTERM (Cloud Run rolling deploy) and SIGINT.
 
     If a simulation is currently being processed, marks it as failed in the DB
-    (with retries) so it doesn't stay frozen in an intermediate state.
+    so it doesn't stay frozen in an intermediate state.  Uses a single fast
+    attempt (4s timeout) to stay within Cloud Run's termination grace period.
     """
     sig_name = signal.Signals(signum).name
     logger.warning(f"[SHUTDOWN] Received {sig_name} — initiating graceful shutdown")
@@ -538,11 +567,30 @@ def _handle_shutdown(signum, frame):
             f"[SHUTDOWN] Sim {_inflight_sim_id} was in-flight at step '{_inflight_step}'. "
             f"Marking as failed before exiting."
         )
-        shutdown_error = RuntimeError(
-            f"Worker received {sig_name} (container shutdown) while processing at step '{_inflight_step}'. "
-            f"Simulation was interrupted by Cloud Run deployment or container restart."
-        )
-        update_simulation_failure(_inflight_sim_id, _inflight_step, shutdown_error)
+        from datetime import datetime as _dt
+        payload = {
+            'status': 'failed',
+            'errorMessage': (
+                f"Worker received {sig_name} (container shutdown) while processing "
+                f"at step '{_inflight_step}'. Simulation was interrupted by Cloud Run "
+                f"deployment or container restart."
+            ),
+            'currentStep': f'Failed at {_inflight_step} (shutdown)',
+            'completedAt': _dt.utcnow().isoformat(),
+            'failedStep': _inflight_step,
+            'errorType': 'ContainerShutdown',
+        }
+        ok = _shutdown_update_simulation(_inflight_sim_id, payload)
+        if ok:
+            logger.info(f"[SHUTDOWN] Sim {_inflight_sim_id} successfully marked as failed.")
+        else:
+            current_status = _get_current_sim_status(_inflight_sim_id)
+            logger.error(
+                f"🚨 SHUTDOWN EMERGENCY: Sim {_inflight_sim_id} could NOT be marked as failed. "
+                f"Current DB status: '{current_status}'. "
+                f"Intended payload: status=failed, failedStep='{_inflight_step}', "
+                f"errorType=ContainerShutdown. ACTION REQUIRED: manually reset this simulation."
+            )
     else:
         logger.info("[SHUTDOWN] No simulation in flight — clean shutdown.")
 
