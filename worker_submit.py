@@ -80,7 +80,6 @@ logger = logging.getLogger(__name__)
 # running.  Cleared back to None when processing finishes.
 _inflight_sim_id: Optional[int] = None
 _inflight_step: str = 'unknown'
-_inflight_error: Optional[Exception] = None   # set only inside signal handler
 
 
 # ---------------------------------------------------------------------------
@@ -165,14 +164,16 @@ def get_pending_simulations():
 def update_simulation(sim_id: int, data: Dict[str, Any]) -> bool:
     """PATCH simulation status.  Returns True on success, False on all failures.
 
-    Retries up to 3 times with exponential backoff (1s → 3s → 9s).
-    Each attempt uses a 10-second connect+read timeout so a hung Express
-    process never blocks the worker indefinitely.
+    Makes 1 initial attempt plus up to 3 retries (4 total), with exponential
+    backoff of 1s → 3s → 9s between attempts.  Each attempt uses a 10-second
+    connect+read timeout so a hung Express process never blocks the worker
+    indefinitely.
     """
     target_status = data.get('status', '(no status)')
     last_exc: Optional[Exception] = None
+    _BACKOFF = [1, 3, 9]   # seconds to wait before retry 1, 2, 3
 
-    for attempt in range(1, 4):
+    for attempt in range(1, 5):   # attempts 1-4 (1 initial + 3 retries)
         try:
             resp = requests.patch(
                 f"{API_BASE}/api/external/simulations/{sim_id}/status",
@@ -186,27 +187,27 @@ def update_simulation(sim_id: int, data: Dict[str, Any]) -> bool:
                         f"update_simulation({sim_id}, status={target_status}) succeeded on attempt {attempt}"
                     )
                 return True
-            # HTTP error (4xx/5xx): log and retry unless it's a permanent client error
+            # HTTP error (4xx/5xx): log and retry
             logger.warning(
-                f"update_simulation({sim_id}, status={target_status}) attempt {attempt}/3 "
+                f"update_simulation({sim_id}, status={target_status}) attempt {attempt}/4 "
                 f"got HTTP {resp.status_code}: {resp.text[:300]}"
             )
             last_exc = None  # not an exception, but still a failure
         except Exception as exc:
             last_exc = exc
             logger.warning(
-                f"update_simulation({sim_id}, status={target_status}) attempt {attempt}/3 "
+                f"update_simulation({sim_id}, status={target_status}) attempt {attempt}/4 "
                 f"raised {type(exc).__name__}: {exc}"
             )
 
-        if attempt < 3:
-            wait = 3 ** (attempt - 1)   # 1s, 3s (then gives up)
+        if attempt < 4:
+            wait = _BACKOFF[attempt - 1]   # 1s, 3s, 9s
             logger.info(f"Retrying update_simulation({sim_id}) in {wait}s...")
             time.sleep(wait)
 
     # All retries exhausted — log a prominent error so it's visible in Cloud Run
     logger.error(
-        f"❌ update_simulation({sim_id}, status={target_status}) FAILED after 3 attempts. "
+        f"❌ update_simulation({sim_id}, status={target_status}) FAILED after 4 attempts. "
         f"Last error: {last_exc}. Simulation may be frozen in DB."
     )
     return False
@@ -261,8 +262,8 @@ def update_simulation_failure(sim_id: int, step: str, error: Exception):
         logger.error(
             f"🚨 EMERGENCY: Sim {sim_id} could NOT be marked as failed in DB. "
             f"Current DB status: '{current_status}'. "
-            f"Step that failed: '{step}'. "
-            f"Error: [{type(error).__name__}] {error_message}. "
+            f"Intended payload: status=failed, failedStep='{step}', "
+            f"errorType={type(error).__name__}, errorMessage={error_message!r}. "
             f"ACTION REQUIRED: manually reset this simulation."
         )
 
@@ -497,12 +498,12 @@ def process_simulation(sim: Dict[str, Any]):
 
     except PipelineStepError as e:
         logger.error(f"[Sim {sim_id}] Pipeline step error: {e}")
-        update_simulation_failure(sim_id, getattr(e, 'step_name', 'unknown'), e)
+        update_simulation_failure(sim_id, getattr(e, 'step_name', _inflight_step), e)
 
     except Exception as e:
         logger.error(f"[Sim {sim_id}] Unexpected error: {e}")
         logger.error(traceback.format_exc())
-        update_simulation_failure(sim_id, 'unknown', e)
+        update_simulation_failure(sim_id, _inflight_step, e)
 
     finally:
         # Always clear inflight tracking once the simulation is done (success or failure)
