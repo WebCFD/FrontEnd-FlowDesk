@@ -1986,6 +1986,11 @@ def generate_surface_3d_vtk(sim_path, post_path):
         raise FileNotFoundError(f"No results.foam / case.foam found in {sim_path}")
 
     reader = pv.get_reader(foam_file)
+    if not reader.time_values:
+        raise ValueError(
+            f"No time steps found in OpenFOAM case at {foam_file} — "
+            "simulation results may be incomplete or not downloaded correctly"
+        )
     reader.set_active_time_value(reader.time_values[-1])
     mesh_raw = reader.read()
 
@@ -2072,6 +2077,11 @@ def generate_volume_internal_vtk(sim_path, post_path):
         raise FileNotFoundError(f"No results.foam / case.foam found in {sim_path}")
 
     reader = pv.get_reader(foam_file)
+    if not reader.time_values:
+        raise ValueError(
+            f"No time steps found in OpenFOAM case at {foam_file} — "
+            "simulation results may be incomplete or not downloaded correctly"
+        )
     reader.set_active_time_value(reader.time_values[-1])
     mesh_raw = reader.read()
 

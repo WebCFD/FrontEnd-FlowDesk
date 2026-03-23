@@ -3,6 +3,7 @@ import sys
 import shutil
 import logging
 import subprocess
+import traceback
 from pathlib import Path
 
 # Add project root to path for src imports
@@ -165,14 +166,28 @@ def run_indoor_spaces(case_name: str, sim_path: str, post_path: str) -> None:
     # Generate 3D boundary surface VTK for web viewer (required output)
     logger.info("\n10 - Generating 3D boundary surface VTK (walls, floor, ceiling, door, window)")
     performance_monitor.update_memory()
-    surface_3d_path = generate_surface_3d_vtk(sim_path, post_path)
-    logger.info(f"3D surface VTK: {surface_3d_path}")
+    try:
+        surface_3d_path = generate_surface_3d_vtk(sim_path, post_path)
+        logger.info(f"3D surface VTK: {surface_3d_path}")
+    except Exception as _e:
+        logger.error(f"10 - FAILED: generate_surface_3d_vtk raised {type(_e).__name__}: {_e}")
+        logger.error(traceback.format_exc())
+        raise RuntimeError(
+            f"3D surface VTK generation failed [{type(_e).__name__}]: {_e}"
+        ) from _e
 
     # Generate 3D internal volume VTK for web viewer (required output)
     logger.info("\n11 - Generating 3D internal volume VTK (UnstructuredGrid internal air volume)")
     performance_monitor.update_memory()
-    volume_internal_path = generate_volume_internal_vtk(sim_path, post_path)
-    logger.info(f"3D volume VTK: {volume_internal_path}")
+    try:
+        volume_internal_path = generate_volume_internal_vtk(sim_path, post_path)
+        logger.info(f"3D volume VTK: {volume_internal_path}")
+    except Exception as _e:
+        logger.error(f"11 - FAILED: generate_volume_internal_vtk raised {type(_e).__name__}: {_e}")
+        logger.error(traceback.format_exc())
+        raise RuntimeError(
+            f"3D volume VTK generation failed [{type(_e).__name__}]: {_e}"
+        ) from _e
 
     # Summary
     logger.info("\n=========== COMFORT ANALYSIS SUMMARY ===========")

@@ -34,10 +34,15 @@ The system utilizes a dual-worker architecture for parallel processing of geomet
 CFD simulations use `buoyantSimpleFoam` with a Boussinesq approximation and hConst thermo model, employing `zeroGradient` for enthalpy/temperature on pressure boundaries to ensure numerical stability. Configurable simulation types with dynamic iteration control and conservative relaxation factors ensure stable startup and convergence. An orphaned simulation recovery system ensures that simulations stuck in "post_processing" are automatically resumed. Post-processing has been optimized by removing image rendering, PDF report generation, and residual convergence plots to reduce memory usage, focusing instead on VTK file generation for interactive 3D web viewing.
 
 **3D VTK Generation** (`step05_results2post.py`, steps 10 & 11 — required outputs, failures propagate):
-- `generate_surface_3d_vtk()`: Merges all OpenFOAM boundary patches (walls, floor, ceiling, door, window) into a PolyData ASCII VTK. Detects real CFD fields (T, U, p, CO2, PMV, PPD, G, qr, k, omega, nut, alphat, a, p_rgh) from the reader; falls back to nearest-neighbour projection from existing flow_plane_*.vtk slices via `scipy.cKDTree`.
-- `generate_volume_internal_vtk()`: Saves the full internalMesh as UNSTRUCTURED_GRID ASCII VTK with 14 mapped CFD fields. Falls back to 50%-decimated boundary surface only when estimated file size exceeds 500 MB.
+- `generate_surface_3d_vtk()`: Merges all OpenFOAM boundary patches (walls, floor, ceiling, door, window) into a PolyData ASCII VTK. Detects real CFD fields (T, U, p, CO2, PMV, PPD, G, qr, k, omega, nut, alphat, a, p_rgh) from the reader; falls back to nearest-neighbour projection from existing flow_plane_*.vtk slices via `scipy.cKDTree`. Guards against empty `time_values` from the reader.
+- `generate_volume_internal_vtk()`: Saves the full internalMesh as UNSTRUCTURED_GRID ASCII VTK with 14 mapped CFD fields. Falls back to 50%-decimated boundary surface only when estimated file size exceeds 500 MB. Guards against empty `time_values` from the reader.
+- Both generators are wrapped in `try/except` in `step05_results2post.py` that logs full tracebacks and re-raises with a descriptive `RuntimeError` message (visible in the simulation's error_message in the DB).
 - Backend (`/api/simulations/:id/vtk-files`): surface_3d type has priority 0 → selected as `latestVolume` by default.
 - Frontend parser (`VTKViewer.tsx`): Handles UNSTRUCTURED_GRID format (CELLS/CELL_TYPES skip + point-cloud vertex fallback).
+
+**Production Logging** (`start-production.sh`):
+- Worker processes (`worker_monitor.py`, `worker_submit.py`) use `tee` to write output to BOTH the log file (`production_logs/*.log`) AND the supervisor stdout — so errors appear in Cloud Run deployment logs.
+- Python environment is verified at startup; if `pyvista`, `scipy`, or `numpy` are missing they are automatically installed via pip before workers are started.
 
 A transactional email system for the landing page contact form is integrated using the Resend API, featuring real-time submission, validation, and notifications. The admin panel includes SHA-256 hashed password authentication for security.
 

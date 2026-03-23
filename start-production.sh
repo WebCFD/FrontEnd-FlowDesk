@@ -112,8 +112,9 @@ start_process() {
     
     log "Iniciando $name..."
     
-    # Ejecutar comando en background con logs
-    nohup bash -c "$command" >> "$log_file" 2>&1 &
+    # Ejecutar comando en background: tee a log file Y a stdout del supervisor
+    # (stdout del supervisor es capturado por Cloud Run → visible en deployment logs)
+    ( bash -c "$command" 2>&1 | tee -a "$log_file" ) &
     
     # Esperar un momento para verificar inicio
     sleep 2
@@ -183,6 +184,20 @@ trap cleanup SIGTERM SIGINT
 # ====== INICIALIZACIÓN ======
 
 log "Iniciando todos los procesos..."
+
+# ── Python environment check ───────────────────────────────────────────────
+log "Verificando entorno Python (pyvista, scipy, numpy)..."
+if python3 -c "import pyvista, scipy, numpy" 2>/dev/null; then
+    log "✅ Python: pyvista, scipy, numpy disponibles"
+else
+    log "⚠️  ADVERTENCIA: pyvista/scipy/numpy no disponibles — step05 fallará. Instalando..."
+    python3 -m pip install --quiet \
+        "pyvista>=0.44.0" "scipy>=1.11.0" "numpy>=1.26.0" \
+        "pandas>=2.2.0" "requests>=2.32.5" "pillow>=11.3.0" \
+        "reportlab>=4.4.4" "matplotlib>=3.10.7" "boto3>=1.41.5" \
+        "pythermalcomfort>=3.8.0" "botocore>=1.41.5" \
+        --no-warn-script-location 2>&1 | tail -3 || log "⚠️  pip install falló — los paquetes pueden no estar disponibles"
+fi
 
 # Iniciar Express (Node.js)
 start_process "express" "node dist/index.js"
