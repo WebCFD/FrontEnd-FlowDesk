@@ -2,10 +2,11 @@ import os
 import sys
 import time
 import json
+import signal
 import logging
 import traceback
 from datetime import datetime
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 import requests
 
 # ---------------------------------------------------------------------------
@@ -71,6 +72,15 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 logger = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# In-flight simulation tracking (used by the SIGTERM handler)
+# ---------------------------------------------------------------------------
+# Set to the simulation ID and current step name while process_simulation() is
+# running.  Cleared back to None when processing finishes.
+_inflight_sim_id: Optional[int] = None
+_inflight_step: str = 'unknown'
+_inflight_error: Optional[Exception] = None   # set only inside signal handler
 
 
 # ---------------------------------------------------------------------------
@@ -152,22 +162,78 @@ def get_pending_simulations():
         return []
 
 
-def update_simulation(sim_id: int, data: Dict[str, Any]):
-    try:
-        resp = requests.patch(
-            f"{API_BASE}/api/external/simulations/{sim_id}/status",
-            json=data,
-            headers={'x-api-key': API_KEY}
-        )
-        if not resp.ok:
-            logger.warning(
-                f"update_simulation({sim_id}) got HTTP {resp.status_code}: {resp.text[:300]}"
+def update_simulation(sim_id: int, data: Dict[str, Any]) -> bool:
+    """PATCH simulation status.  Returns True on success, False on all failures.
+
+    Retries up to 3 times with exponential backoff (1s → 3s → 9s).
+    Each attempt uses a 10-second connect+read timeout so a hung Express
+    process never blocks the worker indefinitely.
+    """
+    target_status = data.get('status', '(no status)')
+    last_exc: Optional[Exception] = None
+
+    for attempt in range(1, 4):
+        try:
+            resp = requests.patch(
+                f"{API_BASE}/api/external/simulations/{sim_id}/status",
+                json=data,
+                headers={'x-api-key': API_KEY},
+                timeout=10,
             )
-    except Exception as e:
-        logger.error(f"Failed to update sim {sim_id}: {e}")
+            if resp.ok:
+                if attempt > 1:
+                    logger.info(
+                        f"update_simulation({sim_id}, status={target_status}) succeeded on attempt {attempt}"
+                    )
+                return True
+            # HTTP error (4xx/5xx): log and retry unless it's a permanent client error
+            logger.warning(
+                f"update_simulation({sim_id}, status={target_status}) attempt {attempt}/3 "
+                f"got HTTP {resp.status_code}: {resp.text[:300]}"
+            )
+            last_exc = None  # not an exception, but still a failure
+        except Exception as exc:
+            last_exc = exc
+            logger.warning(
+                f"update_simulation({sim_id}, status={target_status}) attempt {attempt}/3 "
+                f"raised {type(exc).__name__}: {exc}"
+            )
+
+        if attempt < 3:
+            wait = 3 ** (attempt - 1)   # 1s, 3s (then gives up)
+            logger.info(f"Retrying update_simulation({sim_id}) in {wait}s...")
+            time.sleep(wait)
+
+    # All retries exhausted — log a prominent error so it's visible in Cloud Run
+    logger.error(
+        f"❌ update_simulation({sim_id}, status={target_status}) FAILED after 3 attempts. "
+        f"Last error: {last_exc}. Simulation may be frozen in DB."
+    )
+    return False
+
+
+def _get_current_sim_status(sim_id: int) -> str:
+    """Read the simulation's current status from the API (best-effort, no retries)."""
+    try:
+        resp = requests.get(
+            f"{API_BASE}/api/external/simulations/{sim_id}",
+            headers={'x-api-key': API_KEY},
+            timeout=5,
+        )
+        if resp.ok:
+            data = resp.json()
+            return data.get('status', 'unknown')
+    except Exception:
+        pass
+    return 'unknown'
 
 
 def update_simulation_failure(sim_id: int, step: str, error: Exception):
+    """Mark a simulation as failed, with retry and emergency logging.
+
+    If all PATCH retries fail, fetches the current DB status and logs a
+    prominent ERROR so the incident is always visible in Cloud Run logs.
+    """
     error_message = str(error)
     payload = {
         'status': 'failed',
@@ -182,8 +248,23 @@ def update_simulation_failure(sim_id: int, step: str, error: Exception):
         if 'suggestion' in error.details:
             payload['suggestion'] = error.details['suggestion']
 
-    update_simulation(sim_id, payload)
-    logger.error(f"Simulation {sim_id} failed at {step}: {error_message}")
+    logger.error(
+        f"[Sim {sim_id}] Pipeline failure at step '{step}': "
+        f"[{type(error).__name__}] {error_message}"
+    )
+
+    ok = update_simulation(sim_id, payload)
+
+    if not ok:
+        # PATCH never landed — read DB state and emit a clear emergency log
+        current_status = _get_current_sim_status(sim_id)
+        logger.error(
+            f"🚨 EMERGENCY: Sim {sim_id} could NOT be marked as failed in DB. "
+            f"Current DB status: '{current_status}'. "
+            f"Step that failed: '{step}'. "
+            f"Error: [{type(error).__name__}] {error_message}. "
+            f"ACTION REQUIRED: manually reset this simulation."
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -216,6 +297,8 @@ def process_simulation(sim: Dict[str, Any]):
     Debug mode: if PIPELINE_STOP_AFTER=N is set, the pipeline stops after step N
     and marks the simulation as completed with a debug message.
     """
+    global _inflight_sim_id, _inflight_step
+
     sim_id = sim['id']
     case_name = f"sim_{sim_id}"
     simulation_type = sim.get('simulationType', 'SteadySim')
@@ -232,6 +315,10 @@ def process_simulation(sim: Dict[str, Any]):
 
     logger.info(f"[Sim {sim_id}] Starting pipeline — case: {case_name}, type: {simulation_type}")
 
+    # Track this simulation so the SIGTERM handler can mark it failed if needed
+    _inflight_sim_id = sim_id
+    _inflight_step = 'initializing'
+
     try:
         # Initialize
         update_simulation(sim_id, {
@@ -244,6 +331,7 @@ def process_simulation(sim: Dict[str, Any]):
         # -----------------------------------------------------------------
         # Step 1: JSON → Geometry
         # -----------------------------------------------------------------
+        _inflight_step = 'geometry'
         logger.info(f"[Sim {sim_id}] Step 1/5: Generating 3D geometry...")
         update_simulation(sim_id, {
             'status': 'geometry',
@@ -267,6 +355,7 @@ def process_simulation(sim: Dict[str, Any]):
         # -----------------------------------------------------------------
         # Step 2: Geometry → Mesh
         # -----------------------------------------------------------------
+        _inflight_step = 'meshing'
         logger.info(f"[Sim {sim_id}] Step 2/5: Creating computational mesh...")
         update_simulation(sim_id, {
             'status': 'meshing',
@@ -292,6 +381,7 @@ def process_simulation(sim: Dict[str, Any]):
         # -----------------------------------------------------------------
         # Step 3: Mesh → CFD setup
         # -----------------------------------------------------------------
+        _inflight_step = 'cfd_setup'
         logger.info(f"[Sim {sim_id}] Step 3/5: Setting up CFD case...")
         update_simulation(sim_id, {
             'status': 'cfd_setup',
@@ -321,6 +411,7 @@ def process_simulation(sim: Dict[str, Any]):
         # -----------------------------------------------------------------
         # Step 4: CFD execution
         # -----------------------------------------------------------------
+        _inflight_step = 'cloud_submission'
         if SOLVER_TYPE == 'local':
             # Run solver blocking and then post-process in this same worker
             logger.info(f"[Sim {sim_id}] Step 4/5: Running CFD locally (blocking)...")
@@ -344,6 +435,7 @@ def process_simulation(sim: Dict[str, Any]):
             # -----------------------------------------------------------------
             # Step 5: Post-processing (only when running locally)
             # -----------------------------------------------------------------
+            _inflight_step = 'post_processing'
             logger.info(f"[Sim {sim_id}] Step 5/5: Post-processing results...")
             update_simulation(sim_id, {
                 'status': 'post_processing',
@@ -412,12 +504,52 @@ def process_simulation(sim: Dict[str, Any]):
         logger.error(traceback.format_exc())
         update_simulation_failure(sim_id, 'unknown', e)
 
+    finally:
+        # Always clear inflight tracking once the simulation is done (success or failure)
+        _inflight_sim_id = None
+        _inflight_step = 'unknown'
+
+
+# ---------------------------------------------------------------------------
+# SIGTERM / SIGINT handler
+# ---------------------------------------------------------------------------
+def _handle_shutdown(signum, frame):
+    """Graceful shutdown handler for SIGTERM (Cloud Run rolling deploy) and SIGINT.
+
+    If a simulation is currently being processed, marks it as failed in the DB
+    (with retries) so it doesn't stay frozen in an intermediate state.
+    """
+    sig_name = signal.Signals(signum).name
+    logger.warning(f"[SHUTDOWN] Received {sig_name} — initiating graceful shutdown")
+
+    if _inflight_sim_id is not None:
+        logger.warning(
+            f"[SHUTDOWN] Sim {_inflight_sim_id} was in-flight at step '{_inflight_step}'. "
+            f"Marking as failed before exiting."
+        )
+        shutdown_error = RuntimeError(
+            f"Worker received {sig_name} (container shutdown) while processing at step '{_inflight_step}'. "
+            f"Simulation was interrupted by Cloud Run deployment or container restart."
+        )
+        update_simulation_failure(_inflight_sim_id, _inflight_step, shutdown_error)
+    else:
+        logger.info("[SHUTDOWN] No simulation in flight — clean shutdown.")
+
+    logger.warning("[SHUTDOWN] Exiting worker_submit.")
+    sys.exit(0)
+
 
 # ---------------------------------------------------------------------------
 # Main polling loop
 # ---------------------------------------------------------------------------
 def main():
     log_startup_configuration()
+
+    # Register graceful shutdown handlers so SIGTERM (Cloud Run) marks any
+    # in-flight simulation as failed instead of leaving it frozen.
+    signal.signal(signal.SIGTERM, _handle_shutdown)
+    signal.signal(signal.SIGINT, _handle_shutdown)
+    logger.info("SIGTERM/SIGINT handlers registered — graceful shutdown enabled")
 
     while True:
         try:
@@ -432,6 +564,8 @@ def main():
 
             time.sleep(POLLING_INTERVAL)
 
+        except SystemExit:
+            raise   # let _handle_shutdown's sys.exit(0) propagate
         except KeyboardInterrupt:
             logger.info("Worker stopped")
             break
