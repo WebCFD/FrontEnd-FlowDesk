@@ -116,8 +116,8 @@ def render_isometric_png(slice_mesh, name, z_height, post_path, variable='PMV', 
         label = variable
         show_contours = False
     
-    # Create plotter
-    plotter = pv.Plotter(off_screen=True, window_size=[1920, 1080])
+    # Create plotter (960×540 — 4× fewer pixels than 1920×1080, much faster Mesa software render)
+    plotter = pv.Plotter(off_screen=True, window_size=[960, 540])
     
     # Add mesh with scalar field
     plotter.add_mesh(
@@ -128,69 +128,59 @@ def render_isometric_png(slice_mesh, name, z_height, post_path, variable='PMV', 
         show_edges=False,
         scalar_bar_args={
             'title': label,
-            'title_font_size': 38,      # Reduced 52.5% total from 80 (igual flow_report)
-            'label_font_size': 64,
+            'title_font_size': 20,
+            'label_font_size': 32,
             'shadow': True,
             'n_labels': 5,
             'italic': False,
             'fmt': '%.1f',
             'font_family': 'arial',
-            'vertical': True,           # Vertical orientation only
-            'position_x': 0.85,         # Right side
-            'position_y': 0.25,         # Centered vertically
-            'height': 0.5,              # 50% of viewport height
-            'width': 0.12               # Proportional width
+            'vertical': True,
+            'position_x': 0.85,
+            'position_y': 0.25,
+            'height': 0.5,
+            'width': 0.12
         }
     )
     
-    # Add isocontour lines with labels
+    # Add isocontour lines with labels — ONE batch contour call, then sample by scalar value
     if show_contours and variable in slice_mesh.point_data:
         try:
-            # Generate contours at specified levels
             contours = slice_mesh.contour(isosurfaces=contour_levels, scalars=variable)
             
             if contours.n_points > 0:
-                # Add contour lines (black, thicker)
                 plotter.add_mesh(
                     contours,
                     color='black',
-                    line_width=3,
+                    line_width=2,
                     render_lines_as_tubes=False,
                     lighting=False
                 )
                 
-                # Add labels at contour line points (subsample to avoid clutter)
-                # Sample one point per contour level
-                for level in contour_levels:
-                    # Get points where value ≈ level (within tolerance)
-                    level_contour = slice_mesh.contour(isosurfaces=[level], scalars=variable)
-                    
-                    if level_contour.n_points > 0:
-                        # Sample one point from the middle of the contour
-                        mid_idx = level_contour.n_points // 2
-                        point = level_contour.points[mid_idx]
-                        
-                        # Create label
-                        if variable == 'PMV':
-                            label_text = f'{level:+.1f}'  # +1.0, -0.5, etc.
-                        else:
-                            label_text = f'{level:.0f}%'
-                        
-                        # Add label at that point
-                        plotter.add_point_labels(
-                            [point],
-                            [label_text],
-                            font_size=48,  # 3x más grande para mejor legibilidad
-                            text_color='black',
-                            font_family='arial',
-                            fill_shape=True,
-                            shape='rounded_rect',
-                            shape_color='white',
-                            shape_opacity=0.8,
-                            point_size=0,  # Don't show point marker
-                            render_points_as_spheres=False,
-                            always_visible=False
-                        )
+                # Derive label positions from the batch contour (no extra per-level calls)
+                scalar_vals = contours.point_data.get(variable, None)
+                if scalar_vals is not None and len(contour_levels) > 1:
+                    half_step = abs(contour_levels[1] - contour_levels[0]) / 2.0
+                    for level in contour_levels:
+                        mask = np.abs(scalar_vals - level) < half_step
+                        pts = contours.points[mask]
+                        if len(pts) > 0:
+                            point = pts[len(pts) // 2]
+                            label_text = f'{level:+.1f}' if variable == 'PMV' else f'{level:.0f}%'
+                            plotter.add_point_labels(
+                                [point],
+                                [label_text],
+                                font_size=24,
+                                text_color='black',
+                                font_family='arial',
+                                fill_shape=True,
+                                shape='rounded_rect',
+                                shape_color='white',
+                                shape_opacity=0.8,
+                                point_size=0,
+                                render_points_as_spheres=False,
+                                always_visible=False
+                            )
                 
                 logger.info(f"       Added {len(contour_levels)} isocontour lines with labels")
         except Exception as e:
@@ -224,7 +214,7 @@ def render_isometric_png(slice_mesh, name, z_height, post_path, variable='PMV', 
     logger.info(f"       Saved PNG: {os.path.basename(png_path)}")
 
 
-def analyze_comfort_planes(sim_path, post_path):
+def analyze_comfort_planes(sim_path, post_path, internal_mesh=None):
     """
     Analyze PMV/PPD thermal comfort in 3 horizontal planes.
     
@@ -236,15 +226,18 @@ def analyze_comfort_planes(sim_path, post_path):
     Args:
         sim_path: Path to simulation directory (with VTK/ folder)
         post_path: Path to post-processing output directory
+        internal_mesh: Pre-loaded combined mesh (optional — skips load_foam_results if provided)
         
     Returns:
         dict: Comfort metrics for all planes
     """
     logger.info("    * Analyzing thermal comfort in horizontal planes")
     
-    # Load 3D mesh with PMV/PPD fields
-    logger.info("    * Loading CFD results from VTK")
-    internal_mesh, _, _ = load_foam_results(sim_path)
+    if internal_mesh is None:
+        logger.info("    * Loading CFD results from VTK")
+        internal_mesh, _, _ = load_foam_results(sim_path)
+    else:
+        logger.info("    * Using pre-loaded CFD mesh (skipping load_foam_results)")
     
     logger.info(f"    * Loaded mesh with {internal_mesh.n_cells:,} cells")
     logger.info(f"    * point_data fields: {list(internal_mesh.point_data.keys())}")
@@ -1014,8 +1007,8 @@ def render_flow_png(slice_mesh, name, z_height, post_path, variable='T', surface
         variable: Variable to render ('T' or 'U')
         surfaces_mesh: Boundary surfaces mesh (optional)
     """
-    # Create plotter
-    plotter = pv.Plotter(off_screen=True, window_size=[1920, 1080])
+    # Create plotter (960×540 — 4× fewer pixels than 1920×1080, much faster Mesa software render)
+    plotter = pv.Plotter(off_screen=True, window_size=[960, 540])
     
     if variable == 'T':
         # Temperature as scalar colormap
@@ -1242,7 +1235,7 @@ def render_flow_png(slice_mesh, name, z_height, post_path, variable='T', surface
     logger.info(f"       Saved PNG: {os.path.basename(png_path)}")
 
 
-def analyze_flow_planes(sim_path, post_path):
+def analyze_flow_planes(sim_path, post_path, internal_mesh=None, surfaces_mesh=None, multiblock=None):
     """
     Analyze Temperature and Velocity in 3 horizontal planes.
     
@@ -1254,15 +1247,20 @@ def analyze_flow_planes(sim_path, post_path):
     Args:
         sim_path: Path to simulation directory
         post_path: Path to post-processing output directory
+        internal_mesh: Pre-loaded combined mesh (optional — skips load_foam_results if provided)
+        surfaces_mesh: Pre-loaded boundary surface mesh (optional)
+        multiblock: Pre-loaded MultiBlock (optional, for patch extraction)
         
     Returns:
         dict: Flow metrics for all planes
     """
     logger.info("    * Analyzing flow fields in horizontal planes")
     
-    # Load 3D mesh with T/U fields, surfaces, and multiblock with patches
-    logger.info("    * Loading CFD results")
-    internal_mesh, surfaces_mesh, multiblock = load_foam_results(sim_path)
+    if internal_mesh is None:
+        logger.info("    * Loading CFD results")
+        internal_mesh, surfaces_mesh, multiblock = load_foam_results(sim_path)
+    else:
+        logger.info("    * Using pre-loaded CFD mesh (skipping load_foam_results)")
     
     logger.info(f"    * Loaded mesh with {internal_mesh.n_cells:,} cells")
     
@@ -2152,10 +2150,10 @@ def generate_volume_internal_vtk(sim_path, post_path):
         )
         mesh_to_save = internal_mesh
 
-    mesh_to_save.save(output_path, binary=False)
+    mesh_to_save.save(output_path, binary=True)
     size_kb = os.path.getsize(output_path) // 1024
     dataset_type = 'UnstructuredGrid' if hasattr(mesh_to_save, 'celltypes') or \
         'UNSTRUCTURED' in str(type(mesh_to_save)).upper() else 'PolyData'
-    logger.info(f"    * ✓ volume_internal.vtk saved ({dataset_type}): {output_path} ({size_kb} KB)")
+    logger.info(f"    * ✓ volume_internal.vtk saved ({dataset_type}, binary): {output_path} ({size_kb} KB)")
 
     return output_path

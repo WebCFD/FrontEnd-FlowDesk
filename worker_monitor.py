@@ -5,6 +5,7 @@ import logging
 import shutil
 import requests
 import subprocess
+import threading
 import gc
 import traceback
 from datetime import datetime, timezone
@@ -374,37 +375,54 @@ def process_completed_simulation(sim):
         
         logger.info(f"[Sim {sim_id}] Step 3/4: Running post-processing in isolated subprocess...")
         t0 = time.time()
+        STEP05_TIMEOUT = 900
         try:
             env = os.environ.copy()
             env['PYTHONIOENCODING'] = 'utf-8'
             env['LC_ALL'] = 'C.UTF-8'
             env['LANG'] = 'C.UTF-8'
-            
-            result = subprocess.run(
+
+            # Stream stdout+stderr line-by-line so logs appear in real time
+            proc = subprocess.Popen(
                 ["python3", "-u", "PYTHON_STEPS/step05_results2post.py", case_name],
-                capture_output=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
                 text=True,
-                timeout=600,
-                check=True,
+                encoding='utf-8',
+                errors='replace',
                 env=env,
-                encoding='utf-8'
             )
-            
-            if result.stdout:
-                logger.info(f"[Sim {sim_id}] Post-processing output:\n{result.stdout}")
-            if result.stderr:
-                logger.warning(f"[Sim {sim_id}] Post-processing stderr:\n{result.stderr}")
-            
+
+            def _stream_step05(p, sid):
+                try:
+                    for line in p.stdout:
+                        logger.info(f"[Sim {sid}] [step05] {line.rstrip()}")
+                except Exception:
+                    pass
+
+            stream_thread = threading.Thread(target=_stream_step05, args=(proc, sim_id), daemon=True)
+            stream_thread.start()
+
+            try:
+                proc.wait(timeout=STEP05_TIMEOUT)
+            except subprocess.TimeoutExpired:
+                proc.kill()
+                stream_thread.join(timeout=3)
+                elapsed = time.time() - t0
+                logger.error(f"[Sim {sim_id}] [step05] took {elapsed:.1f}s — TIMEOUT after {STEP05_TIMEOUT}s")
+                raise Exception(f"Post-processing timeout after {STEP05_TIMEOUT}s")
+
+            stream_thread.join(timeout=5)
+
+            if proc.returncode != 0:
+                elapsed = time.time() - t0
+                logger.error(f"[Sim {sim_id}] [step05] took {elapsed:.1f}s — FAILED (exit code {proc.returncode})")
+                raise subprocess.CalledProcessError(proc.returncode, proc.args)
+
             logger.info(f"[Sim {sim_id}] [step05] took {time.time() - t0:.1f}s — completed successfully")
-            
-        except subprocess.TimeoutExpired as e:
-            logger.error(f"[Sim {sim_id}] [step05] took {time.time() - t0:.1f}s — TIMEOUT after 10 minutes")
-            logger.error(traceback.format_exc())
-            raise Exception(f"Post-processing timeout: {str(e)}")
+
         except subprocess.CalledProcessError as e:
-            logger.error(f"[Sim {sim_id}] [step05] took {time.time() - t0:.1f}s — FAILED (exit code {e.returncode})")
-            logger.error(f"[Sim {sim_id}] Subprocess stdout: {e.stdout}")
-            logger.error(f"[Sim {sim_id}] Subprocess stderr: {e.stderr}")
+            logger.error(f"[Sim {sim_id}] [step05] FAILED (exit code {e.returncode})")
             logger.error(traceback.format_exc())
             
             if e.returncode == -9 or e.returncode == 137:
@@ -416,7 +434,7 @@ def process_completed_simulation(sim):
                 logger.error(f"[Sim {sim_id}] OOM DETECTED: Process killed with signal SIGKILL")
                 raise Exception(error_msg)
             else:
-                raise Exception(f"Post-processing failed: {e.stderr}")
+                raise Exception(f"Post-processing failed with exit code {e.returncode}")
         
         # ── Copy to public folder ──────────────────────────────────────────────
         logger.info(f"[Sim {sim_id}] Step 4/4: Copying VTK files to public folder...")

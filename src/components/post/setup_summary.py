@@ -85,8 +85,8 @@ def render_setup_patches_3d(patches_dict, patch_df, mass_flows, post_path, group
     
     logger.info(f"    * Rendering {len(patches_dict)} patches for group '{group}'")
     
-    # Create plotter
-    plotter = pv.Plotter(off_screen=True, window_size=[1920, 1080])
+    # Create plotter (960×540 — faster Mesa software render)
+    plotter = pv.Plotter(off_screen=True, window_size=[960, 540])
     
     # Define group titles and filters
     group_config = {

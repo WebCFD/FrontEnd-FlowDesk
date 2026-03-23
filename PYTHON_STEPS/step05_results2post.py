@@ -19,6 +19,7 @@ from src.components.post.ventilation import analyze_ventilation_planes, generate
 from src.components.post.setup_summary import analyze_setup_summary, generate_setup_html_report
 from src.components.post.datacenter import run_data_centers
 from src.components.tools.performance import PerformanceMonitor
+from src.components.tools.export_debug import load_foam_results
 
 
 logger = logging.getLogger(__name__)
@@ -94,12 +95,16 @@ def run_indoor_spaces(case_name: str, sim_path: str, post_path: str) -> None:
     comfort_script = os.path.join(project_root, 'src', 'components', 'post', 'calculate_comfort.py')
     logger.info(f"   Running: python3 {comfort_script} {sim_path}")
 
-    result = subprocess.run(
-        ['python3', comfort_script, sim_path],
-        capture_output=True,
-        text=True,
-        encoding='utf-8'
-    )
+    try:
+        result = subprocess.run(
+            ['python3', comfort_script, sim_path],
+            capture_output=True,
+            text=True,
+            encoding='utf-8',
+            timeout=120,
+        )
+    except subprocess.TimeoutExpired:
+        raise RuntimeError("PMV/PPD calculation timed out after 120s — calculate_comfort.py hung")
 
     if result.stdout:
         for line in result.stdout.strip().split('\n'):
@@ -114,12 +119,19 @@ def run_indoor_spaces(case_name: str, sim_path: str, post_path: str) -> None:
         raise RuntimeError(f"PMV/PPD calculation failed (exit {result.returncode}): {result.stderr}")
 
     logger.info("   ✓ PMV/PPD fields calculated successfully")
-    
+
+    # Load CFD mesh ONCE and share it across all analysis functions
+    logger.info("\n1b - Loading CFD mesh (shared across all analysis steps)")
+    performance_monitor.update_memory()
+    internal_mesh, surfaces_mesh, multiblock = load_foam_results(sim_path)
+    logger.info(f"   Loaded mesh: {internal_mesh.n_cells:,} cells")
+    performance_monitor.update_memory()
+
     # Analyze comfort in horizontal planes
     logger.info("\n2 - Analyzing PMV/PPD thermal comfort in horizontal planes")
     performance_monitor.update_memory()
     
-    results = analyze_comfort_planes(sim_path, post_path)
+    results = analyze_comfort_planes(sim_path, post_path, internal_mesh=internal_mesh)
     performance_monitor.update_memory()
     
     # Generate HTML comfort report
@@ -131,7 +143,12 @@ def run_indoor_spaces(case_name: str, sim_path: str, post_path: str) -> None:
     logger.info("\n4 - Analyzing T/U flow fields in horizontal planes")
     performance_monitor.update_memory()
     
-    flow_results = analyze_flow_planes(sim_path, post_path)
+    flow_results = analyze_flow_planes(
+        sim_path, post_path,
+        internal_mesh=internal_mesh,
+        surfaces_mesh=surfaces_mesh,
+        multiblock=multiblock,
+    )
     performance_monitor.update_memory()
     
     # Generate HTML flow report

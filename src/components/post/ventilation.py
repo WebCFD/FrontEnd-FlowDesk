@@ -117,8 +117,8 @@ def render_ventilation_png(slice_mesh, name, z_height, post_path, variable='CO2'
         post_path: Path to post-processing directory
         variable: Variable to render ('CO2' or 'age')
     """
-    # Create plotter
-    plotter = pv.Plotter(off_screen=True, window_size=[1920, 1080])
+    # Create plotter (960×540 — faster Mesa software render)
+    plotter = pv.Plotter(off_screen=True, window_size=[960, 540])
     
     if variable == 'CO2':
         # CO2 concentration colormap
