@@ -1,17 +1,45 @@
 # FlowDesk HVAC Simulation Platform
 # Production-ready Docker configuration
 
-# Use Node.js 20 LTS with Alpine Linux for smaller image size
-FROM node:20-alpine
+# Debian-based Node.js image for better Python/pyvista compatibility (Alpine musl
+# breaks many manylinux wheels including VTK/PyVista)
+FROM node:20-slim
 
-# Set working directory
 WORKDIR /app
 
-# Install system dependencies for better compatibility
-RUN apk add --no-cache \
+# Install system dependencies including Python3
+RUN apt-get update && apt-get install -y --no-install-recommends \
     postgresql-client \
     curl \
-    && rm -rf /var/cache/apk/*
+    python3 \
+    python3-pip \
+    python3-venv \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create a dedicated Python virtual environment so packages don't conflict with
+# the system Python and are available to all worker processes
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Install Python packages required by the simulation workers (step05, etc.)
+# Done BEFORE copying application code so this layer is cached between deploys
+RUN pip install --no-cache-dir \
+    "pyvista>=0.44.0" \
+    "scipy>=1.11.0" \
+    "numpy>=1.26.0" \
+    "pandas>=2.2.0" \
+    "requests>=2.32.5" \
+    "pillow>=11.3.0" \
+    "reportlab>=4.4.4" \
+    "matplotlib>=3.10.7" \
+    "boto3>=1.41.5" \
+    "pythermalcomfort>=3.8.0" \
+    "botocore>=1.41.5" \
+    "shapely>=2.0.0" \
+    "foamlib>=0.2.0" \
+    "psutil>=5.9.0" \
+    "tqdm>=4.66.0" \
+    "tarsafe>=0.0.5"
 
 # Copy package files first for better Docker layer caching
 COPY package*.json ./
@@ -26,11 +54,12 @@ COPY . .
 RUN npm run build
 
 # Create non-root user for security
-RUN addgroup -g 1001 -S nodejs \
-    && adduser -S flowdesk -u 1001 -G nodejs
+RUN groupadd -g 1001 nodejs \
+    && useradd -r -u 1001 -g nodejs flowdesk
 
-# Change ownership of app directory
-RUN chown -R flowdesk:nodejs /app
+# Change ownership of app directory and venv
+RUN chown -R flowdesk:nodejs /app \
+    && chown -R flowdesk:nodejs /opt/venv
 USER flowdesk
 
 # Expose port 5000

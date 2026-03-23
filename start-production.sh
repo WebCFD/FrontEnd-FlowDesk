@@ -190,13 +190,21 @@ log "Verificando entorno Python (pyvista, scipy, numpy)..."
 if python3 -c "import pyvista, scipy, numpy" 2>/dev/null; then
     log "✅ Python: pyvista, scipy, numpy disponibles"
 else
-    log "⚠️  ADVERTENCIA: pyvista/scipy/numpy no disponibles — step05 fallará. Instalando..."
-    python3 -m pip install --quiet \
+    log "⚠️  Paquetes Python faltantes — instalando (esto puede tardar varios minutos)..."
+    if python3 -m pip install --quiet --no-warn-script-location \
         "pyvista>=0.44.0" "scipy>=1.11.0" "numpy>=1.26.0" \
         "pandas>=2.2.0" "requests>=2.32.5" "pillow>=11.3.0" \
         "reportlab>=4.4.4" "matplotlib>=3.10.7" "boto3>=1.41.5" \
-        "pythermalcomfort>=3.8.0" "botocore>=1.41.5" \
-        --no-warn-script-location 2>&1 | tail -3 || log "⚠️  pip install falló — los paquetes pueden no estar disponibles"
+        "pythermalcomfort>=3.8.0" "botocore>=1.41.5" 2>&1; then
+        # Re-validate after install — confirm packages are actually importable
+        if python3 -c "import pyvista, scipy, numpy" 2>/dev/null; then
+            log "✅ Python packages instalados y verificados correctamente"
+        else
+            log "❌ CRÍTICO: pip install OK pero import sigue fallando — step05 fallará para todas las simulaciones"
+        fi
+    else
+        log "❌ CRÍTICO: pip install falló — step05 fallará para todas las simulaciones"
+    fi
 fi
 
 # Iniciar Express (Node.js)
