@@ -4,7 +4,6 @@ import shutil
 import logging
 import subprocess
 import traceback
-import time
 from pathlib import Path
 
 # Add project root to path for src imports
@@ -96,77 +95,25 @@ def run_indoor_spaces(case_name: str, sim_path: str, post_path: str) -> None:
     comfort_script = os.path.join(project_root, 'src', 'components', 'post', 'calculate_comfort.py')
     logger.info(f"   Running: python3 {comfort_script} {sim_path}")
 
-    COMFORT_WARN_SECS = 120
-    COMFORT_FAIL_SECS = 240
-
-    import io as _io
-    import threading as _threading
-
-    proc_c = subprocess.Popen(
+    result = subprocess.run(
         ['python3', comfort_script, sim_path],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         text=True,
         encoding='utf-8',
         errors='replace',
     )
 
-    # Drain pipes in background threads to prevent OS pipe-buffer deadlock
-    _stdout_buf = _io.StringIO()
-    _stderr_buf = _io.StringIO()
-
-    def _drain(pipe, buf):
-        try:
-            for line in pipe:
-                buf.write(line)
-        except Exception:
-            pass
-
-    _t_out = _threading.Thread(target=_drain, args=(proc_c.stdout, _stdout_buf), daemon=True)
-    _t_err = _threading.Thread(target=_drain, args=(proc_c.stderr, _stderr_buf), daemon=True)
-    _t_out.start()
-    _t_err.start()
-
-    _t0_c = time.time()
-    _warned_c = False
-    while True:
-        try:
-            proc_c.wait(timeout=5)
-            break
-        except subprocess.TimeoutExpired:
-            _elapsed_c = time.time() - _t0_c
-            if not _warned_c and _elapsed_c >= COMFORT_WARN_SECS:
-                logger.warning(
-                    f"   ⚠ calculate_comfort.py is taking long ({_elapsed_c:.0f}s) — "
-                    f"still running, will fail at {COMFORT_FAIL_SECS}s"
-                )
-                _warned_c = True
-            if _elapsed_c >= COMFORT_FAIL_SECS:
-                proc_c.kill()
-                proc_c.wait()
-                _t_out.join(timeout=3)
-                _t_err.join(timeout=3)
-                raise RuntimeError(
-                    f"PMV/PPD calculation timed out after {COMFORT_FAIL_SECS}s — "
-                    "calculate_comfort.py hung"
-                )
-
-    _t_out.join(timeout=5)
-    _t_err.join(timeout=5)
-    _stdout_c = _stdout_buf.getvalue()
-    _stderr_c = _stderr_buf.getvalue()
-
-    if _stdout_c:
-        for line in _stdout_c.strip().split('\n'):
+    if result.stdout:
+        for line in result.stdout.strip().split('\n'):
             logger.info(f"   {line}")
 
-    if _stderr_c:
-        for line in _stderr_c.strip().split('\n'):
+    if result.stderr:
+        for line in result.stderr.strip().split('\n'):
             logger.warning(f"   [stderr] {line}")
 
-    if proc_c.returncode != 0:
-        logger.error(f"   calculate_comfort.py failed with exit code {proc_c.returncode}")
-        raise RuntimeError(f"PMV/PPD calculation failed (exit {proc_c.returncode}): {_stderr_c}")
+    if result.returncode != 0:
+        logger.error(f"   calculate_comfort.py failed with exit code {result.returncode}")
+        raise RuntimeError(f"PMV/PPD calculation failed (exit {result.returncode}): {result.stderr}")
 
     logger.info("   ✓ PMV/PPD fields calculated successfully")
 
