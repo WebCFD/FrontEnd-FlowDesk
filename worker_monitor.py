@@ -375,7 +375,8 @@ def process_completed_simulation(sim):
         
         logger.info(f"[Sim {sim_id}] Step 3/4: Running post-processing in isolated subprocess...")
         t0 = time.time()
-        STEP05_TIMEOUT = 900
+        STEP05_WARN_SECS = 900
+        STEP05_FAIL_SECS = 1800
         try:
             env = os.environ.copy()
             env['PYTHONIOENCODING'] = 'utf-8'
@@ -403,14 +404,27 @@ def process_completed_simulation(sim):
             stream_thread = threading.Thread(target=_stream_step05, args=(proc, sim_id), daemon=True)
             stream_thread.start()
 
-            try:
-                proc.wait(timeout=STEP05_TIMEOUT)
-            except subprocess.TimeoutExpired:
-                proc.kill()
-                stream_thread.join(timeout=3)
-                elapsed = time.time() - t0
-                logger.error(f"[Sim {sim_id}] [step05] took {elapsed:.1f}s — TIMEOUT after {STEP05_TIMEOUT}s")
-                raise Exception(f"Post-processing timeout after {STEP05_TIMEOUT}s")
+            _warned_05 = False
+            while True:
+                try:
+                    proc.wait(timeout=30)
+                    break
+                except subprocess.TimeoutExpired:
+                    elapsed = time.time() - t0
+                    if not _warned_05 and elapsed >= STEP05_WARN_SECS:
+                        logger.warning(
+                            f"[Sim {sim_id}] [step05] ⚠ running for {elapsed:.0f}s — "
+                            f"still alive, will be killed at {STEP05_FAIL_SECS}s"
+                        )
+                        _warned_05 = True
+                    if elapsed >= STEP05_FAIL_SECS:
+                        proc.kill()
+                        stream_thread.join(timeout=3)
+                        logger.error(
+                            f"[Sim {sim_id}] [step05] took {elapsed:.1f}s — "
+                            f"TIMEOUT after {STEP05_FAIL_SECS}s"
+                        )
+                        raise Exception(f"Post-processing timeout after {STEP05_FAIL_SECS}s")
 
             stream_thread.join(timeout=5)
 

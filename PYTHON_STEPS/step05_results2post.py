@@ -95,28 +95,53 @@ def run_indoor_spaces(case_name: str, sim_path: str, post_path: str) -> None:
     comfort_script = os.path.join(project_root, 'src', 'components', 'post', 'calculate_comfort.py')
     logger.info(f"   Running: python3 {comfort_script} {sim_path}")
 
-    try:
-        result = subprocess.run(
-            ['python3', comfort_script, sim_path],
-            capture_output=True,
-            text=True,
-            encoding='utf-8',
-            timeout=120,
-        )
-    except subprocess.TimeoutExpired:
-        raise RuntimeError("PMV/PPD calculation timed out after 120s — calculate_comfort.py hung")
+    COMFORT_WARN_SECS = 120
+    COMFORT_FAIL_SECS = 240
 
-    if result.stdout:
-        for line in result.stdout.strip().split('\n'):
+    proc_c = subprocess.Popen(
+        ['python3', comfort_script, sim_path],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        encoding='utf-8',
+        errors='replace',
+    )
+    _t0_c = time.time()
+    _warned_c = False
+    while True:
+        try:
+            proc_c.wait(timeout=5)
+            break
+        except subprocess.TimeoutExpired:
+            _elapsed_c = time.time() - _t0_c
+            if not _warned_c and _elapsed_c >= COMFORT_WARN_SECS:
+                logger.warning(
+                    f"   ⚠ calculate_comfort.py is taking long ({_elapsed_c:.0f}s) — "
+                    f"still running, will fail at {COMFORT_FAIL_SECS}s"
+                )
+                _warned_c = True
+            if _elapsed_c >= COMFORT_FAIL_SECS:
+                proc_c.kill()
+                proc_c.wait()
+                raise RuntimeError(
+                    f"PMV/PPD calculation timed out after {COMFORT_FAIL_SECS}s — "
+                    "calculate_comfort.py hung"
+                )
+
+    _stdout_c = proc_c.stdout.read()
+    _stderr_c = proc_c.stderr.read()
+
+    if _stdout_c:
+        for line in _stdout_c.strip().split('\n'):
             logger.info(f"   {line}")
 
-    if result.stderr:
-        for line in result.stderr.strip().split('\n'):
+    if _stderr_c:
+        for line in _stderr_c.strip().split('\n'):
             logger.warning(f"   [stderr] {line}")
 
-    if result.returncode != 0:
-        logger.error(f"   calculate_comfort.py failed with exit code {result.returncode}")
-        raise RuntimeError(f"PMV/PPD calculation failed (exit {result.returncode}): {result.stderr}")
+    if proc_c.returncode != 0:
+        logger.error(f"   calculate_comfort.py failed with exit code {proc_c.returncode}")
+        raise RuntimeError(f"PMV/PPD calculation failed (exit {proc_c.returncode}): {_stderr_c}")
 
     logger.info("   ✓ PMV/PPD fields calculated successfully")
 
