@@ -98,6 +98,9 @@ def run_indoor_spaces(case_name: str, sim_path: str, post_path: str) -> None:
     COMFORT_WARN_SECS = 120
     COMFORT_FAIL_SECS = 240
 
+    import io as _io
+    import threading as _threading
+
     proc_c = subprocess.Popen(
         ['python3', comfort_script, sim_path],
         stdout=subprocess.PIPE,
@@ -106,6 +109,23 @@ def run_indoor_spaces(case_name: str, sim_path: str, post_path: str) -> None:
         encoding='utf-8',
         errors='replace',
     )
+
+    # Drain pipes in background threads to prevent OS pipe-buffer deadlock
+    _stdout_buf = _io.StringIO()
+    _stderr_buf = _io.StringIO()
+
+    def _drain(pipe, buf):
+        try:
+            for line in pipe:
+                buf.write(line)
+        except Exception:
+            pass
+
+    _t_out = _threading.Thread(target=_drain, args=(proc_c.stdout, _stdout_buf), daemon=True)
+    _t_err = _threading.Thread(target=_drain, args=(proc_c.stderr, _stderr_buf), daemon=True)
+    _t_out.start()
+    _t_err.start()
+
     _t0_c = time.time()
     _warned_c = False
     while True:
@@ -123,13 +143,17 @@ def run_indoor_spaces(case_name: str, sim_path: str, post_path: str) -> None:
             if _elapsed_c >= COMFORT_FAIL_SECS:
                 proc_c.kill()
                 proc_c.wait()
+                _t_out.join(timeout=3)
+                _t_err.join(timeout=3)
                 raise RuntimeError(
                     f"PMV/PPD calculation timed out after {COMFORT_FAIL_SECS}s — "
                     "calculate_comfort.py hung"
                 )
 
-    _stdout_c = proc_c.stdout.read()
-    _stderr_c = proc_c.stderr.read()
+    _t_out.join(timeout=5)
+    _t_err.join(timeout=5)
+    _stdout_c = _stdout_buf.getvalue()
+    _stderr_c = _stderr_buf.getvalue()
 
     if _stdout_c:
         for line in _stdout_c.strip().split('\n'):
