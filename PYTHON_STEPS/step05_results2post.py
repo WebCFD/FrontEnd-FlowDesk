@@ -4,6 +4,7 @@ import shutil
 import logging
 import subprocess
 import traceback
+import time
 from pathlib import Path
 
 # Add project root to path for src imports
