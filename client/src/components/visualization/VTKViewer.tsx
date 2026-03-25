@@ -495,6 +495,19 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     vectors: { enabled: false, scale: 1.0, density: 0.1 }
   });
   
+  // Refs that mirror state values to avoid stale closures in async callbacks
+  const activeModeRef = useRef<VisualizationMode>('pressure');
+  const filterConfigRef = useRef<FilterConfig>({
+    isosurface: { enabled: false, values: [0.5] },
+    threshold: { enabled: false, range: [0, 1] },
+    clip: { 
+      enabled: false, 
+      planesEnabled: { x: true, y: true, z: true },
+      planePositions: { x: 0.5, y: 0.5, z: 0.5 }
+    },
+    vectors: { enabled: false, scale: 1.0, density: 0.1 }
+  });
+
   // Referencias principales
   const containerRef = useRef<HTMLDivElement>(null);
   const renderWindowRef = useRef<any>(null);
@@ -1130,15 +1143,26 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     let currentData = sourceDataRef.current;
     const actors = [];
 
-    // Determine which scalar array to use based on active field
+    // Determine which scalar array to use based on active field.
+    // Use the first name that actually exists in the dataset for robustness.
     const pointData = currentData.getPointData();
     let scalarArrayName = '';
+    const findArray = (...names: string[]) => names.find(n => pointData.getArrayByName(n)) || '';
     switch (activeField) {
       case 'pressure':
-        scalarArrayName = 'p';
+        scalarArrayName = findArray('p', 'p_rgh') || pointData.getArray(0)?.getName() || '';
         break;
       case 'velocity':
-        scalarArrayName = 'U';
+        scalarArrayName = findArray('U_magnitude', 'U_mag', 'U') || pointData.getArray(0)?.getName() || '';
+        break;
+      case 'temperature':
+        scalarArrayName = findArray('T_degC', 'T') || pointData.getArray(0)?.getName() || '';
+        break;
+      case 'pmv':
+        scalarArrayName = findArray('PMV') || '';
+        break;
+      case 'ppd':
+        scalarArrayName = findArray('PPD') || '';
         break;
       default:
         scalarArrayName = pointData.getArray(0)?.getName() || '';
@@ -1285,11 +1309,11 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         presetName = 'erdc_blue2red_bw'; // Azul a rojo para presión
         break;
       case 'velocity':
-        // Buscar primero magnitud pre-calculada, luego campo vectorial
-        array = pointData.getArrayByName('U_mag') || pointData.getArrayByName('U');
-        presetName = 'erdc_blue2red_bw'; // Default para velocidad
-        // Solo calcular magnitud si es campo vectorial (U), no si ya es U_mag
-        useVectorMagnitude = array?.getName() === 'U' && array?.getNumberOfComponents() >= 3;
+        // Search for pre-calculated magnitude first, then the full vector field
+        array = pointData.getArrayByName('U_magnitude') || pointData.getArrayByName('U_mag') || pointData.getArrayByName('U');
+        presetName = 'erdc_blue2red_bw';
+        // Only compute magnitude if the array is the raw vector field U (3 components), not a pre-calculated scalar
+        useVectorMagnitude = array?.getNumberOfComponents() >= 3;
         break;
       case 'temperature':
         array = pointData.getArrayByName('T_degC') || pointData.getArrayByName('T');
@@ -1480,7 +1504,13 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       console.log(`Applied ${mode} visualization:`, array.getName(), useVectorMagnitude ? '(magnitude)' : '');
     } else {
       mapper.setScalarVisibility(false);
-      console.warn(`No array found for ${mode} visualization`);
+      if (mode !== 'geometry') {
+        const fieldLabel = mode.charAt(0).toUpperCase() + mode.slice(1);
+        setDataWarning(`No ${fieldLabel} data in this file. Try loading a different VTK file.`);
+        console.warn(`No array found for ${mode} visualization`);
+      } else {
+        setDataWarning(null);
+      }
     }
   };
 
@@ -1642,8 +1672,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       // Clean up previous actors using helper
       removeActors(actorsRef.current);
       
-      // Build new pipeline
-      const newActors = buildPipeline(filterConfig, activeMode);
+      // Use refs (not state values) so the async callback always gets the current mode/config
+      const newActors = buildPipeline(filterConfigRef.current, activeModeRef.current);
       actorsRef.current = newActors;
 
       // Add new actors to scene using helper
@@ -1700,6 +1730,10 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       renderWindowRef.current.renderWindow.render();
     }
   };
+
+  // Keep refs in sync with state so async callbacks always read the latest values
+  useEffect(() => { activeModeRef.current = activeMode; }, [activeMode]);
+  useEffect(() => { filterConfigRef.current = filterConfig; }, [filterConfig]);
 
   // Initialize component
 
