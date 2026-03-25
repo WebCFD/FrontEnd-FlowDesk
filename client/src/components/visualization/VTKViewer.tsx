@@ -264,9 +264,9 @@ function parseVtkAscii(text: string): ReturnType<typeof vtkPolyData.newInstance>
       let legacyData: Uint32Array;
 
       if (tokens[i] === 'OFFSETS') {
-        // VTK 5.1 format: OFFSETS vtktypeXXX (numOffsets = headerNum values) + CONNECTIVITY vtktypeXXX (total values)
-        // numOffsets = headerNum, actual cells = numOffsets - 1
-        const numOffsets = headerNum;
+        // VTK 5.1 format: OFFSETS vtktypeXXX (N+1 offsets for N cells, CSR format) + CONNECTIVITY vtktypeXXX (total values)
+        // The header says N cells, but the OFFSETS array has N+1 entries (starts at 0, ends at total connectivity size)
+        const numOffsets = headerNum + 1;
         const nActualCells = numOffsets - 1;
         i += 2; // skip 'OFFSETS' and type token (e.g. 'vtktypeint64')
         const offsets = new Uint32Array(numOffsets);
