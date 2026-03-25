@@ -264,9 +264,10 @@ function parseVtkAscii(text: string): ReturnType<typeof vtkPolyData.newInstance>
       let legacyData: Uint32Array;
 
       if (tokens[i] === 'OFFSETS') {
-        // VTK 5.1 format: OFFSETS vtktypeXXX (N+1 offsets for N cells, CSR format) + CONNECTIVITY vtktypeXXX (total values)
-        // The header says N cells, but the OFFSETS array has N+1 entries (starts at 0, ends at total connectivity size)
-        const numOffsets = headerNum + 1;
+        // VTK 5.1 format: OFFSETS vtktypeXXX + CONNECTIVITY vtktypeXXX
+        // The OFFSETS array has exactly headerNum entries: offsets[0]=0 (start of first cell),
+        // offsets[N-1]=total (end of last cell). Cells are built from consecutive pairs.
+        const numOffsets = headerNum;
         const nActualCells = numOffsets - 1;
         i += 2; // skip 'OFFSETS' and type token (e.g. 'vtktypeint64')
         const offsets = new Uint32Array(numOffsets);
@@ -902,7 +903,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     
     lookupTable.addRGBPoint(maxVal, 0.9, 0.9, 0.9);
     
-    mapper.setScalarModeToUsePointData();
+    mapper.setScalarModeToUsePointFieldData();
     mapper.setColorByArrayName(array.getName());
     mapper.setScalarVisibility(true);
     mapper.setLookupTable(lookupTable);
@@ -957,7 +958,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       lookupTable.addRGBPoint(maxVal, 0.3, 0.3, 0.3);
     }
     
-    mapper.setScalarModeToUsePointData();
+    mapper.setScalarModeToUsePointFieldData();
     mapper.setColorByArrayName(array.getName());
     mapper.setScalarVisibility(true);
     mapper.setLookupTable(lookupTable);
@@ -1022,7 +1023,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     // Apply vector magnitude coloring to wireframe
     const magnitudeArray = calculateVectorMagnitude(vectorArray);
     pointData.addArray(magnitudeArray);
-    streamlineMapper.setScalarModeToUsePointData();
+    streamlineMapper.setScalarModeToUsePointFieldData();
     streamlineMapper.setColorByArrayName(magnitudeArray.getName());
     streamlineMapper.setScalarVisibility(true);
     
@@ -1058,7 +1059,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       pointActor.getProperty().setOpacity(opacity * 0.6); // Apply user opacity with base transparency
       
       // Use same magnitude coloring as wireframe
-      pointMapper.setScalarModeToUsePointData();
+      pointMapper.setScalarModeToUsePointFieldData();
       pointMapper.setColorByArrayName(magnitudeArray.getName());
       pointMapper.setScalarVisibility(true);
       pointMapper.setLookupTable(vectorLookupTable);
@@ -1414,13 +1415,13 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         // Magnitude is always added to pointData for interpolation
         pointData.addArray(magnitudeArray);
         arrayComeFromCellData = false;
-        mapper.setScalarModeToUsePointData();
+        mapper.setScalarModeToUsePointFieldData();
         mapper.setColorByArrayName(magnitudeArray.getName());
       } else if (arrayComeFromCellData) {
         mapper.setScalarModeToUseCellFieldData();
         mapper.setColorByArrayName(array.getName());
       } else {
-        mapper.setScalarModeToUsePointData();
+        mapper.setScalarModeToUsePointFieldData();
         mapper.setColorByArrayName(array.getName());
       }
       
