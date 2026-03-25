@@ -1353,7 +1353,6 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       }
       
       mapper.setScalarVisibility(true);
-      mapper.setUseLookupTableScalarRange(true);
       
       // Normalize range to handle zero-width, NaN, and infinity cases
       const fieldName = array.getName() || mode;
@@ -1366,22 +1365,15 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         console.log('[VTKViewer] Setting data warning:', warningMsg);
         setDataWarning(warningMsg);
       } else {
-        // Only clear warning if there's actually no issue
         if (dataWarning) {
           console.log('[VTKViewer] Clearing data warning');
           setDataWarning(null);
         }
       }
       
-      // Define effective range at function scope so it's available for manual colormap
-      let effectiveMin, effectiveMax;
-      
       // Use custom min/max values if specified, otherwise use normalized safe range
-      effectiveMin = colormapMin ?? safeMin;
-      effectiveMax = colormapMax ?? safeMax;
-      
-      // Always use safe range for lookup table to prevent crashes
-      lookupTable.setMappingRange(effectiveMin, effectiveMax);
+      const effectiveMin = colormapMin ?? safeMin;
+      const effectiveMax = colormapMax ?? safeMax;
       
       // Update UI state for sliders (use safe range)
       setDataRange([safeMin, safeMax]);
@@ -1389,116 +1381,120 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       console.log('[VTKViewer] Colormap range applied - Data:', `${safeMin.toFixed(2)}-${safeMax.toFixed(2)}`, 
                  'Effective:', `${effectiveMin.toFixed(2)}-${effectiveMax.toFixed(2)}`,
                  normalized.isUniform ? '(uniform data)' : normalized.isInvalid ? '(invalid data)' : '');
-      
-      // Usar selectedColormap state si está disponible
+
+      // Build the color transfer function.
+      // CRITICAL: CTF control points must be at ACTUAL data values, not [0,1].
+      // vtk.js vtkColorTransferFunction.mapScalars() receives raw scalar values
+      // and does a direct binary-search on the node X values. If node X values
+      // are in [0,1] but data is at (e.g.) [-19.5, -19.0], all scalars fall
+      // outside the CTF range and get clamped to the first/last color.
+      // The fix: when a preset is available, rescale its [0,1] X positions to
+      // [effectiveMin, effectiveMax] before adding the points.
       const colormapName = selectedColormap || presetName;
       const preset = vtkColorMaps.getPresetByName(colormapName);
-      if (preset) {
-        lookupTable.applyColorMap(preset);
-        console.log('[VTKViewer] Applied colormap:', colormapName);
+      const span = effectiveMax - effectiveMin;
+
+      if (preset && preset.RGBPoints && preset.RGBPoints.length >= 8) {
+        // Rescale preset control points from [0,1] to [effectiveMin, effectiveMax]
+        const pts = preset.RGBPoints;
+        const presetMin = pts[0];
+        const presetMax = pts[pts.length - 4];
+        const presetSpan = presetMax - presetMin || 1;
+        const numPts = pts.length / 4;
+        for (let j = 0; j < pts.length; j += 4) {
+          const t = (pts[j] - presetMin) / presetSpan; // normalised [0,1]
+          const x = effectiveMin + t * span;            // actual data value
+          // For inversion: mirror the color source from the other end of the preset
+          const srcJ = invertColormap ? (numPts - 1 - j / 4) * 4 : j;
+          lookupTable.addRGBPoint(x, pts[srcJ + 1], pts[srcJ + 2], pts[srcJ + 3]);
+        }
+        console.log('[VTKViewer] Applied preset colormap (rescaled to data range):', colormapName);
       } else {
-        // Fallback manual para colormaps científicos
-        console.warn(`Preset ${colormapName} not found, using manual colormap`);
-        // Use effective range (custom min/max if specified, otherwise data range)
-        const [minVal, maxVal] = [effectiveMin, effectiveMax];
-        
-        // Usar selectedColormap en lugar de mode para determinar colores
-        // Aplicar inversión si está activada
+        // Fallback: manual palettes — points are already at actual data values
+        if (!preset) console.warn(`Preset ${colormapName} not found, using manual colormap`);
         const activeColormap = selectedColormap || presetName;
-        console.log('[VTKViewer] Applied colormap:', activeColormap);
+        console.log('[VTKViewer] Applied manual colormap:', activeColormap);
+        const lo = effectiveMin;
+        const hi = effectiveMax;
+        const mid = (lo + hi) / 2;
+        const q1 = lo + span * 0.25;
+        const q3 = lo + span * 0.75;
         switch (activeColormap) {
           case 'grayscale':
-            // Escala de grises
             if (invertColormap) {
-              lookupTable.addRGBPoint(minVal, 1.0, 1.0, 1.0); // Blanco
-              lookupTable.addRGBPoint(maxVal, 0.0, 0.0, 0.0); // Negro
+              lookupTable.addRGBPoint(lo, 1.0, 1.0, 1.0);
+              lookupTable.addRGBPoint(hi, 0.0, 0.0, 0.0);
             } else {
-              lookupTable.addRGBPoint(minVal, 0.0, 0.0, 0.0); // Negro
-              lookupTable.addRGBPoint(maxVal, 1.0, 1.0, 1.0); // Blanco
+              lookupTable.addRGBPoint(lo, 0.0, 0.0, 0.0);
+              lookupTable.addRGBPoint(hi, 1.0, 1.0, 1.0);
             }
             break;
-            
           case 'plasma':
-            // Plasma: Púrpura oscuro a amarillo (o invertido)
             if (invertColormap) {
-              lookupTable.addRGBPoint(minVal, 0.94, 0.98, 0.65); // Amarillo claro
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.25, 0.99, 0.65, 0.04); // Naranja
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.5, 0.87, 0.31, 0.39); // Rosa-rojo
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.75, 0.49, 0.01, 0.66); // Púrpura
-              lookupTable.addRGBPoint(maxVal, 0.05, 0.03, 0.53); // Púrpura oscuro
+              lookupTable.addRGBPoint(lo, 0.94, 0.98, 0.65);
+              lookupTable.addRGBPoint(q1, 0.99, 0.65, 0.04);
+              lookupTable.addRGBPoint(mid, 0.87, 0.31, 0.39);
+              lookupTable.addRGBPoint(q3, 0.49, 0.01, 0.66);
+              lookupTable.addRGBPoint(hi, 0.05, 0.03, 0.53);
             } else {
-              lookupTable.addRGBPoint(minVal, 0.05, 0.03, 0.53); // Púrpura oscuro
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.25, 0.49, 0.01, 0.66); // Púrpura
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.5, 0.87, 0.31, 0.39); // Rosa-rojo
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.75, 0.99, 0.65, 0.04); // Naranja
-              lookupTable.addRGBPoint(maxVal, 0.94, 0.98, 0.65); // Amarillo claro
+              lookupTable.addRGBPoint(lo, 0.05, 0.03, 0.53);
+              lookupTable.addRGBPoint(q1, 0.49, 0.01, 0.66);
+              lookupTable.addRGBPoint(mid, 0.87, 0.31, 0.39);
+              lookupTable.addRGBPoint(q3, 0.99, 0.65, 0.04);
+              lookupTable.addRGBPoint(hi, 0.94, 0.98, 0.65);
             }
             break;
-            
           case 'viridis':
-            // Viridis: Púrpura oscuro a verde-amarillo (o invertido)
             if (invertColormap) {
-              lookupTable.addRGBPoint(minVal, 0.99, 0.91, 0.15); // Amarillo
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.25, 0.37, 0.74, 0.35); // Verde
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.5, 0.13, 0.57, 0.55); // Turquesa
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.75, 0.28, 0.17, 0.48); // Púrpura
-              lookupTable.addRGBPoint(maxVal, 0.27, 0.00, 0.33); // Púrpura oscuro
+              lookupTable.addRGBPoint(lo, 0.99, 0.91, 0.15);
+              lookupTable.addRGBPoint(q1, 0.37, 0.74, 0.35);
+              lookupTable.addRGBPoint(mid, 0.13, 0.57, 0.55);
+              lookupTable.addRGBPoint(q3, 0.28, 0.17, 0.48);
+              lookupTable.addRGBPoint(hi, 0.27, 0.00, 0.33);
             } else {
-              lookupTable.addRGBPoint(minVal, 0.27, 0.00, 0.33); // Púrpura oscuro
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.25, 0.28, 0.17, 0.48); // Púrpura
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.5, 0.13, 0.57, 0.55); // Turquesa
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.75, 0.37, 0.74, 0.35); // Verde
-              lookupTable.addRGBPoint(maxVal, 0.99, 0.91, 0.15); // Amarillo
+              lookupTable.addRGBPoint(lo, 0.27, 0.00, 0.33);
+              lookupTable.addRGBPoint(q1, 0.28, 0.17, 0.48);
+              lookupTable.addRGBPoint(mid, 0.13, 0.57, 0.55);
+              lookupTable.addRGBPoint(q3, 0.37, 0.74, 0.35);
+              lookupTable.addRGBPoint(hi, 0.99, 0.91, 0.15);
             }
             break;
-            
           case 'jet_cfd':
-            // CFD Jet Colormap: Rojo → Amarillo → Verde → Cian → Azul (clásico CFD)
-            console.log('[VTKViewer] Applying Jet colormap with range:', minVal, 'to', maxVal, 'inverted:', invertColormap);
             if (invertColormap) {
-              lookupTable.addRGBPoint(minVal, 0.0, 0.0, 1.0); // Azul
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.25, 0.0, 1.0, 1.0); // Cian
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.5, 0.0, 1.0, 0.0); // Verde
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.75, 1.0, 1.0, 0.0); // Amarillo
-              lookupTable.addRGBPoint(maxVal, 1.0, 0.0, 0.0); // Rojo
+              lookupTable.addRGBPoint(lo, 0.0, 0.0, 1.0);
+              lookupTable.addRGBPoint(q1, 0.0, 1.0, 1.0);
+              lookupTable.addRGBPoint(mid, 0.0, 1.0, 0.0);
+              lookupTable.addRGBPoint(q3, 1.0, 1.0, 0.0);
+              lookupTable.addRGBPoint(hi, 1.0, 0.0, 0.0);
             } else {
-              lookupTable.addRGBPoint(minVal, 1.0, 0.0, 0.0); // Rojo
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.25, 1.0, 1.0, 0.0); // Amarillo
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.5, 0.0, 1.0, 0.0); // Verde
-              lookupTable.addRGBPoint(minVal + (maxVal - minVal) * 0.75, 0.0, 1.0, 1.0); // Cian
-              lookupTable.addRGBPoint(maxVal, 0.0, 0.0, 1.0); // Azul
+              lookupTable.addRGBPoint(lo, 1.0, 0.0, 0.0);
+              lookupTable.addRGBPoint(q1, 1.0, 1.0, 0.0);
+              lookupTable.addRGBPoint(mid, 0.0, 1.0, 0.0);
+              lookupTable.addRGBPoint(q3, 0.0, 1.0, 1.0);
+              lookupTable.addRGBPoint(hi, 0.0, 0.0, 1.0);
             }
             break;
-            
           case 'cool_warm':
           case 'erdc_blue2red_bw':
-            // Azul frío a rojo cálido (o invertido)
-            if (invertColormap) {
-              lookupTable.addRGBPoint(minVal, 0.71, 0.016, 0.15); // Rojo cálido
-              lookupTable.addRGBPoint((minVal + maxVal) / 2, 0.87, 0.87, 0.87); // Blanco
-              lookupTable.addRGBPoint(maxVal, 0.23, 0.30, 0.75); // Azul frío
-            } else {
-              lookupTable.addRGBPoint(minVal, 0.23, 0.30, 0.75); // Azul frío
-              lookupTable.addRGBPoint((minVal + maxVal) / 2, 0.87, 0.87, 0.87); // Blanco
-              lookupTable.addRGBPoint(maxVal, 0.71, 0.016, 0.15); // Rojo cálido
-            }
-            break;
-            
           default:
-            // Default: erdc_blue2red_bw style
             if (invertColormap) {
-              lookupTable.addRGBPoint(minVal, 0.71, 0.016, 0.15); // Rojo cálido
-              lookupTable.addRGBPoint((minVal + maxVal) / 2, 0.87, 0.87, 0.87); // Blanco
-              lookupTable.addRGBPoint(maxVal, 0.23, 0.30, 0.75); // Azul frío
+              lookupTable.addRGBPoint(lo, 0.71, 0.016, 0.15);
+              lookupTable.addRGBPoint(mid, 0.87, 0.87, 0.87);
+              lookupTable.addRGBPoint(hi, 0.23, 0.30, 0.75);
             } else {
-              lookupTable.addRGBPoint(minVal, 0.23, 0.30, 0.75); // Azul frío
-              lookupTable.addRGBPoint((minVal + maxVal) / 2, 0.87, 0.87, 0.87); // Blanco
-              lookupTable.addRGBPoint(maxVal, 0.71, 0.016, 0.15); // Rojo cálido
+              lookupTable.addRGBPoint(lo, 0.23, 0.30, 0.75);
+              lookupTable.addRGBPoint(mid, 0.87, 0.87, 0.87);
+              lookupTable.addRGBPoint(hi, 0.71, 0.016, 0.15);
             }
             break;
         }
       }
-      
+
+      // Tell the mapper the exact scalar range so the legend/colorbar is correct.
+      // Do NOT use setUseLookupTableScalarRange — that sets the mapper's range from
+      // CTF.getRange() which returns the control-point X range (may be [0,1] for
+      // presets before rescaling), causing all scalars to be clamped to one color.
+      mapper.setScalarRange(effectiveMin, effectiveMax);
       mapper.setLookupTable(lookupTable);
       
       console.log(`Applied ${mode} visualization:`, array.getName(), useVectorMagnitude ? '(magnitude)' : '');
