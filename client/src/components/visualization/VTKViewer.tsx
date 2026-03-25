@@ -615,9 +615,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       // Get source data points and field arrays
       const sourcePoints = sourceData.getPoints().getData();
       const sourcePointData = sourceData.getPointData();
+      const sourceCellData = sourceData.getCellData();
       
-      // Manually interpolate field values using nearest neighbor
-      // Get all field arrays from source
+      // Manually interpolate field values using nearest neighbor (point data)
       const fieldArrays: any[] = [];
       for (let i = 0; i < sourcePointData.getNumberOfArrays(); i++) {
         const array = sourcePointData.getArray(i);
@@ -625,42 +625,77 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
           name: array.getName(),
           components: array.getNumberOfComponents(),
           sourceData: array.getData(),
-          interpolated: new Float32Array(numPlanePoints * array.getNumberOfComponents())
+          interpolated: new Float32Array(numPlanePoints * array.getNumberOfComponents()),
+          isCellData: false,
         });
       }
+
+      // Also include cell data arrays — approximate via nearest cell center
+      const numSourceCells = sourceData.getNumberOfCells();
+      const cellCenters: Float32Array | null = numSourceCells > 0 ? new Float32Array(numSourceCells * 3) : null;
+      if (cellCenters) {
+        for (let ci = 0; ci < numSourceCells; ci++) {
+          const cell = sourceData.getCell(ci);
+          if (!cell) continue;
+          let cx = 0, cy = 0, cz = 0;
+          const numCellPts = cell.getNumberOfPoints ? cell.getNumberOfPoints() : 0;
+          if (numCellPts === 0) continue;
+          for (let pi = 0; pi < numCellPts; pi++) {
+            const ptId = cell.getPointId(pi);
+            cx += sourcePoints[ptId * 3];
+            cy += sourcePoints[ptId * 3 + 1];
+            cz += sourcePoints[ptId * 3 + 2];
+          }
+          cellCenters[ci * 3] = cx / numCellPts;
+          cellCenters[ci * 3 + 1] = cy / numCellPts;
+          cellCenters[ci * 3 + 2] = cz / numCellPts;
+        }
+        for (let i = 0; i < sourceCellData.getNumberOfArrays(); i++) {
+          const array = sourceCellData.getArray(i);
+          fieldArrays.push({
+            name: array.getName(),
+            components: array.getNumberOfComponents(),
+            sourceData: array.getData(),
+            interpolated: new Float32Array(numPlanePoints * array.getNumberOfComponents()),
+            isCellData: true,
+          });
+        }
+      }
       
-      // For each point on the plane, find nearest source point and copy field value
+      // For each point on the plane, find nearest source point/cell and copy field value
       for (let i = 0; i < numPlanePoints; i++) {
         const px = planePoints[i * 3];
         const py = planePoints[i * 3 + 1];
         const pz = planePoints[i * 3 + 2];
         
-        // Find nearest source point (simple nearest neighbor)
-        let minDist = Infinity;
-        let nearestIdx = 0;
-        
+        // Nearest point index (for point data fields)
+        let minPtDist = Infinity;
+        let nearestPtIdx = 0;
         for (let j = 0; j < sourcePoints.length / 3; j++) {
-          const sx = sourcePoints[j * 3];
-          const sy = sourcePoints[j * 3 + 1];
-          const sz = sourcePoints[j * 3 + 2];
-          
-          const dist = (px - sx) ** 2 + (py - sy) ** 2 + (pz - sz) ** 2;
-          if (dist < minDist) {
-            minDist = dist;
-            nearestIdx = j;
+          const dist = (px - sourcePoints[j * 3]) ** 2 + (py - sourcePoints[j * 3 + 1]) ** 2 + (pz - sourcePoints[j * 3 + 2]) ** 2;
+          if (dist < minPtDist) { minPtDist = dist; nearestPtIdx = j; }
+        }
+
+        // Nearest cell center index (for cell data fields)
+        let nearestCellIdx = 0;
+        if (cellCenters && numSourceCells > 0) {
+          let minCellDist = Infinity;
+          for (let ci = 0; ci < numSourceCells; ci++) {
+            const dist = (px - cellCenters[ci * 3]) ** 2 + (py - cellCenters[ci * 3 + 1]) ** 2 + (pz - cellCenters[ci * 3 + 2]) ** 2;
+            if (dist < minCellDist) { minCellDist = dist; nearestCellIdx = ci; }
           }
         }
         
-        // Copy field values from nearest source point
         fieldArrays.forEach(field => {
+          const srcIdx = field.isCellData ? nearestCellIdx : nearestPtIdx;
           for (let c = 0; c < field.components; c++) {
-            field.interpolated[i * field.components + c] = 
-              field.sourceData[nearestIdx * field.components + c];
+            field.interpolated[i * field.components + c] =
+              field.sourceData[srcIdx * field.components + c];
           }
         });
       }
       
-      // Add interpolated field arrays to plane data
+      // Add interpolated field arrays to plane data (always as point data on the plane)
       fieldArrays.forEach(field => {
         const dataArray = vtkDataArray.newInstance({
           name: field.name,
@@ -1289,64 +1324,101 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   // Aplicar visualización con colormaps válidos y manejo vectorial
   const applyVisualization = (mapper: any, dataset: any, mode: VisualizationMode) => {
     const pointData = dataset.getPointData();
+    const cellData = dataset.getCellData();
     const lookupTable = vtkColorTransferFunction.newInstance();
     
     let array = null;
+    let arrayComeFromCellData = false;
     let presetName = 'erdc_blue2red_bw';
     let useVectorMagnitude = false;
     
+    // Helper: look up array by name in pointData first, then cellData
+    const findArray = (name: string) => {
+      const pa = pointData.getArrayByName(name);
+      if (pa) return { arr: pa, fromCells: false };
+      const ca = cellData.getArrayByName(name);
+      if (ca) return { arr: ca, fromCells: true };
+      return null;
+    };
+    const findFirstArray = () => {
+      if (pointData.getNumberOfArrays() > 0) return { arr: pointData.getArray(0), fromCells: false };
+      if (cellData.getNumberOfArrays() > 0) return { arr: cellData.getArray(0), fromCells: true };
+      return null;
+    };
+
     // Debug: Log available arrays
-    const numArrays = pointData.getNumberOfArrays();
-    console.log('[VTKViewer] Selecting field for mode:', mode, '- Available arrays:', numArrays);
-    for (let i = 0; i < numArrays; i++) {
+    const numPtArrays = pointData.getNumberOfArrays();
+    const numCellArrays = cellData.getNumberOfArrays();
+    console.log('[VTKViewer] Selecting field for mode:', mode,
+      '- Point arrays:', numPtArrays, '| Cell arrays:', numCellArrays);
+    for (let i = 0; i < numPtArrays; i++) {
       const arr = pointData.getArray(i);
-      console.log(`  [${i}]:`, arr.getName(), `(${arr.getNumberOfComponents()} components)`);
+      console.log(`  [pt ${i}]:`, arr.getName(), `(${arr.getNumberOfComponents()} components)`);
+    }
+    for (let i = 0; i < numCellArrays; i++) {
+      const arr = cellData.getArray(i);
+      console.log(`  [cell ${i}]:`, arr.getName(), `(${arr.getNumberOfComponents()} components)`);
     }
     
     switch (mode) {
-      case 'pressure':
-        array = pointData.getArrayByName('p') || pointData.getArrayByName('p_rgh') || pointData.getArray(0);
-        presetName = 'erdc_blue2red_bw'; // Azul a rojo para presión
-        break;
-      case 'velocity':
-        // Search for pre-calculated magnitude first, then the full vector field
-        array = pointData.getArrayByName('U_magnitude') || pointData.getArrayByName('U_mag') || pointData.getArrayByName('U');
+      case 'pressure': {
+        const found = findArray('p') || findArray('p_rgh') || findFirstArray();
+        if (found) { array = found.arr; arrayComeFromCellData = found.fromCells; }
         presetName = 'erdc_blue2red_bw';
-        // Only compute magnitude if the array is the raw vector field U (3 components), not a pre-calculated scalar
+        break;
+      }
+      case 'velocity': {
+        const found = findArray('U_magnitude') || findArray('U_mag') || findArray('U');
+        if (found) { array = found.arr; arrayComeFromCellData = found.fromCells; }
+        presetName = 'erdc_blue2red_bw';
         useVectorMagnitude = array?.getNumberOfComponents() >= 3;
         break;
-      case 'temperature':
-        array = pointData.getArrayByName('T_degC') || pointData.getArrayByName('T');
-        presetName = 'plasma'; // Plasma para temperatura
+      }
+      case 'temperature': {
+        const found = findArray('T_degC') || findArray('T');
+        if (found) { array = found.arr; arrayComeFromCellData = found.fromCells; }
+        presetName = 'plasma';
         break;
-      case 'pmv':
-        array = pointData.getArrayByName('PMV');
-        presetName = 'coolwarm'; // Coolwarm para PMV (-3 a +3)
+      }
+      case 'pmv': {
+        const found = findArray('PMV');
+        if (found) { array = found.arr; arrayComeFromCellData = found.fromCells; }
+        presetName = 'coolwarm';
         break;
-      case 'ppd':
-        array = pointData.getArrayByName('PPD');
-        presetName = 'inferno'; // Inferno para PPD (0-100%)
+      }
+      case 'ppd': {
+        const found = findArray('PPD');
+        if (found) { array = found.arr; arrayComeFromCellData = found.fromCells; }
+        presetName = 'inferno';
         break;
+      }
       case 'geometry':
-        // Solo mostrar geometría sin coloring
         array = null;
         break;
-      default:
-        array = pointData.getArray(0);
+      default: {
+        const found = findFirstArray();
+        if (found) { array = found.arr; arrayComeFromCellData = found.fromCells; }
         presetName = 'Greys';
         break;
+      }
     }
     
-    console.log('[VTKViewer] Selected array for mode', mode, ':', array?.getName() || 'none');
+    console.log('[VTKViewer] Selected array for mode', mode, ':',
+      array?.getName() || 'none', arrayComeFromCellData ? '(cell data)' : '(point data)');
     
     if (array) {
       // Para vectores de velocidad, usar magnitud
       if (useVectorMagnitude && array.getNumberOfComponents() >= 3) {
         const magnitudeArray = calculateVectorMagnitude(array);
         array = magnitudeArray;
+        // Magnitude is always added to pointData for interpolation
         pointData.addArray(magnitudeArray);
+        arrayComeFromCellData = false;
         mapper.setScalarModeToUsePointData();
         mapper.setColorByArrayName(magnitudeArray.getName());
+      } else if (arrayComeFromCellData) {
+        mapper.setScalarModeToUseCellFieldData();
+        mapper.setColorByArrayName(array.getName());
       } else {
         mapper.setScalarModeToUsePointData();
         mapper.setColorByArrayName(array.getName());
@@ -1611,16 +1683,21 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         throw new Error('Failed to parse VTK file — parser returned no data');
       }
 
-      const numArrays = polyData.getPointData().getNumberOfArrays();
-      const arrayNames: string[] = [];
-      for (let i = 0; i < numArrays; i++) {
+      const ptArrayNames: string[] = [];
+      for (let i = 0; i < polyData.getPointData().getNumberOfArrays(); i++) {
         const arr = polyData.getPointData().getArray(i);
-        if (arr) arrayNames.push(`${arr.getName()} (${arr.getNumberOfComponents()} components)`);
+        if (arr) ptArrayNames.push(`${arr.getName()} (${arr.getNumberOfComponents()} components)`);
+      }
+      const cellArrayNames: string[] = [];
+      for (let i = 0; i < polyData.getCellData().getNumberOfArrays(); i++) {
+        const arr = polyData.getCellData().getArray(i);
+        if (arr) cellArrayNames.push(`${arr.getName()} (${arr.getNumberOfComponents()} components)`);
       }
       console.log('[VTKViewer] Parsed VTK legacy file:', {
         points: polyData.getNumberOfPoints(),
         cells: polyData.getNumberOfCells(),
-        pointDataArrays: arrayNames,
+        pointDataArrays: ptArrayNames,
+        cellDataArrays: cellArrayNames,
       });
 
       const dataset = polyData;
