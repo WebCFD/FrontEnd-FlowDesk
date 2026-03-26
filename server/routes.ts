@@ -32,7 +32,7 @@ export const VALID_TRANSITIONS: Record<string, string[]> = {
 // Importar crypto para validación de contraseña con hash SHA-256
 // Esta funcionalidad será eliminada próximamente
 import crypto from "crypto";
-import { exec, execSync } from "child_process";
+import { exec, execFile, execSync } from "child_process";
 import { promisify } from "util";
 import os from "os";
 import { getUncachableResendClient } from "./resend";
@@ -737,39 +737,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "value must be a number" });
       }
 
-      // Locate VTK file: local filesystem first, R2 fallback
-      const localPath = path.join(process.cwd(), 'cases', `sim_${simulationId}`, 'post', 'vtk', filename);
-      let vtkPath: string = localPath;
+      // Strict input validation — only allow safe filenames and field names
+      const safeFilename = path.basename(String(filename));
+      if (!/^[\w\-. ]+\.vtk(?:js)?$/.test(safeFilename)) {
+        return res.status(400).json({ message: "Invalid filename" });
+      }
+      const safeField = String(field).slice(0, 64);
+      if (!/^[\w_. \-]+$/.test(safeField)) {
+        return res.status(400).json({ message: "Invalid field name" });
+      }
+
+      // Locate VTK file using same priority as VTK download endpoint
+      const isProduction = process.env.NODE_ENV === 'production';
+      const localCandidates = [
+        path.join(process.cwd(), 'cases', `sim_${simulationId}`, 'post', 'vtk', safeFilename),
+        isProduction
+          ? path.join('/tmp/uploads', `sim_${simulationId}`, 'vtk', safeFilename)
+          : path.join(process.cwd(), 'public', 'uploads', `sim_${simulationId}`, 'vtk', safeFilename),
+      ];
+
+      let vtkPath: string | null = localCandidates.find(p => fsSync.existsSync(p)) || null;
       let tempFile: string | null = null;
 
-      if (!fsSync.existsSync(localPath)) {
+      if (!vtkPath) {
         // Try R2
         try {
-          const fileBuffer = await r2Storage.downloadToBuffer(simulationId, filename);
-          tempFile = path.join(os.tmpdir(), `vtk_iso_${simulationId}_${Date.now()}_${filename}`);
+          const fileBuffer = await r2Storage.downloadToBuffer(simulationId, safeFilename);
+          tempFile = path.join(os.tmpdir(), `vtk_iso_${simulationId}_${Date.now()}_${safeFilename}`);
           await fs.writeFile(tempFile, fileBuffer);
           vtkPath = tempFile;
         } catch (r2Err: any) {
-          console.warn(`[ISOSURFACE] R2 download failed for ${filename}:`, r2Err.message);
-          return res.status(404).json({ message: `VTK file not found: ${filename}` });
+          console.warn(`[ISOSURFACE] R2 download failed for ${safeFilename}:`, r2Err.message);
+          return res.status(404).json({ message: `VTK file not found: ${safeFilename}` });
         }
       }
 
       const scriptPath = path.join(process.cwd(), 'server', 'isosurface.py');
-      console.log(`[ISOSURFACE] sim=${simulationId} file=${filename} field=${field} value=${numValue}`);
+      console.log(`[ISOSURFACE] sim=${simulationId} file=${safeFilename} field=${safeField} value=${numValue}`);
 
+      const EMPTY_VTK = "# vtk DataFile Version 2.0\nEmpty\nASCII\nDATASET POLYDATA\nPOINTS 0 float\n";
       let vtkOutput = '';
       try {
-        const { stdout, stderr } = await execPromise(
-          `python3 "${scriptPath}" "${vtkPath}" "${field}" "${numValue}"`,
+        // Use execFile with argv array — no shell interpolation, safe against metacharacters
+        const execFileAsync = promisify(execFile);
+        const { stdout, stderr } = await execFileAsync(
+          'python3',
+          [scriptPath, vtkPath, safeField, String(numValue)],
           { maxBuffer: 20 * 1024 * 1024, timeout: 30000 }
         );
         if (stderr) console.warn(`[ISOSURFACE] Python stderr:`, stderr.substring(0, 300));
-        vtkOutput = stdout;
+        vtkOutput = stdout || EMPTY_VTK;
       } catch (execErr: any) {
         console.error('[ISOSURFACE] Python execution failed:', execErr.message);
-        // Return empty VTK so frontend handles it gracefully
-        vtkOutput = "# vtk DataFile Version 2.0\nEmpty\nASCII\nDATASET POLYDATA\nPOINTS 0 float\n";
+        vtkOutput = EMPTY_VTK;
       } finally {
         if (tempFile) { try { await fs.unlink(tempFile); } catch (e) {} }
       }

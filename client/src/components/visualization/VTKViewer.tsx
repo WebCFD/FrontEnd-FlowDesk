@@ -334,8 +334,51 @@ function parseVtkAscii(text: string): ReturnType<typeof vtkPolyData.newInstance>
       i += 2 + nCells;
 
     } else if (tok === 'LINES') {
+      // Parse line cells (legacy OR VTK 5.1 OFFSETS+CONNECTIVITY format)
+      const headerNum = parseInt(tokens[i + 1]);
       const total = parseInt(tokens[i + 2]);
-      i += 3 + total;
+      i += 3;
+
+      let lineData: Uint32Array;
+      if (tokens[i] === 'OFFSETS') {
+        // VTK 5.1 new format: OFFSETS type then CONNECTIVITY type
+        // headerNum = numOffsets = nActualLines + 1
+        const numOffsets = headerNum;
+        const nActualLines = numOffsets - 1;
+        i += 2; // skip 'OFFSETS' and type (e.g. 'vtktypeint64')
+        const offsets = new Uint32Array(numOffsets);
+        for (let j = 0; j < numOffsets; j++) {
+          offsets[j] = parseInt(tokens[i++]);
+        }
+        i += 2; // skip 'CONNECTIVITY' and type
+        const connectivity = new Uint32Array(total);
+        for (let j = 0; j < total; j++) {
+          connectivity[j] = parseInt(tokens[i++]);
+        }
+        // Convert to legacy format: [cellSize, v0, v1, ..., cellSize, v0, ...]
+        const legacySize = total + nActualLines;
+        lineData = new Uint32Array(legacySize);
+        let li = 0;
+        for (let c = 0; c < nActualLines; c++) {
+          const start = offsets[c];
+          const end = offsets[c + 1];
+          const cellSize = end - start;
+          lineData[li++] = cellSize;
+          for (let j = start; j < end; j++) {
+            lineData[li++] = connectivity[j];
+          }
+        }
+      } else {
+        // Legacy VTK format: total values in [n, v0, v1, ..., n, v0, ...] form
+        lineData = new Uint32Array(total);
+        for (let j = 0; j < total; j++) {
+          lineData[j] = parseInt(tokens[i++]);
+        }
+      }
+
+      const lineCells = vtkCellArray.newInstance();
+      lineCells.setData(lineData);
+      polyData.setLines(lineCells);
 
     } else if (tok === 'VERTICES') {
       const total = parseInt(tokens[i + 2]);
@@ -1693,31 +1736,25 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     }
   };
 
-  // ── Auto-initialize filter values to data range when enabled ──────────────
+  // ── Auto-initialize filter values to data range when enabled or field changes
   useEffect(() => {
     if (filterConfig.isosurface.enabled && dataRange[0] !== dataRange[1]) {
+      // Always reset to midpoint when the field/dataRange changes while enabled
       const mid = (dataRange[0] + dataRange[1]) / 2;
-      const cur = filterConfig.isosurface.values[0];
-      if (cur < dataRange[0] || cur > dataRange[1]) {
-        setFilterConfig(prev => ({
-          ...prev,
-          isosurface: { ...prev.isosurface, values: [mid] },
-        }));
-      }
+      setFilterConfig(prev => ({
+        ...prev,
+        isosurface: { ...prev.isosurface, values: [mid] },
+      }));
     }
   }, [filterConfig.isosurface.enabled, dataRange]);
 
   useEffect(() => {
     if (filterConfig.threshold.enabled && dataRange[0] !== dataRange[1]) {
-      const [lo, hi] = filterConfig.threshold.range;
-      const isDefault = lo === 0 && hi === 1;
-      const outOfRange = lo < dataRange[0] || hi > dataRange[1];
-      if (isDefault || outOfRange) {
-        setFilterConfig(prev => ({
-          ...prev,
-          threshold: { ...prev.threshold, range: [dataRange[0], dataRange[1]] },
-        }));
-      }
+      // Always reset to full range when the field/dataRange changes while enabled
+      setFilterConfig(prev => ({
+        ...prev,
+        threshold: { ...prev.threshold, range: [dataRange[0], dataRange[1]] },
+      }));
     }
   }, [filterConfig.threshold.enabled, dataRange]);
 
