@@ -952,10 +952,10 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     const glyphMapper = vtkGlyph3DMapper.newInstance();
     glyphMapper.setInputData(sampledData);
     glyphMapper.setSourceConnection(arrowSource.getOutputPort());
-    glyphMapper.setOrient(true);
+    (glyphMapper as any).setOrient(true);
     glyphMapper.setOrientationModeToDirection();
     glyphMapper.setOrientationArray(vectorArray.getName()); // 3-component vector → direction
-    glyphMapper.setScaling(true);
+    (glyphMapper as any).setScaling(true);
     glyphMapper.setScaleModeToScaleByMagnitude();
     glyphMapper.setScaleArray(vectorArray.getName()); // magnitude computed from this
     glyphMapper.setScaleFactor(scale);
@@ -1795,7 +1795,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       return { ...prev, isosurface: { ...prev.isosurface, values: [mid] } };
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterConfig.isosurface.enabled, activeField]);
+  }, [filterConfig.isosurface.enabled, activeMode]);
 
   useEffect(() => {
     if (!filterConfig.threshold.enabled) return;
@@ -1807,7 +1807,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       return { ...prev, threshold: { ...prev.threshold, range: [lo, hi] } };
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterConfig.threshold.enabled, activeField]);
+  }, [filterConfig.threshold.enabled, activeMode]);
 
   // ── Isosurface overlay: debounced fetch when enabled/value changes ─────────
   useEffect(() => {
