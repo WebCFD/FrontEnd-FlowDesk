@@ -105,8 +105,10 @@ def main():
             sys.stdout.write(EMPTY_VTK)
             return
 
-        # Save to temp file and print to stdout
-        tmp_path = tempfile.mktemp(suffix=".vtk")
+        # Save to temp file and print to stdout.
+        # Use mkstemp instead of mktemp (which is race-prone) for safe temp-file creation.
+        fd, tmp_path = tempfile.mkstemp(suffix=".vtk")
+        os.close(fd)
         try:
             contour.save(tmp_path, binary=False)
             with open(tmp_path, "r") as f:
