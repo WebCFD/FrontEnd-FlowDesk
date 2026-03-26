@@ -215,6 +215,21 @@ export class R2StorageService {
     }
   }
 
+  async downloadToBuffer(simulationId: number, filename: string): Promise<Buffer> {
+    const client = this.getClient();
+    const key = `vtk/${simulationId}/${filename}`;
+    const command = new GetObjectCommand({ Bucket: R2_BUCKET_NAME, Key: key });
+    const response = await client.send(command);
+    if (!response.Body) throw new R2NotFoundError();
+    const stream = response.Body as Readable;
+    return new Promise<Buffer>((resolve, reject) => {
+      const chunks: Buffer[] = [];
+      stream.on('data', (chunk: Buffer) => chunks.push(chunk));
+      stream.on('end', () => resolve(Buffer.concat(chunks)));
+      stream.on('error', reject);
+    });
+  }
+
   async listVtkFiles(simulationId: number): Promise<string[]> {
     const client = this.getClient();
     const prefix = `vtk/${simulationId}/`;

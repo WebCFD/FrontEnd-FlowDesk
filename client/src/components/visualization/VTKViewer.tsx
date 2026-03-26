@@ -26,9 +26,15 @@ import vtkPlane from '@kitware/vtk.js/Common/DataModel/Plane';
 import vtkPolyData from '@kitware/vtk.js/Common/DataModel/PolyData';
 import vtkPoints from '@kitware/vtk.js/Common/Core/Points';
 import vtkCellArray from '@kitware/vtk.js/Common/Core/CellArray';
-// @ts-ignore - vtkCutter doesn't have type declarations but works fine
+// @ts-ignore
 import vtkCutter from '@kitware/vtk.js/Filters/Core/Cutter';
 import vtkPlaneSource from '@kitware/vtk.js/Filters/Sources/PlaneSource';
+// @ts-ignore
+import vtkThresholdPoints from '@kitware/vtk.js/Filters/Core/ThresholdPoints';
+// @ts-ignore
+import vtkArrowSource from '@kitware/vtk.js/Filters/Sources/ArrowSource';
+// @ts-ignore
+import vtkGlyph3DMapper from '@kitware/vtk.js/Rendering/Core/Glyph3DMapper';
 
 // Implementación básica de filtros usando VTK.js core disponible
 // Los filtros avanzados se simulan usando funcionalidad básica existente
@@ -479,6 +485,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [colormapMin, setColormapMin] = useState<number | null>(null);
   const [colormapMax, setColormapMax] = useState<number | null>(null);
   const [opacity, setOpacity] = useState<number>(1.0); // 1.0 = opaco, 0.0 = transparente
+  const [isosurfaceLoading, setIsosurfaceLoading] = useState<boolean>(false);
   const [dataWarning, setDataWarning] = useState<string | null>(null);
   const [domainBounds, setDomainBounds] = useState<{ min: number[]; max: number[]; center: number[] }>({
     min: [0, 0, 0],
@@ -523,6 +530,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   }>({});
   const actorsRef = useRef<any[]>([]); // Array de actores para múltiples visualizaciones
   const clippingPlaneActorsRef = useRef<any[]>([]); // Actores para los planos de corte visibles
+  const isosurfaceActorRef = useRef<any>(null); // Actor overlay para isosuperficies
+  const isosurfaceDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const currentVtkFilenameRef = useRef<string>(''); // Nombre del archivo VTK actual
 
   const visualizationControls = [
     { id: 'pressure' as const, label: 'Pressure', icon: Layers },
@@ -568,243 +578,67 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     }
   };
 
-  // Create cutting planes that show actual field data values
+  // Create cutting planes using vtkCutter — accurate intersection lines on the surface geometry
   const createCuttingPlanes = () => {
     if (!sourceDataRef.current) return [];
-    
-    const planes = [];
+
+    const actors: any[] = [];
     const { planePositions, planesEnabled } = filterConfig.clip;
     const sourceData = sourceDataRef.current;
-    
-    // Helper function to create a filled cutting plane with interpolated field data
-    const createSlice = (origin: [number, number, number], normal: [number, number, number], planeSize: [number, number]) => {
-      // Create a filled plane geometry
-      const planeSource = vtkPlaneSource.newInstance();
-      planeSource.setOrigin(...origin);
-      
-      const [width, height] = planeSize;
-      
-      // Set up the plane extent based on normal direction
-      // Point1 and Point2 define the two edges of the rectangle from Origin
-      // They create vectors: v1 = (Point1 - Origin) and v2 = (Point2 - Origin)
-      if (Math.abs(normal[0]) > 0.5) {
-        // X-normal plane (YZ plane) - origin is at [X, minY, minZ]
-        // We need to span from minY to maxY (height) and minZ to maxZ (width)
-        planeSource.setPoint1(origin[0], origin[1], origin[2] + width);   // Move along Z axis
-        planeSource.setPoint2(origin[0], origin[1] + height, origin[2]);  // Move along Y axis
-      } else if (Math.abs(normal[1]) > 0.5) {
-        // Y-normal plane (XZ plane) - origin is at [minX, Y, minZ]
-        // We need to span from minX to maxX (width) and minZ to maxZ (height)
-        planeSource.setPoint1(origin[0] + width, origin[1], origin[2]);   // Move along X axis
-        planeSource.setPoint2(origin[0], origin[1], origin[2] + height);  // Move along Z axis
-      } else {
-        // Z-normal plane (XY plane) - origin is at [minX, minY, Z]
-        // We need to span from minX to maxX (width) and minY to maxY (height)
-        planeSource.setPoint1(origin[0] + width, origin[1], origin[2]);   // Move along X axis
-        planeSource.setPoint2(origin[0], origin[1] + height, origin[2]);  // Move along Y axis
-      }
-      
-      // Medium resolution for better performance
-      planeSource.setXResolution(20);
-      planeSource.setYResolution(20);
-      planeSource.update();
-      
-      const planeData = planeSource.getOutputData();
-      const planePoints = planeData.getPoints().getData();
-      const numPlanePoints = planeData.getNumberOfPoints();
-      
-      // Get source data points and field arrays
-      const sourcePoints = sourceData.getPoints().getData();
-      const sourcePointData = sourceData.getPointData();
-      const sourceCellData = sourceData.getCellData();
-      
-      // Manually interpolate field values using nearest neighbor (point data)
-      const fieldArrays: any[] = [];
-      for (let i = 0; i < sourcePointData.getNumberOfArrays(); i++) {
-        const array = sourcePointData.getArray(i);
-        fieldArrays.push({
-          name: array.getName(),
-          components: array.getNumberOfComponents(),
-          sourceData: array.getData(),
-          interpolated: new Float32Array(numPlanePoints * array.getNumberOfComponents()),
-          isCellData: false,
-        });
+    const { min, max, center } = domainBounds;
+
+    const createCut = (normal: [number, number, number], position: number) => {
+      const plane = vtkPlane.newInstance();
+      plane.setNormal(...normal);
+      // Origin lies ON the cutting plane at the specified position along the normal axis
+      plane.setOrigin(
+        normal[0] !== 0 ? position : center[0],
+        normal[1] !== 0 ? position : center[1],
+        normal[2] !== 0 ? position : center[2],
+      );
+
+      const cutter = vtkCutter.newInstance();
+      cutter.setInputData(sourceData);
+      cutter.setCutFunction(plane);
+      cutter.update();
+
+      const cutData = cutter.getOutputData();
+      if (!cutData || cutData.getNumberOfPoints() === 0) {
+        console.log('[VTKViewer] Cutter returned empty for normal:', normal, 'position:', position);
+        return null;
       }
 
-      // Also include cell data arrays — approximate via nearest cell center
-      const numSourceCells = sourceData.getNumberOfCells();
-      const cellCenters: Float32Array | null = numSourceCells > 0 ? new Float32Array(numSourceCells * 3) : null;
-      if (cellCenters) {
-        for (let ci = 0; ci < numSourceCells; ci++) {
-          const cell = sourceData.getCell(ci);
-          if (!cell) continue;
-          let cx = 0, cy = 0, cz = 0;
-          const numCellPts = cell.getNumberOfPoints ? cell.getNumberOfPoints() : 0;
-          if (numCellPts === 0) continue;
-          for (let pi = 0; pi < numCellPts; pi++) {
-            const ptId = cell.getPointId(pi);
-            cx += sourcePoints[ptId * 3];
-            cy += sourcePoints[ptId * 3 + 1];
-            cz += sourcePoints[ptId * 3 + 2];
-          }
-          cellCenters[ci * 3] = cx / numCellPts;
-          cellCenters[ci * 3 + 1] = cy / numCellPts;
-          cellCenters[ci * 3 + 2] = cz / numCellPts;
-        }
-        for (let i = 0; i < sourceCellData.getNumberOfArrays(); i++) {
-          const array = sourceCellData.getArray(i);
-          fieldArrays.push({
-            name: array.getName(),
-            components: array.getNumberOfComponents(),
-            sourceData: array.getData(),
-            interpolated: new Float32Array(numPlanePoints * array.getNumberOfComponents()),
-            isCellData: true,
-          });
-        }
-      }
-      
-      // For each point on the plane, find nearest source point/cell and copy field value
-      for (let i = 0; i < numPlanePoints; i++) {
-        const px = planePoints[i * 3];
-        const py = planePoints[i * 3 + 1];
-        const pz = planePoints[i * 3 + 2];
-        
-        // Nearest point index (for point data fields)
-        let minPtDist = Infinity;
-        let nearestPtIdx = 0;
-        for (let j = 0; j < sourcePoints.length / 3; j++) {
-          const dist = (px - sourcePoints[j * 3]) ** 2 + (py - sourcePoints[j * 3 + 1]) ** 2 + (pz - sourcePoints[j * 3 + 2]) ** 2;
-          if (dist < minPtDist) { minPtDist = dist; nearestPtIdx = j; }
-        }
+      console.log('[VTKViewer] Cutter output:', cutData.getNumberOfPoints(), 'pts',
+        cutData.getNumberOfLines?.() ?? 0, 'lines');
 
-        // Nearest cell center index (for cell data fields)
-        let nearestCellIdx = 0;
-        if (cellCenters && numSourceCells > 0) {
-          let minCellDist = Infinity;
-          for (let ci = 0; ci < numSourceCells; ci++) {
-            const dist = (px - cellCenters[ci * 3]) ** 2 + (py - cellCenters[ci * 3 + 1]) ** 2 + (pz - cellCenters[ci * 3 + 2]) ** 2;
-            if (dist < minCellDist) { minCellDist = dist; nearestCellIdx = ci; }
-          }
-        }
-        
-        fieldArrays.forEach(field => {
-          const srcIdx = field.isCellData ? nearestCellIdx : nearestPtIdx;
-          for (let c = 0; c < field.components; c++) {
-            field.interpolated[i * field.components + c] =
-              field.sourceData[srcIdx * field.components + c];
-          }
-        });
-      }
-      
-      // Add interpolated field arrays to plane data (always as point data on the plane)
-      fieldArrays.forEach(field => {
-        const dataArray = vtkDataArray.newInstance({
-          name: field.name,
-          values: field.interpolated,
-          numberOfComponents: field.components
-        });
-        planeData.getPointData().addArray(dataArray);
-      });
-      
-      console.log('[VTKViewer] Created filled plane with', numPlanePoints, 'points and', fieldArrays.length, 'interpolated fields');
-      
-      // Create mapper and apply visualization
       const mapper = vtkMapper.newInstance();
-      mapper.setInputData(planeData);
-      
-      // Apply field visualization BEFORE setting up the actor
-      applyVisualization(mapper, planeData, activeMode as VisualizationMode);
-      
-      // CRITICAL FIX: Force mapper to use the correct scalar array
-      // vtkPlaneSource adds TextureCoordinates which can override our field data
-      // We need to explicitly tell the mapper which array to use for coloring
-      const pointData = planeData.getPointData();
-      let targetArrayName = '';
-      
-      switch (activeMode) {
-        case 'pressure':
-          targetArrayName = 'p';
-          break;
-        case 'velocity':
-          targetArrayName = 'U_mag';
-          break;
-        case 'temperature':
-          targetArrayName = 'T_degC';
-          break;
-        case 'pmv':
-          targetArrayName = 'PMV';
-          break;
-        case 'ppd':
-          targetArrayName = 'PPD';
-          break;
-        default:
-          targetArrayName = 'p';
-      }
-      
-      const targetArray = pointData.getArrayByName(targetArrayName);
-      if (targetArray) {
-        mapper.setScalarModeToUsePointFieldData();
-        mapper.setArrayAccessMode(1); // By name
-        mapper.setColorByArrayName(targetArrayName);
-        pointData.setActiveScalars(targetArrayName);
-        console.log('[VTKViewer] Forced mapper to use array:', targetArrayName, 'range:', targetArray.getRange());
-      }
-      
-      // Create actor
+      mapper.setInputData(cutData);
+      applyVisualization(mapper, cutData, activeMode as VisualizationMode);
+
       const actor = vtkActor.newInstance();
       actor.setMapper(mapper);
-      actor.getProperty().setOpacity(1.0);
-      actor.getProperty().setLighting(false); // Disable lighting to show pure field colors
-      
-      // Apply edge visibility based on user preference
-      applyEdgeVisibilityToActor(actor);
-      
-      // Debug output
-      console.log('[VTKViewer] Plane actor visibility:', actor.getVisibility());
-      console.log('[VTKViewer] Plane actor bounds:', actor.getBounds());
-      console.log('[VTKViewer] Plane data - points:', planeData.getNumberOfPoints(), 'polys:', planeData.getNumberOfPolys(), 'cells:', planeData.getNumberOfCells());
-      console.log('[VTKViewer] Mapper scalar range:', mapper.getScalarRange());
-      
+      actor.getProperty().setLineWidth(3);
+      actor.getProperty().setLighting(false);
+
       return actor;
     };
-    
-    const { min, max } = domainBounds;
-    
-    console.log('[VTKViewer] Domain bounds for planes - min:', min, 'max:', max);
-    console.log('[VTKViewer] Domain dimensions - X:', (max[0] - min[0]).toFixed(2), 'Y:', (max[1] - min[1]).toFixed(2), 'Z:', (max[2] - min[2]).toFixed(2));
-    
-    // X Plane (YZ plane normal to X-axis)
+
+    // planePositions are in world coordinates (set by the UI sliders)
     if (planesEnabled.x) {
-      const xPos = planePositions.x;
-      const origin: [number, number, number] = [xPos, min[1], min[2]];
-      const normal: [number, number, number] = [1, 0, 0]; // Normal along X-axis
-      const planeSize: [number, number] = [max[2] - min[2], max[1] - min[1]]; // width (Z), height (Y)
-      console.log('[VTKViewer] X Plane - origin:', origin, 'size:', planeSize);
-      planes.push(createSlice(origin, normal, planeSize));
+      const a = createCut([1, 0, 0], filterConfig.clip.planePositions.x);
+      if (a) actors.push(a);
     }
-    
-    // Y Plane (XZ plane normal to Y-axis)
     if (planesEnabled.y) {
-      const yPos = planePositions.y;
-      const origin: [number, number, number] = [min[0], yPos, min[2]];
-      const normal: [number, number, number] = [0, 1, 0]; // Normal along Y-axis
-      const planeSize: [number, number] = [max[0] - min[0], max[2] - min[2]]; // width (X), height (Z)
-      console.log('[VTKViewer] Y Plane - origin:', origin, 'size:', planeSize);
-      planes.push(createSlice(origin, normal, planeSize));
+      const a = createCut([0, 1, 0], filterConfig.clip.planePositions.y);
+      if (a) actors.push(a);
     }
-    
-    // Z Plane (XY plane normal to Z-axis)
     if (planesEnabled.z) {
-      const zPos = planePositions.z;
-      const origin: [number, number, number] = [min[0], min[1], zPos];
-      const normal: [number, number, number] = [0, 0, 1]; // Normal along Z-axis
-      const planeSize: [number, number] = [max[0] - min[0], max[1] - min[1]]; // width (X), height (Y)
-      console.log('[VTKViewer] Z Plane - origin:', origin, 'size:', planeSize);
-      planes.push(createSlice(origin, normal, planeSize));
+      const a = createCut([0, 0, 1], filterConfig.clip.planePositions.z);
+      if (a) actors.push(a);
     }
-    
-    console.log('[VTKViewer] Created', planes.length, 'cutting planes');
-    return planes;
+
+    console.log('[VTKViewer] Created', actors.length, 'vtkCutter cut actors');
+    return actors;
   };
 
   // Calcular magnitud de vectores para coloring (with memory leak fix)
@@ -993,180 +827,102 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     console.log('[VTKViewer] Applied advanced clipping visualization effects');
   };
 
+  // Build a subsampled PolyData for glyph placement (every step-th point)
+  const subsamplePolyDataForGlyphs = (inputData: any, density: number): any => {
+    const n = inputData.getNumberOfPoints();
+    const step = Math.max(1, Math.round(1.0 / Math.max(0.005, density)));
+    const ptRaw = inputData.getPoints().getData();
+    const pointData = inputData.getPointData();
+
+    const selected: number[] = [];
+    for (let i = 0; i < n; i += step) selected.push(i);
+    const m = selected.length;
+
+    const newPtsData = new Float32Array(m * 3);
+    for (let j = 0; j < m; j++) {
+      const i = selected[j];
+      newPtsData[j * 3] = ptRaw[i * 3];
+      newPtsData[j * 3 + 1] = ptRaw[i * 3 + 1];
+      newPtsData[j * 3 + 2] = ptRaw[i * 3 + 2];
+    }
+
+    const sampledPts = vtkPoints.newInstance();
+    sampledPts.setData(newPtsData, 3);
+
+    const sampledPD = vtkPolyData.newInstance();
+    sampledPD.setPoints(sampledPts);
+
+    // Copy all point data arrays (subsampled)
+    const numArrays = pointData.getNumberOfArrays();
+    for (let ai = 0; ai < numArrays; ai++) {
+      const arr = pointData.getArrayByIndex(ai);
+      const nc = arr.getNumberOfComponents();
+      const oldData = arr.getData();
+      const newData = new Float32Array(m * nc);
+      for (let j = 0; j < m; j++) {
+        const i = selected[j];
+        for (let c = 0; c < nc; c++) newData[j * nc + c] = oldData[i * nc + c];
+      }
+      const newArr = vtkDataArray.newInstance({ name: arr.getName(), values: newData, numberOfComponents: nc });
+      sampledPD.getPointData().addArray(newArr);
+    }
+
+    // Vertex cells so the mapper knows there are points
+    const verts = new Uint32Array(m * 2);
+    for (let j = 0; j < m; j++) { verts[j * 2] = 1; verts[j * 2 + 1] = j; }
+    const vertCells = vtkCellArray.newInstance();
+    vertCells.setData(verts);
+    sampledPD.setVerts(vertCells);
+
+    return sampledPD;
+  };
+
+  // Real arrow glyph vector field using vtkArrowSource + vtkGlyph3DMapper
   const createAdvancedVectorField = (inputData: any, scale: number, density: number, arrayName: string) => {
     const pointData = inputData.getPointData();
     const vectorArray = pointData.getArrayByName(arrayName) || pointData.getArray(1);
-    
+
     if (!vectorArray || vectorArray.getNumberOfComponents() < 3) {
-      console.warn('[VTKViewer] No valid vector array found for advanced visualization');
+      console.warn('[VTKViewer] No valid 3-component vector array for glyphs');
       return null;
     }
 
-    console.log(`[VTKViewer] Creating advanced vector field with scale: ${scale}, density: ${density}`);
-    
-    const actors = [];
-    
-    // Create multiple visualization layers for comprehensive vector field representation
-    
-    // 1. Streamlines representation using wireframe
-    const streamlineActor = vtkActor.newInstance();
-    const streamlineMapper = vtkMapper.newInstance();
-    streamlineMapper.setInputData(inputData);
-    streamlineActor.setMapper(streamlineMapper);
-    
-    // Configure as sophisticated wireframe for flow lines
-    streamlineActor.getProperty().setRepresentationToWireframe();
-    streamlineActor.getProperty().setLineWidth(2);
-    streamlineActor.getProperty().setOpacity(opacity * 0.4); // Apply user opacity with base transparency
-    streamlineActor.getProperty().setColor(0.2, 0.6, 1.0); // Light blue for flow lines
-    
-    // Apply vector magnitude coloring to wireframe
-    const magnitudeArray = calculateVectorMagnitude(vectorArray);
-    pointData.addArray(magnitudeArray);
-    streamlineMapper.setScalarModeToUsePointFieldData();
-    streamlineMapper.setColorByArrayName(magnitudeArray.getName());
-    streamlineMapper.setScalarVisibility(true);
-    
-    // Create lookup table for vector magnitude
-    const vectorLookupTable = vtkColorTransferFunction.newInstance();
-    const normalized = normalizeScalarRange(magnitudeArray, `${arrayName}_magnitude`);
-    const [minMag, maxMag] = normalized.range;
-    vectorLookupTable.setMappingRange(minMag, maxMag);
-    
-    // Apply flow-based coloring
-    vectorLookupTable.addRGBPoint(minMag, 0.0, 0.2, 0.8); // Blue (slow)
-    vectorLookupTable.addRGBPoint(minMag + (maxMag - minMag) * 0.33, 0.0, 0.8, 0.2); // Green (medium)
-    vectorLookupTable.addRGBPoint(minMag + (maxMag - minMag) * 0.66, 0.8, 0.8, 0.0); // Yellow (fast)
-    vectorLookupTable.addRGBPoint(maxMag, 0.8, 0.0, 0.0); // Red (very fast)
-    
-    streamlineMapper.setLookupTable(vectorLookupTable);
-    actors.push(streamlineActor);
-    
-    // 2. Point cloud representation for vector origins (with density sampling)
-    const points = inputData.getPoints();
-    const numPoints = points.getNumberOfPoints();
-    const samplingRate = Math.max(1, Math.floor(1.0 / Math.max(0.01, density)));
-    
-    if (density > 0.5) { // Only add point representation for higher densities
-      const pointActor = vtkActor.newInstance();
-      const pointMapper = vtkMapper.newInstance();
-      pointMapper.setInputData(inputData);
-      pointActor.setMapper(pointMapper);
-      
-      // Configure as point cloud
-      pointActor.getProperty().setRepresentationToPoints();
-      pointActor.getProperty().setPointSize(Math.max(2, scale * 2));
-      pointActor.getProperty().setOpacity(opacity * 0.6); // Apply user opacity with base transparency
-      
-      // Use same magnitude coloring as wireframe
-      pointMapper.setScalarModeToUsePointFieldData();
-      pointMapper.setColorByArrayName(magnitudeArray.getName());
-      pointMapper.setScalarVisibility(true);
-      pointMapper.setLookupTable(vectorLookupTable);
-      
-      actors.push(pointActor);
-    }
-    
-    console.log(`[VTKViewer] Created advanced vector field with ${actors.length} visualization layers, sampling every ${samplingRate} points`);
-    
-    return actors;
-  };
-
-  // Individual filter functions (legacy - kept for compatibility)
-  const createContourFilter = (inputData: any, values: number[], arrayName: string) => {
-    // VTK ContourFilter not available in this build
-    console.warn('[VTKViewer] ContourFilter not available');
-    return null;
-    
-    // const contourFilter = vtkContourFilter.newInstance();
-    // contourFilter.setInputData(inputData);
-    // contourFilter.setContourValues(values);
-    
-    // // Set the scalar field to contour on
-    // const pointData = inputData.getPointData();
-    // const array = pointData.getArrayByName(arrayName) || pointData.getArray(0);
-    // if (array) {
-    //   contourFilter.setInputArrayToProcess(0, 0, 0, 'vtkDataObject::FIELD_ASSOCIATION_POINTS', array.getName());
-    // }
-    
-    // return contourFilter;
-  };
-
-  const createThresholdFilter = (inputData: any, range: [number, number], arrayName: string) => {
-    // VTK ThresholdPoints not available in this build
-    console.warn('[VTKViewer] ThresholdFilter not available');
-    return null;
-    
-    // const thresholdFilter = vtkThresholdPoints.newInstance();
-    // thresholdFilter.setInputData(inputData);
-    // thresholdFilter.setLowerThreshold(range[0]);
-    // thresholdFilter.setUpperThreshold(range[1]);
-    
-    // // Set the scalar field to threshold on
-    // const pointData = inputData.getPointData();
-    // const array = pointData.getArrayByName(arrayName) || pointData.getArray(0);
-    // if (array) {
-    //   thresholdFilter.setInputArrayToProcess(0, 0, 0, 'vtkDataObject::FIELD_ASSOCIATION_POINTS', array.getName());
-    // }
-    
-    // return thresholdFilter;
-  };
-
-  const createClipFilter = (inputData: any, planeOrigin: number[], planeNormal: number[]) => {
-    // VTK ClipPolyData and Plane not available in this build
-    console.warn('[VTKViewer] ClipFilter or Plane not available');
-    return null;
-    
-    // const clipFilter = vtkClipPolyData.newInstance();
-    // const plane = vtkPlane.newInstance();
-    
-    // plane.setOrigin(planeOrigin);
-    // plane.setNormal(planeNormal);
-    
-    // clipFilter.setInputData(inputData);
-    // clipFilter.setClippingPlane(plane);
-    
-    // return clipFilter;
-  };
-
-  const createVectorGlyphs = (inputData: any, scale: number, density: number, arrayName: string) => {
-    // VTK Glyph3DMapper and ArrowSource not available in this build
-    console.warn('[VTKViewer] Glyph3DMapper or ArrowSource not available');
-    return null;
-    
-    const pointData = inputData.getPointData();
-    const vectorArray = pointData.getArrayByName(arrayName) || pointData.getArray(1);
-    
-    if (!vectorArray || vectorArray.getNumberOfComponents() < 3) {
-      console.warn('[VTKViewer] No valid vector array found for glyphs');
-      return null;
+    // Pre-compute magnitude for coloring & scaling
+    const magArray = calculateVectorMagnitude(vectorArray);
+    if (!pointData.getArrayByName(magArray.getName())) {
+      pointData.addArray(magArray);
     }
 
-    // Create arrow source for glyphs
-    // const arrowSource = vtkArrowSource.newInstance();
-    // arrowSource.setTipLength(0.3);
-    // arrowSource.setTipRadius(0.1);
-    // arrowSource.setShaftRadius(0.03);
+    // Subsample points for performance
+    const sampledData = subsamplePolyDataForGlyphs(inputData, density);
 
-    // // Create glyph mapper
-    // const glyphMapper = vtkGlyph3DMapper.newInstance();
-    // glyphMapper.setInputData(inputData);
-    // glyphMapper.setSourceData(arrowSource.getOutputData());
-    // glyphMapper.setOrientationArray(vectorArray.getName());
-    // glyphMapper.setScaleArray(vectorArray.getName());
-    // glyphMapper.setScaleFactor(scale);
-    
-    // Apply density sampling (every Nth point)
-    const totalPoints = inputData.getNumberOfPoints();
-    const samplingRate = Math.max(1, Math.floor(1.0 / density));
-    if (samplingRate > 1) {
-      console.log(`[VTKViewer] Applying vector sampling: every ${samplingRate} points`);
-      // Note: For production, implement proper point sampling/subsampling
-    }
+    // Arrow source
+    const arrowSource = vtkArrowSource.newInstance();
+    arrowSource.setTipLength(0.35);
+    arrowSource.setShaftRadius(0.04);
+    arrowSource.update();
 
-    // Since VTK imports are not available, return null
-    // Real implementation is in createAdvancedVectorField
-    return null;
+    // Glyph mapper
+    const glyphMapper = vtkGlyph3DMapper.newInstance();
+    glyphMapper.setInputData(sampledData);
+    glyphMapper.setSourceConnection(arrowSource.getOutputPort());
+    glyphMapper.setOrient(true);
+    glyphMapper.setOrientationModeToDirection();
+    glyphMapper.setOrientationArray(vectorArray.getName()); // 3-component vector → direction
+    glyphMapper.setScaling(true);
+    glyphMapper.setScaleModeToScaleByMagnitude();
+    glyphMapper.setScaleArray(vectorArray.getName()); // magnitude computed from this
+    glyphMapper.setScaleFactor(scale);
+
+    // Color arrows by velocity magnitude using current colormap
+    applyVisualization(glyphMapper, sampledData, 'velocity');
+
+    const actor = vtkActor.newInstance();
+    actor.setMapper(glyphMapper);
+    actor.getProperty().setOpacity(opacity);
+
+    console.log(`[VTKViewer] Arrow glyphs: ${sampledData.getNumberOfPoints()} arrows (density=${density}, scale=${scale})`);
+    return [actor];
   };
 
   // Build VTK pipeline with filters
@@ -1209,81 +965,84 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     let filteredData = currentData;
     const activeFilters = [];
 
-    // Apply real VTK filter effects using advanced visualization techniques
-    // Since advanced filter imports aren't available, use sophisticated colormap manipulation
-    
-    let filterEffectApplied = false;
-    
-    if (config.isosurface.enabled && config.isosurface.values.length > 0) {
-      console.log('[VTKViewer] Applying real contour effect with values:', config.isosurface.values);
-      
-      // Create discrete contour bands using sophisticated colormap
-      const contourMapper = vtkMapper.newInstance();
-      contourMapper.setInputData(filteredData);
-      
-      const contourActor = vtkActor.newInstance();
-      contourActor.setMapper(contourMapper);
-      
-      // Apply contour-specific visualization
-      applyContourVisualization(contourMapper, filteredData, config.isosurface.values, scalarArrayName, activeField as VisualizationMode);
-      
-      actors.push(contourActor);
-      applyOpacityToActor(contourActor);
-      applyEdgeVisibilityToActor(contourActor);
-      filterEffectApplied = true;
-      console.log('[VTKViewer] Applied real contour visualization');
-    }
-    
-    if (config.threshold.enabled) {
-      console.log('[VTKViewer] Applying real threshold effect with range:', config.threshold.range);
-      
-      // Create threshold visualization with sophisticated range mapping
-      const thresholdMapper = vtkMapper.newInstance();
-      thresholdMapper.setInputData(filteredData);
-      
-      const thresholdActor = vtkActor.newInstance();
-      thresholdActor.setMapper(thresholdMapper);
-      
-      // Apply threshold-specific visualization
-      applyThresholdVisualization(thresholdMapper, filteredData, config.threshold.range, scalarArrayName, activeField as VisualizationMode);
-      
-      actors.push(thresholdActor);
-      applyOpacityToActor(thresholdActor);
-      applyEdgeVisibilityToActor(thresholdActor);
-      filterEffectApplied = true;
-      console.log('[VTKViewer] Applied real threshold visualization');
-    }
-    
-    // Note: Clipping planes are now visualized separately in createCuttingPlanes()
-    // and managed in the useEffect that updates when filterConfig changes
+    // ── Main surface actor (always rendered; opacity adjusted by filters) ──────
+    const surfaceMapper = vtkMapper.newInstance();
+    surfaceMapper.setInputData(filteredData);
+    const surfaceActor = vtkActor.newInstance();
+    surfaceActor.setMapper(surfaceMapper);
+    applyVisualization(surfaceMapper, filteredData, activeField as VisualizationMode);
+    actors.push(surfaceActor);
 
-    // Create main surface actor only if no filter effects were applied
-    if (!filterEffectApplied) {
-      const surfaceMapper = vtkMapper.newInstance();
-      surfaceMapper.setInputData(filteredData);
-      
-      const surfaceActor = vtkActor.newInstance();
-      surfaceActor.setMapper(surfaceMapper);
-      
-      // Apply visualization (coloring)
-      const mode = activeField as VisualizationMode;
-      applyVisualization(surfaceMapper, filteredData, mode);
-      
-      actors.push(surfaceActor);
+    // ── Threshold filter: real vtkThresholdPoints point cloud overlay ─────────
+    if (config.threshold.enabled && scalarArrayName) {
+      const [lo, hi] = config.threshold.range;
+      console.log('[VTKViewer] ThresholdPoints range:', lo, '–', hi, 'array:', scalarArrayName);
+
+      // For multi-component (e.g. velocity U), use magnitude array
+      const threshArray = (() => {
+        const a = pointData.getArrayByName(scalarArrayName);
+        if (a && a.getNumberOfComponents() > 1) {
+          const mag = calculateVectorMagnitude(a);
+          if (!pointData.getArrayByName(mag.getName())) pointData.addArray(mag);
+          return mag.getName();
+        }
+        return scalarArrayName;
+      })();
+
+      try {
+        const threshFilter = vtkThresholdPoints.newInstance();
+        threshFilter.setInputData(filteredData);
+        threshFilter.setCriterias([
+          { arrayName: threshArray, fieldAssociation: 'PointData', operation: 'Above', value: lo },
+          { arrayName: threshArray, fieldAssociation: 'PointData', operation: 'Below', value: hi },
+        ]);
+        threshFilter.update();
+        const threshData = threshFilter.getOutputData();
+
+        if (threshData && threshData.getNumberOfPoints() > 0) {
+          const threshMapper = vtkMapper.newInstance();
+          threshMapper.setInputData(threshData);
+          applyVisualization(threshMapper, threshData, activeField as VisualizationMode);
+
+          const threshActor = vtkActor.newInstance();
+          threshActor.setMapper(threshMapper);
+          threshActor.getProperty().setPointSize(4);
+          threshActor.getProperty().setOpacity(opacity);
+          actors.push(threshActor);
+
+          // Dim the base surface for context
+          surfaceActor.getProperty().setOpacity(Math.min(0.15, opacity * 0.15));
+          surfaceActor.getProperty().setColor(0.7, 0.7, 0.7);
+          surfaceActor.getMapper().setScalarVisibility(false);
+
+          console.log('[VTKViewer] ThresholdPoints output:', threshData.getNumberOfPoints(), 'pts');
+        } else {
+          console.log('[VTKViewer] ThresholdPoints: no points in range — showing full surface');
+          applyOpacityToActor(surfaceActor);
+          applyEdgeVisibilityToActor(surfaceActor);
+        }
+      } catch (err) {
+        console.warn('[VTKViewer] ThresholdPoints failed:', err);
+        applyOpacityToActor(surfaceActor);
+        applyEdgeVisibilityToActor(surfaceActor);
+      }
+    } else {
+      // Normal surface rendering
       applyOpacityToActor(surfaceActor);
       applyEdgeVisibilityToActor(surfaceActor);
     }
 
-    // Real vector visualization with advanced techniques
+    // Note: Isosurface (contour lines) rendered as an overlay via fetchIsosurface / isosurfaceActorRef
+    // Note: Clipping planes rendered separately via createCuttingPlanes / clippingPlaneActorsRef
+
+    // ── Vector arrows: vtkArrowSource + vtkGlyph3DMapper ─────────────────────
     if (config.vectors.enabled && activeField === 'velocity') {
-      console.log('[VTKViewer] Creating real vector field visualization with scale:', config.vectors.scale, 'density:', config.vectors.density);
-      
-      // Create sophisticated vector field representation using multiple techniques
-      const vectorActors = createAdvancedVectorField(currentData, config.vectors.scale, config.vectors.density, 'U');
-      
+      const vectorActors = createAdvancedVectorField(
+        currentData, config.vectors.scale, config.vectors.density, 'U'
+      );
       if (vectorActors && vectorActors.length > 0) {
         actors.push(...vectorActors);
-        console.log('[VTKViewer] Added', vectorActors.length, 'advanced vector visualization actors');
+        console.log('[VTKViewer] Added', vectorActors.length, 'arrow glyph actor(s)');
       }
     }
 
@@ -1669,6 +1428,11 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       
       console.log('[VTKViewer] Loading VTK file for simulation:', simulationId, 'URL:', vtkUrl);
 
+      // Track filename for server-side isosurface endpoint
+      const vtkFilename = vtkUrl.split('/').pop() || '';
+      currentVtkFilenameRef.current = vtkFilename;
+      console.log('[VTKViewer] Tracking VTK filename for isosurface:', vtkFilename);
+
       // Cargar el archivo VTK
       const response = await fetch(vtkUrl);
       if (!response.ok) {
@@ -1828,31 +1592,27 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       removeActors(clippingPlaneActorsRef.current);
       clippingPlaneActorsRef.current = [];
       
-      // Check if any cutting plane is enabled
-      const anyPlaneEnabled = filterConfig.clip.enabled && (
-        filterConfig.clip.planesEnabled.x || 
-        filterConfig.clip.planesEnabled.y || 
+      // Build main pipeline (surface + threshold + vectors)
+      const newActors = buildPipeline(filterConfig, activeMode);
+      actorsRef.current = newActors;
+      addActors(actorsRef.current);
+
+      // If clip is active: dim surface + add vtkCutter intersection lines
+      if (filterConfig.clip.enabled && (
+        filterConfig.clip.planesEnabled.x ||
+        filterConfig.clip.planesEnabled.y ||
         filterConfig.clip.planesEnabled.z
-      );
-      
-      // Only show internal field when cutting planes are NOT active
-      if (!anyPlaneEnabled) {
-        // Build new pipeline with updated config
-        const newActors = buildPipeline(filterConfig, activeMode);
-        actorsRef.current = newActors;
-        
-        // Add new actors to scene
-        addActors(actorsRef.current);
-      } else {
-        // Clear actors when planes are visible
-        actorsRef.current = [];
-      }
-      
-      if (filterConfig.clip.enabled) {
+      )) {
+        // Dim main surface to provide spatial context
+        actorsRef.current.forEach(a => {
+          if (a?.getProperty) a.getProperty().setOpacity(0.15);
+          if (a?.getMapper) a.getMapper().setScalarVisibility(false);
+        });
+
         const planes = createCuttingPlanes();
         clippingPlaneActorsRef.current = planes;
         addActors(clippingPlaneActorsRef.current);
-        console.log('[VTKViewer] Added cutting planes to scene, internal field hidden');
+        console.log('[VTKViewer] Clip: added', planes.length, 'vtkCutter actors');
       }
       
       // Update background color when it changes
@@ -1874,6 +1634,130 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       renderWindowRef.current.renderWindow.render();
     }
   }, [filterConfig, selectedColormap, invertColormap, showGrid, showEdges, backgroundColor, colormapMin, colormapMax, opacity]);
+
+  // ── Fetch isosurface from server (PyVista) ─────────────────────────────────
+  const fetchIsosurface = async (filename: string, field: string, isoValue: number) => {
+    setIsosurfaceLoading(true);
+
+    // Remove any existing isosurface overlay actor
+    if (isosurfaceActorRef.current && renderWindowRef.current?.renderer) {
+      renderWindowRef.current.renderer.removeActor(isosurfaceActorRef.current);
+      isosurfaceActorRef.current = null;
+    }
+
+    try {
+      const resp = await fetch(`/api/simulations/${simulationId}/isosurface`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename, field, value: isoValue }),
+      });
+
+      if (!resp.ok) {
+        console.warn('[VTKViewer] Isosurface endpoint error:', resp.status);
+        return;
+      }
+
+      const vtkText = await resp.text();
+      if (!vtkText || vtkText.trim().length < 50) {
+        console.log('[VTKViewer] Isosurface returned empty result');
+        return;
+      }
+
+      const isoData = parseVtkAscii(vtkText);
+      if (!isoData || isoData.getNumberOfPoints() === 0) {
+        console.log('[VTKViewer] Isosurface: no contour found at value', isoValue);
+        return;
+      }
+
+      console.log('[VTKViewer] Isosurface points:', isoData.getNumberOfPoints());
+
+      const isoMapper = vtkMapper.newInstance();
+      isoMapper.setInputData(isoData);
+      applyVisualization(isoMapper, isoData, activeMode as VisualizationMode);
+
+      const isoActor = vtkActor.newInstance();
+      isoActor.setMapper(isoMapper);
+      isoActor.getProperty().setLineWidth(3);
+      isoActor.getProperty().setLighting(false);
+
+      if (renderWindowRef.current?.renderer) {
+        renderWindowRef.current.renderer.addActor(isoActor);
+        isosurfaceActorRef.current = isoActor;
+        renderWindowRef.current.renderWindow.render();
+        console.log('[VTKViewer] Isosurface actor added to scene');
+      }
+    } catch (err) {
+      console.error('[VTKViewer] fetchIsosurface error:', err);
+    } finally {
+      setIsosurfaceLoading(false);
+    }
+  };
+
+  // ── Auto-initialize filter values to data range when enabled ──────────────
+  useEffect(() => {
+    if (filterConfig.isosurface.enabled && dataRange[0] !== dataRange[1]) {
+      const mid = (dataRange[0] + dataRange[1]) / 2;
+      const cur = filterConfig.isosurface.values[0];
+      if (cur < dataRange[0] || cur > dataRange[1]) {
+        setFilterConfig(prev => ({
+          ...prev,
+          isosurface: { ...prev.isosurface, values: [mid] },
+        }));
+      }
+    }
+  }, [filterConfig.isosurface.enabled, dataRange]);
+
+  useEffect(() => {
+    if (filterConfig.threshold.enabled && dataRange[0] !== dataRange[1]) {
+      const [lo, hi] = filterConfig.threshold.range;
+      const isDefault = lo === 0 && hi === 1;
+      const outOfRange = lo < dataRange[0] || hi > dataRange[1];
+      if (isDefault || outOfRange) {
+        setFilterConfig(prev => ({
+          ...prev,
+          threshold: { ...prev.threshold, range: [dataRange[0], dataRange[1]] },
+        }));
+      }
+    }
+  }, [filterConfig.threshold.enabled, dataRange]);
+
+  // ── Isosurface overlay: debounced fetch when enabled/value changes ─────────
+  useEffect(() => {
+    if (!filterConfig.isosurface.enabled) {
+      // Remove overlay actor
+      if (isosurfaceActorRef.current && renderWindowRef.current?.renderer) {
+        renderWindowRef.current.renderer.removeActor(isosurfaceActorRef.current);
+        isosurfaceActorRef.current = null;
+        if (renderWindowRef.current?.renderWindow) renderWindowRef.current.renderWindow.render();
+      }
+      return;
+    }
+
+    if (!currentVtkFilenameRef.current) return;
+
+    const fieldMap: Partial<Record<VisualizationMode, string>> = {
+      pressure: 'p',
+      velocity: 'U',
+      temperature: 'T_degC',
+      pmv: 'PMV',
+      ppd: 'PPD',
+    };
+    const field = fieldMap[activeMode as VisualizationMode];
+    if (!field) return;
+
+    if (isosurfaceDebounceRef.current) clearTimeout(isosurfaceDebounceRef.current);
+    isosurfaceDebounceRef.current = setTimeout(() => {
+      fetchIsosurface(
+        currentVtkFilenameRef.current,
+        field,
+        filterConfig.isosurface.values[0],
+      );
+    }, 400);
+
+    return () => {
+      if (isosurfaceDebounceRef.current) clearTimeout(isosurfaceDebounceRef.current);
+    };
+  }, [filterConfig.isosurface.enabled, filterConfig.isosurface.values, activeMode]);
 
   return (
     <div className={`vtk-viewer ${className || ''}`}>
@@ -2122,7 +2006,12 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                       </div>
                       {filterConfig.isosurface.enabled && (
                         <div className="space-y-2">
-                          <Label className="text-xs text-gray-600">Value: {filterConfig.isosurface.values[0]?.toFixed(3)}</Label>
+                          <div className="flex items-center justify-between">
+                            <Label className="text-xs text-gray-600">Value: {filterConfig.isosurface.values[0]?.toFixed(3)}</Label>
+                            {isosurfaceLoading && (
+                              <span className="text-xs text-blue-500 animate-pulse">Computing…</span>
+                            )}
+                          </div>
                           <Slider
                             value={filterConfig.isosurface.values}
                             onValueChange={(values: number[]) => setFilterConfig(prev => ({

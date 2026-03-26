@@ -722,6 +722,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Isosurface extraction endpoint: runs PyVista contour() server-side and returns VTK ASCII
+  app.post("/api/simulations/:id/isosurface", async (req, res) => {
+    try {
+      const simulationId = parseInt(req.params.id);
+      const { filename, field, value } = req.body;
+
+      if (!filename || !field || value === undefined || value === null) {
+        return res.status(400).json({ message: "filename, field, and value are required" });
+      }
+
+      const numValue = Number(value);
+      if (isNaN(numValue)) {
+        return res.status(400).json({ message: "value must be a number" });
+      }
+
+      // Locate VTK file: local filesystem first, R2 fallback
+      const localPath = path.join(process.cwd(), 'cases', `sim_${simulationId}`, 'post', 'vtk', filename);
+      let vtkPath: string = localPath;
+      let tempFile: string | null = null;
+
+      if (!fsSync.existsSync(localPath)) {
+        // Try R2
+        try {
+          const fileBuffer = await r2Storage.downloadToBuffer(simulationId, filename);
+          tempFile = path.join(os.tmpdir(), `vtk_iso_${simulationId}_${Date.now()}_${filename}`);
+          await fs.writeFile(tempFile, fileBuffer);
+          vtkPath = tempFile;
+        } catch (r2Err: any) {
+          console.warn(`[ISOSURFACE] R2 download failed for ${filename}:`, r2Err.message);
+          return res.status(404).json({ message: `VTK file not found: ${filename}` });
+        }
+      }
+
+      const scriptPath = path.join(process.cwd(), 'server', 'isosurface.py');
+      console.log(`[ISOSURFACE] sim=${simulationId} file=${filename} field=${field} value=${numValue}`);
+
+      let vtkOutput = '';
+      try {
+        const { stdout, stderr } = await execPromise(
+          `python3 "${scriptPath}" "${vtkPath}" "${field}" "${numValue}"`,
+          { maxBuffer: 20 * 1024 * 1024, timeout: 30000 }
+        );
+        if (stderr) console.warn(`[ISOSURFACE] Python stderr:`, stderr.substring(0, 300));
+        vtkOutput = stdout;
+      } catch (execErr: any) {
+        console.error('[ISOSURFACE] Python execution failed:', execErr.message);
+        // Return empty VTK so frontend handles it gracefully
+        vtkOutput = "# vtk DataFile Version 2.0\nEmpty\nASCII\nDATASET POLYDATA\nPOINTS 0 float\n";
+      } finally {
+        if (tempFile) { try { await fs.unlink(tempFile); } catch (e) {} }
+      }
+
+      res.setHeader('Content-Type', 'text/plain');
+      res.send(vtkOutput);
+    } catch (error: any) {
+      console.error('[ISOSURFACE] Endpoint error:', error);
+      res.status(500).json({ message: "Isosurface extraction failed", error: error.message });
+    }
+  });
+
   // Endpoint for Python workers to get presigned URL for uploading VTK files to R2
   app.post("/api/simulations/:id/vtk/upload-url", async (req, res) => {
     try {
