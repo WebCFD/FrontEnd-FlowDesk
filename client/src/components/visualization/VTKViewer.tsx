@@ -520,6 +520,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [showVectorField, setShowVectorField] = useState(false);
   const [showScientificColormaps, setShowScientificColormaps] = useState(false);
   const [dataRange, setDataRange] = useState<[number, number]>([0, 1]);
+  // Ref copy of dataRange — lets auto-init effects read range without adding it
+  // to their dependency arrays (which would create filterConfig → rebuild → setDataRange → loop).
+  const dataRangeRef = useRef<[number, number]>([0, 1]);
   const [selectedColormap, setSelectedColormap] = useState<string>('jet_cfd');
   const [invertColormap, setInvertColormap] = useState<boolean>(false);
   const [showGrid, setShowGrid] = useState<boolean>(false);
@@ -656,7 +659,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
       const mapper = vtkMapper.newInstance();
       mapper.setInputData(cutData);
-      applyVisualization(mapper, cutData, activeMode as VisualizationMode);
+      applyVisualization(mapper, cutData, activeMode as VisualizationMode, false);
 
       const actor = vtkActor.newInstance();
       actor.setMapper(mapper);
@@ -958,7 +961,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     glyphMapper.setScaleFactor(scale);
 
     // Color arrows by velocity magnitude using current colormap
-    applyVisualization(glyphMapper, sampledData, 'velocity');
+    applyVisualization(glyphMapper, sampledData, 'velocity', false);
 
     const actor = vtkActor.newInstance();
     actor.setMapper(glyphMapper);
@@ -1082,7 +1085,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         if (threshData && threshData.getNumberOfPoints() > 0) {
           const threshMapper = vtkMapper.newInstance();
           threshMapper.setInputData(threshData);
-          applyVisualization(threshMapper, threshData, activeField as VisualizationMode);
+          applyVisualization(threshMapper, threshData, activeField as VisualizationMode, false);
 
           const threshActor = vtkActor.newInstance();
           threshActor.setMapper(threshMapper);
@@ -1772,27 +1775,39 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     }
   };
 
-  // ── Auto-initialize filter values to data range when enabled or field changes
+  // Keep dataRangeRef in sync so auto-init effects can read it without looping
   useEffect(() => {
-    if (filterConfig.isosurface.enabled && dataRange[0] !== dataRange[1]) {
-      // Always reset to midpoint when the field/dataRange changes while enabled
-      const mid = (dataRange[0] + dataRange[1]) / 2;
-      setFilterConfig(prev => ({
-        ...prev,
-        isosurface: { ...prev.isosurface, values: [mid] },
-      }));
-    }
-  }, [filterConfig.isosurface.enabled, dataRange]);
+    dataRangeRef.current = dataRange;
+  }, [dataRange]);
+
+  // ── Auto-initialize filter values when first enabled or when active field changes ──
+  // IMPORTANT: deps list intentionally excludes `dataRange` to avoid the feedback loop:
+  //   filterConfig → rebuild → applyVisualization → setDataRange → this effect → setFilterConfig → loop
+  // Instead we read dataRange via dataRangeRef (always current but not a dep).
+  useEffect(() => {
+    if (!filterConfig.isosurface.enabled) return;
+    const [lo, hi] = dataRangeRef.current;
+    if (lo === hi) return;
+    const mid = (lo + hi) / 2;
+    setFilterConfig(prev => {
+      // Guard: skip no-op write to avoid unnecessary re-renders
+      if (Math.abs(prev.isosurface.values[0] - mid) < Math.abs(hi - lo) * 1e-6) return prev;
+      return { ...prev, isosurface: { ...prev.isosurface, values: [mid] } };
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterConfig.isosurface.enabled, activeField]);
 
   useEffect(() => {
-    if (filterConfig.threshold.enabled && dataRange[0] !== dataRange[1]) {
-      // Always reset to full range when the field/dataRange changes while enabled
-      setFilterConfig(prev => ({
-        ...prev,
-        threshold: { ...prev.threshold, range: [dataRange[0], dataRange[1]] },
-      }));
-    }
-  }, [filterConfig.threshold.enabled, dataRange]);
+    if (!filterConfig.threshold.enabled) return;
+    const [lo, hi] = dataRangeRef.current;
+    if (lo === hi) return;
+    setFilterConfig(prev => {
+      // Guard: skip no-op write to avoid unnecessary re-renders
+      if (prev.threshold.range[0] === lo && prev.threshold.range[1] === hi) return prev;
+      return { ...prev, threshold: { ...prev.threshold, range: [lo, hi] } };
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterConfig.threshold.enabled, activeField]);
 
   // ── Isosurface overlay: debounced fetch when enabled/value changes ─────────
   useEffect(() => {
