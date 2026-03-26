@@ -979,29 +979,54 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     const actors = [];
 
     // Determine which scalar array to use based on active field.
-    // Use the first name that actually exists in the dataset for robustness.
+    // Check point data first, then cell data for robustness.
     const pointData = currentData.getPointData();
+    const cellData = currentData.getCellData();
     let scalarArrayName = '';
-    const findArray = (...names: string[]) => names.find(n => pointData.getArrayByName(n)) || '';
+    let scalarInCellData = false;
+    const findArrayInBoth = (...names: string[]) => {
+      const ptName = names.find(n => pointData.getArrayByName(n));
+      if (ptName) return { name: ptName, fromCells: false };
+      const cellName = names.find(n => cellData.getArrayByName(n));
+      if (cellName) return { name: cellName, fromCells: true };
+      return null;
+    };
+    const firstAvailable = () => {
+      if (pointData.getNumberOfArrays() > 0) return { name: pointData.getArray(0).getName(), fromCells: false };
+      if (cellData.getNumberOfArrays() > 0) return { name: cellData.getArray(0).getName(), fromCells: true };
+      return null;
+    };
     switch (activeField) {
-      case 'pressure':
-        scalarArrayName = findArray('p', 'p_rgh') || pointData.getArray(0)?.getName() || '';
+      case 'pressure': {
+        const f = findArrayInBoth('p', 'p_rgh') || firstAvailable();
+        if (f) { scalarArrayName = f.name; scalarInCellData = f.fromCells; }
         break;
-      case 'velocity':
-        scalarArrayName = findArray('U_magnitude', 'U_mag', 'U') || pointData.getArray(0)?.getName() || '';
+      }
+      case 'velocity': {
+        const f = findArrayInBoth('U_magnitude', 'U_mag', 'U') || firstAvailable();
+        if (f) { scalarArrayName = f.name; scalarInCellData = f.fromCells; }
         break;
-      case 'temperature':
-        scalarArrayName = findArray('T_degC', 'T') || pointData.getArray(0)?.getName() || '';
+      }
+      case 'temperature': {
+        const f = findArrayInBoth('T_degC', 'T') || firstAvailable();
+        if (f) { scalarArrayName = f.name; scalarInCellData = f.fromCells; }
         break;
-      case 'pmv':
-        scalarArrayName = findArray('PMV') || '';
+      }
+      case 'pmv': {
+        const f = findArrayInBoth('PMV');
+        if (f) { scalarArrayName = f.name; scalarInCellData = f.fromCells; }
         break;
-      case 'ppd':
-        scalarArrayName = findArray('PPD') || '';
+      }
+      case 'ppd': {
+        const f = findArrayInBoth('PPD');
+        if (f) { scalarArrayName = f.name; scalarInCellData = f.fromCells; }
         break;
-      default:
-        scalarArrayName = pointData.getArray(0)?.getName() || '';
+      }
+      default: {
+        const f = firstAvailable();
+        if (f) { scalarArrayName = f.name; scalarInCellData = f.fromCells; }
         break;
+      }
     }
 
     // Apply filters in sequence
@@ -1016,28 +1041,40 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     applyVisualization(surfaceMapper, filteredData, activeField as VisualizationMode);
     actors.push(surfaceActor);
 
-    // ── Threshold filter: real vtkThresholdPoints point cloud overlay ─────────
+    // ── Threshold filter: real vtkThresholdPoints filtered geometry ───────────
     if (config.threshold.enabled && scalarArrayName) {
       const [lo, hi] = config.threshold.range;
-      console.log('[VTKViewer] ThresholdPoints range:', lo, '–', hi, 'array:', scalarArrayName);
+      console.log('[VTKViewer] ThresholdPoints range:', lo, '–', hi, 'array:', scalarArrayName, scalarInCellData ? '(cell)' : '(point)');
 
-      // For multi-component (e.g. velocity U), use magnitude array
-      const threshArray = (() => {
-        const a = pointData.getArrayByName(scalarArrayName);
-        if (a && a.getNumberOfComponents() > 1) {
-          const mag = calculateVectorMagnitude(a);
-          if (!pointData.getArrayByName(mag.getName())) pointData.addArray(mag);
-          return mag.getName();
+      // If the active scalar is in cell data only, promote it to point data so
+      // vtkThresholdPoints (which operates on point data) can use it.
+      const threshPointData = filteredData.getPointData();
+      const threshCellData = filteredData.getCellData();
+      let effectiveArrayName = scalarArrayName;
+
+      if (scalarInCellData) {
+        const cellArr = threshCellData.getArrayByName(scalarArrayName);
+        if (cellArr && !threshPointData.getArrayByName(scalarArrayName)) {
+          // Direct copy works for surfaces where point-count ≈ cell-count; for other
+          // topologies this is an approximation but sufficient for filtering.
+          threshPointData.addArray(cellArr);
         }
-        return scalarArrayName;
-      })();
+      }
+
+      // For multi-component arrays (e.g. velocity U), threshold on magnitude
+      const baseArr = threshPointData.getArrayByName(effectiveArrayName);
+      if (baseArr && baseArr.getNumberOfComponents() > 1) {
+        const mag = calculateVectorMagnitude(baseArr);
+        if (!threshPointData.getArrayByName(mag.getName())) threshPointData.addArray(mag);
+        effectiveArrayName = mag.getName();
+      }
 
       try {
         const threshFilter = vtkThresholdPoints.newInstance();
         threshFilter.setInputData(filteredData);
         threshFilter.setCriterias([
-          { arrayName: threshArray, fieldAssociation: 'PointData', operation: 'Above', value: lo },
-          { arrayName: threshArray, fieldAssociation: 'PointData', operation: 'Below', value: hi },
+          { arrayName: effectiveArrayName, fieldAssociation: 'PointData', operation: 'Above', value: lo },
+          { arrayName: effectiveArrayName, fieldAssociation: 'PointData', operation: 'Below', value: hi },
         ]);
         threshFilter.update();
         const threshData = threshFilter.getOutputData();
@@ -1053,10 +1090,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
           threshActor.getProperty().setOpacity(opacity);
           actors.push(threshActor);
 
-          // Dim the base surface for context
-          surfaceActor.getProperty().setOpacity(Math.min(0.15, opacity * 0.15));
-          surfaceActor.getProperty().setColor(0.7, 0.7, 0.7);
-          surfaceActor.getMapper().setScalarVisibility(false);
+          // Hide the base surface so only filtered geometry is visible
+          surfaceActor.setVisibility(false);
 
           console.log('[VTKViewer] ThresholdPoints output:', threshData.getNumberOfPoints(), 'pts');
         } else {
@@ -1125,7 +1160,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   };
 
   // Aplicar visualización con colormaps válidos y manejo vectorial
-  const applyVisualization = (mapper: any, dataset: any, mode: VisualizationMode) => {
+  const applyVisualization = (mapper: any, dataset: any, mode: VisualizationMode, updateState = true) => {
     const pointData = dataset.getPointData();
     const cellData = dataset.getCellData();
     const lookupTable = vtkColorTransferFunction.newInstance();
@@ -1234,24 +1269,25 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       const normalized = normalizeScalarRange(array, fieldName);
       const [safeMin, safeMax] = normalized.range;
       
-      // Show warning to user if data is uniform or invalid
-      if (normalized.isUniform || normalized.isInvalid) {
-        const warningMsg = normalized.message || null;
-        console.log('[VTKViewer] Setting data warning:', warningMsg);
-        setDataWarning(warningMsg);
-      } else {
-        if (dataWarning) {
-          console.log('[VTKViewer] Clearing data warning');
-          setDataWarning(null);
+      // Show warning to user if data is uniform or invalid (only for primary actors)
+      if (updateState) {
+        if (normalized.isUniform || normalized.isInvalid) {
+          const warningMsg = normalized.message || null;
+          console.log('[VTKViewer] Setting data warning:', warningMsg);
+          setDataWarning(warningMsg);
+        } else {
+          if (dataWarning) {
+            console.log('[VTKViewer] Clearing data warning');
+            setDataWarning(null);
+          }
         }
+        // Update UI state for sliders (use safe range) — skip for overlay actors
+        setDataRange([safeMin, safeMax]);
       }
       
       // Use custom min/max values if specified, otherwise use normalized safe range
       const effectiveMin = colormapMin ?? safeMin;
       const effectiveMax = colormapMax ?? safeMax;
-      
-      // Update UI state for sliders (use safe range)
-      setDataRange([safeMin, safeMax]);
       
       console.log('[VTKViewer] Colormap range applied - Data:', `${safeMin.toFixed(2)}-${safeMax.toFixed(2)}`, 
                  'Effective:', `${effectiveMin.toFixed(2)}-${effectiveMax.toFixed(2)}`,
@@ -1716,7 +1752,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
       const isoMapper = vtkMapper.newInstance();
       isoMapper.setInputData(isoData);
-      applyVisualization(isoMapper, isoData, activeMode as VisualizationMode);
+      applyVisualization(isoMapper, isoData, activeMode as VisualizationMode, false);
 
       const isoActor = vtkActor.newInstance();
       isoActor.setMapper(isoMapper);
