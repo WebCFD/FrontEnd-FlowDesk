@@ -949,13 +949,20 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     arrowSource.update();
 
     // Glyph mapper
-    const glyphMapper = vtkGlyph3DMapper.newInstance();
+    // vtkGlyph3DMapper exposes setOrient/setScaling at runtime but the bundled
+    // vtk.js TypeScript definitions omit them. Extend the return type explicitly
+    // through `unknown` (the TypeScript-safe augmentation pattern) rather than `any`.
+    type GlyphMapperExt = ReturnType<typeof vtkGlyph3DMapper.newInstance> & {
+      setOrient(enabled: boolean): void;
+      setScaling(enabled: boolean): void;
+    };
+    const glyphMapper = vtkGlyph3DMapper.newInstance() as unknown as GlyphMapperExt;
     glyphMapper.setInputData(sampledData);
     glyphMapper.setSourceConnection(arrowSource.getOutputPort());
-    (glyphMapper as any).setOrient(true);
+    glyphMapper.setOrient(true);
     glyphMapper.setOrientationModeToDirection();
     glyphMapper.setOrientationArray(vectorArray.getName()); // 3-component vector → direction
-    (glyphMapper as any).setScaling(true);
+    glyphMapper.setScaling(true);
     glyphMapper.setScaleModeToScaleByMagnitude();
     glyphMapper.setScaleArray(vectorArray.getName()); // magnitude computed from this
     glyphMapper.setScaleFactor(scale);
@@ -1049,19 +1056,17 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       const [lo, hi] = config.threshold.range;
       console.log('[VTKViewer] ThresholdPoints range:', lo, '–', hi, 'array:', scalarArrayName, scalarInCellData ? '(cell)' : '(point)');
 
-      // If the active scalar is in cell data only, promote it to point data so
-      // vtkThresholdPoints (which operates on point data) can use it.
       const threshPointData = filteredData.getPointData();
-      const threshCellData = filteredData.getCellData();
       let effectiveArrayName = scalarArrayName;
 
       if (scalarInCellData) {
-        const cellArr = threshCellData.getArrayByName(scalarArrayName);
-        if (cellArr && !threshPointData.getArrayByName(scalarArrayName)) {
-          // Direct copy works for surfaces where point-count ≈ cell-count; for other
-          // topologies this is an approximation but sufficient for filtering.
-          threshPointData.addArray(cellArr);
-        }
+        // vtkThresholdPoints operates on point data only. Cell-data fields cannot be
+        // correctly promoted without a cell-to-point interpolation filter (not available
+        // in this vtk.js build). Fall back to the full surface render for this case.
+        console.warn('[VTKViewer] Threshold skipped: active scalar is cell-data only. Rendering full surface.');
+        applyOpacityToActor(surfaceActor);
+        applyEdgeVisibilityToActor(surfaceActor);
+        return actors;
       }
 
       // For multi-component arrays (e.g. velocity U), threshold on magnitude
@@ -1823,14 +1828,25 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
     if (!currentVtkFilenameRef.current) return;
 
-    const fieldMap: Partial<Record<VisualizationMode, string>> = {
-      pressure: 'p',
-      velocity: 'U',
-      temperature: 'T_degC',
-      pmv: 'PMV',
-      ppd: 'PPD',
+    // Resolve the actual field name from the loaded dataset so we handle all
+    // variants (p vs p_rgh, T_degC vs T, etc.) rather than hard-coding one name.
+    const resolveFieldName = (): string | null => {
+      const src = sourceDataRef.current;
+      if (!src) return null;
+      const pd = src.getPointData();
+      const cd = src.getCellData();
+      const findFirst = (...names: string[]) =>
+        names.find(n => pd.getArrayByName(n) || cd.getArrayByName(n)) ?? null;
+      switch (activeMode as VisualizationMode) {
+        case 'pressure':    return findFirst('p', 'p_rgh');
+        case 'velocity':    return findFirst('U', 'U_magnitude', 'U_mag');
+        case 'temperature': return findFirst('T_degC', 'T');
+        case 'pmv':         return findFirst('PMV');
+        case 'ppd':         return findFirst('PPD');
+        default:            return null;
+      }
     };
-    const field = fieldMap[activeMode as VisualizationMode];
+    const field = resolveFieldName();
     if (!field) return;
 
     if (isosurfaceDebounceRef.current) clearTimeout(isosurfaceDebounceRef.current);
