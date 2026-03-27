@@ -528,6 +528,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [backgroundColor, setBackgroundColor] = useState<string>('#ffffff'); // Blanco por defecto
   const [showSetup, setShowSetup] = useState<boolean>(false);
   const [gridColor, setGridColor] = useState<string>('#8c8c8c');
+  const [edgeColor, setEdgeColor] = useState<string>('#333333');
   const [colormapMin, setColormapMin] = useState<number | null>(null);
   const [colormapMax, setColormapMax] = useState<number | null>(null);
   const [opacity, setOpacity] = useState<number>(1.0); // 1.0 = opaco, 0.0 = transparente
@@ -656,7 +657,10 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     if (actor && actor.getProperty) {
       actor.getProperty().setEdgeVisibility(showEdges);
       if (showEdges) {
-        actor.getProperty().setEdgeColor(0.2, 0.2, 0.2); // Dark gray edges
+        const er = parseInt(edgeColor.slice(1, 3), 16) / 255;
+        const eg = parseInt(edgeColor.slice(3, 5), 16) / 255;
+        const eb = parseInt(edgeColor.slice(5, 7), 16) / 255;
+        actor.getProperty().setEdgeColor(er, eg, eb);
         actor.getProperty().setLineWidth(1);
       }
     }
@@ -1804,7 +1808,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       // Render the scene
       renderWindowRef.current.renderWindow.render();
     }
-  }, [filterConfig, selectedColormap, invertColormap, showGrid, showEdges, backgroundColor, colormapMin, colormapMax, opacity, gridColor]);
+  }, [filterConfig, selectedColormap, invertColormap, showGrid, showEdges, backgroundColor, colormapMin, colormapMax, opacity, gridColor, edgeColor]);
 
   // ── Fetch isosurface from server (PyVista) ─────────────────────────────────
   const fetchIsosurface = async (filename: string, field: string, isoValue: number) => {
@@ -2289,63 +2293,6 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                   </div>
                 )}
                 
-                {/* ── COLORMAP ─────────────────────────────────────────────── */}
-                <div className="px-4 py-3 border-b border-slate-100 space-y-2.5">
-                  <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">Colormap</p>
-                  <div className="grid grid-cols-3 gap-1">
-                    {colormapOptions.map(c => (
-                      <Button
-                        key={c.id}
-                        variant={selectedColormap === c.id ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => setSelectedColormap(c.id)}
-                        className="text-[10px] h-6 px-1.5 font-normal"
-                        data-testid={`button-colormap-${c.id}`}
-                      >
-                        {c.label}
-                      </Button>
-                    ))}
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-slate-600">Invert scale</span>
-                    <Switch checked={invertColormap} onCheckedChange={setInvertColormap} data-testid="toggle-colormap-invert" />
-                  </div>
-                  <div>
-                    <p className="text-[11px] text-slate-500 mb-1">
-                      Range <span className="font-normal text-slate-400">(auto: {dataRange[0].toFixed(2)} – {dataRange[1].toFixed(2)})</span>
-                    </p>
-                    <div className="flex gap-1 items-center">
-                      <Input
-                        type="number"
-                        placeholder="Min"
-                        value={colormapMin ?? ''}
-                        onChange={(e) => setColormapMin(e.target.value ? parseFloat(e.target.value) : null)}
-                        className="flex-1 h-7 text-[11px] px-2"
-                        step="any"
-                        data-testid="input-colormap-min"
-                      />
-                      <Input
-                        type="number"
-                        placeholder="Max"
-                        value={colormapMax ?? ''}
-                        onChange={(e) => setColormapMax(e.target.value ? parseFloat(e.target.value) : null)}
-                        className="flex-1 h-7 text-[11px] px-2"
-                        step="any"
-                        data-testid="input-colormap-max"
-                      />
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => { setColormapMin(null); setColormapMax(null); }}
-                        className="h-7 px-2 text-[11px] shrink-0"
-                        data-testid="button-reset-colormap-range"
-                        title="Reset to automatic range"
-                      >
-                        Auto
-                      </Button>
-                    </div>
-                  </div>
-                </div>
 
                 {/* ── LAYER: SURFACE ───────────────────────────────────────── */}
                 <div className="border-b border-slate-100">
@@ -2634,6 +2581,63 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                   </button>
                   {showSetup && (
                     <div className="px-4 pb-3 pt-1 space-y-3">
+                      {/* Colormap */}
+                      <div>
+                        <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-2">Colormap</p>
+                        <div className="grid grid-cols-3 gap-1">
+                          {colormapOptions.map(c => (
+                            <Button
+                              key={c.id}
+                              variant={selectedColormap === c.id ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => setSelectedColormap(c.id)}
+                              className="text-[10px] h-6 px-1.5 font-normal"
+                              data-testid={`button-colormap-${c.id}`}
+                            >
+                              {c.label}
+                            </Button>
+                          ))}
+                        </div>
+                        <div className="flex items-center justify-between mt-2">
+                          <span className="text-[11px] text-slate-600">Invert scale</span>
+                          <Switch checked={invertColormap} onCheckedChange={setInvertColormap} data-testid="toggle-colormap-invert" />
+                        </div>
+                        <div className="mt-2">
+                          <p className="text-[11px] text-slate-500 mb-1">
+                            Range <span className="font-normal text-slate-400">(auto: {dataRange[0].toFixed(2)} – {dataRange[1].toFixed(2)})</span>
+                          </p>
+                          <div className="flex gap-1 items-center">
+                            <Input
+                              type="number"
+                              placeholder="Min"
+                              value={colormapMin ?? ''}
+                              onChange={(e) => setColormapMin(e.target.value ? parseFloat(e.target.value) : null)}
+                              className="flex-1 h-7 text-[11px] px-2"
+                              step="any"
+                              data-testid="input-colormap-min"
+                            />
+                            <Input
+                              type="number"
+                              placeholder="Max"
+                              value={colormapMax ?? ''}
+                              onChange={(e) => setColormapMax(e.target.value ? parseFloat(e.target.value) : null)}
+                              className="flex-1 h-7 text-[11px] px-2"
+                              step="any"
+                              data-testid="input-colormap-max"
+                            />
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => { setColormapMin(null); setColormapMax(null); }}
+                              className="h-7 px-2 text-[11px] shrink-0"
+                              data-testid="button-reset-colormap-range"
+                              title="Reset to automatic range"
+                            >
+                              Auto
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
                       {/* Background color */}
                       <div>
                         <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-2">Background</p>
@@ -2687,6 +2691,28 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                         <span className="text-[12px] text-slate-700 font-medium">CellEdges</span>
                         <Switch checked={showEdges} onCheckedChange={setShowEdges} data-testid="toggle-show-edges" />
                       </div>
+                      {showEdges && (
+                        <div className="pl-0">
+                          <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-2">Edges Color</p>
+                          <div className="flex items-center gap-2">
+                            {[
+                              { color: '#333333', label: 'Dark' },
+                              { color: '#8c8c8c', label: 'Gray' },
+                              { color: '#ffffff', label: 'White' },
+                              { color: '#cc3333', label: 'Red' },
+                              { color: '#4a90d9', label: 'Blue' },
+                            ].map(ec => (
+                              <button
+                                key={ec.color}
+                                className={`w-6 h-6 rounded-full border-2 transition-all ${edgeColor === ec.color ? 'border-blue-500 scale-110' : 'border-slate-300'}`}
+                                style={{ backgroundColor: ec.color }}
+                                onClick={() => setEdgeColor(ec.color)}
+                                title={ec.label}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
