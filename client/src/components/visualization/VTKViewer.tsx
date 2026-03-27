@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, AlertCircle, Layers, Eye, Activity, Wind, Zap, Scissors, Target, ArrowUp, Palette } from 'lucide-react';
+import { Loader2, AlertCircle, Layers, Eye, Activity, Wind, Zap, Scissors, Target, ArrowUp, Palette, Settings2, ChevronDown } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -526,6 +526,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [showGrid, setShowGrid] = useState<boolean>(false);
   const [showEdges, setShowEdges] = useState<boolean>(false);
   const [backgroundColor, setBackgroundColor] = useState<string>('#ffffff'); // Blanco por defecto
+  const [showSetup, setShowSetup] = useState<boolean>(false);
   const [colormapMin, setColormapMin] = useState<number | null>(null);
   const [colormapMax, setColormapMax] = useState<number | null>(null);
   const [opacity, setOpacity] = useState<number>(1.0); // 1.0 = opaco, 0.0 = transparente
@@ -1175,25 +1176,32 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     // Note: Cutting plane rendered separately via fetchVolumeCut / cutPlaneActorRef
     // Note: Velocity vectors rendered on the cut plane via cutVectorActorRef
 
-    // Add grid/wireframe actor if showGrid is enabled
+    // Add FloorGrid reference plane at Z=0 if showGrid is enabled
     if (showGrid) {
+      // Build a flat XY plane covering the model's domain footprint
+      const floorPlane = vtkPlaneSource.newInstance({
+        xResolution: 12,
+        yResolution: 12,
+      });
+      // Domain bounds: X∈[-3.25, 1.10], Y∈[-2.85, 2.65], floor at Z=0
+      floorPlane.setOrigin(-3.25, -2.85, 0.0);
+      floorPlane.setPoint1( 1.10, -2.85, 0.0);  // along X
+      floorPlane.setPoint2(-3.25,  2.65, 0.0);  // along Y
+      floorPlane.update();
+
       const gridMapper = vtkMapper.newInstance();
-      gridMapper.setInputData(currentData);
-      
+      gridMapper.setInputData(floorPlane.getOutputData());
+      gridMapper.setScalarVisibility(false);
+
       const gridActor = vtkActor.newInstance();
       gridActor.setMapper(gridMapper);
-      
-      // Configure wireframe appearance
       gridActor.getProperty().setRepresentationToWireframe();
       gridActor.getProperty().setLineWidth(1);
-      gridActor.getProperty().setColor(0.3, 0.3, 0.3); // Dark gray
-      applyOpacityToActor(gridActor);
-      
-      // Disable scalar coloring for grid - show only wireframe
-      gridMapper.setScalarVisibility(false);
-      
+      gridActor.getProperty().setColor(0.55, 0.55, 0.55); // mid-gray grid lines
+      gridActor.getProperty().setOpacity(0.6);
+
       actors.push(gridActor);
-      console.log('[VTKViewer] Added grid/wireframe actor');
+      console.log('[VTKViewer] Added FloorGrid plane actor');
     }
 
     // Store filter state for cleanup
@@ -2269,41 +2277,6 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                   </div>
                 )}
                 
-                {/* ── SCENE SETTINGS ──────────────────────────────────────── */}
-                <div className="px-4 py-3 border-b border-slate-100 bg-slate-50">
-                  <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-2">Scene</p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5">
-                      {[
-                        { color: '#ffffff', label: 'White', ring: 'ring-slate-300' },
-                        { color: '#1a1a2e', label: 'Dark Blue', ring: 'ring-slate-600' },
-                        { color: '#000000', label: 'Black', ring: 'ring-slate-800' },
-                        { color: '#f5f5f5', label: 'Light Gray', ring: 'ring-slate-200' },
-                      ].map(bg => (
-                        <button
-                          key={bg.color}
-                          className={`w-6 h-6 rounded-full border-2 transition-all ${backgroundColor === bg.color ? 'border-blue-500 scale-110' : 'border-slate-300'}`}
-                          style={{ backgroundColor: bg.color }}
-                          onClick={() => setBackgroundColor(bg.color)}
-                          data-testid={`button-bg-${bg.label.toLowerCase().replace(' ', '-')}`}
-                          title={bg.label}
-                        />
-                      ))}
-                      <span className="text-[11px] text-slate-400 ml-1">BG</span>
-                    </div>
-                    <div className="flex items-center gap-2.5">
-                      <label className="flex items-center gap-1 cursor-pointer">
-                        <Switch checked={showGrid} onCheckedChange={setShowGrid} data-testid="toggle-show-grid" className="scale-75 origin-right" />
-                        <span className="text-[11px] text-slate-600">Grid</span>
-                      </label>
-                      <label className="flex items-center gap-1 cursor-pointer">
-                        <Switch checked={showEdges} onCheckedChange={setShowEdges} data-testid="toggle-show-edges" className="scale-75 origin-right" />
-                        <span className="text-[11px] text-slate-600">Edges</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-
                 {/* ── COLORMAP ─────────────────────────────────────────────── */}
                 <div className="px-4 py-3 border-b border-slate-100 space-y-2.5">
                   <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">Colormap</p>
@@ -2629,6 +2602,56 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                         <span className="text-[11px] text-slate-500 w-12 shrink-0">Opacity</span>
                         <Slider value={[thresholdOpacity]} onValueChange={([v]: number[]) => setThresholdOpacity(v)} min={0} max={1} step={0.01} className="flex-1" />
                         <span className="text-[11px] text-slate-600 w-8 text-right">{Math.round(thresholdOpacity * 100)}%</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* ── SETUP ────────────────────────────────────────────────── */}
+                <div className="border-b border-slate-100">
+                  <button
+                    className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-slate-50 transition-colors"
+                    onClick={() => setShowSetup(v => !v)}
+                    data-testid="button-setup-expand"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Settings2 className="h-3.5 w-3.5 text-slate-500" />
+                      <span className="text-xs font-semibold text-slate-700">Setup</span>
+                    </div>
+                    <ChevronDown className={`h-3.5 w-3.5 text-slate-400 transition-transform duration-200 ${showSetup ? 'rotate-180' : ''}`} />
+                  </button>
+                  {showSetup && (
+                    <div className="px-4 pb-3 pt-1 space-y-3">
+                      {/* Background color */}
+                      <div>
+                        <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-2">Background</p>
+                        <div className="flex items-center gap-2">
+                          {[
+                            { color: '#ffffff', label: 'White' },
+                            { color: '#1a1a2e', label: 'Dark Blue' },
+                            { color: '#000000', label: 'Black' },
+                            { color: '#f5f5f5', label: 'Light Gray' },
+                          ].map(bg => (
+                            <button
+                              key={bg.color}
+                              className={`w-7 h-7 rounded-full border-2 transition-all ${backgroundColor === bg.color ? 'border-blue-500 scale-110' : 'border-slate-300'}`}
+                              style={{ backgroundColor: bg.color }}
+                              onClick={() => setBackgroundColor(bg.color)}
+                              data-testid={`button-bg-${bg.label.toLowerCase().replace(' ', '-')}`}
+                              title={bg.label}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      {/* FloorGrid */}
+                      <div className="flex items-center justify-between">
+                        <span className="text-[12px] text-slate-700 font-medium">FloorGrid</span>
+                        <Switch checked={showGrid} onCheckedChange={setShowGrid} data-testid="toggle-show-grid" />
+                      </div>
+                      {/* CellEdges */}
+                      <div className="flex items-center justify-between">
+                        <span className="text-[12px] text-slate-700 font-medium">CellEdges</span>
+                        <Switch checked={showEdges} onCheckedChange={setShowEdges} data-testid="toggle-show-edges" />
                       </div>
                     </div>
                   )}
