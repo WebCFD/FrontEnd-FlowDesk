@@ -532,6 +532,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [opacity, setOpacity] = useState<number>(1.0); // 1.0 = opaco, 0.0 = transparente
   const [isosurfaceLoading, setIsosurfaceLoading] = useState<boolean>(false);
   const [cuttingPlaneLoading, setCuttingPlaneLoading] = useState<boolean>(false);
+  const [volumeThresholdLoading, setVolumeThresholdLoading] = useState<boolean>(false);
   const [cutEnabled, setCutEnabled] = useState<boolean>(false);
   const [cutAxis, setCutAxis] = useState<'x' | 'y' | 'z'>('z');
   const [cutPosition, setCutPosition] = useState<number>(1.1);
@@ -594,6 +595,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const cutPlaneActorRef = useRef<any>(null);    // Actor for the cut plane surface
   const cutVectorActorRef = useRef<any>(null);   // Actor for velocity arrows on cut plane
   const cutDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // ── Volume threshold refs ──────────────────────────────────────────────────
+  const volumeThresholdActorRef = useRef<any>(null);
+  const volumeThresholdDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const visualizationControls = [
     { id: 'pressure' as const, label: 'Pressure', icon: Layers },
@@ -1066,66 +1070,73 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     applyVisualization(surfaceMapper, filteredData, activeField as VisualizationMode);
     actors.push(surfaceActor);
 
-    // ── Threshold filter: real vtkThresholdPoints filtered geometry ───────────
+    // ── Threshold filter ───────────────────────────────────────────────────────
     if (config.threshold.enabled && scalarArrayName) {
       const [lo, hi] = config.threshold.range;
-      console.log('[VTKViewer] ThresholdPoints range:', lo, '–', hi, 'array:', scalarArrayName, scalarInCellData ? '(cell)' : '(point)');
 
-      const threshPointData = filteredData.getPointData();
-      let effectiveArrayName = scalarArrayName;
-
-      if (scalarInCellData) {
-        // vtkThresholdPoints operates on point data only. Cell-data fields cannot be
-        // correctly promoted without a cell-to-point interpolation filter (not available
-        // in this vtk.js build). Fall back to the full surface render for this case.
-        console.warn('[VTKViewer] Threshold skipped: active scalar is cell-data only. Rendering full surface.');
-        applyOpacityToActor(surfaceActor);
+      // When volume_internal.vtk is active, the PyVista server-side threshold produces a
+      // true 3D volumetric result (interior cells in range, surface extracted).
+      // The async actor is managed by the fetchVolumeThreshold / useEffect pipeline.
+      // Here we just dim the base surface so the overlay is visible.
+      if (currentVtkFilenameRef.current === 'volume_internal.vtk') {
+        surfaceActor.getProperty().setOpacity(0.08);
+        surfaceMapper.setScalarVisibility(false);
         applyEdgeVisibilityToActor(surfaceActor);
-        return actors;
-      }
+        console.log('[VTKViewer] volume_internal threshold: deferring to server-side PyVista');
+      } else {
+        // Fallback: client-side vtkThresholdPoints on the surface mesh
+        console.log('[VTKViewer] ThresholdPoints range:', lo, '–', hi, 'array:', scalarArrayName, scalarInCellData ? '(cell)' : '(point)');
 
-      // For multi-component arrays (e.g. velocity U), threshold on magnitude
-      const baseArr = threshPointData.getArrayByName(effectiveArrayName);
-      if (baseArr && baseArr.getNumberOfComponents() > 1) {
-        const mag = calculateVectorMagnitude(baseArr);
-        if (!threshPointData.getArrayByName(mag.getName())) threshPointData.addArray(mag);
-        effectiveArrayName = mag.getName();
-      }
+        const threshPointData = filteredData.getPointData();
+        let effectiveArrayName = scalarArrayName;
 
-      try {
-        const threshFilter = vtkThresholdPoints.newInstance();
-        threshFilter.setInputData(filteredData);
-        threshFilter.setCriterias([
-          { arrayName: effectiveArrayName, fieldAssociation: 'PointData', operation: 'Above', value: lo },
-          { arrayName: effectiveArrayName, fieldAssociation: 'PointData', operation: 'Below', value: hi },
-        ]);
-        threshFilter.update();
-        const threshData = threshFilter.getOutputData();
+        if (scalarInCellData) {
+          console.warn('[VTKViewer] Threshold skipped: active scalar is cell-data only.');
+          applyOpacityToActor(surfaceActor);
+          applyEdgeVisibilityToActor(surfaceActor);
+          return actors;
+        }
 
-        if (threshData && threshData.getNumberOfPoints() > 0) {
-          const threshMapper = vtkMapper.newInstance();
-          threshMapper.setInputData(threshData);
-          applyVisualization(threshMapper, threshData, activeField as VisualizationMode, false);
+        const baseArr = threshPointData.getArrayByName(effectiveArrayName);
+        if (baseArr && baseArr.getNumberOfComponents() > 1) {
+          const mag = calculateVectorMagnitude(baseArr);
+          if (!threshPointData.getArrayByName(mag.getName())) threshPointData.addArray(mag);
+          effectiveArrayName = mag.getName();
+        }
 
-          const threshActor = vtkActor.newInstance();
-          threshActor.setMapper(threshMapper);
-          threshActor.getProperty().setPointSize(4);
-          threshActor.getProperty().setOpacity(opacity);
-          actors.push(threshActor);
+        try {
+          const threshFilter = vtkThresholdPoints.newInstance();
+          threshFilter.setInputData(filteredData);
+          threshFilter.setCriterias([
+            { arrayName: effectiveArrayName, fieldAssociation: 'PointData', operation: 'Above', value: lo },
+            { arrayName: effectiveArrayName, fieldAssociation: 'PointData', operation: 'Below', value: hi },
+          ]);
+          threshFilter.update();
+          const threshData = threshFilter.getOutputData();
 
-          // Hide the base surface so only filtered geometry is visible
-          surfaceActor.setVisibility(false);
+          if (threshData && threshData.getNumberOfPoints() > 0) {
+            const threshMapper = vtkMapper.newInstance();
+            threshMapper.setInputData(threshData);
+            applyVisualization(threshMapper, threshData, activeField as VisualizationMode, false);
 
-          console.log('[VTKViewer] ThresholdPoints output:', threshData.getNumberOfPoints(), 'pts');
-        } else {
-          console.log('[VTKViewer] ThresholdPoints: no points in range — showing full surface');
+            const threshActor = vtkActor.newInstance();
+            threshActor.setMapper(threshMapper);
+            threshActor.getProperty().setPointSize(4);
+            threshActor.getProperty().setOpacity(opacity);
+            actors.push(threshActor);
+
+            surfaceActor.setVisibility(false);
+            console.log('[VTKViewer] ThresholdPoints output:', threshData.getNumberOfPoints(), 'pts');
+          } else {
+            console.log('[VTKViewer] ThresholdPoints: no points in range — showing full surface');
+            applyOpacityToActor(surfaceActor);
+            applyEdgeVisibilityToActor(surfaceActor);
+          }
+        } catch (err) {
+          console.warn('[VTKViewer] ThresholdPoints failed:', err);
           applyOpacityToActor(surfaceActor);
           applyEdgeVisibilityToActor(surfaceActor);
         }
-      } catch (err) {
-        console.warn('[VTKViewer] ThresholdPoints failed:', err);
-        applyOpacityToActor(surfaceActor);
-        applyEdgeVisibilityToActor(surfaceActor);
       }
     } else {
       // Normal surface rendering
@@ -1881,6 +1892,62 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     }
   };
 
+  // ── Fetch volumetric threshold from server (PyVista threshold on internalMesh) ──
+  const fetchVolumeThreshold = async (field: string, lo: number, hi: number) => {
+    setVolumeThresholdLoading(true);
+
+    if (volumeThresholdActorRef.current && renderWindowRef.current?.renderer) {
+      renderWindowRef.current.renderer.removeActor(volumeThresholdActorRef.current);
+      volumeThresholdActorRef.current = null;
+    }
+
+    try {
+      const resp = await fetch(`/api/simulations/${simulationId}/volume-threshold`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ field, lo, hi }),
+      });
+
+      if (!resp.ok) {
+        console.warn('[VTKViewer] volume-threshold request failed:', resp.status);
+        return;
+      }
+
+      const vtkText = await resp.text();
+      if (!vtkText || vtkText.trim().length < 50) {
+        console.log('[VTKViewer] volume-threshold returned empty result (no cells in range)');
+        return;
+      }
+
+      const threshData = parseVtkAscii(vtkText);
+      if (!threshData || threshData.getNumberOfPoints() === 0) {
+        console.log('[VTKViewer] volume-threshold: no geometry in range', lo, '–', hi);
+        return;
+      }
+
+      console.log('[VTKViewer] volume-threshold:', threshData.getNumberOfPoints(), 'pts, field:', field, 'range:', lo, '–', hi);
+
+      const threshMapper = vtkMapper.newInstance();
+      threshMapper.setInputData(threshData);
+      applyVisualization(threshMapper, threshData, activeModeRef.current, false);
+
+      const threshActor = vtkActor.newInstance();
+      threshActor.setMapper(threshMapper);
+      threshActor.getProperty().setOpacity(opacity);
+      volumeThresholdActorRef.current = threshActor;
+
+      if (renderWindowRef.current?.renderer) {
+        renderWindowRef.current.renderer.addActor(threshActor);
+        renderWindowRef.current.renderWindow.render();
+        console.log('[VTKViewer] Volume threshold actor added to scene');
+      }
+    } catch (err) {
+      console.error('[VTKViewer] fetchVolumeThreshold error:', err);
+    } finally {
+      setVolumeThresholdLoading(false);
+    }
+  };
+
   // Keep dataRangeRef in sync so auto-init effects can read it without looping
   useEffect(() => {
     dataRangeRef.current = dataRange;
@@ -1914,6 +1981,58 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterConfig.threshold.enabled, activeMode]);
+
+  // ── Server-side volumetric threshold (only when volume_internal.vtk is active) ──
+  useEffect(() => {
+    if (currentVtkFilenameRef.current !== 'volume_internal.vtk') return;
+
+    if (!filterConfig.threshold.enabled) {
+      // Remove threshold overlay and restore surface opacity
+      if (volumeThresholdActorRef.current && renderWindowRef.current?.renderer) {
+        renderWindowRef.current.renderer.removeActor(volumeThresholdActorRef.current);
+        volumeThresholdActorRef.current = null;
+      }
+      actorsRef.current.forEach(a => {
+        if (a?.getProperty) a.getProperty().setOpacity(opacity);
+        if (a?.getMapper) a.getMapper().setScalarVisibility(true);
+      });
+      if (renderWindowRef.current?.renderWindow) renderWindowRef.current.renderWindow.render();
+      return;
+    }
+
+    // Resolve actual field name from active mode and loaded dataset
+    const resolveField = (): string | null => {
+      const src = sourceDataRef.current;
+      if (!src) return null;
+      const pd = src.getPointData();
+      const cd = src.getCellData();
+      const findFirst = (...names: string[]) =>
+        names.find(n => pd.getArrayByName(n) || cd.getArrayByName(n)) ?? null;
+      switch (activeMode as VisualizationMode) {
+        case 'pressure':    return findFirst('p', 'p_rgh');
+        case 'velocity':    return findFirst('U', 'U_magnitude', 'U_mag');
+        case 'temperature': return findFirst('T_degC', 'T');
+        case 'pmv':         return findFirst('PMV');
+        case 'ppd':         return findFirst('PPD');
+        default:            return null;
+      }
+    };
+    const field = resolveField();
+    if (!field) return;
+
+    const [lo, hi] = filterConfig.threshold.range;
+    if (lo === hi) return;
+
+    if (volumeThresholdDebounceRef.current) clearTimeout(volumeThresholdDebounceRef.current);
+    volumeThresholdDebounceRef.current = setTimeout(() => {
+      fetchVolumeThreshold(field, lo, hi);
+    }, 500);
+
+    return () => {
+      if (volumeThresholdDebounceRef.current) clearTimeout(volumeThresholdDebounceRef.current);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterConfig.threshold.enabled, filterConfig.threshold.range, activeMode]);
 
   // ── Isosurface overlay: debounced fetch when enabled/value changes ─────────
   useEffect(() => {
@@ -2326,9 +2445,14 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                       </div>
                       {filterConfig.threshold.enabled && (
                         <div className="space-y-2">
-                          <Label className="text-xs text-gray-600">
-                            Range: {filterConfig.threshold.range[0]?.toFixed(3)} - {filterConfig.threshold.range[1]?.toFixed(3)}
-                          </Label>
+                          <div className="flex items-center justify-between">
+                            <Label className="text-xs text-gray-600">
+                              Range: {filterConfig.threshold.range[0]?.toFixed(3)} - {filterConfig.threshold.range[1]?.toFixed(3)}
+                            </Label>
+                            {volumeThresholdLoading && (
+                              <span className="text-xs text-blue-500 animate-pulse">Computing…</span>
+                            )}
+                          </div>
                           <Slider
                             value={filterConfig.threshold.range}
                             onValueChange={(range: number[]) => setFilterConfig(prev => ({

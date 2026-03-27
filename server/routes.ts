@@ -863,6 +863,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ── Volumetric threshold: PyVista threshold([lo,hi]) on volume_internal.vtk ──
+  const volumeThresholdSchema = z.object({
+    field: z.string().max(64).regex(/^[\w_. \-]+$/, 'Invalid field name'),
+    lo: z.number(),
+    hi: z.number(),
+  }).refine(d => d.lo <= d.hi, { message: 'lo must be less than or equal to hi', path: ['lo'] });
+
+  app.post("/api/simulations/:id/volume-threshold", async (req, res) => {
+    try {
+      const simulationId = parseInt(req.params.id);
+
+      const parsed = volumeThresholdSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ message: 'Invalid request', errors: parsed.error.flatten() });
+      }
+      const { field, lo, hi } = parsed.data;
+
+      const localPath = path.join(
+        process.cwd(), 'cases', `sim_${simulationId}`, 'post', 'vtk', 'volume_internal.vtk'
+      );
+      const prodPath = path.join('/tmp/uploads', `sim_${simulationId}`, 'vtk', 'volume_internal.vtk');
+
+      let vtkPath: string | null = null;
+      let tempFile: string | null = null;
+
+      if (fsSync.existsSync(localPath)) {
+        vtkPath = localPath;
+      } else if (fsSync.existsSync(prodPath)) {
+        vtkPath = prodPath;
+      } else {
+        try {
+          const fileBuffer = await r2Storage.downloadToBuffer(simulationId, 'volume_internal.vtk');
+          tempFile = path.join(os.tmpdir(), `vol_thresh_${simulationId}_${Date.now()}.vtk`);
+          await fs.writeFile(tempFile, fileBuffer);
+          vtkPath = tempFile;
+        } catch (r2Err: any) {
+          console.warn(`[VOLUME-THRESHOLD] R2 download failed:`, r2Err.message);
+          return res.status(404).json({ message: 'volume_internal.vtk not found' });
+        }
+      }
+
+      const EMPTY_VTK = "# vtk DataFile Version 2.0\nEmpty\nASCII\nDATASET POLYDATA\nPOINTS 0 float\n";
+      const scriptPath = path.join(process.cwd(), 'server', 'volume_threshold.py');
+      console.log(`[VOLUME-THRESHOLD] sim=${simulationId} field=${field} lo=${lo} hi=${hi}`);
+
+      let vtkOutput = '';
+      try {
+        const execFileAsync = promisify(execFile);
+        const { stdout, stderr } = await execFileAsync(
+          'python3',
+          [scriptPath, vtkPath!, field, String(lo), String(hi)],
+          { maxBuffer: 50 * 1024 * 1024, timeout: 90000 }
+        );
+        if (stderr) console.log(`[VOLUME-THRESHOLD] Python:`, stderr.substring(0, 500));
+        vtkOutput = stdout || EMPTY_VTK;
+      } catch (execErr: any) {
+        console.error('[VOLUME-THRESHOLD] Python failed:', execErr.message);
+        vtkOutput = EMPTY_VTK;
+      } finally {
+        if (tempFile) { try { await fs.unlink(tempFile); } catch (e) {} }
+      }
+
+      res.setHeader('Content-Type', 'text/plain');
+      res.send(vtkOutput);
+    } catch (error: any) {
+      console.error('[VOLUME-THRESHOLD] Endpoint error:', error);
+      res.status(500).json({ message: 'Volume threshold failed', error: error.message });
+    }
+  });
+
   // Isosurface extraction endpoint: runs PyVista contour() server-side and returns VTK ASCII
   app.post("/api/simulations/:id/isosurface", async (req, res) => {
     try {
