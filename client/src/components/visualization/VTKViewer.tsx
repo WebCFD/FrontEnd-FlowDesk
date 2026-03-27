@@ -540,7 +540,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [cutAxis, setCutAxis] = useState<'x' | 'y' | 'z'>('z');
   const [cutPosition, setCutPosition] = useState<number>(1.1);
   const [cutVectorsEnabled, setCutVectorsEnabled] = useState<boolean>(false);
-  const [cutVectorScale, setCutVectorScale] = useState<number>(5.0);
+  const [cutVectorScale, setCutVectorScale] = useState<number>(0.5);
   const [cutVectorDensity, setCutVectorDensity] = useState<number>(0.1);
   const [dataWarning, setDataWarning] = useState<string | null>(null);
   const [domainBounds, setDomainBounds] = useState<{ min: number[]; max: number[]; center: number[] }>({
@@ -556,7 +556,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       planesEnabled: { x: true, y: true, z: true },
       planePositions: { x: 0.5, y: 0.5, z: 0.5 }
     },
-    vectors: { enabled: false, scale: 10.0, density: 0.1 }
+    vectors: { enabled: false, scale: 0.5, density: 0.1 }
   });
   
   // Refs that mirror state values to avoid stale closures in async callbacks
@@ -569,7 +569,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       planesEnabled: { x: true, y: true, z: true },
       planePositions: { x: 0.5, y: 0.5, z: 0.5 }
     },
-    vectors: { enabled: false, scale: 10.0, density: 0.1 }
+    vectors: { enabled: false, scale: 0.5, density: 0.1 }
   });
 
   // Referencias principales
@@ -594,7 +594,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   // ── Volume cut plane refs ──────────────────────────────────────────────────
   const cutEnabledRef = useRef<boolean>(false);
   const cutVectorsEnabledRef = useRef<boolean>(false);
-  const cutVectorScaleRef = useRef<number>(5.0);
+  const cutVectorScaleRef = useRef<number>(0.5);
   const cutVectorDensityRef = useRef<number>(0.1);
   // Track whether user has manually set filter values (prevents auto-init from overwriting on re-enable)
   const isosurfaceUserSet = useRef<boolean>(false);
@@ -995,6 +995,24 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     // Subsample points for performance
     const sampledData = subsamplePolyDataForGlyphs(inputData, density);
 
+    // Compute max velocity magnitude from sampled points so we can normalise the
+    // scale factor. This ensures the longest arrow = `scale` world-units regardless
+    // of actual velocity magnitude in the dataset (standard CFD post-processor
+    // behaviour, matching Paraview / Tecplot defaults).
+    const sampledVecArray = sampledData.getPointData().getArrayByName(arrayName)
+      || sampledData.getPointData().getArray(1);
+    let maxMag = 0;
+    if (sampledVecArray) {
+      const nTuples = sampledVecArray.getNumberOfTuples();
+      for (let i = 0; i < nTuples; i++) {
+        const t = sampledVecArray.getTuple(i);
+        const mag = Math.sqrt(t[0] * t[0] + t[1] * t[1] + t[2] * t[2]);
+        if (mag > maxMag) maxMag = mag;
+      }
+    }
+    // normalizedScaleFactor: scaleFactor = scale / maxMag → fastest arrow = scale world units
+    const normalizedScaleFactor = maxMag > 0 ? scale / maxMag : scale;
+
     // Arrow source
     const arrowSource = vtkArrowSource.newInstance();
     arrowSource.setTipLength(0.35);
@@ -1018,7 +1036,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     glyphMapper.setScaling(true);
     glyphMapper.setScaleModeToScaleByMagnitude();
     glyphMapper.setScaleArray(vectorArray.getName()); // magnitude computed from this
-    glyphMapper.setScaleFactor(scale);
+    glyphMapper.setScaleFactor(normalizedScaleFactor); // normalised: max arrow = scale world units
 
     // Color arrows by velocity magnitude using current colormap
     applyVisualization(glyphMapper, sampledData, 'velocity', false);
@@ -1027,7 +1045,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     actor.setMapper(glyphMapper);
     actor.getProperty().setOpacity(opacity);
 
-    console.log(`[VTKViewer] Arrow glyphs: ${sampledData.getNumberOfPoints()} arrows (density=${density}, scale=${scale})`);
+    console.log(`[VTKViewer] Arrow glyphs: ${sampledData.getNumberOfPoints()} arrows (density=${density}, scale=${scale}, maxMag=${maxMag.toFixed(4)}, normFactor=${normalizedScaleFactor.toFixed(4)})`);
     return [actor];
   };
 
@@ -2441,7 +2459,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                         <div className="space-y-1.5">
                           <div className="flex items-center gap-2">
                             <span className="text-[11px] text-slate-500 w-14 shrink-0">Scale {cutVectorScale.toFixed(2)}</span>
-                            <Slider value={[cutVectorScale]} onValueChange={([v]: number[]) => setCutVectorScale(v)} min={0.05} max={10.0} step={0.05} className="flex-1" data-testid="slider-cut-vector-scale" />
+                            <Slider value={[cutVectorScale]} onValueChange={([v]: number[]) => setCutVectorScale(v)} min={0.05} max={2.0} step={0.05} className="flex-1" data-testid="slider-cut-vector-scale" />
                           </div>
                           <div className="flex items-center gap-2">
                             <span className="text-[11px] text-slate-500 w-14 shrink-0">Density {cutVectorDensity.toFixed(2)}</span>
