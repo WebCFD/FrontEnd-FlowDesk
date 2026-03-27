@@ -1043,20 +1043,6 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     glyphMapper.setScaleModeToScaleByConstant();           // every arrow = scaleFactor world units
     glyphMapper.setScaleFactor(scale);                     // direct: slider value = arrow length (m)
 
-    // Diagnostic: force buildArrays and inspect first transformation matrix
-    (glyphMapper as any).buildArrays();
-    const matArr: Float32Array | null = (glyphMapper as any).getMatrixArray();
-    if (matArr && matArr.length >= 16) {
-      const m = Array.from(matArr.slice(0, 16)).map((v) => (v as number).toFixed(3));
-      console.log(`[ARROWS] matrix[0]: ${m.join(', ')}`);
-      // Diagonal elements [0], [5], [10] carry the scale (after rotation)
-      // For SCALE_BY_CONSTANT with scale=s: length of columns should be s
-      const col0 = Math.sqrt(matArr[0]**2 + matArr[1]**2 + matArr[2]**2);
-      console.log(`[ARROWS] col0-length (≈ scale factor): ${col0.toFixed(4)}`);
-    } else {
-      console.warn(`[ARROWS] matrixArray is ${matArr === null ? 'null' : 'empty (len=' + (matArr?.length ?? 0) + ')'} — buildArrays may have failed`);
-    }
-
     console.log(`[ARROWS] Glyph mapper configured: orientArray="${vectorArray.getName()}", scaleFactor=${scale}`);
 
     // Color arrows by velocity magnitude using current colormap
@@ -1067,6 +1053,21 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     actor.getProperty().setOpacity(opacity);
 
     console.log(`[ARROWS] ✓ Actor created — ${sampledData.getNumberOfPoints()} arrows, length=${scale}m each`);
+
+    // Diagnostic: force buildArrays AFTER all setup and inspect the first transformation matrix
+    // (logged LAST so the log-tail capture always sees it)
+    (glyphMapper as any).buildArrays();
+    const matArr: Float32Array | null = (glyphMapper as any).getMatrixArray();
+    if (matArr && matArr.length >= 16) {
+      const col0 = Math.sqrt(matArr[0]**2 + matArr[1]**2 + matArr[2]**2);
+      const col1 = Math.sqrt(matArr[4]**2 + matArr[5]**2 + matArr[6]**2);
+      const col2 = Math.sqrt(matArr[8]**2 + matArr[9]**2 + matArr[10]**2);
+      console.log(`[ARROWS] matrix[0] col-lengths (scale): X=${col0.toFixed(4)}, Y=${col1.toFixed(4)}, Z=${col2.toFixed(4)}`);
+      console.log(`[ARROWS] matrix[0] translation: (${matArr[12].toFixed(3)}, ${matArr[13].toFixed(3)}, ${matArr[14].toFixed(3)})`);
+    } else {
+      console.warn(`[ARROWS] matrixArray NULL/EMPTY — buildArrays may have failed (len=${matArr?.length ?? 'null'})`);
+    }
+
     return [actor];
   };
 
