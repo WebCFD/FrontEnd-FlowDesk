@@ -1021,6 +1021,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     arrowSource.setTipLength(0.35);
     arrowSource.setShaftRadius(0.05);
     arrowSource.update();
+    const arrowGeometry = arrowSource.getOutputData(); // grab output directly (avoids lazy-pipeline issues)
+    console.log(`[ARROWS] arrowGeometry: ${arrowGeometry ? arrowGeometry.getNumberOfPoints() + ' pts' : 'NULL'}`);
 
     // Glyph mapper — SCALE_BY_CONSTANT: every arrow is exactly `scale` world-units
     // long regardless of local velocity magnitude. Orientation still follows the
@@ -1032,14 +1034,28 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       setScaleModeToScaleByConstant(): void;
     };
     const glyphMapper = vtkGlyph3DMapper.newInstance() as unknown as GlyphMapperExt;
-    glyphMapper.setInputData(sampledData);
-    glyphMapper.setSourceConnection(arrowSource.getOutputPort());
+    glyphMapper.setInputData(sampledData, 0);             // point positions + orientation array
+    glyphMapper.setInputData(arrowGeometry, 1);           // arrow glyph geometry (direct, no lazy pipeline)
     glyphMapper.setOrient(true);
     glyphMapper.setOrientationModeToDirection();
     glyphMapper.setOrientationArray(vectorArray.getName()); // direction from velocity vector
     glyphMapper.setScaling(true);
     glyphMapper.setScaleModeToScaleByConstant();           // every arrow = scaleFactor world units
     glyphMapper.setScaleFactor(scale);                     // direct: slider value = arrow length (m)
+
+    // Diagnostic: force buildArrays and inspect first transformation matrix
+    (glyphMapper as any).buildArrays();
+    const matArr: Float32Array | null = (glyphMapper as any).getMatrixArray();
+    if (matArr && matArr.length >= 16) {
+      const m = Array.from(matArr.slice(0, 16)).map((v) => (v as number).toFixed(3));
+      console.log(`[ARROWS] matrix[0]: ${m.join(', ')}`);
+      // Diagonal elements [0], [5], [10] carry the scale (after rotation)
+      // For SCALE_BY_CONSTANT with scale=s: length of columns should be s
+      const col0 = Math.sqrt(matArr[0]**2 + matArr[1]**2 + matArr[2]**2);
+      console.log(`[ARROWS] col0-length (≈ scale factor): ${col0.toFixed(4)}`);
+    } else {
+      console.warn(`[ARROWS] matrixArray is ${matArr === null ? 'null' : 'empty (len=' + (matArr?.length ?? 0) + ')'} — buildArrays may have failed`);
+    }
 
     console.log(`[ARROWS] Glyph mapper configured: orientArray="${vectorArray.getName()}", scaleFactor=${scale}`);
 
