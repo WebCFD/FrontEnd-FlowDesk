@@ -978,15 +978,35 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
   // Real arrow glyph vector field using vtkArrowSource + vtkGlyph3DMapper
   const createAdvancedVectorField = (inputData: any, scale: number, density: number, arrayName: string) => {
+    console.log(`[ARROWS] createAdvancedVectorField called — scale=${scale}, density=${density}, array="${arrayName}"`);
+
     const pointData = inputData.getPointData();
+    const nPtArrays = pointData.getNumberOfArrays();
+    const ptArrayNames = Array.from({ length: nPtArrays }, (_, i) => pointData.getArrayByIndex(i)?.getName());
+    console.log(`[ARROWS] inputData: ${inputData.getNumberOfPoints()} pts, pointData arrays: [${ptArrayNames.join(', ')}]`);
+
     const vectorArray = pointData.getArrayByName(arrayName) || pointData.getArray(1);
 
-    if (!vectorArray || vectorArray.getNumberOfComponents() < 3) {
-      console.warn('[VTKViewer] No valid 3-component vector array for glyphs');
+    if (!vectorArray) {
+      console.warn(`[ARROWS] ✗ Array "${arrayName}" not found and no fallback — aborting`);
+      return null;
+    }
+    console.log(`[ARROWS] Found vector array: "${vectorArray.getName()}", nComponents=${vectorArray.getNumberOfComponents()}, nTuples=${vectorArray.getNumberOfTuples()}`);
+
+    if (vectorArray.getNumberOfComponents() < 3) {
+      console.warn(`[ARROWS] ✗ Array has ${vectorArray.getNumberOfComponents()} components, need ≥3 — aborting`);
       return null;
     }
 
-    // Pre-compute magnitude for coloring & scaling
+    // Sample a few raw velocity values for diagnostics
+    const nSample = Math.min(5, vectorArray.getNumberOfTuples());
+    for (let i = 0; i < nSample; i++) {
+      const t = vectorArray.getTuple(i);
+      const mag = Math.sqrt(t[0]*t[0] + t[1]*t[1] + t[2]*t[2]);
+      console.log(`[ARROWS]   point[${i}]: U=(${t[0].toFixed(4)}, ${t[1].toFixed(4)}, ${t[2].toFixed(4)}) |U|=${mag.toFixed(4)}`);
+    }
+
+    // Pre-compute magnitude for coloring
     const magArray = calculateVectorMagnitude(vectorArray);
     if (!pointData.getArrayByName(magArray.getName())) {
       pointData.addArray(magArray);
@@ -994,49 +1014,34 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
     // Subsample points for performance
     const sampledData = subsamplePolyDataForGlyphs(inputData, density);
+    console.log(`[ARROWS] Subsampled: ${sampledData.getNumberOfPoints()} arrow positions (step=1/${Math.max(1,Math.round(1/Math.max(0.005,density)))})`);
 
-    // Compute max velocity magnitude from sampled points so we can normalise the
-    // scale factor. This ensures the longest arrow = `scale` world-units regardless
-    // of actual velocity magnitude in the dataset (standard CFD post-processor
-    // behaviour, matching Paraview / Tecplot defaults).
-    const sampledVecArray = sampledData.getPointData().getArrayByName(arrayName)
-      || sampledData.getPointData().getArray(1);
-    let maxMag = 0;
-    if (sampledVecArray) {
-      const nTuples = sampledVecArray.getNumberOfTuples();
-      for (let i = 0; i < nTuples; i++) {
-        const t = sampledVecArray.getTuple(i);
-        const mag = Math.sqrt(t[0] * t[0] + t[1] * t[1] + t[2] * t[2]);
-        if (mag > maxMag) maxMag = mag;
-      }
-    }
-    // normalizedScaleFactor: scaleFactor = scale / maxMag → fastest arrow = scale world units
-    const normalizedScaleFactor = maxMag > 0 ? scale / maxMag : scale;
-
-    // Arrow source
+    // Arrow source — slightly fatter shaft so arrows read well at all zoom levels
     const arrowSource = vtkArrowSource.newInstance();
     arrowSource.setTipLength(0.35);
-    arrowSource.setShaftRadius(0.04);
+    arrowSource.setShaftRadius(0.05);
     arrowSource.update();
 
-    // Glyph mapper
-    // vtkGlyph3DMapper exposes setOrient/setScaling at runtime but the bundled
-    // vtk.js TypeScript definitions omit them. Extend the return type explicitly
-    // through `unknown` (the TypeScript-safe augmentation pattern) rather than `any`.
+    // Glyph mapper — SCALE_BY_CONSTANT: every arrow is exactly `scale` world-units
+    // long regardless of local velocity magnitude. Orientation still follows the
+    // velocity direction; coloring shows the magnitude. This makes the Scale slider
+    // directly control the physical arrow length with no hidden normalization.
     type GlyphMapperExt = ReturnType<typeof vtkGlyph3DMapper.newInstance> & {
       setOrient(enabled: boolean): void;
       setScaling(enabled: boolean): void;
+      setScaleModeToScaleByConstant(): void;
     };
     const glyphMapper = vtkGlyph3DMapper.newInstance() as unknown as GlyphMapperExt;
     glyphMapper.setInputData(sampledData);
     glyphMapper.setSourceConnection(arrowSource.getOutputPort());
     glyphMapper.setOrient(true);
     glyphMapper.setOrientationModeToDirection();
-    glyphMapper.setOrientationArray(vectorArray.getName()); // 3-component vector → direction
+    glyphMapper.setOrientationArray(vectorArray.getName()); // direction from velocity vector
     glyphMapper.setScaling(true);
-    glyphMapper.setScaleModeToScaleByMagnitude();
-    glyphMapper.setScaleArray(vectorArray.getName()); // magnitude computed from this
-    glyphMapper.setScaleFactor(normalizedScaleFactor); // normalised: max arrow = scale world units
+    glyphMapper.setScaleModeToScaleByConstant();           // every arrow = scaleFactor world units
+    glyphMapper.setScaleFactor(scale);                     // direct: slider value = arrow length (m)
+
+    console.log(`[ARROWS] Glyph mapper configured: orientArray="${vectorArray.getName()}", scaleFactor=${scale}`);
 
     // Color arrows by velocity magnitude using current colormap
     applyVisualization(glyphMapper, sampledData, 'velocity', false);
@@ -1045,7 +1050,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     actor.setMapper(glyphMapper);
     actor.getProperty().setOpacity(opacity);
 
-    console.log(`[VTKViewer] Arrow glyphs: ${sampledData.getNumberOfPoints()} arrows (density=${density}, scale=${scale}, maxMag=${maxMag.toFixed(4)}, normFactor=${normalizedScaleFactor.toFixed(4)})`);
+    console.log(`[ARROWS] ✓ Actor created — ${sampledData.getNumberOfPoints()} arrows, length=${scale}m each`);
     return [actor];
   };
 
@@ -2231,20 +2236,25 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
   // ── Cut plane vectors: rebuild when toggle/scale/density changes ───────────
   useEffect(() => {
-    if (!cutEnabled || !cuttingPlaneDataRef.current) return;
+    console.log(`[ARROWS] rebuild effect fired — cutEnabled=${cutEnabled}, hasData=${!!cuttingPlaneDataRef.current}, cutVectorsEnabled=${cutVectorsEnabled}, scale=${cutVectorScale}, density=${cutVectorDensity}`);
+    if (!cutEnabled) { console.log('[ARROWS] skip: cut disabled'); return; }
+    if (!cuttingPlaneDataRef.current) { console.log('[ARROWS] skip: no cut data in ref'); return; }
 
     // Remove existing vector actor
     if (cutVectorActorRef.current && renderWindowRef.current?.renderer) {
       renderWindowRef.current.renderer.removeActor(cutVectorActorRef.current);
       cutVectorActorRef.current = null;
+      console.log('[ARROWS] removed old actor');
     }
 
     if (!cutVectorsEnabled) {
       if (renderWindowRef.current?.renderWindow) renderWindowRef.current.renderWindow.render();
+      console.log('[ARROWS] vectors toggled off — done');
       return;
     }
 
     // Add fresh velocity arrows on the current cut data
+    console.log(`[ARROWS] calling createAdvancedVectorField with scale=${cutVectorScale}`);
     const vActors = createAdvancedVectorField(
       cuttingPlaneDataRef.current, cutVectorScale, cutVectorDensity, 'U'
     );
@@ -2252,7 +2262,10 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       cutVectorActorRef.current = vActors[0];
       if (renderWindowRef.current?.renderer) {
         renderWindowRef.current.renderer.addActor(cutVectorActorRef.current);
+        console.log('[ARROWS] ✓ new actor added to renderer');
       }
+    } else {
+      console.warn('[ARROWS] ✗ createAdvancedVectorField returned null/empty');
     }
     if (renderWindowRef.current?.renderWindow) renderWindowRef.current.renderWindow.render();
   // eslint-disable-next-line react-hooks/exhaustive-deps
