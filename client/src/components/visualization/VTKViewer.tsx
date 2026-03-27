@@ -2441,7 +2441,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                         <div className="space-y-1.5">
                           <div className="flex items-center gap-2">
                             <span className="text-[11px] text-slate-500 w-14 shrink-0">Scale {cutVectorScale.toFixed(2)}</span>
-                            <Slider value={[cutVectorScale]} onValueChange={([v]: number[]) => setCutVectorScale(v)} min={0.05} max={3.0} step={0.05} className="flex-1" data-testid="slider-cut-vector-scale" />
+                            <Slider value={[cutVectorScale]} onValueChange={([v]: number[]) => setCutVectorScale(v)} min={0.05} max={10.0} step={0.05} className="flex-1" data-testid="slider-cut-vector-scale" />
                           </div>
                           <div className="flex items-center gap-2">
                             <span className="text-[11px] text-slate-500 w-14 shrink-0">Density {cutVectorDensity.toFixed(2)}</span>
