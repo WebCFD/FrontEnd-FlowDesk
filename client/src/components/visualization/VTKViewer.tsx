@@ -540,7 +540,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [cutAxis, setCutAxis] = useState<'x' | 'y' | 'z'>('z');
   const [cutPosition, setCutPosition] = useState<number>(1.1);
   const [cutVectorsEnabled, setCutVectorsEnabled] = useState<boolean>(false);
-  const [cutVectorScale, setCutVectorScale] = useState<number>(0.5);
+  const [cutVectorScale, setCutVectorScale] = useState<number>(5.0);
   const [cutVectorDensity, setCutVectorDensity] = useState<number>(0.1);
   const [dataWarning, setDataWarning] = useState<string | null>(null);
   const [domainBounds, setDomainBounds] = useState<{ min: number[]; max: number[]; center: number[] }>({
@@ -556,7 +556,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       planesEnabled: { x: true, y: true, z: true },
       planePositions: { x: 0.5, y: 0.5, z: 0.5 }
     },
-    vectors: { enabled: false, scale: 1.0, density: 0.1 }
+    vectors: { enabled: false, scale: 10.0, density: 0.1 }
   });
   
   // Refs that mirror state values to avoid stale closures in async callbacks
@@ -569,7 +569,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       planesEnabled: { x: true, y: true, z: true },
       planePositions: { x: 0.5, y: 0.5, z: 0.5 }
     },
-    vectors: { enabled: false, scale: 1.0, density: 0.1 }
+    vectors: { enabled: false, scale: 10.0, density: 0.1 }
   });
 
   // Referencias principales
@@ -594,8 +594,11 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   // ── Volume cut plane refs ──────────────────────────────────────────────────
   const cutEnabledRef = useRef<boolean>(false);
   const cutVectorsEnabledRef = useRef<boolean>(false);
-  const cutVectorScaleRef = useRef<number>(0.5);
+  const cutVectorScaleRef = useRef<number>(5.0);
   const cutVectorDensityRef = useRef<number>(0.1);
+  // Track whether user has manually set filter values (prevents auto-init from overwriting on re-enable)
+  const isosurfaceUserSet = useRef<boolean>(false);
+  const thresholdUserSet = useRef<boolean>(false);
   const cuttingPlaneDataRef = useRef<any>(null); // PolyData of the current slice
   const cutPlaneActorRef = useRef<any>(null);    // Actor for the cut plane surface
   const cutVectorActorRef = useRef<any>(null);   // Actor for velocity arrows on cut plane
@@ -2001,8 +2004,18 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   // IMPORTANT: deps list intentionally excludes `dataRange` to avoid the feedback loop:
   //   filterConfig → rebuild → applyVisualization → setDataRange → this effect → setFilterConfig → loop
   // Instead we read dataRange via dataRangeRef (always current but not a dep).
+  // Skip auto-init if user has manually set the value (isosurfaceUserSet / thresholdUserSet),
+  // UNLESS this effect fired because the field changed (reset userSet to false first).
   useEffect(() => {
     if (!filterConfig.isosurface.enabled) return;
+    // Field change: clear userSet so auto-init runs for the new field's range
+    isosurfaceUserSet.current = false;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isosurfaceField]);
+
+  useEffect(() => {
+    if (!filterConfig.isosurface.enabled) return;
+    if (isosurfaceUserSet.current) return; // user has custom value — preserve it
     const [lo, hi] = dataRangeRef.current;
     if (lo === hi) return;
     const mid = (lo + hi) / 2;
@@ -2016,6 +2029,14 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
   useEffect(() => {
     if (!filterConfig.threshold.enabled) return;
+    // Field change: clear userSet so auto-init runs for the new field's range
+    thresholdUserSet.current = false;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [thresholdField]);
+
+  useEffect(() => {
+    if (!filterConfig.threshold.enabled) return;
+    if (thresholdUserSet.current) return; // user has custom range — preserve it
     const [lo, hi] = dataRangeRef.current;
     if (lo === hi) return;
     setFilterConfig(prev => {
@@ -2456,7 +2477,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                   </div>
                   {filterConfig.isosurface.enabled && (
                     <div className="px-4 pb-3 space-y-2.5">
-                      <div className="flex flex-wrap gap-1">
+                      <div className="flex flex-wrap items-center gap-1">
                         {filterFieldControls.map(c => (
                           <Button
                             key={c.id}
@@ -2468,6 +2489,19 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                             {c.short}
                           </Button>
                         ))}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-[10px] h-6 px-2 font-normal ml-auto text-slate-400 border-slate-200 hover:text-slate-600"
+                          onClick={() => {
+                            const [lo, hi] = dataRangeRef.current;
+                            const mid = (lo + hi) / 2;
+                            isosurfaceUserSet.current = false;
+                            setFilterConfig(prev => ({ ...prev, isosurface: { ...prev.isosurface, values: [mid] } }));
+                          }}
+                        >
+                          Default
+                        </Button>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-[11px] text-slate-500 w-12 shrink-0">
@@ -2475,7 +2509,10 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                         </span>
                         <Slider
                           value={filterConfig.isosurface.values}
-                          onValueChange={(values: number[]) => setFilterConfig(prev => ({ ...prev, isosurface: { ...prev.isosurface, values } }))}
+                          onValueChange={(values: number[]) => {
+                            isosurfaceUserSet.current = true;
+                            setFilterConfig(prev => ({ ...prev, isosurface: { ...prev.isosurface, values } }));
+                          }}
                           min={dataRange[0]}
                           max={dataRange[1]}
                           step={(dataRange[1] - dataRange[0]) / 100}
@@ -2511,7 +2548,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                   </div>
                   {filterConfig.threshold.enabled && (
                     <div className="px-4 pb-3 space-y-2.5">
-                      <div className="flex flex-wrap gap-1">
+                      <div className="flex flex-wrap items-center gap-1">
                         {filterFieldControls.map(c => (
                           <Button
                             key={c.id}
@@ -2523,6 +2560,18 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                             {c.short}
                           </Button>
                         ))}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-[10px] h-6 px-2 font-normal ml-auto text-slate-400 border-slate-200 hover:text-slate-600"
+                          onClick={() => {
+                            const [lo, hi] = dataRangeRef.current;
+                            thresholdUserSet.current = false;
+                            setFilterConfig(prev => ({ ...prev, threshold: { ...prev.threshold, range: [lo, hi] } }));
+                          }}
+                        >
+                          Default
+                        </Button>
                       </div>
                       <div className="space-y-1">
                         <span className="text-[11px] text-slate-500">
@@ -2530,7 +2579,10 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                         </span>
                         <Slider
                           value={filterConfig.threshold.range}
-                          onValueChange={(range: number[]) => setFilterConfig(prev => ({ ...prev, threshold: { ...prev.threshold, range: range as [number, number] } }))}
+                          onValueChange={(range: number[]) => {
+                            thresholdUserSet.current = true;
+                            setFilterConfig(prev => ({ ...prev, threshold: { ...prev.threshold, range: range as [number, number] } }));
+                          }}
                           min={dataRange[0]}
                           max={dataRange[1]}
                           step={(dataRange[1] - dataRange[0]) / 100}
