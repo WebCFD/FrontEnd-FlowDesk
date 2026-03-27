@@ -1110,10 +1110,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       // When volume_internal.vtk is active, the PyVista server-side threshold produces a
       // true 3D volumetric result (interior cells in range, surface extracted).
       // The async actor is managed by the fetchVolumeThreshold / useEffect pipeline.
-      // Here we just dim the base surface so the overlay is visible.
+      // Surface stays visible (same as isosurface behaviour); overlay is additive.
       if (currentVtkFilenameRef.current === 'volume_internal.vtk') {
-        surfaceActor.getProperty().setOpacity(0.08);
-        surfaceMapper.setScalarVisibility(false);
+        applyOpacityToActor(surfaceActor);
         applyEdgeVisibilityToActor(surfaceActor);
         console.log('[VTKViewer] volume_internal threshold: deferring to server-side PyVista');
       } else {
@@ -1719,12 +1718,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       actorsRef.current = newActors;
       addActors(actorsRef.current);
       
-      // If a volume cut plane is active, re-dim the main surface and re-apply colours to cut
+      // If a volume cut plane is active, re-apply colours to cut (surface stays visible)
       if (cutEnabledRef.current && cuttingPlaneDataRef.current && cutPlaneActorRef.current) {
-        actorsRef.current.forEach(a => {
-          if (a?.getProperty) a.getProperty().setOpacity(0.08);
-          if (a?.getMapper) a.getMapper().setScalarVisibility(false);
-        });
         const cutMapper = cutPlaneActorRef.current.getMapper();
         if (cutMapper) applyVisualization(cutMapper, cuttingPlaneDataRef.current, (cutFieldRef.current || mode) as VisualizationMode, false);
         // Ensure cut actors are still in the scene after the rebuild
@@ -1776,12 +1771,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       actorsRef.current = newActors;
       addActors(actorsRef.current);
 
-      // If a volume cut plane is active, re-dim the main surface and re-apply colours
+      // If a volume cut plane is active, re-apply colours to cut (surface stays visible)
       if (cutEnabledRef.current && cuttingPlaneDataRef.current && cutPlaneActorRef.current) {
-        actorsRef.current.forEach(a => {
-          if (a?.getProperty) a.getProperty().setOpacity(0.08);
-          if (a?.getMapper) a.getMapper().setScalarVisibility(false);
-        });
         const cutMapper = cutPlaneActorRef.current.getMapper();
         if (cutMapper) applyVisualization(cutMapper, cuttingPlaneDataRef.current, cutFieldRef.current, false);
         if (renderWindowRef.current?.renderer) {
@@ -1909,12 +1900,6 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
       console.log('[VTKViewer] volume-cut:', cutData.getNumberOfPoints(), 'pts at', axis, '=', position);
       cuttingPlaneDataRef.current = cutData;
-
-      // Dim the main surface (context geometry)
-      actorsRef.current.forEach(a => {
-        if (a?.getProperty) a.getProperty().setOpacity(0.08);
-        if (a?.getMapper) a.getMapper().setScalarVisibility(false);
-      });
 
       // Create and add the cut plane actor
       const cutMapper = vtkMapper.newInstance();
