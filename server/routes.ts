@@ -571,14 +571,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
             };
           })
           .sort((a, b) => {
-            // Sort: volume_internal first (PyVista surface extraction), then legacy types
+            // Sort: volume_internal.vtk first (PyVista extraction), then legacy types.
+            // surface_3d is not in the visualization pipeline (Task #25) — falls to default 99.
             const typeOrder: Record<string, number> = { 
               volume_internal: 0,
-              surface_3d: 1,
-              volume_complete: 2, 
-              boundary: 3, 
-              volume: 4, 
-              slice: 5 
+              volume_complete: 1, 
+              boundary: 2, 
+              volume: 3, 
+              slice: 4 
             };
             const orderDiff = (typeOrder[a.type] ?? 99) - (typeOrder[b.type] ?? 99);
             if (orderDiff !== 0) return orderDiff;
@@ -686,11 +686,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         files = files.sort((a, b) => {
           const typeOrder: Record<string, number> = {
             volume_internal: 0,
-            surface_3d: 1,
-            volume_complete: 2,
-            boundary: 3,
-            volume: 4,
-            slice: 5,
+            volume_complete: 1,
+            boundary: 2,
+            volume: 3,
+            slice: 4,
           };
           const orderDiff = (typeOrder[a.type] ?? 99) - (typeOrder[b.type] ?? 99);
           if (orderDiff !== 0) return orderDiff;
@@ -701,15 +700,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Get latest volume file — prefer volume_internal (PyVista server-side ops).
-      // surface_3d is excluded: it is removed from the visualization pipeline (Task #25).
-      const latestVolume = files.find(f =>
-        f.type === 'volume_internal'
-      ) || files.find(f =>
-        f.type === 'volume_complete'
-      ) || files.find(f =>
-        f.type === 'volume'
-      );
+      // Get latest volume file.
+      // Prefer volume_internal.vtk (exact filename) — the binary internalMesh file served via
+      // PyVista server-side extraction. Legacy openfoam_*internal*.vtkjs files also get
+      // type='volume_internal' but are NOT the same source; they fall into the volume fallback.
+      // surface_3d is excluded: removed from the visualization pipeline (Task #25).
+      const latestVolume = files.find(f => f.filename === 'volume_internal.vtk')
+        || files.find(f => f.type === 'volume_complete')
+        || files.find(f => f.type === 'volume_internal')
+        || files.find(f => f.type === 'volume');
       
       res.json({ 
         files,

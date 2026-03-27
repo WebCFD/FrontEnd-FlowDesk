@@ -1516,10 +1516,11 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
       console.log('[VTKViewer] Loading VTK file for simulation:', simulationId, 'URL:', vtkUrl);
 
-      // volume_internal → server-side PyVista extract_surface() → ASCII POLYDATA with interior fields.
-      // All other types → direct fetch from the file URL.
+      // volume_internal.vtk (exact filename) → server-side PyVista extract_surface() → ASCII POLYDATA
+      // with interior CFD field values. Legacy openfoam_*internal*.vtkjs also has type='volume_internal'
+      // but is fetched directly as a regular file (different format, different pipeline).
       let vtkText: string;
-      if (latestVolume && latestVolume.type === 'volume_internal') {
+      if (latestVolume && latestVolume.filename === 'volume_internal.vtk') {
         currentVtkFilenameRef.current = 'volume_internal.vtk';
         console.log('[VTKViewer] volume_internal detected — fetching extracted surface via /volume-surface');
         const surfaceResp = await fetch(`/api/simulations/${simulationId}/volume-surface`);
