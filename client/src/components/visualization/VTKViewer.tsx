@@ -2175,10 +2175,6 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         cutVectorActorRef.current = null;
       }
       cuttingPlaneDataRef.current = null;
-      actorsRef.current.forEach(a => {
-        if (a?.getProperty) a.getProperty().setOpacity(opacity);
-        if (a?.getMapper) a.getMapper().setScalarVisibility(true);
-      });
       if (renderWindowRef.current?.renderWindow) renderWindowRef.current.renderWindow.render();
       return;
     }
