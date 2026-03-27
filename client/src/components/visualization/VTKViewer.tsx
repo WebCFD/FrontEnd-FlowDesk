@@ -529,6 +529,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [colormapMin, setColormapMin] = useState<number | null>(null);
   const [colormapMax, setColormapMax] = useState<number | null>(null);
   const [opacity, setOpacity] = useState<number>(1.0); // 1.0 = opaco, 0.0 = transparente
+  const [surfaceEnabled, setSurfaceEnabled] = useState<boolean>(true);
   const [isosurfaceLoading, setIsosurfaceLoading] = useState<boolean>(false);
   const [cuttingPlaneLoading, setCuttingPlaneLoading] = useState<boolean>(false);
   const [volumeThresholdLoading, setVolumeThresholdLoading] = useState<boolean>(false);
@@ -583,6 +584,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const actorsRef = useRef<any[]>([]); // Array de actores para múltiples visualizaciones
   const clippingPlaneActorsRef = useRef<any[]>([]); // Actores para los planos de corte visibles
   const isosurfaceActorRef = useRef<any>(null); // Actor overlay para isosuperficies
+  const surfaceActorRef = useRef<any>(null);    // Main surface actor (for visibility toggle)
+  const surfaceEnabledRef = useRef<boolean>(true);
   const isosurfaceDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const currentVtkFilenameRef = useRef<string>(''); // Nombre del archivo VTK actual
   // ── Volume cut plane refs ──────────────────────────────────────────────────
@@ -1089,6 +1092,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     const surfaceActor = vtkActor.newInstance();
     surfaceActor.setMapper(surfaceMapper);
     applyVisualization(surfaceMapper, filteredData, activeField as VisualizationMode);
+    surfaceActor.setVisibility(surfaceEnabledRef.current);
+    surfaceActorRef.current = surfaceActor;
     actors.push(surfaceActor);
 
     // ── Threshold filter ───────────────────────────────────────────────────────
@@ -2063,6 +2068,17 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterConfig.threshold.enabled, filterConfig.threshold.range, thresholdField]);
 
+  // ── Sync surfaceEnabled to ref ────────────────────────────────────────────
+  useEffect(() => { surfaceEnabledRef.current = surfaceEnabled; }, [surfaceEnabled]);
+
+  // ── Toggle surface actor visibility live ──────────────────────────────────
+  useEffect(() => {
+    if (surfaceActorRef.current) {
+      surfaceActorRef.current.setVisibility(surfaceEnabled);
+      if (renderWindowRef.current?.renderWindow) renderWindowRef.current.renderWindow.render();
+    }
+  }, [surfaceEnabled]);
+
   // ── Isosurface overlay: debounced fetch when enabled/value changes ─────────
   useEffect(() => {
     if (!filterConfig.isosurface.enabled) {
@@ -2327,37 +2343,43 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                     <div className="flex items-center gap-2">
                       <Layers className="h-3.5 w-3.5 text-blue-600" />
                       <span className="text-xs font-semibold text-slate-700">Surface</span>
-                      <span className="text-[10px] text-blue-500 font-medium">always on</span>
                     </div>
+                    <Switch
+                      checked={surfaceEnabled}
+                      onCheckedChange={setSurfaceEnabled}
+                      data-testid="switch-surface-enable"
+                    />
                   </div>
-                  <div className="px-4 pt-2 pb-3 space-y-2.5">
-                    <div className="flex flex-wrap gap-1">
-                      {visualizationControls.map((c) => (
-                        <Button
-                          key={c.id}
-                          variant={activeMode === c.id ? 'default' : 'outline'}
-                          size="sm"
-                          onClick={() => handleModeChange(c.id)}
-                          className="text-[10px] h-6 px-1.5 gap-0.5 font-normal"
-                          data-testid={`button-visualization-${c.id}`}
-                        >
-                          <c.icon className="h-2.5 w-2.5" />
-                          {c.label}
-                        </Button>
-                      ))}
+                  {surfaceEnabled && (
+                    <div className="px-4 pt-2 pb-3 space-y-2.5">
+                      <div className="flex flex-wrap gap-1">
+                        {visualizationControls.map((c) => (
+                          <Button
+                            key={c.id}
+                            variant={activeMode === c.id ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => handleModeChange(c.id)}
+                            className="text-[10px] h-6 px-1.5 gap-0.5 font-normal"
+                            data-testid={`button-visualization-${c.id}`}
+                          >
+                            <c.icon className="h-2.5 w-2.5" />
+                            {c.label}
+                          </Button>
+                        ))}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] text-slate-500 w-12 shrink-0">Opacity</span>
+                        <Slider
+                          value={[opacity]}
+                          onValueChange={(value: number[]) => setOpacity(value[0])}
+                          min={0} max={1} step={0.01}
+                          className="flex-1"
+                          data-testid="slider-transparency"
+                        />
+                        <span className="text-[11px] text-slate-600 w-8 text-right">{Math.round(opacity * 100)}%</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[11px] text-slate-500 w-12 shrink-0">Opacity</span>
-                      <Slider
-                        value={[opacity]}
-                        onValueChange={(value: number[]) => setOpacity(value[0])}
-                        min={0} max={1} step={0.01}
-                        className="flex-1"
-                        data-testid="slider-transparency"
-                      />
-                      <span className="text-[11px] text-slate-600 w-8 text-right">{Math.round(opacity * 100)}%</span>
-                    </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* ── LAYER: CUTTING PLANE ─────────────────────────────────── */}
