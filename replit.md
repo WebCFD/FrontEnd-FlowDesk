@@ -37,7 +37,13 @@ CFD simulations use `buoyantSimpleFoam` with a Boussinesq approximation and hCon
 - `generate_surface_3d_vtk()`: Merges all OpenFOAM boundary patches (walls, floor, ceiling, door, window) into a PolyData ASCII VTK. Detects real CFD fields (T, U, p, CO2, PMV, PPD, G, qr, k, omega, nut, alphat, a, p_rgh) from the reader; falls back to nearest-neighbour projection from existing flow_plane_*.vtk slices via `scipy.cKDTree`. Guards against empty `time_values` from the reader.
 - `generate_volume_internal_vtk()`: Saves the full internalMesh as UNSTRUCTURED_GRID ASCII VTK with 14 mapped CFD fields. Falls back to 50%-decimated boundary surface only when estimated file size exceeds 500 MB. Guards against empty `time_values` from the reader.
 - Both generators are wrapped in `try/except` in `step05_results2post.py` that logs full tracebacks and re-raises with a descriptive `RuntimeError` message (visible in the simulation's error_message in the DB).
-- Backend (`/api/simulations/:id/vtk-files`): surface_3d type has priority 0 → selected as `latestVolume` by default.
+- Backend (`/api/simulations/:id/vtk-files`): **volume_internal has priority 0** → selected as `latestVolume` by default (Task #25). surface_3d is now priority 1.
+- Two new server-side endpoints (Task #25):
+  - `GET /api/simulations/:id/volume-surface` — runs `server/volume_surface.py` (PyVista `extract_surface()`) and returns ASCII POLYDATA of the internalMesh outer surface with full interior CFD field values.
+  - `POST /api/simulations/:id/volume-cut` — runs `server/volume_slice.py` (PyVista `slice()`) with body `{axis, position}` and returns an ASCII POLYDATA cross-section slice.
+- Frontend (`VTKViewer.tsx`): When `latestVolume.type === 'volume_internal'`, the viewer fetches from `/volume-surface` instead of the binary VTK file directly. `currentVtkFilenameRef` is set to `volume_internal.vtk` so the isosurface endpoint uses the right source.
+- Cutting Plane filter now uses server-side PyVista slicing (not vtkCutter on the surface mesh). UI redesigned: X/Y/Z axis selector, position slider, Z height presets (Ankle 0.1m / Seated 0.6m / Standing 1.1m / Head 1.7m), and a Velocity Vectors toggle with scale/density controls inside the panel.
+- Vector Field panel removed from main filter menu; vectors are now rendered only on the active cutting plane.
 - Frontend parser (`VTKViewer.tsx`): Handles UNSTRUCTURED_GRID format (CELLS/CELL_TYPES skip + point-cloud vertex fallback).
 
 **Production Logging** (`start-production.sh`):

@@ -571,13 +571,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
             };
           })
           .sort((a, b) => {
-            // Sort: surface_3d > volume_complete > boundary > volume > volume_internal > slices
+            // Sort: volume_internal first (PyVista surface extraction), then legacy types
             const typeOrder: Record<string, number> = { 
-              surface_3d: 0,
-              volume_complete: 1, 
-              boundary: 2, 
-              volume: 3, 
-              volume_internal: 4, 
+              volume_internal: 0,
+              surface_3d: 1,
+              volume_complete: 2, 
+              boundary: 3, 
+              volume: 4, 
               slice: 5 
             };
             const orderDiff = (typeOrder[a.type] ?? 99) - (typeOrder[b.type] ?? 99);
@@ -685,11 +685,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         files = files.sort((a, b) => {
           const typeOrder: Record<string, number> = {
-            surface_3d: 0,
-            volume_complete: 1,
-            boundary: 2,
-            volume: 3,
-            volume_internal: 4,
+            volume_internal: 0,
+            surface_3d: 1,
+            volume_complete: 2,
+            boundary: 3,
+            volume: 4,
             slice: 5,
           };
           const orderDiff = (typeOrder[a.type] ?? 99) - (typeOrder[b.type] ?? 99);
@@ -701,13 +701,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Get latest volume file — prefer surface_3d (full 3D room) then older volume types
+      // Get latest volume file — prefer volume_internal (server-side surface extraction gives
+      // interior field values), then fall back to legacy boundary/surface types
       const latestVolume = files.find(f =>
+        f.type === 'volume_internal'
+      ) || files.find(f =>
         f.type === 'surface_3d'
       ) || files.find(f =>
         f.type === 'volume_complete'
-      ) || files.find(f =>
-        f.type === 'volume_internal'
       ) || files.find(f =>
         f.type === 'volume'
       );
@@ -719,6 +720,135 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error: any) {
       res.status(500).json({ message: "Failed to list VTK files", error: error.message });
+    }
+  });
+
+  // ── Volume surface extraction: PyVista extract_surface() on volume_internal.vtk ──
+  app.get("/api/simulations/:id/volume-surface", async (req, res) => {
+    try {
+      const simulationId = parseInt(req.params.id);
+
+      const localPath = path.join(
+        process.cwd(), 'cases', `sim_${simulationId}`, 'post', 'vtk', 'volume_internal.vtk'
+      );
+      const prodPath = path.join('/tmp/uploads', `sim_${simulationId}`, 'vtk', 'volume_internal.vtk');
+
+      let vtkPath: string | null = null;
+      let tempFile: string | null = null;
+
+      if (fsSync.existsSync(localPath)) {
+        vtkPath = localPath;
+      } else if (fsSync.existsSync(prodPath)) {
+        vtkPath = prodPath;
+      } else {
+        // Try R2
+        try {
+          const fileBuffer = await r2Storage.downloadToBuffer(simulationId, 'volume_internal.vtk');
+          tempFile = path.join(os.tmpdir(), `vol_surf_${simulationId}_${Date.now()}.vtk`);
+          await fs.writeFile(tempFile, fileBuffer);
+          vtkPath = tempFile;
+        } catch (r2Err: any) {
+          console.warn(`[VOLUME-SURFACE] R2 download failed:`, r2Err.message);
+          return res.status(404).json({ message: 'volume_internal.vtk not found' });
+        }
+      }
+
+      const EMPTY_VTK = "# vtk DataFile Version 2.0\nEmpty\nASCII\nDATASET POLYDATA\nPOINTS 0 float\n";
+      const scriptPath = path.join(process.cwd(), 'server', 'volume_surface.py');
+      console.log(`[VOLUME-SURFACE] sim=${simulationId} file=${vtkPath}`);
+
+      let vtkOutput = '';
+      try {
+        const execFileAsync = promisify(execFile);
+        const { stdout, stderr } = await execFileAsync(
+          'python3',
+          [scriptPath, vtkPath!],
+          { maxBuffer: 50 * 1024 * 1024, timeout: 60000 }
+        );
+        if (stderr) console.log(`[VOLUME-SURFACE] Python:`, stderr.substring(0, 500));
+        vtkOutput = stdout || EMPTY_VTK;
+      } catch (execErr: any) {
+        console.error('[VOLUME-SURFACE] Python failed:', execErr.message);
+        vtkOutput = EMPTY_VTK;
+      } finally {
+        if (tempFile) { try { await fs.unlink(tempFile); } catch (e) {} }
+      }
+
+      res.setHeader('Content-Type', 'text/plain');
+      res.send(vtkOutput);
+    } catch (error: any) {
+      console.error('[VOLUME-SURFACE] Endpoint error:', error);
+      res.status(500).json({ message: 'Volume surface extraction failed', error: error.message });
+    }
+  });
+
+  // ── Volume cutting plane: PyVista slice() on volume_internal.vtk ──
+  app.post("/api/simulations/:id/volume-cut", async (req, res) => {
+    try {
+      const simulationId = parseInt(req.params.id);
+      const { axis, position } = req.body;
+
+      if (!axis || position === undefined || position === null) {
+        return res.status(400).json({ message: 'axis and position are required' });
+      }
+      if (!['x', 'y', 'z'].includes(String(axis).toLowerCase())) {
+        return res.status(400).json({ message: 'axis must be x, y, or z' });
+      }
+      const numPosition = Number(position);
+      if (isNaN(numPosition)) {
+        return res.status(400).json({ message: 'position must be a number' });
+      }
+
+      const localPath = path.join(
+        process.cwd(), 'cases', `sim_${simulationId}`, 'post', 'vtk', 'volume_internal.vtk'
+      );
+      const prodPath = path.join('/tmp/uploads', `sim_${simulationId}`, 'vtk', 'volume_internal.vtk');
+
+      let vtkPath: string | null = null;
+      let tempFile: string | null = null;
+
+      if (fsSync.existsSync(localPath)) {
+        vtkPath = localPath;
+      } else if (fsSync.existsSync(prodPath)) {
+        vtkPath = prodPath;
+      } else {
+        try {
+          const fileBuffer = await r2Storage.downloadToBuffer(simulationId, 'volume_internal.vtk');
+          tempFile = path.join(os.tmpdir(), `vol_cut_${simulationId}_${Date.now()}.vtk`);
+          await fs.writeFile(tempFile, fileBuffer);
+          vtkPath = tempFile;
+        } catch (r2Err: any) {
+          console.warn(`[VOLUME-CUT] R2 download failed:`, r2Err.message);
+          return res.status(404).json({ message: 'volume_internal.vtk not found' });
+        }
+      }
+
+      const EMPTY_VTK = "# vtk DataFile Version 2.0\nEmpty\nASCII\nDATASET POLYDATA\nPOINTS 0 float\n";
+      const scriptPath = path.join(process.cwd(), 'server', 'volume_slice.py');
+      console.log(`[VOLUME-CUT] sim=${simulationId} axis=${axis} pos=${numPosition}`);
+
+      let vtkOutput = '';
+      try {
+        const execFileAsync = promisify(execFile);
+        const { stdout, stderr } = await execFileAsync(
+          'python3',
+          [scriptPath, vtkPath!, String(axis).toLowerCase(), String(numPosition)],
+          { maxBuffer: 30 * 1024 * 1024, timeout: 45000 }
+        );
+        if (stderr) console.log(`[VOLUME-CUT] Python:`, stderr.substring(0, 500));
+        vtkOutput = stdout || EMPTY_VTK;
+      } catch (execErr: any) {
+        console.error('[VOLUME-CUT] Python failed:', execErr.message);
+        vtkOutput = EMPTY_VTK;
+      } finally {
+        if (tempFile) { try { await fs.unlink(tempFile); } catch (e) {} }
+      }
+
+      res.setHeader('Content-Type', 'text/plain');
+      res.send(vtkOutput);
+    } catch (error: any) {
+      console.error('[VOLUME-CUT] Endpoint error:', error);
+      res.status(500).json({ message: 'Volume cut failed', error: error.message });
     }
   });
 

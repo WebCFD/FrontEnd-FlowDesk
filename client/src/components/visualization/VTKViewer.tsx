@@ -517,7 +517,6 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [showIsosurfaces, setShowIsosurfaces] = useState(false);
   const [showThresholdFilter, setShowThresholdFilter] = useState(false);
   const [showCuttingPlane, setShowCuttingPlane] = useState(false);
-  const [showVectorField, setShowVectorField] = useState(false);
   const [showScientificColormaps, setShowScientificColormaps] = useState(false);
   const [dataRange, setDataRange] = useState<[number, number]>([0, 1]);
   // Ref copy of dataRange — lets auto-init effects read range without adding it
@@ -532,6 +531,13 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [colormapMax, setColormapMax] = useState<number | null>(null);
   const [opacity, setOpacity] = useState<number>(1.0); // 1.0 = opaco, 0.0 = transparente
   const [isosurfaceLoading, setIsosurfaceLoading] = useState<boolean>(false);
+  const [cuttingPlaneLoading, setCuttingPlaneLoading] = useState<boolean>(false);
+  const [cutEnabled, setCutEnabled] = useState<boolean>(false);
+  const [cutAxis, setCutAxis] = useState<'x' | 'y' | 'z'>('z');
+  const [cutPosition, setCutPosition] = useState<number>(1.1);
+  const [cutVectorsEnabled, setCutVectorsEnabled] = useState<boolean>(false);
+  const [cutVectorScale, setCutVectorScale] = useState<number>(0.5);
+  const [cutVectorDensity, setCutVectorDensity] = useState<number>(0.1);
   const [dataWarning, setDataWarning] = useState<string | null>(null);
   const [domainBounds, setDomainBounds] = useState<{ min: number[]; max: number[]; center: number[] }>({
     min: [0, 0, 0],
@@ -579,6 +585,15 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const isosurfaceActorRef = useRef<any>(null); // Actor overlay para isosuperficies
   const isosurfaceDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const currentVtkFilenameRef = useRef<string>(''); // Nombre del archivo VTK actual
+  // ── Volume cut plane refs ──────────────────────────────────────────────────
+  const cutEnabledRef = useRef<boolean>(false);
+  const cutVectorsEnabledRef = useRef<boolean>(false);
+  const cutVectorScaleRef = useRef<number>(0.5);
+  const cutVectorDensityRef = useRef<number>(0.1);
+  const cuttingPlaneDataRef = useRef<any>(null); // PolyData of the current slice
+  const cutPlaneActorRef = useRef<any>(null);    // Actor for the cut plane surface
+  const cutVectorActorRef = useRef<any>(null);   // Actor for velocity arrows on cut plane
+  const cutDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const visualizationControls = [
     { id: 'pressure' as const, label: 'Pressure', icon: Layers },
@@ -1119,18 +1134,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     }
 
     // Note: Isosurface (contour lines) rendered as an overlay via fetchIsosurface / isosurfaceActorRef
-    // Note: Clipping planes rendered separately via createCuttingPlanes / clippingPlaneActorsRef
-
-    // ── Vector arrows: vtkArrowSource + vtkGlyph3DMapper ─────────────────────
-    if (config.vectors.enabled && activeField === 'velocity') {
-      const vectorActors = createAdvancedVectorField(
-        currentData, config.vectors.scale, config.vectors.density, 'U'
-      );
-      if (vectorActors && vectorActors.length > 0) {
-        actors.push(...vectorActors);
-        console.log('[VTKViewer] Added', vectorActors.length, 'arrow glyph actor(s)');
-      }
-    }
+    // Note: Cutting plane rendered separately via fetchVolumeCut / cutPlaneActorRef
+    // Note: Velocity vectors rendered on the cut plane via cutVectorActorRef
 
     // Add grid/wireframe actor if showGrid is enabled
     if (showGrid) {
@@ -1515,20 +1520,31 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       
       console.log('[VTKViewer] Loading VTK file for simulation:', simulationId, 'URL:', vtkUrl);
 
-      // Track filename for server-side isosurface endpoint
-      const vtkFilename = vtkUrl.split('/').pop() || '';
-      currentVtkFilenameRef.current = vtkFilename;
-      console.log('[VTKViewer] Tracking VTK filename for isosurface:', vtkFilename);
-
-      // Cargar el archivo VTK
-      const response = await fetch(vtkUrl);
-      if (!response.ok) {
-        throw new Error(`File not found: ${response.status}`);
+      // When volume_internal is the primary file, use server-side PyVista surface extraction
+      // (binary UNSTRUCTURED_GRID → extract_surface() → ASCII POLYDATA with interior field values)
+      let vtkText: string;
+      if (latestVolume && latestVolume.type === 'volume_internal') {
+        currentVtkFilenameRef.current = 'volume_internal.vtk';
+        console.log('[VTKViewer] volume_internal detected — fetching extracted surface via /volume-surface');
+        const surfaceResp = await fetch(`/api/simulations/${simulationId}/volume-surface`);
+        if (!surfaceResp.ok) {
+          throw new Error(`Volume surface extraction failed: ${surfaceResp.status}`);
+        }
+        vtkText = await surfaceResp.text();
+      } else {
+        // Legacy ASCII VTK files (surface_3d, etc.) — load directly
+        const vtkFilename = vtkUrl.split('/').pop() || '';
+        currentVtkFilenameRef.current = vtkFilename;
+        console.log('[VTKViewer] Tracking VTK filename for isosurface:', vtkFilename);
+        const response = await fetch(vtkUrl);
+        if (!response.ok) {
+          throw new Error(`File not found: ${response.status}`);
+        }
+        vtkText = await response.text();
       }
 
       // Parsear archivo VTK Legacy ASCII con nuestro propio parser
       // (vtkPolyDataReader de vtk.js falla con VTK 5.1 — bug en setData callback sin bind)
-      const vtkText = await response.text();
       const polyData = parseVtkAscii(vtkText);
 
       if (!polyData) {
@@ -1635,22 +1651,27 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const handleModeChange = (mode: VisualizationMode) => {
     setActiveMode(mode);
     
-    // Disable cutting planes when changing visualization field
-    // This forces user to re-enable them to see the new field on the planes
-    setFilterConfig(prev => ({
-      ...prev,
-      clip: {
-        ...prev.clip,
-        enabled: false
-      }
-    }));
-    
     if (sourceDataRef.current && renderWindowRef.current?.renderer) {
-      // Rebuild pipeline with new mode
+      // Rebuild main pipeline with the new visualization mode
       removeActors(actorsRef.current);
       const newActors = buildPipeline(filterConfig, mode);
       actorsRef.current = newActors;
       addActors(actorsRef.current);
+      
+      // If a volume cut plane is active, re-dim the main surface and re-apply colours to cut
+      if (cutEnabledRef.current && cuttingPlaneDataRef.current && cutPlaneActorRef.current) {
+        actorsRef.current.forEach(a => {
+          if (a?.getProperty) a.getProperty().setOpacity(0.08);
+          if (a?.getMapper) a.getMapper().setScalarVisibility(false);
+        });
+        const cutMapper = cutPlaneActorRef.current.getMapper();
+        if (cutMapper) applyVisualization(cutMapper, cuttingPlaneDataRef.current, mode as VisualizationMode, false);
+        // Ensure cut actors are still in the scene after the rebuild
+        if (renderWindowRef.current?.renderer) {
+          renderWindowRef.current.renderer.addActor(cutPlaneActorRef.current);
+          if (cutVectorActorRef.current) renderWindowRef.current.renderer.addActor(cutVectorActorRef.current);
+        }
+      }
       
       renderWindowRef.current.renderWindow.render();
     }
@@ -1659,6 +1680,10 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   // Keep refs in sync with state so async callbacks always read the latest values
   useEffect(() => { activeModeRef.current = activeMode; }, [activeMode]);
   useEffect(() => { filterConfigRef.current = filterConfig; }, [filterConfig]);
+  useEffect(() => { cutEnabledRef.current = cutEnabled; }, [cutEnabled]);
+  useEffect(() => { cutVectorsEnabledRef.current = cutVectorsEnabled; }, [cutVectorsEnabled]);
+  useEffect(() => { cutVectorScaleRef.current = cutVectorScale; }, [cutVectorScale]);
+  useEffect(() => { cutVectorDensityRef.current = cutVectorDensity; }, [cutVectorDensity]);
 
   // Initialize component
 
@@ -1679,27 +1704,23 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       removeActors(clippingPlaneActorsRef.current);
       clippingPlaneActorsRef.current = [];
       
-      // Build main pipeline (surface + threshold + vectors)
+      // Build main pipeline (surface + threshold)
       const newActors = buildPipeline(filterConfig, activeMode);
       actorsRef.current = newActors;
       addActors(actorsRef.current);
 
-      // If clip is active: dim surface + add vtkCutter intersection lines
-      if (filterConfig.clip.enabled && (
-        filterConfig.clip.planesEnabled.x ||
-        filterConfig.clip.planesEnabled.y ||
-        filterConfig.clip.planesEnabled.z
-      )) {
-        // Dim main surface to provide spatial context
+      // If a volume cut plane is active, re-dim the main surface and re-apply colours
+      if (cutEnabledRef.current && cuttingPlaneDataRef.current && cutPlaneActorRef.current) {
         actorsRef.current.forEach(a => {
-          if (a?.getProperty) a.getProperty().setOpacity(0.15);
+          if (a?.getProperty) a.getProperty().setOpacity(0.08);
           if (a?.getMapper) a.getMapper().setScalarVisibility(false);
         });
-
-        const planes = createCuttingPlanes();
-        clippingPlaneActorsRef.current = planes;
-        addActors(clippingPlaneActorsRef.current);
-        console.log('[VTKViewer] Clip: added', planes.length, 'vtkCutter actors');
+        const cutMapper = cutPlaneActorRef.current.getMapper();
+        if (cutMapper) applyVisualization(cutMapper, cuttingPlaneDataRef.current, activeModeRef.current, false);
+        if (renderWindowRef.current?.renderer) {
+          renderWindowRef.current.renderer.addActor(cutPlaneActorRef.current);
+          if (cutVectorActorRef.current) renderWindowRef.current.renderer.addActor(cutVectorActorRef.current);
+        }
       }
       
       // Update background color when it changes
@@ -1777,6 +1798,87 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       console.error('[VTKViewer] fetchIsosurface error:', err);
     } finally {
       setIsosurfaceLoading(false);
+    }
+  };
+
+  // ── Fetch volume cutting plane from server (PyVista slice) ────────────────
+  const fetchVolumeCut = async (axis: 'x' | 'y' | 'z', position: number) => {
+    setCuttingPlaneLoading(true);
+
+    // Remove stale cut actors before adding fresh ones
+    if (cutPlaneActorRef.current && renderWindowRef.current?.renderer) {
+      renderWindowRef.current.renderer.removeActor(cutPlaneActorRef.current);
+      cutPlaneActorRef.current = null;
+    }
+    if (cutVectorActorRef.current && renderWindowRef.current?.renderer) {
+      renderWindowRef.current.renderer.removeActor(cutVectorActorRef.current);
+      cutVectorActorRef.current = null;
+    }
+
+    try {
+      const resp = await fetch(`/api/simulations/${simulationId}/volume-cut`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ axis, position }),
+      });
+
+      if (!resp.ok) {
+        console.warn('[VTKViewer] volume-cut request failed:', resp.status);
+        return;
+      }
+
+      const vtkText = await resp.text();
+      if (!vtkText || vtkText.trim().length < 50) {
+        console.log('[VTKViewer] volume-cut returned empty data');
+        return;
+      }
+
+      const cutData = parseVtkAscii(vtkText);
+      if (!cutData || cutData.getNumberOfPoints() === 0) {
+        console.log('[VTKViewer] volume-cut: no geometry at', axis, '=', position);
+        return;
+      }
+
+      console.log('[VTKViewer] volume-cut:', cutData.getNumberOfPoints(), 'pts at', axis, '=', position);
+      cuttingPlaneDataRef.current = cutData;
+
+      // Dim the main surface (context geometry)
+      actorsRef.current.forEach(a => {
+        if (a?.getProperty) a.getProperty().setOpacity(0.08);
+        if (a?.getMapper) a.getMapper().setScalarVisibility(false);
+      });
+
+      // Create and add the cut plane actor
+      const cutMapper = vtkMapper.newInstance();
+      cutMapper.setInputData(cutData);
+      applyVisualization(cutMapper, cutData, activeModeRef.current, false);
+
+      const cutActor = vtkActor.newInstance();
+      cutActor.setMapper(cutMapper);
+      cutPlaneActorRef.current = cutActor;
+
+      if (renderWindowRef.current?.renderer) {
+        renderWindowRef.current.renderer.addActor(cutActor);
+      }
+
+      // Add velocity vector glyphs on the cut plane if the toggle is on
+      if (cutVectorsEnabledRef.current) {
+        const vActors = createAdvancedVectorField(
+          cutData, cutVectorScaleRef.current, cutVectorDensityRef.current, 'U'
+        );
+        if (vActors && vActors.length > 0) {
+          cutVectorActorRef.current = vActors[0];
+          if (renderWindowRef.current?.renderer) {
+            renderWindowRef.current.renderer.addActor(cutVectorActorRef.current);
+          }
+        }
+      }
+
+      if (renderWindowRef.current?.renderWindow) renderWindowRef.current.renderWindow.render();
+    } catch (err) {
+      console.error('[VTKViewer] fetchVolumeCut error:', err);
+    } finally {
+      setCuttingPlaneLoading(false);
     }
   };
 
@@ -1862,6 +1964,67 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       if (isosurfaceDebounceRef.current) clearTimeout(isosurfaceDebounceRef.current);
     };
   }, [filterConfig.isosurface.enabled, filterConfig.isosurface.values, activeMode]);
+
+  // ── Volume cut plane: debounced fetch when enabled/axis/position changes ───
+  useEffect(() => {
+    if (!cutEnabled) {
+      // Remove cut plane actors and restore main surface
+      if (cutPlaneActorRef.current && renderWindowRef.current?.renderer) {
+        renderWindowRef.current.renderer.removeActor(cutPlaneActorRef.current);
+        cutPlaneActorRef.current = null;
+      }
+      if (cutVectorActorRef.current && renderWindowRef.current?.renderer) {
+        renderWindowRef.current.renderer.removeActor(cutVectorActorRef.current);
+        cutVectorActorRef.current = null;
+      }
+      cuttingPlaneDataRef.current = null;
+      actorsRef.current.forEach(a => {
+        if (a?.getProperty) a.getProperty().setOpacity(opacity);
+        if (a?.getMapper) a.getMapper().setScalarVisibility(true);
+      });
+      if (renderWindowRef.current?.renderWindow) renderWindowRef.current.renderWindow.render();
+      return;
+    }
+
+    if (cutDebounceRef.current) clearTimeout(cutDebounceRef.current);
+    cutDebounceRef.current = setTimeout(() => {
+      fetchVolumeCut(cutAxis, cutPosition);
+    }, 400);
+
+    return () => {
+      if (cutDebounceRef.current) clearTimeout(cutDebounceRef.current);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cutEnabled, cutAxis, cutPosition]);
+
+  // ── Cut plane vectors: rebuild when toggle/scale/density changes ───────────
+  useEffect(() => {
+    if (!cutEnabled || !cuttingPlaneDataRef.current) return;
+
+    // Remove existing vector actor
+    if (cutVectorActorRef.current && renderWindowRef.current?.renderer) {
+      renderWindowRef.current.renderer.removeActor(cutVectorActorRef.current);
+      cutVectorActorRef.current = null;
+    }
+
+    if (!cutVectorsEnabled) {
+      if (renderWindowRef.current?.renderWindow) renderWindowRef.current.renderWindow.render();
+      return;
+    }
+
+    // Add fresh velocity arrows on the current cut data
+    const vActors = createAdvancedVectorField(
+      cuttingPlaneDataRef.current, cutVectorScale, cutVectorDensity, 'U'
+    );
+    if (vActors && vActors.length > 0) {
+      cutVectorActorRef.current = vActors[0];
+      if (renderWindowRef.current?.renderer) {
+        renderWindowRef.current.renderer.addActor(cutVectorActorRef.current);
+      }
+    }
+    if (renderWindowRef.current?.renderWindow) renderWindowRef.current.renderWindow.render();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cutVectorsEnabled, cutVectorScale, cutVectorDensity, cutEnabled]);
 
   return (
     <div className={`vtk-viewer ${className || ''}`}>
@@ -2187,7 +2350,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
                 <Separator />
 
-                {/* Cutting Plane */}
+                {/* Cutting Plane — server-side PyVista slice on volume_internal.vtk */}
                 <Collapsible open={showCuttingPlane} onOpenChange={setShowCuttingPlane}>
                   <CollapsibleTrigger asChild>
                     <Button variant="ghost" size="sm" className="w-full justify-between p-2" data-testid="button-cutting-plane">
@@ -2201,208 +2364,133 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                     </Button>
                   </CollapsibleTrigger>
                   <CollapsibleContent>
-                    <div className="space-y-2 mt-2">
+                    <div className="space-y-3 mt-2">
                       <div className="flex items-center justify-between">
                         <Label className="text-sm">Enable</Label>
                         <Switch
-                          checked={filterConfig.clip.enabled}
-                          onCheckedChange={(enabled) => setFilterConfig(prev => ({
-                            ...prev,
-                            clip: { ...prev.clip, enabled }
-                          }))}
-                          data-testid="switch-clip"
+                          checked={cutEnabled}
+                          onCheckedChange={setCutEnabled}
+                          data-testid="switch-cut-enable"
                         />
                       </div>
-                      {filterConfig.clip.enabled && (
+
+                      {cutEnabled && (
                         <div className="space-y-3">
-                          {/* X Plane (Red) */}
+                          {/* Axis selector */}
                           <div className="space-y-1">
-                            <div className="flex items-center justify-between">
-                              <Label className="text-xs font-semibold text-red-600 flex items-center gap-1">
-                                <div className="w-3 h-3 bg-red-500 rounded"></div>
-                                X Plane
-                              </Label>
-                              <Switch
-                                checked={filterConfig.clip.planesEnabled.x}
-                                onCheckedChange={(enabled) => setFilterConfig(prev => ({
-                                  ...prev,
-                                  clip: { 
-                                    ...prev.clip, 
-                                    planesEnabled: { ...prev.clip.planesEnabled, x: enabled }
-                                  }
-                                }))}
-                                data-testid="switch-clip-x"
-                              />
+                            <Label className="text-xs text-gray-600">Axis</Label>
+                            <div className="flex gap-1">
+                              {(['x', 'y', 'z'] as const).map(ax => (
+                                <Button
+                                  key={ax}
+                                  variant={cutAxis === ax ? "default" : "outline"}
+                                  size="sm"
+                                  className="flex-1 text-xs h-7"
+                                  onClick={() => {
+                                    setCutAxis(ax);
+                                    const mid = ax === 'x'
+                                      ? (domainBounds.min[0] + domainBounds.max[0]) / 2
+                                      : ax === 'y'
+                                      ? (domainBounds.min[1] + domainBounds.max[1]) / 2
+                                      : 1.1;
+                                    setCutPosition(parseFloat(mid.toFixed(2)));
+                                  }}
+                                  data-testid={`button-cut-axis-${ax}`}
+                                >
+                                  {ax.toUpperCase()}
+                                </Button>
+                              ))}
                             </div>
-                            {filterConfig.clip.planesEnabled.x && (
-                              <>
-                                <Label className="text-xs text-gray-500">
-                                  Position: {filterConfig.clip.planePositions.x.toFixed(3)}
-                                </Label>
-                                <Slider
-                                  value={[filterConfig.clip.planePositions.x]}
-                                  onValueChange={([x]: number[]) => setFilterConfig(prev => ({
-                                    ...prev,
-                                    clip: { 
-                                      ...prev.clip, 
-                                      planePositions: { ...prev.clip.planePositions, x }
-                                    }
-                                  }))}
-                                  min={domainBounds.min[0]}
-                                  max={domainBounds.max[0]}
-                                  step={(domainBounds.max[0] - domainBounds.min[0]) / 100}
-                                  className="w-full"
-                                  data-testid="slider-clip-x"
-                                />
-                              </>
-                            )}
                           </div>
 
-                          {/* Y Plane (Green) */}
+                          {/* Z height presets */}
+                          {cutAxis === 'z' && (
+                            <div className="space-y-1">
+                              <Label className="text-xs text-gray-600">Height presets</Label>
+                              <div className="grid grid-cols-2 gap-1">
+                                {[
+                                  { label: 'Ankle 0.1m', value: 0.1 },
+                                  { label: 'Seated 0.6m', value: 0.6 },
+                                  { label: 'Standing 1.1m', value: 1.1 },
+                                  { label: 'Head 1.7m', value: 1.7 },
+                                ].map(preset => (
+                                  <Button
+                                    key={preset.value}
+                                    variant={Math.abs(cutPosition - preset.value) < 0.01 ? "default" : "outline"}
+                                    size="sm"
+                                    className="text-xs h-7 px-1"
+                                    onClick={() => setCutPosition(preset.value)}
+                                    data-testid={`button-cut-z-${preset.value}`}
+                                  >
+                                    {preset.label}
+                                  </Button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Position slider */}
                           <div className="space-y-1">
                             <div className="flex items-center justify-between">
-                              <Label className="text-xs font-semibold text-green-600 flex items-center gap-1">
-                                <div className="w-3 h-3 bg-green-500 rounded"></div>
-                                Y Plane
+                              <Label className="text-xs text-gray-600">
+                                Position: {cutPosition.toFixed(2)} m
                               </Label>
-                              <Switch
-                                checked={filterConfig.clip.planesEnabled.y}
-                                onCheckedChange={(enabled) => setFilterConfig(prev => ({
-                                  ...prev,
-                                  clip: { 
-                                    ...prev.clip, 
-                                    planesEnabled: { ...prev.clip.planesEnabled, y: enabled }
-                                  }
-                                }))}
-                                data-testid="switch-clip-y"
-                              />
+                              {cuttingPlaneLoading && (
+                                <span className="text-xs text-blue-500 animate-pulse">Slicing…</span>
+                              )}
                             </div>
-                            {filterConfig.clip.planesEnabled.y && (
-                              <>
-                                <Label className="text-xs text-gray-500">
-                                  Position: {filterConfig.clip.planePositions.y.toFixed(3)}
-                                </Label>
-                                <Slider
-                                  value={[filterConfig.clip.planePositions.y]}
-                                  onValueChange={([y]: number[]) => setFilterConfig(prev => ({
-                                    ...prev,
-                                    clip: { 
-                                      ...prev.clip, 
-                                      planePositions: { ...prev.clip.planePositions, y }
-                                    }
-                                  }))}
-                                  min={domainBounds.min[1]}
-                                  max={domainBounds.max[1]}
-                                  step={(domainBounds.max[1] - domainBounds.min[1]) / 100}
-                                  className="w-full"
-                                  data-testid="slider-clip-y"
-                                />
-                              </>
-                            )}
+                            <Slider
+                              value={[cutPosition]}
+                              onValueChange={([v]: number[]) => setCutPosition(parseFloat(v.toFixed(3)))}
+                              min={cutAxis === 'x' ? domainBounds.min[0] : cutAxis === 'y' ? domainBounds.min[1] : domainBounds.min[2]}
+                              max={cutAxis === 'x' ? domainBounds.max[0] : cutAxis === 'y' ? domainBounds.max[1] : domainBounds.max[2]}
+                              step={0.05}
+                              className="w-full"
+                              data-testid="slider-cut-position"
+                            />
                           </div>
 
-                          {/* Z Plane (Blue) */}
-                          <div className="space-y-1">
-                            <div className="flex items-center justify-between">
-                              <Label className="text-xs font-semibold text-blue-600 flex items-center gap-1">
-                                <div className="w-3 h-3 bg-blue-500 rounded"></div>
-                                Z Plane
+                          {/* Velocity vectors toggle */}
+                          <div className="flex items-center justify-between pt-2 border-t border-gray-200">
+                            <Label className="text-sm flex items-center gap-1">
+                              <ArrowUp className="h-3 w-3" />
+                              Velocity Vectors
+                            </Label>
+                            <Switch
+                              checked={cutVectorsEnabled}
+                              onCheckedChange={setCutVectorsEnabled}
+                              data-testid="switch-cut-vectors"
+                            />
+                          </div>
+
+                          {cutVectorsEnabled && (
+                            <div className="space-y-2">
+                              <Label className="text-xs text-gray-600">
+                                Scale: {cutVectorScale.toFixed(2)}
                               </Label>
-                              <Switch
-                                checked={filterConfig.clip.planesEnabled.z}
-                                onCheckedChange={(enabled) => setFilterConfig(prev => ({
-                                  ...prev,
-                                  clip: { 
-                                    ...prev.clip, 
-                                    planesEnabled: { ...prev.clip.planesEnabled, z: enabled }
-                                  }
-                                }))}
-                                data-testid="switch-clip-z"
+                              <Slider
+                                value={[cutVectorScale]}
+                                onValueChange={([v]: number[]) => setCutVectorScale(v)}
+                                min={0.05}
+                                max={3.0}
+                                step={0.05}
+                                className="w-full"
+                                data-testid="slider-cut-vector-scale"
+                              />
+                              <Label className="text-xs text-gray-600">
+                                Density: {cutVectorDensity.toFixed(2)}
+                              </Label>
+                              <Slider
+                                value={[cutVectorDensity]}
+                                onValueChange={([v]: number[]) => setCutVectorDensity(v)}
+                                min={0.01}
+                                max={0.5}
+                                step={0.01}
+                                className="w-full"
+                                data-testid="slider-cut-vector-density"
                               />
                             </div>
-                            {filterConfig.clip.planesEnabled.z && (
-                              <>
-                                <Label className="text-xs text-gray-500">
-                                  Position: {filterConfig.clip.planePositions.z.toFixed(3)}
-                                </Label>
-                                <Slider
-                                  value={[filterConfig.clip.planePositions.z]}
-                                  onValueChange={([z]: number[]) => setFilterConfig(prev => ({
-                                    ...prev,
-                                    clip: { 
-                                      ...prev.clip, 
-                                      planePositions: { ...prev.clip.planePositions, z }
-                                    }
-                                  }))}
-                                  min={domainBounds.min[2]}
-                                  max={domainBounds.max[2]}
-                                  step={(domainBounds.max[2] - domainBounds.min[2]) / 100}
-                                  className="w-full"
-                                  data-testid="slider-clip-z"
-                                />
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </CollapsibleContent>
-                </Collapsible>
-
-                <Separator />
-
-                {/* Vector Field */}
-                <Collapsible open={showVectorField} onOpenChange={setShowVectorField}>
-                  <CollapsibleTrigger asChild>
-                    <Button variant="ghost" size="sm" className="w-full justify-between p-2" data-testid="button-vector-field">
-                      <div className="flex items-center gap-2">
-                        <ArrowUp className="h-4 w-4" />
-                        <span className="text-sm font-medium">Vector Field</span>
-                      </div>
-                      <div className={`transition-transform ${showVectorField ? 'rotate-180' : ''}`}>
-                        ▼
-                      </div>
-                    </Button>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <div className="space-y-2 mt-2">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-sm">Enable</Label>
-                        <Switch
-                          checked={filterConfig.vectors.enabled}
-                          onCheckedChange={(enabled) => setFilterConfig(prev => ({
-                            ...prev,
-                            vectors: { ...prev.vectors, enabled }
-                          }))}
-                          data-testid="switch-vectors"
-                        />
-                      </div>
-                      {filterConfig.vectors.enabled && (
-                        <div className="space-y-2">
-                          <Label className="text-xs text-gray-600">Scale: {filterConfig.vectors.scale?.toFixed(2)}</Label>
-                          <Slider
-                            value={[filterConfig.vectors.scale]}
-                            onValueChange={([scale]: number[]) => setFilterConfig(prev => ({
-                              ...prev,
-                              vectors: { ...prev.vectors, scale }
-                            }))}
-                            min={0.1}
-                            max={5.0}
-                            step={0.1}
-                            className="w-full"
-                          />
-                          <Label className="text-xs text-gray-600">Density: {filterConfig.vectors.density?.toFixed(2)}</Label>
-                          <Slider
-                            value={[filterConfig.vectors.density]}
-                            onValueChange={([density]: number[]) => setFilterConfig(prev => ({
-                              ...prev,
-                              vectors: { ...prev.vectors, density }
-                            }))}
-                            min={0.01}
-                            max={1.0}
-                            step={0.01}
-                            className="w-full"
-                          />
+                          )}
                         </div>
                       )}
                     </div>
