@@ -82,6 +82,12 @@ def main():
 
         print(f"[volume_slice] Slice: n_points={sliced.n_points}, n_cells={sliced.n_cells}", file=sys.stderr)
 
+        # Interpolate cell-centred fields (U, p, T …) to point positions so
+        # that the frontend glyph mapper (which reads POINT_DATA) can use them.
+        # This also gives smoother colour gradients on the cut surface.
+        sliced = sliced.cell_data_to_point_data()
+        print(f"[volume_slice] After cell→point: n_points={sliced.n_points}, arrays={list(sliced.point_data.keys())}", file=sys.stderr)
+
         fd, tmp_path = tempfile.mkstemp(suffix=".vtk")
         os.close(fd)
         try:
