@@ -527,6 +527,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [showEdges, setShowEdges] = useState<boolean>(false);
   const [backgroundColor, setBackgroundColor] = useState<string>('#ffffff'); // Blanco por defecto
   const [showSetup, setShowSetup] = useState<boolean>(false);
+  const [gridColor, setGridColor] = useState<string>('#8c8c8c');
   const [colormapMin, setColormapMin] = useState<number | null>(null);
   const [colormapMax, setColormapMax] = useState<number | null>(null);
   const [opacity, setOpacity] = useState<number>(1.0); // 1.0 = opaco, 0.0 = transparente
@@ -1178,16 +1179,27 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
     // Add FloorGrid reference plane at Z=0 if showGrid is enabled
     if (showGrid) {
-      // Build a flat XY plane covering the model's domain footprint
+      // Build a flat XY plane 10% larger than the model's domain footprint
+      // Domain: X∈[-3.25, 1.10], Y∈[-2.85, 2.65] → 10% expansion (5% each side)
+      // X range 4.35 → +0.435 total → [-3.4675, 1.3175]
+      // Y range 5.50 → +0.550 total → [-3.125, 2.925]
       const floorPlane = vtkPlaneSource.newInstance({
         xResolution: 12,
         yResolution: 12,
       });
-      // Domain bounds: X∈[-3.25, 1.10], Y∈[-2.85, 2.65], floor at Z=0
-      floorPlane.setOrigin(-3.25, -2.85, 0.0);
-      floorPlane.setPoint1( 1.10, -2.85, 0.0);  // along X
-      floorPlane.setPoint2(-3.25,  2.65, 0.0);  // along Y
+      floorPlane.setOrigin(-3.4675, -3.125, 0.0);
+      floorPlane.setPoint1( 1.3175, -3.125, 0.0);  // along X
+      floorPlane.setPoint2(-3.4675,  2.925, 0.0);  // along Y
       floorPlane.update();
+
+      // Parse hex gridColor to VTK RGB (0–1 range)
+      const hexToRgb = (hex: string): [number, number, number] => {
+        const r = parseInt(hex.slice(1, 3), 16) / 255;
+        const g = parseInt(hex.slice(3, 5), 16) / 255;
+        const b = parseInt(hex.slice(5, 7), 16) / 255;
+        return [r, g, b];
+      };
+      const [gr, gg, gb] = hexToRgb(gridColor);
 
       const gridMapper = vtkMapper.newInstance();
       gridMapper.setInputData(floorPlane.getOutputData());
@@ -1197,7 +1209,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       gridActor.setMapper(gridMapper);
       gridActor.getProperty().setRepresentationToWireframe();
       gridActor.getProperty().setLineWidth(1);
-      gridActor.getProperty().setColor(0.55, 0.55, 0.55); // mid-gray grid lines
+      gridActor.getProperty().setColor(gr, gg, gb);
       gridActor.getProperty().setOpacity(0.6);
 
       actors.push(gridActor);
@@ -1792,7 +1804,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       // Render the scene
       renderWindowRef.current.renderWindow.render();
     }
-  }, [filterConfig, selectedColormap, invertColormap, showGrid, showEdges, backgroundColor, colormapMin, colormapMax, opacity]);
+  }, [filterConfig, selectedColormap, invertColormap, showGrid, showEdges, backgroundColor, colormapMin, colormapMax, opacity, gridColor]);
 
   // ── Fetch isosurface from server (PyVista) ─────────────────────────────────
   const fetchIsosurface = async (filename: string, field: string, isoValue: number) => {
@@ -2648,6 +2660,28 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                         <span className="text-[12px] text-slate-700 font-medium">FloorGrid</span>
                         <Switch checked={showGrid} onCheckedChange={setShowGrid} data-testid="toggle-show-grid" />
                       </div>
+                      {showGrid && (
+                        <div className="pl-0">
+                          <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-2">Grid Color</p>
+                          <div className="flex items-center gap-2">
+                            {[
+                              { color: '#8c8c8c', label: 'Gray' },
+                              { color: '#ffffff', label: 'White' },
+                              { color: '#222222', label: 'Dark' },
+                              { color: '#4a90d9', label: 'Blue' },
+                              { color: '#e8c17a', label: 'Warm' },
+                            ].map(gc => (
+                              <button
+                                key={gc.color}
+                                className={`w-6 h-6 rounded-full border-2 transition-all ${gridColor === gc.color ? 'border-blue-500 scale-110' : 'border-slate-300'}`}
+                                style={{ backgroundColor: gc.color }}
+                                onClick={() => setGridColor(gc.color)}
+                                title={gc.label}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      )}
                       {/* CellEdges */}
                       <div className="flex items-center justify-between">
                         <span className="text-[12px] text-slate-700 font-medium">CellEdges</span>
