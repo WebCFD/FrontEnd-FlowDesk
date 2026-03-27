@@ -2035,6 +2035,20 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       return;
     }
 
+    // 'geometry' means no scalar threshold — remove overlay and restore surface
+    if (thresholdField === 'geometry') {
+      if (volumeThresholdActorRef.current && renderWindowRef.current?.renderer) {
+        renderWindowRef.current.renderer.removeActor(volumeThresholdActorRef.current);
+        volumeThresholdActorRef.current = null;
+      }
+      actorsRef.current.forEach(a => {
+        if (a?.getProperty) a.getProperty().setOpacity(opacity);
+        if (a?.getMapper) a.getMapper().setScalarVisibility(true);
+      });
+      if (renderWindowRef.current?.renderWindow) renderWindowRef.current.renderWindow.render();
+      return;
+    }
+
     // Resolve actual field name from threshold field and loaded dataset
     const resolveField = (): string | null => {
       const src = sourceDataRef.current;
@@ -2093,6 +2107,16 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     }
 
     if (!currentVtkFilenameRef.current) return;
+
+    // 'geometry' means no scalar coloring — remove any existing overlay and stop
+    if (isosurfaceField === 'geometry') {
+      if (isosurfaceActorRef.current && renderWindowRef.current?.renderer) {
+        renderWindowRef.current.renderer.removeActor(isosurfaceActorRef.current);
+        isosurfaceActorRef.current = null;
+        if (renderWindowRef.current?.renderWindow) renderWindowRef.current.renderWindow.render();
+      }
+      return;
+    }
 
     // Resolve the actual field name from the loaded dataset so we handle all
     // variants (p vs p_rgh, T_degC vs T, etc.) rather than hard-coding one name.
