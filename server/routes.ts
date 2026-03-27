@@ -913,15 +913,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      // Task #25: when volume_internal.vtk exists locally, use it as the isosurface source
-      // regardless of the client-provided filename — gives real 3D isosurfaces from interior cells.
-      const volInternalLocal = path.join(
-        process.cwd(), 'cases', `sim_${simulationId}`, 'post', 'vtk', 'volume_internal.vtk'
-      );
-      if (fsSync.existsSync(volInternalLocal) && vtkPath !== volInternalLocal) {
+      // Task #25: when volume_internal.vtk exists on disk, override the source for the
+      // isosurface regardless of client-provided filename — gives real 3D contours from interior cells.
+      // Checks both local dev path and production /tmp/uploads path for consistency.
+      const volInternalCandidates = [
+        path.join(process.cwd(), 'cases', `sim_${simulationId}`, 'post', 'vtk', 'volume_internal.vtk'),
+        path.join('/tmp/uploads', `sim_${simulationId}`, 'vtk', 'volume_internal.vtk'),
+      ];
+      const volInternal = volInternalCandidates.find(p => fsSync.existsSync(p));
+      if (volInternal && vtkPath !== volInternal) {
         console.log(`[ISOSURFACE] Overriding ${safeFilename} with volume_internal.vtk for 3D isosurfaces`);
         if (tempFile) { try { await fs.unlink(tempFile); } catch (e) {} tempFile = null; }
-        vtkPath = volInternalLocal;
+        vtkPath = volInternal;
       }
 
       const scriptPath = path.join(process.cwd(), 'server', 'isosurface.py');

@@ -1507,9 +1507,12 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
           `[VTKViewer] Loading ${typeLabel[latestVolume.type] || latestVolume.type}: ${latestVolume.filename}`
         );
       } else if (files && files.length > 0) {
-        // Fallback to first available file (likely a 2D slice plane)
-        vtkUrl = files[0].path;
-        console.log('[VTKViewer] No 3D volume file found — loading slice:', files[0].filename);
+        // Fallback to first usable file (likely a 2D slice plane).
+        // surface_3d.vtk is excluded from the visualization pipeline (Task #25).
+        const usableFile = files.find((f: any) => f.filename !== 'surface_3d.vtk') || null;
+        if (!usableFile) throw new Error('No VTK files available for this simulation');
+        vtkUrl = usableFile.path;
+        console.log('[VTKViewer] No 3D volume file found — loading slice:', usableFile.filename);
       } else {
         throw new Error('No VTK files available for this simulation');
       }
