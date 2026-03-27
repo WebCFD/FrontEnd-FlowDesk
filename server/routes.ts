@@ -701,12 +701,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Get latest volume file — prefer volume_internal (server-side surface extraction gives
-      // interior field values), then fall back to legacy boundary/surface types
+      // Get latest volume file — prefer volume_internal (PyVista server-side ops).
+      // surface_3d is excluded: it is removed from the visualization pipeline (Task #25).
       const latestVolume = files.find(f =>
         f.type === 'volume_internal'
-      ) || files.find(f =>
-        f.type === 'surface_3d'
       ) || files.find(f =>
         f.type === 'volume_complete'
       ) || files.find(f =>
@@ -783,21 +781,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // ── Volume cutting plane: PyVista slice() on volume_internal.vtk ──
+  // Domain bounds: X ∈ [-3.25, 1.10] m · Y ∈ [-2.85, 2.65] m · Z ∈ [0.0, 2.5] m
+  const volumeCutSchema = z.object({
+    axis: z.enum(['x', 'y', 'z']),
+    position: z.number(),
+  }).superRefine((data, ctx) => {
+    const bounds: Record<string, [number, number]> = {
+      x: [-3.25, 1.10],
+      y: [-2.85, 2.65],
+      z: [0.0,  2.5 ],
+    };
+    const [min, max] = bounds[data.axis];
+    if (data.position < min || data.position > max) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `position out of domain bounds for axis ${data.axis}: must be in [${min}, ${max}]`,
+        path: ['position'],
+      });
+    }
+  });
+
   app.post("/api/simulations/:id/volume-cut", async (req, res) => {
     try {
       const simulationId = parseInt(req.params.id);
-      const { axis, position } = req.body;
 
-      if (!axis || position === undefined || position === null) {
-        return res.status(400).json({ message: 'axis and position are required' });
+      const parsed = volumeCutSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ message: 'Invalid request', errors: parsed.error.flatten() });
       }
-      if (!['x', 'y', 'z'].includes(String(axis).toLowerCase())) {
-        return res.status(400).json({ message: 'axis must be x, y, or z' });
-      }
-      const numPosition = Number(position);
-      if (isNaN(numPosition)) {
-        return res.status(400).json({ message: 'position must be a number' });
-      }
+      const { axis, position: numPosition } = parsed.data;
 
       const localPath = path.join(
         process.cwd(), 'cases', `sim_${simulationId}`, 'post', 'vtk', 'volume_internal.vtk'
@@ -900,6 +912,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.warn(`[ISOSURFACE] R2 download failed for ${safeFilename}:`, r2Err.message);
           return res.status(404).json({ message: `VTK file not found: ${safeFilename}` });
         }
+      }
+
+      // Task #25: when volume_internal.vtk exists locally, use it as the isosurface source
+      // regardless of the client-provided filename — gives real 3D isosurfaces from interior cells.
+      const volInternalLocal = path.join(
+        process.cwd(), 'cases', `sim_${simulationId}`, 'post', 'vtk', 'volume_internal.vtk'
+      );
+      if (fsSync.existsSync(volInternalLocal) && vtkPath !== volInternalLocal) {
+        console.log(`[ISOSURFACE] Overriding ${safeFilename} with volume_internal.vtk for 3D isosurfaces`);
+        if (tempFile) { try { await fs.unlink(tempFile); } catch (e) {} tempFile = null; }
+        vtkPath = volInternalLocal;
       }
 
       const scriptPath = path.join(process.cwd(), 'server', 'isosurface.py');

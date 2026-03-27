@@ -1491,18 +1491,14 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       console.log('[VTKViewer] Available VTK files:', files?.length || 0);
       console.log('[VTKViewer] Latest volume:', latestVolume);
       
-      // Prefer 3D volume/surface files over 2D slice planes.
-      // latestVolume priority (set by backend): surface_3d > volume_complete > volume_internal > volume
-      // surface_3d    = full 3D room boundary (walls/floor/ceiling/door/window) with CFD fields
-      // volume_internal = internal air volume mesh (UnstructuredGrid → point cloud rendering)
-      // volume_complete = legacy OpenFOAM converted vtkjs
-      // slice          = 2D horizontal cut plane (fallback)
-      let vtkUrl;
+      // Prefer 3D volume files. latestVolume priority (set by backend):
+      // volume_internal → volume_complete → volume → (slice fallback)
+      // volume_internal is the primary source; all operations go through server-side PyVista.
+      let vtkUrl: string | undefined;
       if (latestVolume) {
         vtkUrl = latestVolume.path;
         const typeLabel: Record<string, string> = {
-          surface_3d: '3D room surface (walls/floor/ceiling)',
-          volume_internal: '3D internal volume mesh',
+          volume_internal: '3D internal volume mesh (PyVista)',
           volume_complete: 'OpenFOAM vtkjs volume',
           boundary: 'OpenFOAM boundary patches',
           volume: 'OpenFOAM volume',
@@ -1517,11 +1513,11 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       } else {
         throw new Error('No VTK files available for this simulation');
       }
-      
+
       console.log('[VTKViewer] Loading VTK file for simulation:', simulationId, 'URL:', vtkUrl);
 
-      // When volume_internal is the primary file, use server-side PyVista surface extraction
-      // (binary UNSTRUCTURED_GRID → extract_surface() → ASCII POLYDATA with interior field values)
+      // volume_internal → server-side PyVista extract_surface() → ASCII POLYDATA with interior fields.
+      // All other types → direct fetch from the file URL.
       let vtkText: string;
       if (latestVolume && latestVolume.type === 'volume_internal') {
         currentVtkFilenameRef.current = 'volume_internal.vtk';
@@ -1532,11 +1528,10 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         }
         vtkText = await surfaceResp.text();
       } else {
-        // Legacy ASCII VTK files (surface_3d, etc.) — load directly
-        const vtkFilename = vtkUrl.split('/').pop() || '';
+        const vtkFilename = vtkUrl!.split('/').pop() || '';
         currentVtkFilenameRef.current = vtkFilename;
         console.log('[VTKViewer] Tracking VTK filename for isosurface:', vtkFilename);
-        const response = await fetch(vtkUrl);
+        const response = await fetch(vtkUrl!);
         if (!response.ok) {
           throw new Error(`File not found: ${response.status}`);
         }
