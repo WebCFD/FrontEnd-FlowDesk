@@ -540,7 +540,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [cutAxis, setCutAxis] = useState<'x' | 'y' | 'z'>('z');
   const [cutPosition, setCutPosition] = useState<number>(1.1);
   const [cutVectorsEnabled, setCutVectorsEnabled] = useState<boolean>(false);
-  const [cutVectorScale, setCutVectorScale] = useState<number>(0.5);
+  const [cutVectorScale, setCutVectorScale] = useState<number>(50);
   const [cutVectorDensity, setCutVectorDensity] = useState<number>(0.1);
   const [dataWarning, setDataWarning] = useState<string | null>(null);
   const [domainBounds, setDomainBounds] = useState<{ min: number[]; max: number[]; center: number[] }>({
@@ -594,7 +594,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   // ── Volume cut plane refs ──────────────────────────────────────────────────
   const cutEnabledRef = useRef<boolean>(false);
   const cutVectorsEnabledRef = useRef<boolean>(false);
-  const cutVectorScaleRef = useRef<number>(0.5);
+  const cutVectorScaleRef = useRef<number>(50);
   const cutVectorDensityRef = useRef<number>(0.1);
   // Track whether user has manually set filter values (prevents auto-init from overwriting on re-enable)
   const isosurfaceUserSet = useRef<boolean>(false);
@@ -2488,8 +2488,8 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                       {cutVectorsEnabled && (
                         <div className="space-y-1.5">
                           <div className="flex items-center gap-2">
-                            <span className="text-[11px] text-slate-500 w-14 shrink-0">Scale {cutVectorScale.toFixed(2)}</span>
-                            <Slider value={[cutVectorScale]} onValueChange={([v]: number[]) => setCutVectorScale(v)} min={0.05} max={2.0} step={0.05} className="flex-1" data-testid="slider-cut-vector-scale" />
+                            <span className="text-[11px] text-slate-500 w-14 shrink-0">Scale {cutVectorScale % 1 === 0 ? cutVectorScale.toFixed(0) : cutVectorScale.toFixed(1)}</span>
+                            <Slider value={[cutVectorScale]} onValueChange={([v]: number[]) => setCutVectorScale(v)} min={0.1} max={50} step={0.5} className="flex-1" data-testid="slider-cut-vector-scale" />
                           </div>
                           <div className="flex items-center gap-2">
                             <span className="text-[11px] text-slate-500 w-14 shrink-0">Density {cutVectorDensity.toFixed(2)}</span>
