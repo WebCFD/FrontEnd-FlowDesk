@@ -622,6 +622,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     { id: 'temperature', short: 'T' },
     { id: 'pmv', short: 'PMV' },
     { id: 'ppd', short: 'PPD' },
+    { id: 'geometry', short: 'Geo' },
   ];
   const colormapOptions = [
     { id: 'erdc_blue2red_bw', label: 'Blue→Red' },
@@ -1701,7 +1702,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
           if (a?.getMapper) a.getMapper().setScalarVisibility(false);
         });
         const cutMapper = cutPlaneActorRef.current.getMapper();
-        if (cutMapper) applyVisualization(cutMapper, cuttingPlaneDataRef.current, mode as VisualizationMode, false);
+        if (cutMapper) applyVisualization(cutMapper, cuttingPlaneDataRef.current, (cutFieldRef.current || mode) as VisualizationMode, false);
         // Ensure cut actors are still in the scene after the rebuild
         if (renderWindowRef.current?.renderer) {
           renderWindowRef.current.renderer.addActor(cutPlaneActorRef.current);
