@@ -88,6 +88,18 @@ def main():
         sliced = sliced.cell_data_to_point_data()
         print(f"[volume_slice] After cell→point: n_points={sliced.n_points}, arrays={list(sliced.point_data.keys())}", file=sys.stderr)
 
+        # Project velocity to the cut plane by zeroing the normal component.
+        # This ensures vector arrows lie flat in the plane and are visible from
+        # any camera angle. Without this, arrows in e.g. a Z-cut point mostly
+        # downward (supply air) and appear as invisible dots head-on.
+        if 'U' in sliced.point_data:
+            import numpy as np
+            normal_idx = {'x': 0, 'y': 1, 'z': 2}[axis]
+            u = sliced.point_data['U'].copy()
+            u[:, normal_idx] = 0.0
+            sliced.point_data['U'] = u
+            print(f"[volume_slice] Projected U to cut plane (zeroed component {normal_idx})", file=sys.stderr)
+
         fd, tmp_path = tempfile.mkstemp(suffix=".vtk")
         os.close(fd)
         try:
