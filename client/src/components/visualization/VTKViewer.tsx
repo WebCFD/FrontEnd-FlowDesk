@@ -3,12 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, AlertCircle, Layers, Eye, Activity, Wind, Zap, Settings, Sliders, Scissors, Target, ArrowUp, Palette } from 'lucide-react';
+import { Loader2, AlertCircle, Layers, Eye, Activity, Wind, Zap, Scissors, Target, ArrowUp, Palette } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 // VTK.js imports
 import '@kitware/vtk.js/Rendering/Profiles/Geometry';
@@ -513,11 +511,12 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeMode, setActiveMode] = useState<VisualizationMode>('pressure');
-  const [showAdvancedControls, setShowAdvancedControls] = useState(false);
-  const [showIsosurfaces, setShowIsosurfaces] = useState(false);
-  const [showThresholdFilter, setShowThresholdFilter] = useState(false);
-  const [showCuttingPlane, setShowCuttingPlane] = useState(false);
-  const [showScientificColormaps, setShowScientificColormaps] = useState(false);
+  const [isosurfaceField, setIsosurfaceField] = useState<VisualizationMode>('pressure');
+  const [thresholdField, setThresholdField] = useState<VisualizationMode>('pressure');
+  const [cutField, setCutField] = useState<VisualizationMode>('pressure');
+  const [isosurfaceOpacity, setIsosurfaceOpacity] = useState<number>(1.0);
+  const [thresholdOpacity, setThresholdOpacity] = useState<number>(0.9);
+  const [cutOpacity, setCutOpacity] = useState<number>(1.0);
   const [dataRange, setDataRange] = useState<[number, number]>([0, 1]);
   // Ref copy of dataRange — lets auto-init effects read range without adding it
   // to their dependency arrays (which would create filterConfig → rebuild → setDataRange → loop).
@@ -598,6 +597,13 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   // ── Volume threshold refs ──────────────────────────────────────────────────
   const volumeThresholdActorRef = useRef<any>(null);
   const volumeThresholdDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // ── Per-filter field and opacity refs (mirror state for async callbacks) ───
+  const isosurfaceFieldRef = useRef<VisualizationMode>('pressure');
+  const thresholdFieldRef = useRef<VisualizationMode>('pressure');
+  const cutFieldRef = useRef<VisualizationMode>('pressure');
+  const isosurfaceOpacityRef = useRef<number>(1.0);
+  const thresholdOpacityRef = useRef<number>(0.9);
+  const cutOpacityRef = useRef<number>(1.0);
 
   const visualizationControls = [
     { id: 'pressure' as const, label: 'Pressure', icon: Layers },
@@ -606,6 +612,21 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     { id: 'pmv' as const, label: 'PMV', icon: Target },
     { id: 'ppd' as const, label: 'PPD', icon: Zap },
     { id: 'geometry' as const, label: 'Geometry', icon: Eye }
+  ];
+  const filterFieldControls: { id: VisualizationMode; short: string }[] = [
+    { id: 'pressure', short: 'P' },
+    { id: 'velocity', short: 'U' },
+    { id: 'temperature', short: 'T' },
+    { id: 'pmv', short: 'PMV' },
+    { id: 'ppd', short: 'PPD' },
+  ];
+  const colormapOptions = [
+    { id: 'erdc_blue2red_bw', label: 'Blue→Red' },
+    { id: 'jet_cfd', label: 'Jet CFD' },
+    { id: 'plasma', label: 'Plasma' },
+    { id: 'viridis', label: 'Viridis' },
+    { id: 'cool_warm', label: 'Cool-Warm' },
+    { id: 'grayscale', label: 'Gray' },
   ];
 
   // Helper functions for scene management
@@ -1694,6 +1715,12 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   useEffect(() => { cutVectorsEnabledRef.current = cutVectorsEnabled; }, [cutVectorsEnabled]);
   useEffect(() => { cutVectorScaleRef.current = cutVectorScale; }, [cutVectorScale]);
   useEffect(() => { cutVectorDensityRef.current = cutVectorDensity; }, [cutVectorDensity]);
+  useEffect(() => { isosurfaceFieldRef.current = isosurfaceField; }, [isosurfaceField]);
+  useEffect(() => { thresholdFieldRef.current = thresholdField; }, [thresholdField]);
+  useEffect(() => { cutFieldRef.current = cutField; }, [cutField]);
+  useEffect(() => { isosurfaceOpacityRef.current = isosurfaceOpacity; }, [isosurfaceOpacity]);
+  useEffect(() => { thresholdOpacityRef.current = thresholdOpacity; }, [thresholdOpacity]);
+  useEffect(() => { cutOpacityRef.current = cutOpacity; }, [cutOpacity]);
 
   // Initialize component
 
@@ -1726,7 +1753,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
           if (a?.getMapper) a.getMapper().setScalarVisibility(false);
         });
         const cutMapper = cutPlaneActorRef.current.getMapper();
-        if (cutMapper) applyVisualization(cutMapper, cuttingPlaneDataRef.current, activeModeRef.current, false);
+        if (cutMapper) applyVisualization(cutMapper, cuttingPlaneDataRef.current, cutFieldRef.current, false);
         if (renderWindowRef.current?.renderer) {
           renderWindowRef.current.renderer.addActor(cutPlaneActorRef.current);
           if (cutVectorActorRef.current) renderWindowRef.current.renderer.addActor(cutVectorActorRef.current);
@@ -1791,12 +1818,13 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
       const isoMapper = vtkMapper.newInstance();
       isoMapper.setInputData(isoData);
-      applyVisualization(isoMapper, isoData, activeMode as VisualizationMode, false);
+      applyVisualization(isoMapper, isoData, isosurfaceFieldRef.current, false);
 
       const isoActor = vtkActor.newInstance();
       isoActor.setMapper(isoMapper);
       isoActor.getProperty().setLineWidth(3);
       isoActor.getProperty().setLighting(false);
+      isoActor.getProperty().setOpacity(isosurfaceOpacityRef.current);
 
       if (renderWindowRef.current?.renderer) {
         renderWindowRef.current.renderer.addActor(isoActor);
@@ -1861,10 +1889,11 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       // Create and add the cut plane actor
       const cutMapper = vtkMapper.newInstance();
       cutMapper.setInputData(cutData);
-      applyVisualization(cutMapper, cutData, activeModeRef.current, false);
+      applyVisualization(cutMapper, cutData, cutFieldRef.current, false);
 
       const cutActor = vtkActor.newInstance();
       cutActor.setMapper(cutMapper);
+      cutActor.getProperty().setOpacity(cutOpacityRef.current);
       cutPlaneActorRef.current = cutActor;
 
       if (renderWindowRef.current?.renderer) {
@@ -1929,11 +1958,11 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
 
       const threshMapper = vtkMapper.newInstance();
       threshMapper.setInputData(threshData);
-      applyVisualization(threshMapper, threshData, activeModeRef.current, false);
+      applyVisualization(threshMapper, threshData, thresholdFieldRef.current, false);
 
       const threshActor = vtkActor.newInstance();
       threshActor.setMapper(threshMapper);
-      threshActor.getProperty().setOpacity(opacity);
+      threshActor.getProperty().setOpacity(thresholdOpacityRef.current);
       volumeThresholdActorRef.current = threshActor;
 
       if (renderWindowRef.current?.renderer) {
@@ -1968,7 +1997,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       return { ...prev, isosurface: { ...prev.isosurface, values: [mid] } };
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterConfig.isosurface.enabled, activeMode]);
+  }, [filterConfig.isosurface.enabled, isosurfaceField]);
 
   useEffect(() => {
     if (!filterConfig.threshold.enabled) return;
@@ -1980,7 +2009,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       return { ...prev, threshold: { ...prev.threshold, range: [lo, hi] } };
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterConfig.threshold.enabled, activeMode]);
+  }, [filterConfig.threshold.enabled, thresholdField]);
 
   // ── Server-side volumetric threshold (only when volume_internal.vtk is active) ──
   useEffect(() => {
@@ -2000,7 +2029,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       return;
     }
 
-    // Resolve actual field name from active mode and loaded dataset
+    // Resolve actual field name from threshold field and loaded dataset
     const resolveField = (): string | null => {
       const src = sourceDataRef.current;
       if (!src) return null;
@@ -2008,7 +2037,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       const cd = src.getCellData();
       const findFirst = (...names: string[]) =>
         names.find(n => pd.getArrayByName(n) || cd.getArrayByName(n)) ?? null;
-      switch (activeMode as VisualizationMode) {
+      switch (thresholdField) {
         case 'pressure':    return findFirst('p', 'p_rgh');
         case 'velocity':    return findFirst('U', 'U_magnitude', 'U_mag');
         case 'temperature': return findFirst('T_degC', 'T');
@@ -2032,7 +2061,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       if (volumeThresholdDebounceRef.current) clearTimeout(volumeThresholdDebounceRef.current);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterConfig.threshold.enabled, filterConfig.threshold.range, activeMode]);
+  }, [filterConfig.threshold.enabled, filterConfig.threshold.range, thresholdField]);
 
   // ── Isosurface overlay: debounced fetch when enabled/value changes ─────────
   useEffect(() => {
@@ -2057,7 +2086,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       const cd = src.getCellData();
       const findFirst = (...names: string[]) =>
         names.find(n => pd.getArrayByName(n) || cd.getArrayByName(n)) ?? null;
-      switch (activeMode as VisualizationMode) {
+      switch (isosurfaceField) {
         case 'pressure':    return findFirst('p', 'p_rgh');
         case 'velocity':    return findFirst('U', 'U_magnitude', 'U_mag');
         case 'temperature': return findFirst('T_degC', 'T');
@@ -2081,7 +2110,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     return () => {
       if (isosurfaceDebounceRef.current) clearTimeout(isosurfaceDebounceRef.current);
     };
-  }, [filterConfig.isosurface.enabled, filterConfig.isosurface.values, activeMode]);
+  }, [filterConfig.isosurface.enabled, filterConfig.isosurface.values, isosurfaceField]);
 
   // ── Volume cut plane: debounced fetch when enabled/axis/position changes ───
   useEffect(() => {
@@ -2144,6 +2173,35 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cutVectorsEnabled, cutVectorScale, cutVectorDensity, cutEnabled]);
 
+  // ── Recolor cut plane when its independent field changes (no re-fetch) ─────
+  useEffect(() => {
+    if (!cutEnabled || !cutPlaneActorRef.current || !cuttingPlaneDataRef.current) return;
+    const cutMapper = cutPlaneActorRef.current.getMapper();
+    if (cutMapper) {
+      applyVisualization(cutMapper, cuttingPlaneDataRef.current, cutField, false);
+      if (renderWindowRef.current?.renderWindow) renderWindowRef.current.renderWindow.render();
+    }
+  }, [cutField]);
+
+  // ── Per-filter opacity live-update effects ─────────────────────────────────
+  useEffect(() => {
+    if (!isosurfaceActorRef.current) return;
+    isosurfaceActorRef.current.getProperty().setOpacity(isosurfaceOpacity);
+    if (renderWindowRef.current?.renderWindow) renderWindowRef.current.renderWindow.render();
+  }, [isosurfaceOpacity]);
+
+  useEffect(() => {
+    if (!volumeThresholdActorRef.current) return;
+    volumeThresholdActorRef.current.getProperty().setOpacity(thresholdOpacity);
+    if (renderWindowRef.current?.renderWindow) renderWindowRef.current.renderWindow.render();
+  }, [thresholdOpacity]);
+
+  useEffect(() => {
+    if (!cutPlaneActorRef.current) return;
+    cutPlaneActorRef.current.getProperty().setOpacity(cutOpacity);
+    if (renderWindowRef.current?.renderWindow) renderWindowRef.current.renderWindow.render();
+  }, [cutOpacity]);
+
   return (
     <div className={`vtk-viewer ${className || ''}`}>
       <Card className="border-slate-200 shadow-lg">
@@ -2160,469 +2218,375 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
         <CardContent className="p-0">
           <div className="flex gap-0">
             {/* Left Sidebar - Controls */}
-            <div className="w-72 border-r border-slate-200 bg-slate-50/50 overflow-y-auto max-h-[600px]">
-              <div className="p-4 space-y-4">
+            <div className="w-72 border-r border-slate-200 bg-white overflow-y-auto max-h-[600px] flex flex-col">
+
                 {/* Data warning badge */}
                 {dataWarning && (
-                  <div className="flex items-center gap-2 p-2 bg-amber-50 border border-amber-200 rounded-md">
-                    <AlertCircle className="h-4 w-4 text-amber-600 flex-shrink-0" />
+                  <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 border-b border-amber-200">
+                    <AlertCircle className="h-3.5 w-3.5 text-amber-600 flex-shrink-0" />
                     <span className="text-xs text-amber-800">{dataWarning}</span>
                   </div>
                 )}
                 
-                {/* Visualization Mode Selection */}
-                <div>
-                  <h3 className="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-2">
-                    <Eye className="h-4 w-4" />
-                    Visualization Mode
-                  </h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    {visualizationControls.map((control) => (
+                {/* ── SCENE SETTINGS ──────────────────────────────────────── */}
+                <div className="px-4 py-3 border-b border-slate-100 bg-slate-50">
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mb-2">Scene</p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      {[
+                        { color: '#ffffff', label: 'White', ring: 'ring-slate-300' },
+                        { color: '#1a1a2e', label: 'Dark Blue', ring: 'ring-slate-600' },
+                        { color: '#000000', label: 'Black', ring: 'ring-slate-800' },
+                        { color: '#f5f5f5', label: 'Light Gray', ring: 'ring-slate-200' },
+                      ].map(bg => (
+                        <button
+                          key={bg.color}
+                          className={`w-6 h-6 rounded-full border-2 transition-all ${backgroundColor === bg.color ? 'border-blue-500 scale-110' : 'border-slate-300'}`}
+                          style={{ backgroundColor: bg.color }}
+                          onClick={() => setBackgroundColor(bg.color)}
+                          data-testid={`button-bg-${bg.label.toLowerCase().replace(' ', '-')}`}
+                          title={bg.label}
+                        />
+                      ))}
+                      <span className="text-[11px] text-slate-400 ml-1">BG</span>
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      <label className="flex items-center gap-1 cursor-pointer">
+                        <Switch checked={showGrid} onCheckedChange={setShowGrid} data-testid="toggle-show-grid" className="scale-75 origin-right" />
+                        <span className="text-[11px] text-slate-600">Grid</span>
+                      </label>
+                      <label className="flex items-center gap-1 cursor-pointer">
+                        <Switch checked={showEdges} onCheckedChange={setShowEdges} data-testid="toggle-show-edges" className="scale-75 origin-right" />
+                        <span className="text-[11px] text-slate-600">Edges</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── COLORMAP ─────────────────────────────────────────────── */}
+                <div className="px-4 py-3 border-b border-slate-100 space-y-2.5">
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">Colormap</p>
+                  <div className="grid grid-cols-3 gap-1">
+                    {colormapOptions.map(c => (
                       <Button
-                        key={control.id}
-                        variant={activeMode === control.id ? "default" : "outline"}
+                        key={c.id}
+                        variant={selectedColormap === c.id ? 'default' : 'outline'}
                         size="sm"
-                        onClick={() => handleModeChange(control.id)}
-                        className="text-xs h-9 gap-1 w-full justify-start"
-                        data-testid={`button-visualization-${control.id}`}
+                        onClick={() => setSelectedColormap(c.id)}
+                        className="text-[10px] h-6 px-1.5 font-normal"
+                        data-testid={`button-colormap-${c.id}`}
                       >
-                        <control.icon className="h-3 w-3" />
-                        {control.label}
+                        {c.label}
                       </Button>
                     ))}
                   </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] text-slate-600">Invert scale</span>
+                    <Switch checked={invertColormap} onCheckedChange={setInvertColormap} data-testid="toggle-colormap-invert" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] text-slate-500 mb-1">
+                      Range <span className="font-normal text-slate-400">(auto: {dataRange[0].toFixed(2)} – {dataRange[1].toFixed(2)})</span>
+                    </p>
+                    <div className="flex gap-1 items-center">
+                      <Input
+                        type="number"
+                        placeholder="Min"
+                        value={colormapMin ?? ''}
+                        onChange={(e) => setColormapMin(e.target.value ? parseFloat(e.target.value) : null)}
+                        className="flex-1 h-7 text-[11px] px-2"
+                        step="any"
+                        data-testid="input-colormap-min"
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Max"
+                        value={colormapMax ?? ''}
+                        onChange={(e) => setColormapMax(e.target.value ? parseFloat(e.target.value) : null)}
+                        className="flex-1 h-7 text-[11px] px-2"
+                        step="any"
+                        data-testid="input-colormap-max"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => { setColormapMin(null); setColormapMax(null); }}
+                        className="h-7 px-2 text-[11px] shrink-0"
+                        data-testid="button-reset-colormap-range"
+                        title="Reset to automatic range"
+                      >
+                        Auto
+                      </Button>
+                    </div>
+                  </div>
                 </div>
-                
-                <Separator />
-                
-                {/* Controles Avanzados Collapsible */}
-                <Collapsible open={showAdvancedControls} onOpenChange={setShowAdvancedControls}>
-                  <CollapsibleTrigger asChild>
-                    <Button variant="ghost" size="sm" className="w-full justify-between p-2" data-testid="button-advanced-controls">
-                      <div className="flex items-center gap-2">
-                        <Sliders className="h-4 w-4" />
-                        <span className="text-sm font-medium">Advanced Controls</span>
-                      </div>
-                      <div className={`transition-transform ${showAdvancedControls ? 'rotate-180' : ''}`}>
-                        ▼
-                      </div>
-                    </Button>
-                  </CollapsibleTrigger>
-                  
-                  <CollapsibleContent className="space-y-4 mt-4">
-                {/* Scientific Colormaps */}
-                <Collapsible open={showScientificColormaps} onOpenChange={setShowScientificColormaps}>
-                  <CollapsibleTrigger asChild>
-                    <Button variant="ghost" size="sm" className="w-full justify-between p-2" data-testid="button-scientific-colormaps">
-                      <div className="flex items-center gap-2">
-                        <Palette className="h-4 w-4" />
-                        <span className="text-sm font-medium">Scientific Colormaps</span>
-                      </div>
-                      <div className={`transition-transform ${showScientificColormaps ? 'rotate-180' : ''}`}>
-                        ▼
-                      </div>
-                    </Button>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <div className="space-y-2 mt-2">
-                      <div className="grid grid-cols-2 gap-2">
-                        {['erdc_blue2red_bw', 'jet_cfd', 'plasma', 'viridis', 'cool_warm', 'grayscale'].map((colormap) => (
+
+                {/* ── LAYER: SURFACE ───────────────────────────────────────── */}
+                <div className="border-b border-slate-100">
+                  <div className="flex items-center justify-between px-4 py-2.5 bg-blue-50/60">
+                    <div className="flex items-center gap-2">
+                      <Layers className="h-3.5 w-3.5 text-blue-600" />
+                      <span className="text-xs font-semibold text-slate-700">Surface</span>
+                      <span className="text-[10px] text-blue-500 font-medium">always on</span>
+                    </div>
+                  </div>
+                  <div className="px-4 pt-2 pb-3 space-y-2.5">
+                    <div className="flex flex-wrap gap-1">
+                      {visualizationControls.map((c) => (
+                        <Button
+                          key={c.id}
+                          variant={activeMode === c.id ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => handleModeChange(c.id)}
+                          className="text-[10px] h-6 px-1.5 gap-0.5 font-normal"
+                          data-testid={`button-visualization-${c.id}`}
+                        >
+                          <c.icon className="h-2.5 w-2.5" />
+                          {c.label}
+                        </Button>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] text-slate-500 w-12 shrink-0">Opacity</span>
+                      <Slider
+                        value={[opacity]}
+                        onValueChange={(value: number[]) => setOpacity(value[0])}
+                        min={0} max={1} step={0.01}
+                        className="flex-1"
+                        data-testid="slider-transparency"
+                      />
+                      <span className="text-[11px] text-slate-600 w-8 text-right">{Math.round(opacity * 100)}%</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── LAYER: CUTTING PLANE ─────────────────────────────────── */}
+                <div className="border-b border-slate-100">
+                  <div className="flex items-center justify-between px-4 py-2.5">
+                    <div className="flex items-center gap-2">
+                      <Activity className="h-3.5 w-3.5 text-slate-500" />
+                      <span className="text-xs font-semibold text-slate-700">Cutting Plane</span>
+                      {cuttingPlaneLoading && <span className="text-[10px] text-blue-500 animate-pulse">Slicing…</span>}
+                    </div>
+                    <Switch
+                      checked={cutEnabled}
+                      onCheckedChange={(v) => { setCutEnabled(v); if (v) setCutField(activeMode); }}
+                      data-testid="switch-cut-enable"
+                    />
+                  </div>
+                  {cutEnabled && (
+                    <div className="px-4 pb-3 space-y-2.5">
+                      <div className="flex flex-wrap gap-1">
+                        {filterFieldControls.map(c => (
                           <Button
-                            key={colormap}
-                            variant={selectedColormap === colormap ? "default" : "outline"}
+                            key={c.id}
+                            variant={cutField === c.id ? 'default' : 'outline'}
                             size="sm"
-                            onClick={() => {
-                              console.log('[VTKViewer] Changing colormap to:', colormap);
-                              setSelectedColormap(colormap);
-                            }}
-                            className="text-xs"
-                            data-testid={`button-colormap-${colormap}`}
+                            className="text-[10px] h-6 px-2 font-normal"
+                            onClick={() => setCutField(c.id)}
                           >
-                            {colormap.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                            {c.short}
                           </Button>
                         ))}
                       </div>
-                      
-                      {/* Toggle para invertir colormap */}
-                      <div className="flex items-center justify-between mt-2">
-                        <Label className="text-sm">Invert scale</Label>
-                        <Switch
-                          checked={invertColormap}
-                          onCheckedChange={setInvertColormap}
-                          data-testid="toggle-colormap-invert"
-                        />
-                      </div>
-                      
-                      {/* Toggle para mostrar grid */}
-                      <div className="flex items-center justify-between mt-2">
-                        <Label className="text-sm">Show Grid</Label>
-                        <Switch
-                          checked={showGrid}
-                          onCheckedChange={setShowGrid}
-                          data-testid="toggle-show-grid"
-                        />
-                      </div>
-                      
-                      {/* Toggle para mostrar edges */}
-                      <div className="flex items-center justify-between mt-2">
-                        <Label className="text-sm">Show Edges</Label>
-                        <Switch
-                          checked={showEdges}
-                          onCheckedChange={setShowEdges}
-                          data-testid="toggle-show-edges"
-                        />
-                      </div>
-                      
-                      {/* Selector de color de fondo */}
-                      <div className="flex items-center justify-between mt-2">
-                        <Label className="text-sm">Background</Label>
-                        <div className="flex gap-2">
-                          {[
-                            { color: '#ffffff', label: 'White' },
-                            { color: '#000000', label: 'Black' },
-                            { color: '#1a1a2e', label: 'Dark Blue' },
-                            { color: '#f5f5f5', label: 'Light Gray' }
-                          ].map((bg) => (
+                      <div className="space-y-1">
+                        <span className="text-[11px] text-slate-500">Axis</span>
+                        <div className="flex gap-1">
+                          {(['x', 'y', 'z'] as const).map(ax => (
                             <Button
-                              key={bg.color}
-                              variant={backgroundColor === bg.color ? "default" : "outline"}
+                              key={ax}
+                              variant={cutAxis === ax ? 'default' : 'outline'}
                               size="sm"
-                              className="w-6 h-6 p-0 rounded-full border-2"
-                              style={{ backgroundColor: bg.color === '#ffffff' ? '#ffffff' : bg.color }}
-                              onClick={() => setBackgroundColor(bg.color)}
-                              data-testid={`button-bg-${bg.label.toLowerCase().replace(' ', '-')}`}
-                              title={bg.label}
-                            />
+                              className="flex-1 text-xs h-7"
+                              onClick={() => {
+                                setCutAxis(ax);
+                                const mid = ax === 'x'
+                                  ? (domainBounds.min[0] + domainBounds.max[0]) / 2
+                                  : ax === 'y'
+                                  ? (domainBounds.min[1] + domainBounds.max[1]) / 2
+                                  : 1.1;
+                                setCutPosition(parseFloat(mid.toFixed(2)));
+                              }}
+                              data-testid={`button-cut-axis-${ax}`}
+                            >
+                              {ax.toUpperCase()}
+                            </Button>
                           ))}
                         </div>
                       </div>
-
-                      {/* Colormap Range Controls */}
-                      <div className="space-y-2 mt-4">
-                        <Label className="text-sm font-medium">Colormap Range</Label>
-                        <div className="flex space-x-2 items-center">
-                          <Input
-                            type="number"
-                            placeholder="Min"
-                            value={colormapMin ?? ''}
-                            onChange={(e) => setColormapMin(e.target.value ? parseFloat(e.target.value) : null)}
-                            className="w-20 text-xs"
-                            step="any"
-                            data-testid="input-colormap-min"
-                          />
-                          <Input
-                            type="number"
-                            placeholder="Max"
-                            value={colormapMax ?? ''}
-                            onChange={(e) => setColormapMax(e.target.value ? parseFloat(e.target.value) : null)}
-                            className="w-20 text-xs"
-                            step="any"
-                            data-testid="input-colormap-max"
-                          />
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => { 
-                              setColormapMin(null); 
-                              setColormapMax(null); 
-                            }}
-                            className="text-xs px-2 py-1"
-                            data-testid="button-reset-colormap-range"
-                            title="Reset to automatic range"
-                          >
-                            Reset
-                          </Button>
+                      {cutAxis === 'z' && (
+                        <div className="grid grid-cols-2 gap-1">
+                          {[
+                            { label: 'Ankle 0.1m', value: 0.1 },
+                            { label: 'Seated 0.6m', value: 0.6 },
+                            { label: 'Standing 1.1m', value: 1.1 },
+                            { label: 'Head 1.7m', value: 1.7 },
+                          ].map(preset => (
+                            <Button
+                              key={preset.value}
+                              variant={Math.abs(cutPosition - preset.value) < 0.01 ? 'default' : 'outline'}
+                              size="sm"
+                              className="text-[10px] h-7 px-1 font-normal"
+                              onClick={() => setCutPosition(preset.value)}
+                              data-testid={`button-cut-z-${preset.value}`}
+                            >
+                              {preset.label}
+                            </Button>
+                          ))}
                         </div>
-                        <div className="text-xs text-slate-500">
-                          Auto range: {dataRange[0].toFixed(2)} - {dataRange[1].toFixed(2)}
-                        </div>
-                      </div>
-
-                      {/* Transparency Control */}
-                      <div className="space-y-2 mt-4">
-                        <Label className="text-sm font-medium">
-                          Transparency: {(100 - opacity * 100).toFixed(0)}%
-                        </Label>
+                      )}
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] text-slate-500 w-12 shrink-0">
+                          {cutAxis.toUpperCase()} {cutPosition.toFixed(2)}m
+                        </span>
                         <Slider
-                          value={[opacity]}
-                          onValueChange={(value: number[]) => setOpacity(value[0])}
-                          max={1}
-                          min={0}
-                          step={0.01}
+                          value={[cutPosition]}
+                          onValueChange={([v]: number[]) => setCutPosition(parseFloat(v.toFixed(3)))}
+                          min={cutAxis === 'x' ? domainBounds.min[0] : cutAxis === 'y' ? domainBounds.min[1] : domainBounds.min[2]}
+                          max={cutAxis === 'x' ? domainBounds.max[0] : cutAxis === 'y' ? domainBounds.max[1] : domainBounds.max[2]}
+                          step={0.05}
+                          className="flex-1"
+                          data-testid="slider-cut-position"
+                        />
+                      </div>
+                      <div className="flex items-center justify-between pt-1 border-t border-slate-100">
+                        <Label className="text-xs text-slate-600 flex items-center gap-1 cursor-pointer">
+                          <ArrowUp className="h-3 w-3" />
+                          Velocity Vectors
+                        </Label>
+                        <Switch checked={cutVectorsEnabled} onCheckedChange={setCutVectorsEnabled} data-testid="switch-cut-vectors" />
+                      </div>
+                      {cutVectorsEnabled && (
+                        <div className="space-y-1.5">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[11px] text-slate-500 w-14 shrink-0">Scale {cutVectorScale.toFixed(2)}</span>
+                            <Slider value={[cutVectorScale]} onValueChange={([v]: number[]) => setCutVectorScale(v)} min={0.05} max={3.0} step={0.05} className="flex-1" data-testid="slider-cut-vector-scale" />
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[11px] text-slate-500 w-14 shrink-0">Density {cutVectorDensity.toFixed(2)}</span>
+                            <Slider value={[cutVectorDensity]} onValueChange={([v]: number[]) => setCutVectorDensity(v)} min={0.01} max={0.5} step={0.01} className="flex-1" data-testid="slider-cut-vector-density" />
+                          </div>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
+                        <span className="text-[11px] text-slate-500 w-12 shrink-0">Opacity</span>
+                        <Slider value={[cutOpacity]} onValueChange={([v]: number[]) => setCutOpacity(v)} min={0} max={1} step={0.01} className="flex-1" />
+                        <span className="text-[11px] text-slate-600 w-8 text-right">{Math.round(cutOpacity * 100)}%</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* ── LAYER: ISOSURFACE ────────────────────────────────────── */}
+                <div className="border-b border-slate-100">
+                  <div className="flex items-center justify-between px-4 py-2.5">
+                    <div className="flex items-center gap-2">
+                      <Target className="h-3.5 w-3.5 text-slate-500" />
+                      <span className="text-xs font-semibold text-slate-700">Isosurface</span>
+                      {isosurfaceLoading && <span className="text-[10px] text-blue-500 animate-pulse">Computing…</span>}
+                    </div>
+                    <Switch
+                      checked={filterConfig.isosurface.enabled}
+                      onCheckedChange={(enabled) => {
+                        if (enabled) setIsosurfaceField(activeMode);
+                        setFilterConfig(prev => ({ ...prev, isosurface: { ...prev.isosurface, enabled } }));
+                      }}
+                      data-testid="switch-isosurface"
+                    />
+                  </div>
+                  {filterConfig.isosurface.enabled && (
+                    <div className="px-4 pb-3 space-y-2.5">
+                      <div className="flex flex-wrap gap-1">
+                        {filterFieldControls.map(c => (
+                          <Button
+                            key={c.id}
+                            variant={isosurfaceField === c.id ? 'default' : 'outline'}
+                            size="sm"
+                            className="text-[10px] h-6 px-2 font-normal"
+                            onClick={() => setIsosurfaceField(c.id)}
+                          >
+                            {c.short}
+                          </Button>
+                        ))}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] text-slate-500 w-12 shrink-0">
+                          Value {filterConfig.isosurface.values[0]?.toFixed(3)}
+                        </span>
+                        <Slider
+                          value={filterConfig.isosurface.values}
+                          onValueChange={(values: number[]) => setFilterConfig(prev => ({ ...prev, isosurface: { ...prev.isosurface, values } }))}
+                          min={dataRange[0]}
+                          max={dataRange[1]}
+                          step={(dataRange[1] - dataRange[0]) / 100}
+                          className="flex-1"
+                          data-testid="slider-isosurface"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
+                        <span className="text-[11px] text-slate-500 w-12 shrink-0">Opacity</span>
+                        <Slider value={[isosurfaceOpacity]} onValueChange={([v]: number[]) => setIsosurfaceOpacity(v)} min={0} max={1} step={0.01} className="flex-1" />
+                        <span className="text-[11px] text-slate-600 w-8 text-right">{Math.round(isosurfaceOpacity * 100)}%</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* ── LAYER: THRESHOLD ─────────────────────────────────────── */}
+                <div className="border-b border-slate-100">
+                  <div className="flex items-center justify-between px-4 py-2.5">
+                    <div className="flex items-center gap-2">
+                      <Scissors className="h-3.5 w-3.5 text-slate-500" />
+                      <span className="text-xs font-semibold text-slate-700">Threshold</span>
+                      {volumeThresholdLoading && <span className="text-[10px] text-blue-500 animate-pulse">Computing…</span>}
+                    </div>
+                    <Switch
+                      checked={filterConfig.threshold.enabled}
+                      onCheckedChange={(enabled) => {
+                        if (enabled) setThresholdField(activeMode);
+                        setFilterConfig(prev => ({ ...prev, threshold: { ...prev.threshold, enabled } }));
+                      }}
+                      data-testid="switch-threshold"
+                    />
+                  </div>
+                  {filterConfig.threshold.enabled && (
+                    <div className="px-4 pb-3 space-y-2.5">
+                      <div className="flex flex-wrap gap-1">
+                        {filterFieldControls.map(c => (
+                          <Button
+                            key={c.id}
+                            variant={thresholdField === c.id ? 'default' : 'outline'}
+                            size="sm"
+                            className="text-[10px] h-6 px-2 font-normal"
+                            onClick={() => setThresholdField(c.id)}
+                          >
+                            {c.short}
+                          </Button>
+                        ))}
+                      </div>
+                      <div className="space-y-1">
+                        <span className="text-[11px] text-slate-500">
+                          Range: {filterConfig.threshold.range[0]?.toFixed(3)} – {filterConfig.threshold.range[1]?.toFixed(3)}
+                        </span>
+                        <Slider
+                          value={filterConfig.threshold.range}
+                          onValueChange={(range: number[]) => setFilterConfig(prev => ({ ...prev, threshold: { ...prev.threshold, range: range as [number, number] } }))}
+                          min={dataRange[0]}
+                          max={dataRange[1]}
+                          step={(dataRange[1] - dataRange[0]) / 100}
                           className="w-full"
-                          data-testid="slider-transparency"
-                        />
-                        <div className="flex justify-between text-xs text-slate-500">
-                          <span>Opaque</span>
-                          <span>Transparent</span>
-                        </div>
-                      </div>
-                    </div>
-                  </CollapsibleContent>
-                </Collapsible>
-
-                <Separator />
-
-                {/* Isosurfaces */}
-                <Collapsible open={showIsosurfaces} onOpenChange={setShowIsosurfaces}>
-                  <CollapsibleTrigger asChild>
-                    <Button variant="ghost" size="sm" className="w-full justify-between p-2" data-testid="button-isosurfaces">
-                      <div className="flex items-center gap-2">
-                        <Target className="h-4 w-4" />
-                        <span className="text-sm font-medium">Isosurfaces</span>
-                      </div>
-                      <div className={`transition-transform ${showIsosurfaces ? 'rotate-180' : ''}`}>
-                        ▼
-                      </div>
-                    </Button>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <div className="space-y-2 mt-2">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-sm">Enable</Label>
-                        <Switch
-                          checked={filterConfig.isosurface.enabled}
-                          onCheckedChange={(enabled) => setFilterConfig(prev => ({
-                            ...prev,
-                            isosurface: { ...prev.isosurface, enabled }
-                          }))}
-                          data-testid="switch-isosurface"
+                          data-testid="slider-threshold"
                         />
                       </div>
-                      {filterConfig.isosurface.enabled && (
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <Label className="text-xs text-gray-600">Value: {filterConfig.isosurface.values[0]?.toFixed(3)}</Label>
-                            {isosurfaceLoading && (
-                              <span className="text-xs text-blue-500 animate-pulse">Computing…</span>
-                            )}
-                          </div>
-                          <Slider
-                            value={filterConfig.isosurface.values}
-                            onValueChange={(values: number[]) => setFilterConfig(prev => ({
-                              ...prev,
-                              isosurface: { ...prev.isosurface, values }
-                            }))}
-                            min={dataRange[0]}
-                            max={dataRange[1]}
-                            step={(dataRange[1] - dataRange[0]) / 100}
-                            className="w-full"
-                            data-testid="slider-isosurface"
-                          />
-                        </div>
-                      )}
+                      <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
+                        <span className="text-[11px] text-slate-500 w-12 shrink-0">Opacity</span>
+                        <Slider value={[thresholdOpacity]} onValueChange={([v]: number[]) => setThresholdOpacity(v)} min={0} max={1} step={0.01} className="flex-1" />
+                        <span className="text-[11px] text-slate-600 w-8 text-right">{Math.round(thresholdOpacity * 100)}%</span>
+                      </div>
                     </div>
-                  </CollapsibleContent>
-                </Collapsible>
+                  )}
+                </div>
 
-                <Separator />
-
-                {/* Threshold Filter */}
-                <Collapsible open={showThresholdFilter} onOpenChange={setShowThresholdFilter}>
-                  <CollapsibleTrigger asChild>
-                    <Button variant="ghost" size="sm" className="w-full justify-between p-2" data-testid="button-threshold-filter">
-                      <div className="flex items-center gap-2">
-                        <Scissors className="h-4 w-4" />
-                        <span className="text-sm font-medium">Threshold Filter</span>
-                      </div>
-                      <div className={`transition-transform ${showThresholdFilter ? 'rotate-180' : ''}`}>
-                        ▼
-                      </div>
-                    </Button>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <div className="space-y-2 mt-2">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-sm">Enable</Label>
-                        <Switch
-                          checked={filterConfig.threshold.enabled}
-                          onCheckedChange={(enabled) => setFilterConfig(prev => ({
-                            ...prev,
-                            threshold: { ...prev.threshold, enabled }
-                          }))}
-                          data-testid="switch-threshold"
-                        />
-                      </div>
-                      {filterConfig.threshold.enabled && (
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <Label className="text-xs text-gray-600">
-                              Range: {filterConfig.threshold.range[0]?.toFixed(3)} - {filterConfig.threshold.range[1]?.toFixed(3)}
-                            </Label>
-                            {volumeThresholdLoading && (
-                              <span className="text-xs text-blue-500 animate-pulse">Computing…</span>
-                            )}
-                          </div>
-                          <Slider
-                            value={filterConfig.threshold.range}
-                            onValueChange={(range: number[]) => setFilterConfig(prev => ({
-                              ...prev,
-                              threshold: { ...prev.threshold, range: range as [number, number] }
-                            }))}
-                            min={dataRange[0]}
-                            max={dataRange[1]}
-                            step={(dataRange[1] - dataRange[0]) / 100}
-                            className="w-full"
-                            data-testid="slider-threshold"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </CollapsibleContent>
-                </Collapsible>
-
-                <Separator />
-
-                {/* Cutting Plane — server-side PyVista slice on volume_internal.vtk */}
-                <Collapsible open={showCuttingPlane} onOpenChange={setShowCuttingPlane}>
-                  <CollapsibleTrigger asChild>
-                    <Button variant="ghost" size="sm" className="w-full justify-between p-2" data-testid="button-cutting-plane">
-                      <div className="flex items-center gap-2">
-                        <Activity className="h-4 w-4" />
-                        <span className="text-sm font-medium">Cutting Plane</span>
-                      </div>
-                      <div className={`transition-transform ${showCuttingPlane ? 'rotate-180' : ''}`}>
-                        ▼
-                      </div>
-                    </Button>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <div className="space-y-3 mt-2">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-sm">Enable</Label>
-                        <Switch
-                          checked={cutEnabled}
-                          onCheckedChange={setCutEnabled}
-                          data-testid="switch-cut-enable"
-                        />
-                      </div>
-
-                      {cutEnabled && (
-                        <div className="space-y-3">
-                          {/* Axis selector */}
-                          <div className="space-y-1">
-                            <Label className="text-xs text-gray-600">Axis</Label>
-                            <div className="flex gap-1">
-                              {(['x', 'y', 'z'] as const).map(ax => (
-                                <Button
-                                  key={ax}
-                                  variant={cutAxis === ax ? "default" : "outline"}
-                                  size="sm"
-                                  className="flex-1 text-xs h-7"
-                                  onClick={() => {
-                                    setCutAxis(ax);
-                                    const mid = ax === 'x'
-                                      ? (domainBounds.min[0] + domainBounds.max[0]) / 2
-                                      : ax === 'y'
-                                      ? (domainBounds.min[1] + domainBounds.max[1]) / 2
-                                      : 1.1;
-                                    setCutPosition(parseFloat(mid.toFixed(2)));
-                                  }}
-                                  data-testid={`button-cut-axis-${ax}`}
-                                >
-                                  {ax.toUpperCase()}
-                                </Button>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* Z height presets */}
-                          {cutAxis === 'z' && (
-                            <div className="space-y-1">
-                              <Label className="text-xs text-gray-600">Height presets</Label>
-                              <div className="grid grid-cols-2 gap-1">
-                                {[
-                                  { label: 'Ankle 0.1m', value: 0.1 },
-                                  { label: 'Seated 0.6m', value: 0.6 },
-                                  { label: 'Standing 1.1m', value: 1.1 },
-                                  { label: 'Head 1.7m', value: 1.7 },
-                                ].map(preset => (
-                                  <Button
-                                    key={preset.value}
-                                    variant={Math.abs(cutPosition - preset.value) < 0.01 ? "default" : "outline"}
-                                    size="sm"
-                                    className="text-xs h-7 px-1"
-                                    onClick={() => setCutPosition(preset.value)}
-                                    data-testid={`button-cut-z-${preset.value}`}
-                                  >
-                                    {preset.label}
-                                  </Button>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {/* Position slider */}
-                          <div className="space-y-1">
-                            <div className="flex items-center justify-between">
-                              <Label className="text-xs text-gray-600">
-                                Position: {cutPosition.toFixed(2)} m
-                              </Label>
-                              {cuttingPlaneLoading && (
-                                <span className="text-xs text-blue-500 animate-pulse">Slicing…</span>
-                              )}
-                            </div>
-                            <Slider
-                              value={[cutPosition]}
-                              onValueChange={([v]: number[]) => setCutPosition(parseFloat(v.toFixed(3)))}
-                              min={cutAxis === 'x' ? domainBounds.min[0] : cutAxis === 'y' ? domainBounds.min[1] : domainBounds.min[2]}
-                              max={cutAxis === 'x' ? domainBounds.max[0] : cutAxis === 'y' ? domainBounds.max[1] : domainBounds.max[2]}
-                              step={0.05}
-                              className="w-full"
-                              data-testid="slider-cut-position"
-                            />
-                          </div>
-
-                          {/* Velocity vectors toggle */}
-                          <div className="flex items-center justify-between pt-2 border-t border-gray-200">
-                            <Label className="text-sm flex items-center gap-1">
-                              <ArrowUp className="h-3 w-3" />
-                              Velocity Vectors
-                            </Label>
-                            <Switch
-                              checked={cutVectorsEnabled}
-                              onCheckedChange={setCutVectorsEnabled}
-                              data-testid="switch-cut-vectors"
-                            />
-                          </div>
-
-                          {cutVectorsEnabled && (
-                            <div className="space-y-2">
-                              <Label className="text-xs text-gray-600">
-                                Scale: {cutVectorScale.toFixed(2)}
-                              </Label>
-                              <Slider
-                                value={[cutVectorScale]}
-                                onValueChange={([v]: number[]) => setCutVectorScale(v)}
-                                min={0.05}
-                                max={3.0}
-                                step={0.05}
-                                className="w-full"
-                                data-testid="slider-cut-vector-scale"
-                              />
-                              <Label className="text-xs text-gray-600">
-                                Density: {cutVectorDensity.toFixed(2)}
-                              </Label>
-                              <Slider
-                                value={[cutVectorDensity]}
-                                onValueChange={([v]: number[]) => setCutVectorDensity(v)}
-                                min={0.01}
-                                max={0.5}
-                                step={0.01}
-                                className="w-full"
-                                data-testid="slider-cut-vector-density"
-                              />
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </CollapsibleContent>
-                </Collapsible>
-
-                  </CollapsibleContent>
-                </Collapsible>
-              </div>
             </div>
             
             {/* Right Side - Canvas and Colorbar */}
