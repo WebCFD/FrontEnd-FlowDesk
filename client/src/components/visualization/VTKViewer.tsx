@@ -29,10 +29,6 @@ import vtkCutter from '@kitware/vtk.js/Filters/Core/Cutter';
 import vtkPlaneSource from '@kitware/vtk.js/Filters/Sources/PlaneSource';
 // @ts-ignore
 import vtkThresholdPoints from '@kitware/vtk.js/Filters/Core/ThresholdPoints';
-// @ts-ignore
-import vtkArrowSource from '@kitware/vtk.js/Filters/Sources/ArrowSource';
-// @ts-ignore
-import vtkGlyph3DMapper from '@kitware/vtk.js/Rendering/Core/Glyph3DMapper';
 
 // Implementación básica de filtros usando VTK.js core disponible
 // Los filtros avanzados se simulan usando funcionalidad básica existente
@@ -507,90 +503,6 @@ function parseVtkAscii(text: string): ReturnType<typeof vtkPolyData.newInstance>
   return polyData;
 }
 
-// =================== DIAGNOSTIC TEST — DELETE AFTER ===================
-function GlyphDiagTest() {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    console.log('[GLYPHTEST] effectStarted — containerRef.current:', !!containerRef.current);
-    if (!containerRef.current) return;
-
-    try {
-      const rw = vtkRenderWindow.newInstance();
-      const ren = vtkRenderer.newInstance({ background: [0.1, 0.1, 0.2] });
-      rw.addRenderer(ren);
-      const glRW = vtkOpenGLRenderWindow.newInstance();
-      glRW.setContainer(containerRef.current);
-      glRW.setSize(300, 200);
-      rw.addView(glRW);
-
-      // 5 points: 3 arrows pointing +X (horizontal), 2 arrows pointing +Y (vertical)
-      // Camera looks along -Z, so +X arrows should appear as horizontal sticks,
-      // +Y arrows as vertical sticks. If both appear as dots it is NOT a camera-angle issue.
-      const pts = vtkPoints.newInstance();
-      pts.setData(new Float32Array([-1,-1,0, 1,-1,0, 1,1,0, -1,1,0, 0,0,0]), 3);
-      const cells = vtkCellArray.newInstance();
-      cells.setData(new Uint32Array([1,0, 1,1, 1,2, 1,3, 1,4]));
-      const uArr = vtkDataArray.newInstance({
-        name: 'U',
-        // Points 0-2: +X direction (should look like horizontal sticks from -Z camera)
-        // Points 3-4: +Y direction (should look like vertical sticks from -Z camera)
-        values: new Float32Array([1,0,0, 1,0,0, 1,0,0, 0,1,0, 0,1,0]),
-        numberOfComponents: 3,
-      });
-      const pd = vtkPolyData.newInstance();
-      pd.setPoints(pts);
-      pd.setVerts(cells);
-      pd.getPointData().addArray(uArr);
-
-      const arrow = vtkArrowSource.newInstance();
-      const gm = vtkGlyph3DMapper.newInstance();
-      gm.setInputData(pd, 0);
-      gm.setSourceConnection(arrow.getOutputPort());
-      gm.setOrient(true);
-      gm.setOrientationModeToDirection();
-      gm.setOrientationArray('U');
-      gm.setScaling(true);
-      gm.setScaleModeToScaleByConstant();
-      gm.setScaleFactor(1);
-      gm.setScalarVisibility(false);  // force orange actor color — rules out LUT/scalar issues
-
-      const actor = vtkActor.newInstance();
-      actor.setMapper(gm);
-      actor.getProperty().setColor(1, 0.5, 0.1);  // orange
-      ren.addActor(actor);
-      ren.resetCamera();
-
-      const cam = ren.getActiveCamera();
-      console.log('[GLYPHTEST] camera pos:', JSON.stringify(cam.getPosition()));
-      console.log('[GLYPHTEST] camera dir:', JSON.stringify(cam.getDirectionOfProjection()));
-      console.log('[GLYPHTEST] camera up :', JSON.stringify(cam.getViewUp()));
-
-      console.log('[GLYPHTEST] calling rw.render()...');
-      rw.render();
-      console.log('[GLYPHTEST] render() COMPLETED — no throw');
-
-      return () => {
-        ren.removeAllActors();
-        rw.removeRenderer(ren);
-        glRW.setContainer(null);
-      };
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      const stack = err instanceof Error ? err.stack : '';
-      console.error('[GLYPHTEST] *** EXCEPTION during render:', msg);
-      console.error('[GLYPHTEST] stack:', stack);
-    }
-  }, []);
-
-  return (
-    <div style={{ position: 'fixed', bottom: 8, right: 8, zIndex: 9999, background: '#111', border: '1px solid #555', borderRadius: 4, padding: 6 }}>
-      <div style={{ color: '#eee', fontSize: 10, marginBottom: 4 }}>🔬 Glyph3D Test</div>
-      <div ref={containerRef} style={{ width: 300, height: 200 }} />
-    </div>
-  );
-}
-// =================== END DIAGNOSTIC TEST ===================
 
 export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [loading, setLoading] = useState(true);
@@ -625,7 +537,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [cutAxis, setCutAxis] = useState<'x' | 'y' | 'z'>('z');
   const [cutPosition, setCutPosition] = useState<number>(1.1);
   const [cutVectorsEnabled, setCutVectorsEnabled] = useState<boolean>(false);
-  const [cutVectorScale, setCutVectorScale] = useState<number>(50);
+  const [cutVectorScale, setCutVectorScale] = useState<number>(0.3);
   const [cutVectorDensity, setCutVectorDensity] = useState<number>(0.1);
   const [dataWarning, setDataWarning] = useState<string | null>(null);
   const [domainBounds, setDomainBounds] = useState<{ min: number[]; max: number[]; center: number[] }>({
@@ -1061,98 +973,140 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     return sampledPD;
   };
 
-  // Real arrow glyph vector field using vtkArrowSource + vtkGlyph3DMapper
+  // Build velocity arrows by constructing shaft + arrowhead geometry directly.
+  // Uses a standard vtkMapper — no Glyph3DMapper complexity.
+  // Each arrow = shaft line (2 pts) + filled triangle head (3 pts), total 5 pts.
   const createAdvancedVectorField = (inputData: any, scale: number, density: number, arrayName: string) => {
-    console.log(`[ARROWS] createAdvancedVectorField called — scale=${scale}, density=${density}, array="${arrayName}"`);
-
     const pointData = inputData.getPointData();
-    const nPtArrays = pointData.getNumberOfArrays();
-    const ptArrayNames = Array.from({ length: nPtArrays }, (_, i) => pointData.getArrayByIndex(i)?.getName());
-    console.log(`[ARROWS] inputData: ${inputData.getNumberOfPoints()} pts, pointData arrays: [${ptArrayNames.join(', ')}]`);
-
     const vectorArray = pointData.getArrayByName(arrayName) || pointData.getArray(1);
-
-    if (!vectorArray) {
-      console.warn(`[ARROWS] ✗ Array "${arrayName}" not found and no fallback — aborting`);
-      return null;
-    }
-    console.log(`[ARROWS] Found vector array: "${vectorArray.getName()}", nComponents=${vectorArray.getNumberOfComponents()}, nTuples=${vectorArray.getNumberOfTuples()}`);
-
-    if (vectorArray.getNumberOfComponents() < 3) {
-      console.warn(`[ARROWS] ✗ Array has ${vectorArray.getNumberOfComponents()} components, need ≥3 — aborting`);
+    if (!vectorArray || vectorArray.getNumberOfComponents() < 3) {
+      console.warn(`[ARROWS] ✗ vector array "${arrayName}" not found or < 3 components`);
       return null;
     }
 
-    // Sample a few raw velocity values for diagnostics
-    const nSample = Math.min(5, vectorArray.getNumberOfTuples());
-    for (let i = 0; i < nSample; i++) {
-      const t = vectorArray.getTuple(i);
-      const mag = Math.sqrt(t[0]*t[0] + t[1]*t[1] + t[2]*t[2]);
-      console.log(`[ARROWS]   point[${i}]: U=(${t[0].toFixed(4)}, ${t[1].toFixed(4)}, ${t[2].toFixed(4)}) |U|=${mag.toFixed(4)}`);
-    }
-
-    // Pre-compute magnitude for coloring
-    const magArray = calculateVectorMagnitude(vectorArray);
-    if (!pointData.getArrayByName(magArray.getName())) {
-      pointData.addArray(magArray);
-    }
-
-    // Subsample points for performance
     const sampledData = subsamplePolyDataForGlyphs(inputData, density);
-    console.log(`[ARROWS] Subsampled: ${sampledData.getNumberOfPoints()} arrow positions (step=1/${Math.max(1,Math.round(1/Math.max(0.005,density)))})`);
+    const n = sampledData.getNumberOfPoints();
+    if (n === 0) return null;
 
-    // Arrow source — slightly fatter shaft so arrows read well at all zoom levels
-    const arrowSource = vtkArrowSource.newInstance();
-    arrowSource.setTipLength(0.35);
-    arrowSource.setShaftRadius(0.05);
-    arrowSource.update();
-    const arrowGeometry = arrowSource.getOutputData(); // grab output directly (avoids lazy-pipeline issues)
-    console.log(`[ARROWS] arrowGeometry: ${arrowGeometry ? arrowGeometry.getNumberOfPoints() + ' pts' : 'NULL'}`);
+    const sampledArr = sampledData.getPointData().getArrayByName(arrayName);
+    if (!sampledArr) return null;
 
-    // Glyph mapper — SCALE_BY_CONSTANT: every arrow is exactly `scale` world-units
-    // long regardless of local velocity magnitude. Orientation still follows the
-    // velocity direction; coloring shows the magnitude. This makes the Scale slider
-    // directly control the physical arrow length with no hidden normalization.
-    type GlyphMapperExt = ReturnType<typeof vtkGlyph3DMapper.newInstance> & {
-      setOrient(enabled: boolean): void;
-      setScaling(enabled: boolean): void;
-      setScaleModeToScaleByConstant(): void;
-    };
-    const glyphMapper = vtkGlyph3DMapper.newInstance() as unknown as GlyphMapperExt;
-    glyphMapper.setInputData(sampledData, 0);             // point positions + orientation array
-    glyphMapper.setInputData(arrowGeometry, 1);           // arrow glyph geometry (direct, no lazy pipeline)
-    glyphMapper.setOrient(true);
-    glyphMapper.setOrientationModeToDirection();
-    glyphMapper.setOrientationArray(vectorArray.getName()); // direction from velocity vector
-    glyphMapper.setScaling(true);
-    glyphMapper.setScaleModeToScaleByConstant();           // every arrow = scaleFactor world units
-    glyphMapper.setScaleFactor(scale);                     // direct: slider value = arrow length (m)
+    const pts   = sampledData.getPoints().getData();
+    const uData = sampledArr.getData();
 
-    console.log(`[ARROWS] Glyph mapper configured: orientArray="${vectorArray.getName()}", scaleFactor=${scale}`);
+    // 5 vertices per arrow: [0] tail, [1] shaftTip, [2] wingL, [3] wingR, [4] apex
+    const positions  = new Float32Array(n * 5 * 3);
+    const magnitudes = new Float32Array(n * 5);
 
-    // Color arrows by velocity magnitude using current colormap
-    applyVisualization(glyphMapper, sampledData, 'velocity', false);
+    // VTK legacy cell format: [count, idx0, idx1, ...] packed together
+    const lineData = new Uint32Array(n * 3);  // 3 values per shaft line: [2, tail, shaftTip]
+    const triData  = new Uint32Array(n * 4);  // 4 values per triangle:   [3, wingL, wingR, apex]
+
+    for (let i = 0; i < n; i++) {
+      const x  = pts[i * 3];
+      const y  = pts[i * 3 + 1];
+      const z  = pts[i * 3 + 2];
+      const ux = uData[i * 3];
+      const uy = uData[i * 3 + 1];
+      const uz = uData[i * 3 + 2];
+      const mag = Math.sqrt(ux * ux + uy * uy + uz * uz);
+      const inv = mag > 1e-10 ? 1 / mag : 0;
+
+      // Unit direction
+      const dx = ux * inv;
+      const dy = uy * inv;
+      const dz = uz * inv;
+
+      // Perpendicular vector via cross product with world-up or world-X
+      let rx = 0, ry = 1, rz = 0;
+      if (Math.abs(dy) > 0.9) { rx = 1; ry = 0; }
+      let px = dy * rz - dz * ry;
+      let py = dz * rx - dx * rz;
+      let pz = dx * ry - dy * rx;
+      const pLen = Math.sqrt(px * px + py * py + pz * pz);
+      if (pLen > 1e-10) { px /= pLen; py /= pLen; pz /= pLen; }
+
+      // Proportions: shaft = 70 %, head = 30 %, head half-width = 18 %
+      const shaftEnd  = scale * 0.70;
+      const headHalf  = scale * 0.18;
+
+      const base = i * 5;
+
+      // [0] tail
+      positions[base * 3]     = x;
+      positions[base * 3 + 1] = y;
+      positions[base * 3 + 2] = z;
+      magnitudes[base]        = mag;
+
+      // [1] shaft tip / head base center
+      positions[(base + 1) * 3]     = x + dx * shaftEnd;
+      positions[(base + 1) * 3 + 1] = y + dy * shaftEnd;
+      positions[(base + 1) * 3 + 2] = z + dz * shaftEnd;
+      magnitudes[base + 1]          = mag;
+
+      // [2] left wing
+      positions[(base + 2) * 3]     = x + dx * shaftEnd + px * headHalf;
+      positions[(base + 2) * 3 + 1] = y + dy * shaftEnd + py * headHalf;
+      positions[(base + 2) * 3 + 2] = z + dz * shaftEnd + pz * headHalf;
+      magnitudes[base + 2]          = mag;
+
+      // [3] right wing
+      positions[(base + 3) * 3]     = x + dx * shaftEnd - px * headHalf;
+      positions[(base + 3) * 3 + 1] = y + dy * shaftEnd - py * headHalf;
+      positions[(base + 3) * 3 + 2] = z + dz * shaftEnd - pz * headHalf;
+      magnitudes[base + 3]          = mag;
+
+      // [4] apex
+      positions[(base + 4) * 3]     = x + dx * scale;
+      positions[(base + 4) * 3 + 1] = y + dy * scale;
+      positions[(base + 4) * 3 + 2] = z + dz * scale;
+      magnitudes[base + 4]          = mag;
+
+      // Shaft line cell
+      lineData[i * 3]     = 2;
+      lineData[i * 3 + 1] = base;
+      lineData[i * 3 + 2] = base + 1;
+
+      // Head triangle cell
+      triData[i * 4]     = 3;
+      triData[i * 4 + 1] = base + 2;
+      triData[i * 4 + 2] = base + 3;
+      triData[i * 4 + 3] = base + 4;
+    }
+
+    // Build combined PolyData (lines + triangles)
+    const arrowPoints = vtkPoints.newInstance();
+    arrowPoints.setData(positions, 3);
+
+    const magArr = vtkDataArray.newInstance({
+      name: 'U_magnitude',
+      values: magnitudes,
+      numberOfComponents: 1,
+    });
+
+    const lineCells = vtkCellArray.newInstance();
+    lineCells.setData(lineData);
+    const triCells = vtkCellArray.newInstance();
+    triCells.setData(triData);
+
+    const arrowPD = vtkPolyData.newInstance();
+    arrowPD.setPoints(arrowPoints);
+    arrowPD.setLines(lineCells);
+    arrowPD.setPolys(triCells);
+    arrowPD.getPointData().addArray(magArr);
+    arrowPD.getPointData().setActiveScalars('U_magnitude');
+
+    // Standard PolyDataMapper — same pipeline already proven for pressure/temperature
+    const arrowMapper = vtkMapper.newInstance();
+    arrowMapper.setInputData(arrowPD);
+    applyVisualization(arrowMapper, arrowPD, 'velocity', false);
 
     const actor = vtkActor.newInstance();
-    actor.setMapper(glyphMapper);
+    actor.setMapper(arrowMapper);
     actor.getProperty().setOpacity(opacity);
+    actor.getProperty().setLineWidth(1.5);
 
-    console.log(`[ARROWS] ✓ Actor created — ${sampledData.getNumberOfPoints()} arrows, length=${scale}m each`);
-
-    // Diagnostic: force buildArrays AFTER all setup and inspect the first transformation matrix
-    // (logged LAST so the log-tail capture always sees it)
-    (glyphMapper as any).buildArrays();
-    const matArr: Float32Array | null = (glyphMapper as any).getMatrixArray();
-    if (matArr && matArr.length >= 16) {
-      const col0 = Math.sqrt(matArr[0]**2 + matArr[1]**2 + matArr[2]**2);
-      const col1 = Math.sqrt(matArr[4]**2 + matArr[5]**2 + matArr[6]**2);
-      const col2 = Math.sqrt(matArr[8]**2 + matArr[9]**2 + matArr[10]**2);
-      console.log(`[ARROWS] matrix[0] col-lengths (scale): X=${col0.toFixed(4)}, Y=${col1.toFixed(4)}, Z=${col2.toFixed(4)}`);
-      console.log(`[ARROWS] matrix[0] translation: (${matArr[12].toFixed(3)}, ${matArr[13].toFixed(3)}, ${matArr[14].toFixed(3)})`);
-    } else {
-      console.warn(`[ARROWS] matrixArray NULL/EMPTY — buildArrays may have failed (len=${matArr?.length ?? 'null'})`);
-    }
-
+    console.log(`[ARROWS] ✓ ${n} arrows built (manual geometry) — scale=${scale}m, density=${density}`);
     return [actor];
   };
 
@@ -2993,7 +2947,6 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
           </div>
         </CardContent>
       </Card>
-      <GlyphDiagTest />
     </div>
   );
 }
