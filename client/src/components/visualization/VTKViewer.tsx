@@ -512,54 +512,75 @@ function GlyphDiagTest() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    console.log('[GLYPHTEST] effectStarted — containerRef.current:', !!containerRef.current);
     if (!containerRef.current) return;
 
-    const rw = vtkRenderWindow.newInstance();
-    const ren = vtkRenderer.newInstance({ background: [0.1, 0.1, 0.2] });
-    rw.addRenderer(ren);
-    const glRW = vtkOpenGLRenderWindow.newInstance();
-    glRW.setContainer(containerRef.current);
-    glRW.setSize(300, 200);
-    rw.addView(glRW);
+    try {
+      const rw = vtkRenderWindow.newInstance();
+      const ren = vtkRenderer.newInstance({ background: [0.1, 0.1, 0.2] });
+      rw.addRenderer(ren);
+      const glRW = vtkOpenGLRenderWindow.newInstance();
+      glRW.setContainer(containerRef.current);
+      glRW.setSize(300, 200);
+      rw.addView(glRW);
 
-    const pts = vtkPoints.newInstance();
-    pts.setData(new Float32Array([-1,-1,0, 1,-1,0, 1,1,0, -1,1,0, 0,0,0]), 3);
-    const cells = vtkCellArray.newInstance();
-    cells.setData(new Uint32Array([1,0, 1,1, 1,2, 1,3, 1,4]));
-    const uArr = vtkDataArray.newInstance({
-      name: 'U',
-      values: new Float32Array([1,0,0, 1,0,0, 1,0,0, 1,0,0, 1,0,0]),
-      numberOfComponents: 3,
-    });
-    const pd = vtkPolyData.newInstance();
-    pd.setPoints(pts);
-    pd.setVerts(cells);
-    pd.getPointData().addArray(uArr);
+      // 5 points: 3 arrows pointing +X (horizontal), 2 arrows pointing +Y (vertical)
+      // Camera looks along -Z, so +X arrows should appear as horizontal sticks,
+      // +Y arrows as vertical sticks. If both appear as dots it is NOT a camera-angle issue.
+      const pts = vtkPoints.newInstance();
+      pts.setData(new Float32Array([-1,-1,0, 1,-1,0, 1,1,0, -1,1,0, 0,0,0]), 3);
+      const cells = vtkCellArray.newInstance();
+      cells.setData(new Uint32Array([1,0, 1,1, 1,2, 1,3, 1,4]));
+      const uArr = vtkDataArray.newInstance({
+        name: 'U',
+        // Points 0-2: +X direction (should look like horizontal sticks from -Z camera)
+        // Points 3-4: +Y direction (should look like vertical sticks from -Z camera)
+        values: new Float32Array([1,0,0, 1,0,0, 1,0,0, 0,1,0, 0,1,0]),
+        numberOfComponents: 3,
+      });
+      const pd = vtkPolyData.newInstance();
+      pd.setPoints(pts);
+      pd.setVerts(cells);
+      pd.getPointData().addArray(uArr);
 
-    const arrow = vtkArrowSource.newInstance();
-    const gm = vtkGlyph3DMapper.newInstance();
-    gm.setInputData(pd, 0);
-    gm.setSourceConnection(arrow.getOutputPort());
-    gm.setOrient(true);
-    gm.setOrientationModeToDirection();
-    gm.setOrientationArray('U');
-    gm.setScaling(true);
-    gm.setScaleModeToScaleByConstant();
-    gm.setScaleFactor(1);
+      const arrow = vtkArrowSource.newInstance();
+      const gm = vtkGlyph3DMapper.newInstance();
+      gm.setInputData(pd, 0);
+      gm.setSourceConnection(arrow.getOutputPort());
+      gm.setOrient(true);
+      gm.setOrientationModeToDirection();
+      gm.setOrientationArray('U');
+      gm.setScaling(true);
+      gm.setScaleModeToScaleByConstant();
+      gm.setScaleFactor(1);
+      gm.setScalarVisibility(false);  // force orange actor color — rules out LUT/scalar issues
 
-    const actor = vtkActor.newInstance();
-    actor.setMapper(gm);
-    actor.getProperty().setColor(1, 0.5, 0.1);
-    ren.addActor(actor);
-    ren.resetCamera();
-    rw.render();
-    console.log('[GLYPHTEST] rendered');
+      const actor = vtkActor.newInstance();
+      actor.setMapper(gm);
+      actor.getProperty().setColor(1, 0.5, 0.1);  // orange
+      ren.addActor(actor);
+      ren.resetCamera();
 
-    return () => {
-      ren.removeAllActors();
-      rw.removeRenderer(ren);
-      glRW.setContainer(null);
-    };
+      const cam = ren.getActiveCamera();
+      console.log('[GLYPHTEST] camera pos:', JSON.stringify(cam.getPosition()));
+      console.log('[GLYPHTEST] camera dir:', JSON.stringify(cam.getDirectionOfProjection()));
+      console.log('[GLYPHTEST] camera up :', JSON.stringify(cam.getViewUp()));
+
+      console.log('[GLYPHTEST] calling rw.render()...');
+      rw.render();
+      console.log('[GLYPHTEST] render() COMPLETED — no throw');
+
+      return () => {
+        ren.removeAllActors();
+        rw.removeRenderer(ren);
+        glRW.setContainer(null);
+      };
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      const stack = err instanceof Error ? err.stack : '';
+      console.error('[GLYPHTEST] *** EXCEPTION during render:', msg);
+      console.error('[GLYPHTEST] stack:', stack);
+    }
   }, []);
 
   return (
