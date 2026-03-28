@@ -1929,8 +1929,14 @@ def _map_slice_fields_to_mesh(mesh, vtk_dir):
     slice_files = sorted(glob.glob(slice_pattern))
 
     if not slice_files:
-        logger.warning(f"    * _map_slice_fields_to_mesh: no flow_plane_*.vtk in {vtk_dir}")
-        return mesh
+        # Fallback: try DataCenters slice files
+        dc_pattern = os.path.join(vtk_dir, 'dc_slice_*.vtk')
+        slice_files = sorted(glob.glob(dc_pattern))
+        if slice_files:
+            logger.info(f"    * _map_slice_fields_to_mesh: using {len(slice_files)} dc_slice_*.vtk as field source")
+        else:
+            logger.warning(f"    * _map_slice_fields_to_mesh: no flow_plane_*.vtk or dc_slice_*.vtk in {vtk_dir}")
+            return mesh
 
     slice_data = pv.read(slice_files[0])
     for f in slice_files[1:]:
