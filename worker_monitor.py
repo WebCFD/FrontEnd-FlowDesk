@@ -114,8 +114,7 @@ def get_cloud_execution_sims():
     try:
         response = requests.get(
             f"{API_BASE}/api/external/simulations/cloud_execution",
-            headers={'x-api-key': API_KEY},
-            params={'environment': 'production'}
+            headers={'x-api-key': API_KEY}
         )
         if response.ok:
             data = response.json()
@@ -132,8 +131,7 @@ def get_post_processing_sims():
     try:
         response = requests.get(
             f"{API_BASE}/api/external/simulations/post_processing",
-            headers={'x-api-key': API_KEY},
-            params={'environment': 'production'}
+            headers={'x-api-key': API_KEY}
         )
         if response.ok:
             data = response.json()

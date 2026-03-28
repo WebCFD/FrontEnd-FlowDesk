@@ -1903,10 +1903,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid API key" });
       }
 
-      const envFilter = (req.query.environment === 'development') ? 'development' : 'production';
+      const envFilter = (process.env.NODE_ENV === 'production') ? 'production' : 'development';
       console.log('[EXPRESS] Fetching pending simulations for environment:', envFilter);
 
-      // Get all simulations with status 'pending' for the given environment
+      // Get all simulations with status 'pending' for the server's own environment
       const pendingSimulations = await db
         .select({
           id: simulations.id,
@@ -1947,10 +1947,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid API key" });
       }
 
-      const envFilter = (req.query.environment === 'development') ? 'development' : 'production';
+      const envFilter = (process.env.NODE_ENV === 'production') ? 'production' : 'development';
       console.log('[EXPRESS] Fetching cloud_execution simulations for environment:', envFilter);
 
-      // Get all simulations with status 'cloud_execution' for the given environment
+      // Get all simulations with status 'cloud_execution' for the server's own environment
       const cloudSimulations = await db
         .select({
           id: simulations.id,
@@ -1992,10 +1992,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid API key" });
       }
 
-      const envFilter = (req.query.environment === 'development') ? 'development' : 'production';
+      const envFilter = (process.env.NODE_ENV === 'production') ? 'production' : 'development';
       console.log('[EXPRESS] Fetching post_processing simulations for environment:', envFilter);
 
-      // Get all simulations with status 'post_processing' (orphaned simulations) for the given environment
+      // Get all simulations with status 'post_processing' (orphaned simulations) for the server's own environment
       const postProcessingSimulations = await db
         .select({
           id: simulations.id,
