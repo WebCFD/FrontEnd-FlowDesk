@@ -2573,7 +2573,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                                   <Label className="text-[11px] text-slate-500 cursor-pointer underline decoration-dotted">Plane Projection</Label>
                                 </TooltipTrigger>
                                 <TooltipContent side="left" className="max-w-[200px] text-xs">
-                                  OFF: las flechas muestran la dirección real del flujo en 3D (pueden entrar o salir del plano). ON: las flechas se proyectan sobre el plano de corte y quedan planas, facilitando la lectura del patrón de flujo.
+                                  OFF: arrows show the real 3D flow direction (they may point into or out of the plane). ON: arrows are projected onto the cut plane and lie flat, making the flow pattern easier to read.
                                 </TooltipContent>
                               </Tooltip>
                             </TooltipProvider>
