@@ -36,7 +36,8 @@ STATUS_LABELS = {
 # Config
 API_BASE = os.getenv('API_BASE_URL', 'http://localhost:5000')
 API_KEY = 'flowerpower-external-api'
-WORKER_ENVIRONMENT = os.getenv('APP_ENVIRONMENT', 'production')
+_node_env_default = 'production' if os.getenv('NODE_ENV') == 'production' else 'development'
+WORKER_ENVIRONMENT = os.getenv('APP_ENVIRONMENT', _node_env_default)
 POLLING_INTERVAL = 30
 CFDFEASERVICE_API_KEY = os.getenv('CFDFEASERVICE_API_KEY')
 
@@ -60,6 +61,7 @@ def log_startup_configuration():
     logger.info("=" * 60)
     logger.info(f"Environment: {env_label}")
     logger.info(f"NODE_ENV: {os.getenv('NODE_ENV', 'not set')}")
+    logger.info(f"WORKER_ENVIRONMENT (sim filter): {WORKER_ENVIRONMENT}")
     logger.info(f"API_BASE: {API_BASE}")
     
     # VTK upload paths

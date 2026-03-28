@@ -143,7 +143,9 @@ def log_startup_configuration():
 # ---------------------------------------------------------------------------
 # API helpers
 # ---------------------------------------------------------------------------
-WORKER_ENVIRONMENT = os.getenv('APP_ENVIRONMENT', 'production')
+_node_env_default = 'production' if os.getenv('NODE_ENV') == 'production' else 'development'
+WORKER_ENVIRONMENT = os.getenv('APP_ENVIRONMENT', _node_env_default)
+logger.info(f"[WORKER] Effective environment: {WORKER_ENVIRONMENT} (NODE_ENV={os.getenv('NODE_ENV')}, APP_ENVIRONMENT={os.getenv('APP_ENVIRONMENT')})")
 
 def get_pending_simulations():
     try:
