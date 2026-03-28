@@ -53,7 +53,7 @@ def upload_vtk_files(simulation_id: int, vtk_directory: str) -> dict:
             "failed": []
         }
     
-    vtk_files = [f for f in os.listdir(vtk_directory) if f.endswith(".vtkjs")]
+    vtk_files = [f for f in os.listdir(vtk_directory) if f.endswith(".vtkjs") or f.endswith(".vtk")]
     
     if not vtk_files:
         return {

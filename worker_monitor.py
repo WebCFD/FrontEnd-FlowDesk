@@ -301,9 +301,29 @@ def copy_results_to_public(case_name, sim_id):
             if openfoam_count > 0:
                 logger.info(f"Converted {openfoam_count} OpenFOAM VTK files for sim {sim_id}")
         
+        # Copy step05 post/vtk/*.vtk files (volume_internal, surface_3d, plane slices)
+        post_vtk_dir = os.path.join(post_path, "vtk")
+        if os.path.exists(post_vtk_dir):
+            os.makedirs(obj_dest, exist_ok=True)
+            post_vtk_count = 0
+            for vtk_file in os.listdir(post_vtk_dir):
+                if vtk_file.endswith('.vtk'):
+                    src = os.path.join(post_vtk_dir, vtk_file)
+                    dst = os.path.join(obj_dest, vtk_file)
+                    try:
+                        import shutil
+                        shutil.copy2(src, dst)
+                        post_vtk_count += 1
+                    except Exception as e:
+                        logger.error(f"Failed to copy {vtk_file}: {e}")
+            if post_vtk_count:
+                logger.info(f"Copied {post_vtk_count} post/vtk/*.vtk files for sim {sim_id}")
+        else:
+            logger.warning(f"No post/vtk dir found at {post_vtk_dir}")
+
         vtk_list = []
         if os.path.exists(obj_dest):
-            vtk_list = [f"/uploads/sim_{sim_id}/vtk/{vtk}" for vtk in os.listdir(obj_dest) if vtk.endswith('.vtkjs')]
+            vtk_list = [f"/uploads/sim_{sim_id}/vtk/{vtk}" for vtk in os.listdir(obj_dest) if vtk.endswith('.vtkjs') or vtk.endswith('.vtk')]
         
         result_paths = {"vtk": vtk_list}
         logger.info(f"Total VTK files available: {len(vtk_list)}")
