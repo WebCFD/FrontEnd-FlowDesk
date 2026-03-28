@@ -9,12 +9,13 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import {
   Eye, ArrowLeft, Thermometer, Wind, RefreshCw, Settings,
   TrendingUp, AlertCircle, CheckCircle, ExternalLink,
+  Server, Flame, Gauge, Zap,
 } from "lucide-react";
 import { useLocation } from "wouter";
 import VTKViewer from "@/components/visualization/VTKViewer";
 import type { Simulation } from "@shared/schema";
 
-// ── Types ──────────────────────────────────────────────────────────────────
+// ── IndoorSpaces types ──────────────────────────────────────────────────────
 interface ComfortPlane {
   comfort_area_pct: number;
   pmv_mean: number;
@@ -41,8 +42,73 @@ interface FlowMetrics {
 interface VentPlane { ADPI_pct: number; CO2_compliant_pct: number; stagnation_pct: number; }
 interface VentMetrics { seated: VentPlane; standing: VentPlane; }
 
+// ── DataCenter types ────────────────────────────────────────────────────────
+interface RackMetric {
+  T_inlet_mean: number;
+  T_inlet_p50: number;
+  T_inlet_p95: number;
+  T_inlet_p99: number;
+  T_inlet_max: number;
+  T_outlet_mean: number;
+  delta_T: number;
+  power_kW: number;
+  airflow_m3s: number;
+  ashrae_ok: boolean;
+  ashrae_class: string;
+}
+interface DcMetrics {
+  rack_metrics: Record<string, RackMetric>;
+  rci: {
+    RCI_HI: number;
+    RCI_LO: number;
+    n_racks: number;
+    n_ashrae_ok: number;
+    T_inlet_p50: number;
+    T_inlet_p95: number;
+    T_inlet_p99: number;
+    T_inlet_max: number;
+  };
+  rti: {
+    RTI: number;
+    T_supply_mean: number;
+    T_return_mean: number;
+    T_IT_outlet_mean: number;
+    interpretation: string;
+  };
+  cooling_efficiency: {
+    eta_cooling: number;
+    Q_IT_kW: number;
+    Q_CRAC_kW: number;
+    T_supply: number;
+    T_return_mean: number;
+    delta_T_crac: number;
+    quality: string;
+  };
+  slice_results: Record<string, {
+    height_m: number;
+    T_mean: number;
+    T_p95: number;
+    T_max: number;
+    hot_spot_pct: number;
+    U_mean: number;
+    U_max: number;
+    stagnation_pct: number;
+  }>;
+}
+
 // ── Report definitions ─────────────────────────────────────────────────────
-const REPORTS = [
+interface ReportDef {
+  id: string;
+  name: string;
+  desc: string;
+  file: string;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+  bg: string;
+  border: string;
+}
+
+const IS_REPORTS: ReportDef[] = [
   {
     id: "comfort",
     name: "Comfort Report",
@@ -83,10 +149,49 @@ const REPORTS = [
     bg: "bg-green-50",
     border: "border-green-100",
   },
-] as const;
+];
+
+const DC_REPORTS: ReportDef[] = [
+  {
+    id: "dc_rack",
+    name: "Rack Thermal Analysis",
+    desc: "Inlet/outlet temperatures, ASHRAE class and RCI/RTI metrics per rack",
+    file: "dc_rack_report.html",
+    icon: Server,
+    color: "text-blue-600",
+    bg: "bg-blue-50",
+    border: "border-blue-100",
+  },
+  {
+    id: "dc_thermal",
+    name: "Thermal Map",
+    desc: "Temperature distribution slices at rack bottom, mid and top heights",
+    file: "dc_thermal_report.html",
+    icon: Flame,
+    color: "text-orange-500",
+    bg: "bg-orange-50",
+    border: "border-orange-100",
+  },
+  {
+    id: "dc_airflow",
+    name: "Airflow Analysis",
+    desc: "Velocity fields, hot-spot zones and stagnation areas across the data center",
+    file: "dc_airflow_report.html",
+    icon: Wind,
+    color: "text-teal-500",
+    bg: "bg-teal-50",
+    border: "border-teal-100",
+  },
+];
 
 // ── Small helpers ──────────────────────────────────────────────────────────
-function KpiCard({ label, value, sub, ok }: { label: string; value: string; sub?: string; ok?: boolean }) {
+type StatusColor = "green" | "yellow" | "red";
+
+function KpiCard({
+  label, value, sub, ok,
+}: {
+  label: string; value: string; sub?: string; ok?: boolean;
+}) {
   return (
     <div className="flex flex-col gap-1 rounded-xl border bg-white px-5 py-4 shadow-sm">
       <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">{label}</span>
@@ -102,7 +207,67 @@ function KpiCard({ label, value, sub, ok }: { label: string; value: string; sub?
   );
 }
 
+function DcKpiCard({
+  label, value, sub, status, icon: Icon,
+}: {
+  label: string; value: string; sub?: string; status: StatusColor; icon?: React.ComponentType<{ className?: string }>;
+}) {
+  const colors: Record<StatusColor, { badge: string; icon: string; border: string }> = {
+    green:  { badge: "bg-green-100 text-green-800 border-green-200", icon: "text-green-500", border: "border-l-green-400" },
+    yellow: { badge: "bg-amber-100 text-amber-800 border-amber-200",  icon: "text-amber-500",  border: "border-l-amber-400" },
+    red:    { badge: "bg-red-100 text-red-800 border-red-200",        icon: "text-red-500",    border: "border-l-red-400" },
+  };
+  const c = colors[status];
+  return (
+    <div className={`flex flex-col gap-1 rounded-xl border bg-white px-5 py-4 shadow-sm border-l-4 ${c.border}`}>
+      <div className="flex items-center gap-2">
+        {Icon && <Icon className={`h-4 w-4 ${c.icon}`} />}
+        <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">{label}</span>
+      </div>
+      <span className="text-2xl font-bold text-slate-800 leading-none">{value}</span>
+      {sub !== undefined && (
+        <span className={`inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full mt-1 border w-fit ${c.badge}`}>
+          {status === "green" && <CheckCircle className="h-3 w-3" />}
+          {status !== "green" && <AlertCircle className="h-3 w-3" />}
+          {sub}
+        </span>
+      )}
+    </div>
+  );
+}
+
 function fmt(v: number, decimals = 1) { return v.toFixed(decimals); }
+
+function rciStatus(v: number): StatusColor {
+  if (v >= 91) return "green";
+  if (v >= 75) return "yellow";
+  return "red";
+}
+function rciLabel(v: number): string {
+  if (v >= 91) return "Excellent ≥91%";
+  if (v >= 75) return "Acceptable ≥75%";
+  return "Poor <75%";
+}
+function rtiStatus(v: number): StatusColor {
+  if (v >= 0.9 && v <= 1.1) return "green";
+  if (v >= 0.8 && v <= 1.2) return "yellow";
+  return "red";
+}
+function rtiLabel(v: number): string {
+  if (v >= 0.9 && v <= 1.1) return "Balanced (0.9–1.1)";
+  if (v >= 0.8 && v <= 1.2) return "Acceptable (0.8–1.2)";
+  return v > 1.1 ? "Recirculation risk" : "Bypass / mixing";
+}
+function etaStatus(v: number): StatusColor {
+  if (v >= 80) return "green";
+  if (v >= 50) return "yellow";
+  return "red";
+}
+function etaLabel(v: number): string {
+  if (v >= 80) return "Good ≥80%";
+  if (v >= 50) return "Moderate ≥50%";
+  return "Poor — bypass losses";
+}
 
 // ── Main page ──────────────────────────────────────────────────────────────
 export default function Analysis() {
@@ -110,7 +275,7 @@ export default function Analysis() {
   const [, setLocation] = useLocation();
   const simulationId = params?.id ? parseInt(params.id, 10) : null;
 
-  const [openReport, setOpenReport] = useState<(typeof REPORTS)[number] | null>(null);
+  const [openReport, setOpenReport] = useState<ReportDef | null>(null);
 
   const { data: simulation, isLoading, error } = useQuery<Simulation>({
     queryKey: [`/api/simulations/${simulationId}`],
@@ -120,28 +285,52 @@ export default function Analysis() {
   const postUrl = (file: string) => `/api/simulations/${simulationId}/post/${file}`;
   const hasPost = !!simulationId && !isNaN(simulationId);
 
+  const simulationType: string = (simulation?.jsonConfig as Record<string, unknown> | null)?.simulationType as string ?? "IndoorSpaces";
+  const isDataCenter = simulationType === "DataCenters";
+
+  // IndoorSpaces metrics
   const { data: comfort } = useQuery<ComfortMetrics>({
     queryKey: [`/api/simulations/${simulationId}/post/comfort_metrics.json`],
-    enabled: hasPost,
+    enabled: hasPost && !isDataCenter,
     queryFn: () => fetch(postUrl("comfort_metrics.json")).then(r => r.ok ? r.json() : null),
     retry: false,
   });
 
   const { data: flow } = useQuery<FlowMetrics>({
     queryKey: [`/api/simulations/${simulationId}/post/flow_metrics.json`],
-    enabled: hasPost,
+    enabled: hasPost && !isDataCenter,
     queryFn: () => fetch(postUrl("flow_metrics.json")).then(r => r.ok ? r.json() : null),
     retry: false,
   });
 
   const { data: vent } = useQuery<VentMetrics>({
     queryKey: [`/api/simulations/${simulationId}/post/ventilation_metrics.json`],
-    enabled: hasPost,
+    enabled: hasPost && !isDataCenter,
     queryFn: () => fetch(postUrl("ventilation_metrics.json")).then(r => r.ok ? r.json() : null),
     retry: false,
   });
 
-  const hasMetrics = !!(comfort || flow || vent);
+  // DataCenter metrics
+  const { data: dcMetrics } = useQuery<DcMetrics>({
+    queryKey: [`/api/simulations/${simulationId}/post/dc_metrics.json`],
+    enabled: hasPost && isDataCenter,
+    queryFn: () => fetch(postUrl("dc_metrics.json")).then(r => r.ok ? r.json() : null),
+    retry: false,
+  });
+
+  const hasISMetrics = !!(comfort || flow || vent);
+  const hasDCMetrics = !!dcMetrics;
+
+  const activeReports = isDataCenter ? DC_REPORTS : IS_REPORTS;
+  const reportsGridCols = isDataCenter ? "sm:grid-cols-3" : "sm:grid-cols-2 lg:grid-cols-4";
+
+  // DC derived values
+  const rci = dcMetrics?.rci;
+  const rti = dcMetrics?.rti;
+  const eff = dcMetrics?.cooling_efficiency;
+  const rackCount = rci ? rci.n_racks : 0;
+  const ashraeOk = rci ? rci.n_ashrae_ok : 0;
+  const ashraePct = rackCount > 0 ? (ashraeOk / rackCount) * 100 : 0;
 
   return (
     <DashboardLayout>
@@ -167,6 +356,12 @@ export default function Analysis() {
             <Badge variant="secondary" className="text-sm bg-green-100 text-green-800 border-green-200">
               {simulation.status.charAt(0).toUpperCase() + simulation.status.slice(1)}
             </Badge>
+            {isDataCenter && (
+              <Badge variant="outline" className="text-sm border-blue-200 text-blue-700 bg-blue-50">
+                <Server className="h-3 w-3 mr-1" />
+                Data Center
+              </Badge>
+            )}
           </div>
           <p className="text-muted-foreground -mt-4">
             Simulation: <span className="font-medium text-foreground">{simulation.name}</span>
@@ -196,8 +391,8 @@ export default function Analysis() {
               <h2 className="text-xl font-semibold">Reports &amp; Metrics</h2>
             </div>
 
-            {/* KPI summary row */}
-            {hasMetrics && (
+            {/* ── IndoorSpaces KPI row ── */}
+            {!isDataCenter && hasISMetrics && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
                 {comfort?.seated && (
                   <KpiCard
@@ -236,9 +431,50 @@ export default function Analysis() {
               </div>
             )}
 
-            {/* Report cards */}
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {REPORTS.map((report) => {
+            {/* ── DataCenter KPI row ── */}
+            {isDataCenter && hasDCMetrics && rci && rti && eff && (
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+                <DcKpiCard
+                  label="RCI High"
+                  value={`${fmt(rci.RCI_HI, 0)}%`}
+                  sub={rciLabel(rci.RCI_HI)}
+                  status={rciStatus(rci.RCI_HI)}
+                  icon={Gauge}
+                />
+                <DcKpiCard
+                  label="RCI Low"
+                  value={`${fmt(rci.RCI_LO, 0)}%`}
+                  sub={rciLabel(rci.RCI_LO)}
+                  status={rciStatus(rci.RCI_LO)}
+                  icon={Gauge}
+                />
+                <DcKpiCard
+                  label="RTI"
+                  value={fmt(rti.RTI, 2)}
+                  sub={rtiLabel(rti.RTI)}
+                  status={rtiStatus(rti.RTI)}
+                  icon={TrendingUp}
+                />
+                <DcKpiCard
+                  label="η Cooling"
+                  value={`${fmt(eff.eta_cooling, 0)}%`}
+                  sub={etaLabel(eff.eta_cooling)}
+                  status={etaStatus(eff.eta_cooling)}
+                  icon={Zap}
+                />
+                <DcKpiCard
+                  label="ASHRAE A2"
+                  value={`${fmt(ashraePct, 0)}%`}
+                  sub={`${ashraeOk}/${rackCount} racks OK`}
+                  status={ashraePct === 100 ? "green" : ashraePct >= 50 ? "yellow" : "red"}
+                  icon={Server}
+                />
+              </div>
+            )}
+
+            {/* ── Report cards ── */}
+            <div className={`grid gap-4 ${reportsGridCols}`}>
+              {activeReports.map((report) => {
                 const Icon = report.icon;
                 return (
                   <button
