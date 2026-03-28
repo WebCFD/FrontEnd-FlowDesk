@@ -7,6 +7,7 @@ import { Loader2, AlertCircle, Layers, Eye, Activity, Wind, Zap, Scissors, Targe
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 // VTK.js imports
 import '@kitware/vtk.js/Rendering/Profiles/Geometry';
@@ -2566,7 +2567,16 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                             <Slider value={[cutVectorDensity]} onValueChange={([v]: number[]) => setCutVectorDensity(v)} min={0.01} max={0.5} step={0.01} className="flex-1" data-testid="slider-cut-vector-density" />
                           </div>
                           <div className="flex items-center justify-between">
-                            <Label className="text-[11px] text-slate-500 cursor-pointer">Plane Projection</Label>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Label className="text-[11px] text-slate-500 cursor-pointer underline decoration-dotted">Plane Projection</Label>
+                                </TooltipTrigger>
+                                <TooltipContent side="left" className="max-w-[200px] text-xs">
+                                  OFF: las flechas muestran la dirección real del flujo en 3D (pueden entrar o salir del plano). ON: las flechas se proyectan sobre el plano de corte y quedan planas, facilitando la lectura del patrón de flujo.
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                             <Switch checked={cutVectorProject} onCheckedChange={setCutVectorProject} data-testid="switch-cut-vector-project" />
                           </div>
                         </div>
