@@ -69,3 +69,5 @@ R2_BUCKET_NAME = "flowdesk-vtk-storage"
 
 [userenv.development]
 PIPELINE_STOP_AFTER = "5"
+APP_ENVIRONMENT = "development"
+VITE_APP_ENVIRONMENT = "development"

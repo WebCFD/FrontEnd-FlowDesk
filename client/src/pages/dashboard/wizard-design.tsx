@@ -3521,7 +3521,7 @@ export default function WizardDesign() {
           status: simulationStatus,
           jsonConfig: exportData,
           password: simulationPassword, // TEMPORARY: contraseña de lanzamiento
-          environment: import.meta.env.MODE === 'production' ? 'production' : 'development',
+          environment: import.meta.env.VITE_APP_ENVIRONMENT || (import.meta.env.MODE === 'production' ? 'production' : 'development'),
         }),
       });
 

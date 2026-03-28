@@ -1907,7 +1907,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const allowedEnvs = ['production', 'development'];
-      const nodeEnvDefault = (process.env.NODE_ENV === 'production') ? 'production' : 'development';
+      const nodeEnvDefault = process.env.APP_ENVIRONMENT || ((process.env.NODE_ENV === 'production') ? 'production' : 'development');
       const envFilter = allowedEnvs.includes(req.query.environment as string)
         ? (req.query.environment as string)
         : nodeEnvDefault;
@@ -1955,7 +1955,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const allowedEnvs = ['production', 'development'];
-      const nodeEnvDefault = (process.env.NODE_ENV === 'production') ? 'production' : 'development';
+      const nodeEnvDefault = process.env.APP_ENVIRONMENT || ((process.env.NODE_ENV === 'production') ? 'production' : 'development');
       const envFilter = allowedEnvs.includes(req.query.environment as string)
         ? (req.query.environment as string)
         : nodeEnvDefault;
@@ -2004,7 +2004,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const allowedEnvs = ['production', 'development'];
-      const nodeEnvDefault = (process.env.NODE_ENV === 'production') ? 'production' : 'development';
+      const nodeEnvDefault = process.env.APP_ENVIRONMENT || ((process.env.NODE_ENV === 'production') ? 'production' : 'development');
       const envFilter = allowedEnvs.includes(req.query.environment as string)
         ? (req.query.environment as string)
         : nodeEnvDefault;
