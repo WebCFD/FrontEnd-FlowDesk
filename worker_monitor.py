@@ -36,6 +36,7 @@ STATUS_LABELS = {
 # Config
 API_BASE = os.getenv('API_BASE_URL', 'http://localhost:5000')
 API_KEY = 'flowerpower-external-api'
+WORKER_ENVIRONMENT = os.getenv('APP_ENVIRONMENT', 'production')
 POLLING_INTERVAL = 30
 CFDFEASERVICE_API_KEY = os.getenv('CFDFEASERVICE_API_KEY')
 
@@ -114,7 +115,8 @@ def get_cloud_execution_sims():
     try:
         response = requests.get(
             f"{API_BASE}/api/external/simulations/cloud_execution",
-            headers={'x-api-key': API_KEY}
+            headers={'x-api-key': API_KEY},
+            params={'environment': WORKER_ENVIRONMENT}
         )
         if response.ok:
             data = response.json()
@@ -131,7 +133,8 @@ def get_post_processing_sims():
     try:
         response = requests.get(
             f"{API_BASE}/api/external/simulations/post_processing",
-            headers={'x-api-key': API_KEY}
+            headers={'x-api-key': API_KEY},
+            params={'environment': WORKER_ENVIRONMENT}
         )
         if response.ok:
             data = response.json()

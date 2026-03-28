@@ -143,11 +143,14 @@ def log_startup_configuration():
 # ---------------------------------------------------------------------------
 # API helpers
 # ---------------------------------------------------------------------------
+WORKER_ENVIRONMENT = os.getenv('APP_ENVIRONMENT', 'production')
+
 def get_pending_simulations():
     try:
         response = requests.get(
             f"{API_BASE}/api/external/simulations/pending",
-            headers={'x-api-key': API_KEY}
+            headers={'x-api-key': API_KEY},
+            params={'environment': WORKER_ENVIRONMENT}
         )
         if response.ok:
             data = response.json()

@@ -1903,10 +1903,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid API key" });
       }
 
-      const envFilter = (process.env.NODE_ENV === 'production') ? 'production' : 'development';
+      const allowedEnvs = ['production', 'development'];
+      const nodeEnvDefault = (process.env.NODE_ENV === 'production') ? 'production' : 'development';
+      const envFilter = allowedEnvs.includes(req.query.environment as string)
+        ? (req.query.environment as string)
+        : nodeEnvDefault;
       console.log('[EXPRESS] Fetching pending simulations for environment:', envFilter);
 
-      // Get all simulations with status 'pending' for the server's own environment
+      // Get all simulations with status 'pending' for the given environment
       const pendingSimulations = await db
         .select({
           id: simulations.id,
@@ -1947,10 +1951,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid API key" });
       }
 
-      const envFilter = (process.env.NODE_ENV === 'production') ? 'production' : 'development';
+      const allowedEnvs = ['production', 'development'];
+      const nodeEnvDefault = (process.env.NODE_ENV === 'production') ? 'production' : 'development';
+      const envFilter = allowedEnvs.includes(req.query.environment as string)
+        ? (req.query.environment as string)
+        : nodeEnvDefault;
       console.log('[EXPRESS] Fetching cloud_execution simulations for environment:', envFilter);
 
-      // Get all simulations with status 'cloud_execution' for the server's own environment
+      // Get all simulations with status 'cloud_execution' for the given environment
       const cloudSimulations = await db
         .select({
           id: simulations.id,
@@ -1992,10 +2000,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid API key" });
       }
 
-      const envFilter = (process.env.NODE_ENV === 'production') ? 'production' : 'development';
+      const allowedEnvs = ['production', 'development'];
+      const nodeEnvDefault = (process.env.NODE_ENV === 'production') ? 'production' : 'development';
+      const envFilter = allowedEnvs.includes(req.query.environment as string)
+        ? (req.query.environment as string)
+        : nodeEnvDefault;
       console.log('[EXPRESS] Fetching post_processing simulations for environment:', envFilter);
 
-      // Get all simulations with status 'post_processing' (orphaned simulations) for the server's own environment
+      // Get all simulations with status 'post_processing' (orphaned simulations) for the given environment
       const postProcessingSimulations = await db
         .select({
           id: simulations.id,
