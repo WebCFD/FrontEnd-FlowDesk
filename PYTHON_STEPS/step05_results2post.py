@@ -230,7 +230,7 @@ def run(case_name: str = "cases/cfd_case", simulation_type: str = "IndoorSpaces"
 
     Dispatches to the appropriate post-processing pipeline based on simulation_type:
       - IndoorSpaces    : PMV/PPD comfort + flow + ventilation + setup
-      - DataCenters     : (not yet implemented)
+      - DataCenters     : rack thermal analysis (RCI, RTI, η_cooling) + thermal/airflow maps
       - FireAndSmoke    : (not yet implemented)
       - IndustrialCooling: (not yet implemented)
 

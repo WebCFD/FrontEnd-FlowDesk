@@ -313,6 +313,23 @@ def copy_results_to_public(case_name, sim_id):
         logger.error(f"Failed to copy results: {e}")
         return None
 
+KNOWN_CASE_TYPES = {'IndoorSpaces', 'DataCenters', 'FireAndSmoke', 'IndustrialCooling'}
+
+def resolve_case_type(sim: dict) -> str:
+    """
+    Extract the case type (IndoorSpaces/DataCenters/etc.) from simulation jsonConfig.
+    Falls back to 'IndoorSpaces' if not found or if the stored value is a solver type
+    (SteadySim/TransientSim) rather than a case type — which happens for simulations
+    created before the solverType/simulationType split was fixed in the API.
+    """
+    json_config = sim.get('jsonConfig') or {}
+    raw = json_config.get('simulationType', 'IndoorSpaces')
+    if raw in KNOWN_CASE_TYPES:
+        return raw
+    logger.warning(f"[Worker] jsonConfig.simulationType='{raw}' is not a known case type — defaulting to IndoorSpaces")
+    return 'IndoorSpaces'
+
+
 def process_completed_simulation(sim):
     """
     Procesa simulación cuyo cloud task ha completado (status 10).
@@ -321,6 +338,8 @@ def process_completed_simulation(sim):
     sim_id = sim['id']
     task_id = sim.get('taskId')
     case_name = f"sim_{sim_id}"
+    case_type = resolve_case_type(sim)
+    logger.info(f"[Sim {sim_id}] Case type resolved: {case_type}")
     
     logger.info(f"=" * 60)
     logger.info(f"STARTING PROCESSING: Simulation #{sim_id}")
@@ -390,7 +409,7 @@ def process_completed_simulation(sim):
 
             # Stream stdout+stderr line-by-line so logs appear in real time
             proc = subprocess.Popen(
-                ["python3", "-u", "PYTHON_STEPS/step05_results2post.py", case_name],
+                ["python3", "-u", "PYTHON_STEPS/step05_results2post.py", case_name, case_type],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,

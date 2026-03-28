@@ -353,10 +353,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const filename = `${sanitizedName}_${timestamp}.json`;
       const filePath = path.join(userFolderPath, filename);
 
-      // Add simulationType to jsonConfig before saving
+      // Preserve the case type (IndoorSpaces/DataCenters/etc.) from jsonConfig.
+      // Store the solver type (SteadySim/TransientSim) separately as solverType.
       const enrichedJsonConfig = {
         ...jsonConfig,
-        simulationType: simulationType
+        solverType: simulationType,
+        // Only set simulationType if not already provided by the wizard's export
+        ...(jsonConfig?.simulationType ? {} : { simulationType: 'IndoorSpaces' }),
       };
 
       // Save JSON file
