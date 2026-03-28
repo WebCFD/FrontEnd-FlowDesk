@@ -382,7 +382,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         isPublic: false,
         jsonConfig: enrichedJsonConfig,
         userId: req.user.id,
-        environment: (environment === 'development') ? 'development' : 'production',
+        environment: (['development', 'production'].includes(environment)) ? environment : (process.env.APP_ENVIRONMENT || 'production'),
       });
 
       // Return success with simulation data
