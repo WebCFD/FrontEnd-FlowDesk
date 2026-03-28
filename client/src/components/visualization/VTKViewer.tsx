@@ -539,6 +539,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   const [cutVectorsEnabled, setCutVectorsEnabled] = useState<boolean>(false);
   const [cutVectorScale, setCutVectorScale] = useState<number>(0.3);
   const [cutVectorDensity, setCutVectorDensity] = useState<number>(0.1);
+  const [cutVectorProject, setCutVectorProject] = useState<boolean>(false);
   const [dataWarning, setDataWarning] = useState<string | null>(null);
   const [domainBounds, setDomainBounds] = useState<{ min: number[]; max: number[]; center: number[] }>({
     min: [0, 0, 0],
@@ -591,8 +592,9 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   // ── Volume cut plane refs ──────────────────────────────────────────────────
   const cutEnabledRef = useRef<boolean>(false);
   const cutVectorsEnabledRef = useRef<boolean>(false);
-  const cutVectorScaleRef = useRef<number>(50);
+  const cutVectorScaleRef = useRef<number>(0.3);
   const cutVectorDensityRef = useRef<number>(0.1);
+  const cutVectorProjectRef = useRef<boolean>(false);
   // Track whether user has manually set filter values (prevents auto-init from overwriting on re-enable)
   const isosurfaceUserSet = useRef<boolean>(false);
   const thresholdUserSet = useRef<boolean>(false);
@@ -976,7 +978,11 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   // Build velocity arrows by constructing shaft + arrowhead geometry directly.
   // Uses a standard vtkMapper — no Glyph3DMapper complexity.
   // Each arrow = shaft line (2 pts) + filled triangle head (3 pts), total 5 pts.
-  const createAdvancedVectorField = (inputData: any, scale: number, density: number, arrayName: string) => {
+  // planeNormal: unit normal of the cut plane (used when projectOnPlane=true)
+  const createAdvancedVectorField = (
+    inputData: any, scale: number, density: number, arrayName: string,
+    projectOnPlane = false, planeNormal: [number, number, number] = [0, 0, 1]
+  ) => {
     const pointData = inputData.getPointData();
     const vectorArray = pointData.getArrayByName(arrayName) || pointData.getArray(1);
     if (!vectorArray || vectorArray.getNumberOfComponents() < 3) {
@@ -1002,20 +1008,39 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     const lineData = new Uint32Array(n * 3);  // 3 values per shaft line: [2, tail, shaftTip]
     const triData  = new Uint32Array(n * 4);  // 4 values per triangle:   [3, wingL, wingR, apex]
 
+    const [nx, ny, nz] = planeNormal;
+
     for (let i = 0; i < n; i++) {
       const x  = pts[i * 3];
       const y  = pts[i * 3 + 1];
       const z  = pts[i * 3 + 2];
-      const ux = uData[i * 3];
-      const uy = uData[i * 3 + 1];
-      const uz = uData[i * 3 + 2];
-      const mag = Math.sqrt(ux * ux + uy * uy + uz * uz);
+      let ux = uData[i * 3];
+      let uy = uData[i * 3 + 1];
+      let uz = uData[i * 3 + 2];
+
+      // Original 3-D magnitude (for coloring — always reflects true speed)
+      const mag3d = Math.sqrt(ux * ux + uy * uy + uz * uz);
+
+      // Project onto cut plane if requested: U_proj = U - (U·n)*n
+      if (projectOnPlane) {
+        const dot = ux * nx + uy * ny + uz * nz;
+        ux -= dot * nx;
+        uy -= dot * ny;
+        uz -= dot * nz;
+      }
+
+      const mag = projectOnPlane
+        ? Math.sqrt(ux * ux + uy * uy + uz * uz)
+        : mag3d;
       const inv = mag > 1e-10 ? 1 / mag : 0;
 
-      // Unit direction
+      // Unit direction (of projected or original vector)
       const dx = ux * inv;
       const dy = uy * inv;
       const dz = uz * inv;
+
+      // Color by original 3-D speed so the colormap is consistent regardless of projection
+      const colorMag = mag3d;
 
       // Perpendicular vector via cross product with world-up or world-X
       let rx = 0, ry = 1, rz = 0;
@@ -1036,31 +1061,31 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
       positions[base * 3]     = x;
       positions[base * 3 + 1] = y;
       positions[base * 3 + 2] = z;
-      magnitudes[base]        = mag;
+      magnitudes[base]        = colorMag;
 
       // [1] shaft tip / head base center
       positions[(base + 1) * 3]     = x + dx * shaftEnd;
       positions[(base + 1) * 3 + 1] = y + dy * shaftEnd;
       positions[(base + 1) * 3 + 2] = z + dz * shaftEnd;
-      magnitudes[base + 1]          = mag;
+      magnitudes[base + 1]          = colorMag;
 
       // [2] left wing
       positions[(base + 2) * 3]     = x + dx * shaftEnd + px * headHalf;
       positions[(base + 2) * 3 + 1] = y + dy * shaftEnd + py * headHalf;
       positions[(base + 2) * 3 + 2] = z + dz * shaftEnd + pz * headHalf;
-      magnitudes[base + 2]          = mag;
+      magnitudes[base + 2]          = colorMag;
 
       // [3] right wing
       positions[(base + 3) * 3]     = x + dx * shaftEnd - px * headHalf;
       positions[(base + 3) * 3 + 1] = y + dy * shaftEnd - py * headHalf;
       positions[(base + 3) * 3 + 2] = z + dz * shaftEnd - pz * headHalf;
-      magnitudes[base + 3]          = mag;
+      magnitudes[base + 3]          = colorMag;
 
       // [4] apex
       positions[(base + 4) * 3]     = x + dx * scale;
       positions[(base + 4) * 3 + 1] = y + dy * scale;
       positions[(base + 4) * 3 + 2] = z + dz * scale;
-      magnitudes[base + 4]          = mag;
+      magnitudes[base + 4]          = colorMag;
 
       // Shaft line cell
       lineData[i * 3]     = 2;
@@ -1822,6 +1847,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
   useEffect(() => { cutVectorsEnabledRef.current = cutVectorsEnabled; }, [cutVectorsEnabled]);
   useEffect(() => { cutVectorScaleRef.current = cutVectorScale; }, [cutVectorScale]);
   useEffect(() => { cutVectorDensityRef.current = cutVectorDensity; }, [cutVectorDensity]);
+  useEffect(() => { cutVectorProjectRef.current = cutVectorProject; }, [cutVectorProject]);
   useEffect(() => { isosurfaceFieldRef.current = isosurfaceField; }, [isosurfaceField]);
   useEffect(() => { thresholdFieldRef.current = thresholdField; }, [thresholdField]);
   useEffect(() => { cutFieldRef.current = cutField; }, [cutField]);
@@ -2310,9 +2336,14 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     }
 
     // Add fresh velocity arrows on the current cut data
-    console.log(`[ARROWS] calling createAdvancedVectorField with scale=${cutVectorScale}`);
+    const axisNormals: Record<string, [number, number, number]> = {
+      x: [1, 0, 0], y: [0, 1, 0], z: [0, 0, 1],
+    };
+    const planeNormal = axisNormals[cutAxis] ?? [0, 0, 1];
+    console.log(`[ARROWS] calling createAdvancedVectorField — scale=${cutVectorScale}, project=${cutVectorProject}, normal=[${planeNormal}]`);
     const vActors = createAdvancedVectorField(
-      cuttingPlaneDataRef.current, cutVectorScale, cutVectorDensity, 'U'
+      cuttingPlaneDataRef.current, cutVectorScale, cutVectorDensity, 'U',
+      cutVectorProject, planeNormal
     );
     if (vActors && vActors.length > 0) {
       cutVectorActorRef.current = vActors[0];
@@ -2325,7 +2356,7 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
     }
     if (renderWindowRef.current?.renderWindow) renderWindowRef.current.renderWindow.render();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cutVectorsEnabled, cutVectorScale, cutVectorDensity, cutEnabled]);
+  }, [cutVectorsEnabled, cutVectorScale, cutVectorDensity, cutEnabled, cutVectorProject, cutAxis]);
 
   // ── Recolor cut plane when its independent field changes (no re-fetch) ─────
   useEffect(() => {
@@ -2527,12 +2558,16 @@ export default function VTKViewer({ simulationId, className }: VTKViewerProps) {
                       {cutVectorsEnabled && (
                         <div className="space-y-1.5">
                           <div className="flex items-center gap-2">
-                            <span className="text-[11px] text-slate-500 w-14 shrink-0">Scale {cutVectorScale % 1 === 0 ? cutVectorScale.toFixed(0) : cutVectorScale.toFixed(1)}</span>
-                            <Slider value={[cutVectorScale]} onValueChange={([v]: number[]) => setCutVectorScale(v)} min={0.1} max={50} step={0.1} className="flex-1" data-testid="slider-cut-vector-scale" />
+                            <span className="text-[11px] text-slate-500 w-14 shrink-0">Scale {cutVectorScale.toFixed(2)}</span>
+                            <Slider value={[cutVectorScale]} onValueChange={([v]: number[]) => setCutVectorScale(v)} min={0} max={2} step={0.01} className="flex-1" data-testid="slider-cut-vector-scale" />
                           </div>
                           <div className="flex items-center gap-2">
                             <span className="text-[11px] text-slate-500 w-14 shrink-0">Density {cutVectorDensity.toFixed(2)}</span>
                             <Slider value={[cutVectorDensity]} onValueChange={([v]: number[]) => setCutVectorDensity(v)} min={0.01} max={0.5} step={0.01} className="flex-1" data-testid="slider-cut-vector-density" />
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <Label className="text-[11px] text-slate-500 cursor-pointer">Plane Projection</Label>
+                            <Switch checked={cutVectorProject} onCheckedChange={setCutVectorProject} data-testid="switch-cut-vector-project" />
                           </div>
                         </div>
                       )}
