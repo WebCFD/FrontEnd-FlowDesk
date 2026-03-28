@@ -268,24 +268,33 @@ export default function Analysis() {
 
       {/* ── Report Sheet (iframe panel) ── */}
       <Sheet open={!!openReport} onOpenChange={(o) => { if (!o) setOpenReport(null); }}>
-        <SheetContent side="right" className="w-full sm:max-w-4xl p-0 flex flex-col">
-          <SheetHeader className="px-6 py-4 border-b shrink-0">
+        <SheetContent side="right" className="w-full sm:max-w-5xl p-0 flex flex-col overflow-hidden">
+          <SheetHeader className="px-6 py-3 border-b shrink-0 flex-row items-center justify-between">
             <SheetTitle className="flex items-center gap-2">
               {openReport && (() => { const Icon = openReport.icon; return <Icon className={`h-5 w-5 ${openReport.color}`} />; })()}
               {openReport?.name}
             </SheetTitle>
-          </SheetHeader>
-          <div className="flex-1 min-h-0">
             {openReport && simulationId && (
-              <iframe
-                key={openReport.id}
-                src={postUrl(openReport.file)}
-                title={openReport.name}
-                className="w-full h-full border-0"
-                sandbox="allow-scripts allow-same-origin"
-              />
+              <a
+                href={postUrl(openReport.file)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors mr-8"
+              >
+                <ExternalLink className="h-3 w-3" />
+                Open in new tab
+              </a>
             )}
-          </div>
+          </SheetHeader>
+          {openReport && simulationId && (
+            <iframe
+              key={openReport.id}
+              src={postUrl(openReport.file)}
+              title={openReport.name}
+              style={{ width: '100%', height: 'calc(100dvh - 57px)', border: 'none', display: 'block' }}
+              sandbox="allow-scripts allow-same-origin"
+            />
+          )}
         </SheetContent>
       </Sheet>
     </DashboardLayout>

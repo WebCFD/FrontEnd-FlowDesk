@@ -1142,11 +1142,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Serve any file from cases/sim_{id}/post/ (HTML reports, images, JSON)
-  app.get("/api/simulations/:id/post/:filepath(*)", async (req, res) => {
+  // Serve any file from cases/sim_{id}/post/ (HTML reports, images, JSON, subdirs)
+  app.get("/api/simulations/:id/post/*", async (req, res) => {
     try {
       const simulationId = parseInt(req.params.id);
-      const rawPath = (req.params as any).filepath || '';
+      const rawPath = (req.params as any)[0] || '';
       // Prevent path traversal
       const safePath = path.normalize(rawPath).replace(/^(\.\.(\/|\\|$))+/, '');
       const filePath = path.join(process.cwd(), 'cases', `sim_${simulationId}`, 'post', safePath);
