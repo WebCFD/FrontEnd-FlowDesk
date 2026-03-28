@@ -24,6 +24,7 @@ from datetime import datetime
 from pathlib import Path
 
 from src.components.tools.export_debug import load_foam_results
+from src.components.post.objects import generate_surface_3d_vtk, generate_volume_internal_vtk
 
 logger = logging.getLogger(__name__)
 
@@ -1163,6 +1164,22 @@ def run_data_centers(case_name: str, sim_path: str, post_path: str) -> None:
     with open(metrics_path, "w") as f:
         json.dump(_np_safe(metrics_all), f, indent=2)
     logger.info(f"\n    * Saved DC metrics: {os.path.basename(metrics_path)}")
+
+    # 9 ── 3D boundary surface VTK (required by web viewer) ───────────────────
+    logger.info("\n9 - Generating 3D boundary surface VTK (walls, floor, ceiling, racks)")
+    try:
+        surface_3d_path = generate_surface_3d_vtk(sim_path, post_path, preloaded_multiblock=multiblock)
+        logger.info(f"    * 3D surface VTK: {surface_3d_path}")
+    except Exception as _e:
+        logger.error(f"9 - FAILED: generate_surface_3d_vtk raised {type(_e).__name__}: {_e}")
+
+    # 10 ── 3D internal volume VTK (required by web viewer) ───────────────────
+    logger.info("\n10 - Generating 3D internal volume VTK (CFD field values)")
+    try:
+        volume_internal_path = generate_volume_internal_vtk(sim_path, post_path, preloaded_multiblock=multiblock)
+        logger.info(f"    * 3D volume VTK: {volume_internal_path}")
+    except Exception as _e:
+        logger.error(f"10 - FAILED: generate_volume_internal_vtk raised {type(_e).__name__}: {_e}")
 
     logger.info("\n=========== DATA CENTER POST-PROCESSING SUMMARY ===========")
     logger.info(f"  RCI_HI = {rci.get('RCI_HI', 0):.1f}%  (target ≥ 96%)")
