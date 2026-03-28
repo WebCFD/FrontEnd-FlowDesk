@@ -509,99 +509,57 @@ function parseVtkAscii(text: string): ReturnType<typeof vtkPolyData.newInstance>
 
 // =================== DIAGNOSTIC TEST — DELETE AFTER ===================
 function GlyphDiagTest() {
-  console.log('[GLYPHTEST] render()');
-  const divARef = useRef<HTMLDivElement>(null);
-  const divBRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    console.log('[GLYPHTEST] useEffect fired — divA:', !!divARef.current, 'divB:', !!divBRef.current);
-    if (!divARef.current || !divBRef.current) return;
+    if (!containerRef.current) return;
 
-    function buildScene(container: HTMLDivElement, label: string, useSourceConn: boolean) {
-      try {
-        const rw = vtkRenderWindow.newInstance();
-        const ren = vtkRenderer.newInstance({ background: [0.08, 0.08, 0.15] });
-        rw.addRenderer(ren);
-        const glRW = vtkOpenGLRenderWindow.newInstance();
-        glRW.setContainer(container);
-        glRW.setSize(200, 150);
-        rw.addView(glRW);
+    const rw = vtkRenderWindow.newInstance();
+    const ren = vtkRenderer.newInstance({ background: [0.1, 0.1, 0.2] });
+    rw.addRenderer(ren);
+    const glRW = vtkOpenGLRenderWindow.newInstance();
+    glRW.setContainer(containerRef.current);
+    glRW.setSize(300, 200);
+    rw.addView(glRW);
 
-        // 5 points in a 2×2 grid + center, all with velocity (1,0,0)
-        const pts = vtkPoints.newInstance();
-        pts.setData(new Float32Array([
-          -1, -1, 0,
-           1, -1, 0,
-           1,  1, 0,
-          -1,  1, 0,
-           0,  0, 0,
-        ]), 3);
+    const pts = vtkPoints.newInstance();
+    pts.setData(new Float32Array([-1,-1,0, 1,-1,0, 1,1,0, -1,1,0, 0,0,0]), 3);
+    const cells = vtkCellArray.newInstance();
+    cells.setData(new Uint32Array([1,0, 1,1, 1,2, 1,3, 1,4]));
+    const uArr = vtkDataArray.newInstance({
+      name: 'U',
+      values: new Float32Array([1,0,0, 1,0,0, 1,0,0, 1,0,0, 1,0,0]),
+      numberOfComponents: 3,
+    });
+    const pd = vtkPolyData.newInstance();
+    pd.setPoints(pts);
+    pd.setVerts(cells);
+    pd.getPointData().addArray(uArr);
 
-        const verts = new Uint32Array([1,0, 1,1, 1,2, 1,3, 1,4]);
-        const cells = vtkCellArray.newInstance();
-        cells.setData(verts);
+    const arrow = vtkArrowSource.newInstance();
+    const gm = vtkGlyph3DMapper.newInstance();
+    gm.setInputData(pd, 0);
+    gm.setSourceConnection(arrow.getOutputPort());
+    gm.setOrient(true);
+    gm.setOrientationModeToDirection();
+    gm.setOrientationArray('U');
+    gm.setScaling(true);
+    gm.setScaleModeToScaleByConstant();
+    gm.setScaleFactor(1);
 
-        const uArr = vtkDataArray.newInstance({
-          name: 'U',
-          values: new Float32Array([1,0,0, 1,0,0, 1,0,0, 1,0,0, 1,0,0]),
-          numberOfComponents: 3,
-        });
-
-        const pd = vtkPolyData.newInstance();
-        pd.setPoints(pts);
-        pd.setVerts(cells);
-        pd.getPointData().addArray(uArr);
-
-        const arrow = vtkArrowSource.newInstance();
-        arrow.update();
-
-        const gm = vtkGlyph3DMapper.newInstance();
-        gm.setInputData(pd, 0);
-        if (useSourceConn) {
-          gm.setSourceConnection(arrow.getOutputPort());
-        } else {
-          gm.setInputData(arrow.getOutputData(), 1);
-        }
-        gm.setOrient(true);
-        gm.setOrientationModeToDirection();
-        gm.setOrientationArray('U');
-        gm.setScaling(true);
-        gm.setScaleModeToScaleByConstant();
-        gm.setScaleFactor(0.8);
-
-        const actor = vtkActor.newInstance();
-        actor.setMapper(gm);
-        actor.getProperty().setColor(1, 0.6, 0.1);
-        ren.addActor(actor);
-        ren.resetCamera();
-        rw.render();
-        console.log(`[GLYPHTEST] ${label} — OK, rendered`);
-      } catch (e: any) {
-        console.log(`[GLYPHTEST] ${label} — CAUGHT ERROR: ${e?.message || e}`);
-      }
-    }
-
-    buildScene(divARef.current, 'A:setSourceConnection', true);
-    buildScene(divBRef.current, 'B:setInputData(data,1)', false);
+    const actor = vtkActor.newInstance();
+    actor.setMapper(gm);
+    actor.getProperty().setColor(1, 0.5, 0.1);
+    ren.addActor(actor);
+    ren.resetCamera();
+    rw.render();
+    console.log('[GLYPHTEST] rendered');
   }, []);
 
   return (
-    <div style={{
-      position: 'fixed', bottom: 8, right: 8, zIndex: 9999,
-      background: '#12121e', border: '1px solid #444', borderRadius: 6,
-      padding: '6px 8px', fontFamily: 'monospace',
-    }}>
-      <div style={{ color: '#fff', fontSize: 10, marginBottom: 4 }}>🔬 Glyph3D Diag Test</div>
-      <div style={{ display: 'flex', gap: 6 }}>
-        <div>
-          <div style={{ color: '#aaa', fontSize: 9, marginBottom: 2 }}>A: setSourceConnection</div>
-          <div ref={divARef} style={{ width: 200, height: 150 }} />
-        </div>
-        <div>
-          <div style={{ color: '#aaa', fontSize: 9, marginBottom: 2 }}>B: setInputData(data,1)</div>
-          <div ref={divBRef} style={{ width: 200, height: 150 }} />
-        </div>
-      </div>
+    <div style={{ position: 'fixed', bottom: 8, right: 8, zIndex: 9999, background: '#111', border: '1px solid #555', borderRadius: 4, padding: 6 }}>
+      <div style={{ color: '#eee', fontSize: 10, marginBottom: 4 }}>🔬 Glyph3D Test</div>
+      <div ref={containerRef} style={{ width: 300, height: 200 }} />
     </div>
   );
 }
