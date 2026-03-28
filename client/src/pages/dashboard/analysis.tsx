@@ -288,32 +288,32 @@ export default function Analysis() {
   const simulationType: string = (simulation?.jsonConfig as Record<string, unknown> | null)?.simulationType as string ?? "IndoorSpaces";
   const isDataCenter = simulationType === "DataCenters";
 
-  // IndoorSpaces metrics
+  // IndoorSpaces metrics — only after simulation type is known to avoid spurious DC requests
   const { data: comfort } = useQuery<ComfortMetrics>({
     queryKey: [`/api/simulations/${simulationId}/post/comfort_metrics.json`],
-    enabled: hasPost && !isDataCenter,
+    enabled: hasPost && !!simulation && !isDataCenter,
     queryFn: () => fetch(postUrl("comfort_metrics.json")).then(r => r.ok ? r.json() : null),
     retry: false,
   });
 
   const { data: flow } = useQuery<FlowMetrics>({
     queryKey: [`/api/simulations/${simulationId}/post/flow_metrics.json`],
-    enabled: hasPost && !isDataCenter,
+    enabled: hasPost && !!simulation && !isDataCenter,
     queryFn: () => fetch(postUrl("flow_metrics.json")).then(r => r.ok ? r.json() : null),
     retry: false,
   });
 
   const { data: vent } = useQuery<VentMetrics>({
     queryKey: [`/api/simulations/${simulationId}/post/ventilation_metrics.json`],
-    enabled: hasPost && !isDataCenter,
+    enabled: hasPost && !!simulation && !isDataCenter,
     queryFn: () => fetch(postUrl("ventilation_metrics.json")).then(r => r.ok ? r.json() : null),
     retry: false,
   });
 
-  // DataCenter metrics
+  // DataCenter metrics — only after simulation type is known
   const { data: dcMetrics } = useQuery<DcMetrics>({
     queryKey: [`/api/simulations/${simulationId}/post/dc_metrics.json`],
-    enabled: hasPost && isDataCenter,
+    enabled: hasPost && !!simulation && isDataCenter,
     queryFn: () => fetch(postUrl("dc_metrics.json")).then(r => r.ok ? r.json() : null),
     retry: false,
   });
