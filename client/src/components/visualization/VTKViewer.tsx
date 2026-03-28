@@ -554,6 +554,12 @@ function GlyphDiagTest() {
     ren.resetCamera();
     rw.render();
     console.log('[GLYPHTEST] rendered');
+
+    return () => {
+      ren.removeAllActors();
+      rw.removeRenderer(ren);
+      glRW.setContainer(null);
+    };
   }, []);
 
   return (
