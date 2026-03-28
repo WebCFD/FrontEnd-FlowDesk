@@ -1142,6 +1142,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Serve any file from cases/sim_{id}/post/ (HTML reports, images, JSON)
+  app.get("/api/simulations/:id/post/:filepath(*)", async (req, res) => {
+    try {
+      const simulationId = parseInt(req.params.id);
+      const rawPath = (req.params as any).filepath || '';
+      // Prevent path traversal
+      const safePath = path.normalize(rawPath).replace(/^(\.\.(\/|\\|$))+/, '');
+      const filePath = path.join(process.cwd(), 'cases', `sim_${simulationId}`, 'post', safePath);
+      if (!fsSync.existsSync(filePath)) {
+        return res.status(404).json({ message: 'Post file not found', path: safePath });
+      }
+      res.sendFile(filePath);
+    } catch (error: any) {
+      res.status(500).json({ message: 'Failed to serve post file', error: error.message });
+    }
+  });
+
   app.get("/api/simulations/:id", async (req, res) => {
     try {
       if (!req.isAuthenticated()) {
