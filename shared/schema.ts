@@ -37,6 +37,7 @@ export const simulations = pgTable("simulations", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   completedAt: timestamp("completed_at"),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  environment: text("environment").default("production").notNull(), // 'production' | 'development'
 });
 
 // @deprecated - kept for backwards compatibility
@@ -88,6 +89,7 @@ export const insertSimulationSchema = createInsertSchema(simulations)
     cost: true,
     isPublic: true,
     jsonConfig: true,
+    environment: true,
   })
   .extend({
     status: z.enum([
@@ -104,6 +106,7 @@ export const insertSimulationSchema = createInsertSchema(simulations)
     simulationType: z.enum(['SteadySim', 'TransientSim', 'test_calculation']),
     packageType: z.enum(['basic', 'professional', 'enterprise']),
     cost: z.string().transform(val => parseFloat(val)),
+    environment: z.enum(['production', 'development']).default('production'),
   });
 
 // Schema for updating simulation status

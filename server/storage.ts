@@ -101,6 +101,7 @@ export class DatabaseStorage implements IStorage {
         isPublic: simulation.isPublic,
         jsonConfig: simulation.jsonConfig,
         userId: simulation.userId,
+        environment: simulation.environment ?? 'production',
       })
       .returning();
     return newSimulation;

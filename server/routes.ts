@@ -9,7 +9,7 @@ import * as fsSync from "fs";
 import path from "path";
 import JSZip from "jszip";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { ObjectStorageService } from "./objectStorage";
 import { r2Storage, R2NotFoundError } from "./r2Storage";
 import { ConcurrentUpdateError } from "./storage";
@@ -299,7 +299,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('[EXPRESS] Password validation successful');
       // ========== FIN DE TEMPORARY PASSWORD PROTECTION ==========
 
-      const { name, simulationType, status, jsonConfig } = req.body;
+      const { name, simulationType, status, jsonConfig, environment } = req.body;
 
       // Validation 1: Check simulation name
       if (!name || name.trim().length === 0) {
@@ -379,6 +379,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         isPublic: false,
         jsonConfig: enrichedJsonConfig,
         userId: req.user.id,
+        environment: (environment === 'development') ? 'development' : 'production',
       });
 
       // Return success with simulation data
@@ -1902,9 +1903,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid API key" });
       }
 
-      console.log('[EXPRESS] Fetching pending simulations...');
+      const envFilter = (req.query.environment === 'development') ? 'development' : 'production';
+      console.log('[EXPRESS] Fetching pending simulations for environment:', envFilter);
 
-      // Get all simulations with status 'pending'
+      // Get all simulations with status 'pending' for the given environment
       const pendingSimulations = await db
         .select({
           id: simulations.id,
@@ -1920,7 +1922,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           updatedAt: simulations.updatedAt,
         })
         .from(simulations)
-        .where(eq(simulations.status, 'pending'))
+        .where(and(eq(simulations.status, 'pending'), eq(simulations.environment, envFilter)))
         .orderBy(simulations.createdAt);
 
       console.log('[EXPRESS] Found pending simulations:', pendingSimulations.length);
@@ -1945,9 +1947,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid API key" });
       }
 
-      console.log('[EXPRESS] Fetching cloud_execution simulations...');
+      const envFilter = (req.query.environment === 'development') ? 'development' : 'production';
+      console.log('[EXPRESS] Fetching cloud_execution simulations for environment:', envFilter);
 
-      // Get all simulations with status 'cloud_execution'
+      // Get all simulations with status 'cloud_execution' for the given environment
       const cloudSimulations = await db
         .select({
           id: simulations.id,
@@ -1964,7 +1967,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           updatedAt: simulations.updatedAt,
         })
         .from(simulations)
-        .where(eq(simulations.status, 'cloud_execution'))
+        .where(and(eq(simulations.status, 'cloud_execution'), eq(simulations.environment, envFilter)))
         .orderBy(simulations.createdAt);
 
       console.log('[EXPRESS] Found cloud_execution simulations:', cloudSimulations.length);
@@ -1989,9 +1992,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid API key" });
       }
 
-      console.log('[EXPRESS] Fetching post_processing simulations...');
+      const envFilter = (req.query.environment === 'development') ? 'development' : 'production';
+      console.log('[EXPRESS] Fetching post_processing simulations for environment:', envFilter);
 
-      // Get all simulations with status 'post_processing' (orphaned simulations)
+      // Get all simulations with status 'post_processing' (orphaned simulations) for the given environment
       const postProcessingSimulations = await db
         .select({
           id: simulations.id,
@@ -2008,7 +2012,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           updatedAt: simulations.updatedAt,
         })
         .from(simulations)
-        .where(eq(simulations.status, 'post_processing'))
+        .where(and(eq(simulations.status, 'post_processing'), eq(simulations.environment, envFilter)))
         .orderBy(simulations.createdAt);
 
       console.log('[EXPRESS] Found post_processing simulations:', postProcessingSimulations.length);
