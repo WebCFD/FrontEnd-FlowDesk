@@ -1,0 +1,326 @@
+{
+  "case_name": "DataCenter_1",
+  "simulationType": "SteadySim",
+  "version": "1.0",
+  "levels": {
+    "0": {
+      "height": 2.5,
+      "deck": 0.35,
+      "ceiling": {
+        "temp": 20,
+        "emissivity": 0.9,
+        "airEntries": []
+      },
+      "floor": {
+        "temp": 20,
+        "emissivity": 0.9,
+        "airEntries": []
+      },
+      "walls": [
+        {
+          "id": "wall_0F_3",
+          "start": {
+            "x": 4,
+            "y": 2.5
+          },
+          "end": {
+            "x": -3,
+            "y": 2.5
+          },
+          "temp": 24,
+          "material": "default",
+          "emissivity": 0.9,
+          "airEntries": []
+        },
+        {
+          "id": "wall_0F_4",
+          "start": {
+            "x": -3,
+            "y": 2.5
+          },
+          "end": {
+            "x": -3,
+            "y": -2.45
+          },
+          "temp": 24,
+          "material": "default",
+          "emissivity": 0.9,
+          "airEntries": [
+            {
+              "id": "vent_0F_1",
+              "type": "vent",
+              "position": {
+                "x": -3,
+                "y": 1.49859,
+                "z": 1.1,
+                "normal": {
+                  "x": -1,
+                  "y": 0,
+                  "z": 0
+                }
+              },
+              "dimensions": {
+                "width": 0.6,
+                "height": 0.4,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 20,
+                "airDirection": "inflow",
+                "flowDirection": {
+                  "x": 1,
+                  "y": 0,
+                  "z": 0
+                },
+                "verticalAngle": 0,
+                "horizontalAngle": 0,
+                "flowType": "massFlow",
+                "flowIntensity": "medium"
+              }
+            }
+          ]
+        },
+        {
+          "id": "wall_0F_5",
+          "start": {
+            "x": -3,
+            "y": -2.45
+          },
+          "end": {
+            "x": 4,
+            "y": -2.45
+          },
+          "temp": 20,
+          "material": "default",
+          "emissivity": 0.9,
+          "airEntries": []
+        },
+        {
+          "id": "wall_0F_6",
+          "start": {
+            "x": 4,
+            "y": -2.45
+          },
+          "end": {
+            "x": 4,
+            "y": 2.5
+          },
+          "temp": 20,
+          "material": "default",
+          "emissivity": 0.9,
+          "airEntries": [
+            {
+              "id": "window_0F_1",
+              "type": "window",
+              "position": {
+                "x": 4,
+                "y": -1.41417,
+                "z": 1.5,
+                "normal": {
+                  "x": 1,
+                  "y": 0,
+                  "z": 0
+                }
+              },
+              "dimensions": {
+                "width": 1.2,
+                "height": 1.2,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "airDirection": "outflow",
+                "flowDirection": {
+                  "x": 1,
+                  "y": 0,
+                  "z": 0
+                },
+                "verticalAngle": 0,
+                "horizontalAngle": 0,
+                "flowIntensity": "medium",
+                "temperature": 20
+              }
+            }
+          ]
+        }
+      ],
+      "stairs": [],
+      "furniture": [
+        {
+          "id": "object_0F_rack_1",
+          "faces": {
+            "front": {
+              "role": "inlet",
+              "vertices": [
+                [
+                  0.3117,
+                  0.6043,
+                  0
+                ],
+                [
+                  -0.2883,
+                  0.6043,
+                  0
+                ],
+                [
+                  -0.2883,
+                  0.6043,
+                  2
+                ],
+                [
+                  0.3117,
+                  0.6043,
+                  2
+                ]
+              ],
+              "rackDensity": "medium",
+              "thermalPower_kW": 10,
+              "airFlow": 2395
+            },
+            "back": {
+              "role": "outlet",
+              "vertices": [
+                [
+                  -0.2883,
+                  -0.3957,
+                  0
+                ],
+                [
+                  0.3117,
+                  -0.3957,
+                  0
+                ],
+                [
+                  0.3117,
+                  -0.3957,
+                  2
+                ],
+                [
+                  -0.2883,
+                  -0.3957,
+                  2
+                ]
+              ],
+              "rackDensity": "medium",
+              "thermalPower_kW": 10,
+              "airFlow": 2395
+            },
+            "left": {
+              "role": "wall",
+              "vertices": [
+                [
+                  -0.2883,
+                  0.6043,
+                  0
+                ],
+                [
+                  -0.2883,
+                  -0.3957,
+                  0
+                ],
+                [
+                  -0.2883,
+                  -0.3957,
+                  2
+                ],
+                [
+                  -0.2883,
+                  0.6043,
+                  2
+                ]
+              ],
+              "temperature": 20,
+              "material": "default",
+              "emissivity": 0.9
+            },
+            "right": {
+              "role": "wall",
+              "vertices": [
+                [
+                  0.3117,
+                  -0.3957,
+                  0
+                ],
+                [
+                  0.3117,
+                  0.6043,
+                  0
+                ],
+                [
+                  0.3117,
+                  0.6043,
+                  2
+                ],
+                [
+                  0.3117,
+                  -0.3957,
+                  2
+                ]
+              ],
+              "temperature": 20,
+              "material": "default",
+              "emissivity": 0.9
+            },
+            "top": {
+              "role": "wall",
+              "vertices": [
+                [
+                  -0.2883,
+                  -0.3957,
+                  2
+                ],
+                [
+                  0.3117,
+                  -0.3957,
+                  2
+                ],
+                [
+                  0.3117,
+                  0.6043,
+                  2
+                ],
+                [
+                  -0.2883,
+                  0.6043,
+                  2
+                ]
+              ],
+              "temperature": 20,
+              "material": "default",
+              "emissivity": 0.9
+            },
+            "bottom": {
+              "role": "wall",
+              "vertices": [
+                [
+                  -0.2883,
+                  0.6043,
+                  0
+                ],
+                [
+                  0.3117,
+                  0.6043,
+                  0
+                ],
+                [
+                  0.3117,
+                  -0.3957,
+                  0
+                ],
+                [
+                  -0.2883,
+                  -0.3957,
+                  0
+                ]
+              ],
+              "temperature": 20,
+              "material": "default",
+              "emissivity": 0.9
+            }
+          }
+        }
+      ]
+    }
+  }
+}
