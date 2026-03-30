@@ -254,18 +254,8 @@ def create_block_mesh(patch_df: pd.DataFrame, data: Dict[str, Any]) -> Tuple[pd.
     """
     patch_id = data['id'].replace(' ', '_')
 
-    # --- Boundary condition (all faces are wall) ---
-    sim = data.get('simulationProperties', {})
-    new_patch = get_wall_bc_dict(
-        patch_id,
-        temperature=sim.get('temperature', DEFAULT_TEMPERATURE),
-        emissivity=sim.get('emissivity', 0.9),
-        material=sim.get('material', 'default')
-    )
-    patch_df = pd.concat([patch_df, pd.DataFrame([new_patch])], ignore_index=True)
-    patch_idx = patch_df.index[patch_df['id'] == patch_id][0].astype(np.int16)
-
     # --- Dimensions: prefer new 'dimensions' field, fall back to legacy 'scale' ---
+    # (extracted early so surface area can be stored in the BC dict)
     if 'dimensions' in data:
         dims = data['dimensions']
         w = dims['width']
@@ -275,6 +265,25 @@ def create_block_mesh(patch_df: pd.DataFrame, data: Dict[str, Any]) -> Tuple[pd.
         # Legacy: scale → {x, y, z}
         scale = data.get('scale', {'x': 1.0, 'y': 1.0, 'z': 1.0})
         w, d, h = scale['x'], scale['y'], scale['z']
+
+    # Surface area of all 6 faces [m²]
+    surface_area_m2 = 2.0 * (w * d + w * h + d * h)
+
+    # --- Boundary condition (all faces are wall) ---
+    sim = data.get('simulationProperties', {})
+    thermal_bc_mode = sim.get('thermalBCMode', 'fixedT')
+    thermal_power_w = float(sim.get('thermalPower_W', 0.0))
+    new_patch = get_wall_bc_dict(
+        patch_id,
+        temperature=sim.get('temperature', DEFAULT_TEMPERATURE),
+        emissivity=sim.get('emissivity', 0.9),
+        material=sim.get('material', 'default')
+    )
+    new_patch['thermalBCMode']   = thermal_bc_mode
+    new_patch['thermalPower_W']  = thermal_power_w
+    new_patch['surface_area_m2'] = surface_area_m2
+    patch_df = pd.concat([patch_df, pd.DataFrame([new_patch])], ignore_index=True)
+    patch_idx = patch_df.index[patch_df['id'] == patch_id][0].astype(np.int16)
 
     # --- Position ---
     pos = data['position']

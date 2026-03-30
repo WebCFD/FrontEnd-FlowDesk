@@ -507,8 +507,23 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["type"] = 'fixedFluxPressure'
                         new_bc_data["value"] = 0
                     elif(variable == 'T'):
-                        new_bc_data["type"] = 'fixedValue'
-                        new_bc_data["value"] = row['T_(°C)'] + 273.15
+                        thermal_bc_mode = row.get('thermalBCMode', 'fixedT')
+                        if thermal_bc_mode == 'fixedQ':
+                            # Heat flux BC: externalWallHeatFluxTemperature
+                            thermal_power_w  = float(row.get('thermalPower_W', 0.0) or 0.0)
+                            surface_area_m2  = float(row.get('surface_area_m2', 1.0) or 1.0)
+                            q_w_per_m2 = thermal_power_w / surface_area_m2 if surface_area_m2 > 0 else 0.0
+                            logger.info(f"    BC {row['id']} (wall/fixedQ): Q={thermal_power_w}W A={surface_area_m2:.4f}m² q={q_w_per_m2:.2f}W/m²")
+                            # foamlib writes scalar values without 'uniform'; post-processing
+                            # in the T-file step below will insert 'uniform' before the q value.
+                            new_bc_data["type"]        = 'externalWallHeatFluxTemperature'
+                            new_bc_data["mode"]        = 'flux'
+                            new_bc_data["q"]           = q_w_per_m2   # bare float; fixed below
+                            new_bc_data["kappaMethod"] = 'fluidThermo'
+                            new_bc_data["value"]       = row['T_(°C)'] + 273.15  # foamlib adds 'uniform'
+                        else:
+                            new_bc_data["type"] = 'fixedValue'
+                            new_bc_data["value"] = row['T_(°C)'] + 273.15
                     elif(variable == 'U'):
                         new_bc_data["type"] = 'noSlip'
                     else:
@@ -768,6 +783,26 @@ def define_initial_files(sim_path, patch_df):
         with open(t_file, 'w', encoding='utf-8') as _f:
             _f.write(_t_content)
         logger.info("    * Rack T boundary conditions post-processed successfully")
+
+    # ── Post-process 0.orig/T: fix 'q X;' → 'q uniform X;' for fixedQ blocks ──
+    # foamlib writes bare scalar values; OpenFOAM's externalWallHeatFluxTemperature
+    # requires PatchFunction1<scalar> format: 'q uniform X;'
+    fixedq_patches = patch_df[patch_df['thermalBCMode'] == 'fixedQ'] \
+        if 'thermalBCMode' in patch_df.columns else pd.DataFrame()
+    if len(fixedq_patches) > 0:
+        t_file = os.path.join(initial_path, 'T')
+        with open(t_file, 'r', encoding='utf-8') as _f:
+            _t_content = _f.read()
+        # Within any externalWallHeatFluxTemperature block, replace 'q   X;' with 'q   uniform X;'
+        _t_content = _re.sub(
+            r'(type\s+externalWallHeatFluxTemperature\s*;[^}]*?\bq\s+)([0-9eE+\-.]+)(\s*;)',
+            r'\1uniform \2\3',
+            _t_content,
+            flags=_re.DOTALL
+        )
+        with open(t_file, 'w', encoding='utf-8') as _f:
+            _f.write(_t_content)
+        logger.info(f"    * Fixed {len(fixedq_patches)} externalWallHeatFluxTemperature 'q' field(s) in 0.orig/T")
 
 
 def setup(case_path: str, simulation_type: str = 'comfortTest', transient: bool = False, n_cpu: int = 2) -> list:

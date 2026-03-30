@@ -212,6 +212,8 @@ interface FurnitureExport {
     temperature: number;
     material: string;
     emissivity: number;
+    thermalBCMode?: 'fixedT' | 'fixedQ';
+    thermalPower_W?: number;
     
     flowType?: 'massFlow' | 'velocity' | 'pressure';
     flowValue?: number;
@@ -985,7 +987,9 @@ export function generateSimulationData(
       const baseSimulationProperties = {
         temperature: properties.temperature || simulationProperties.airTemperature || 20,
         material: properties.material || 'default',
-        emissivity: properties.emissivity || 0.90
+        emissivity: properties.emissivity || 0.90,
+        ...(properties.thermalBCMode ? { thermalBCMode: properties.thermalBCMode } : {}),
+        ...(properties.thermalPower_W !== undefined ? { thermalPower_W: properties.thermalPower_W } : {})
       };
       
       // Add vent/nozzle-specific properties if this is a vent or nozzle

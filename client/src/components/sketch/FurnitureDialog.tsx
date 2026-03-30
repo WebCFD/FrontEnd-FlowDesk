@@ -290,6 +290,8 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
   const [furnitureName, setFurnitureName] = useState("");
   const [materialType, setMaterialType] = useState("default");
   const [temperature, setTemperature] = useState(20);
+  const [thermalBCMode, setThermalBCMode] = useState<'fixedT' | 'fixedQ'>('fixedT');
+  const [thermalPower_W, setThermalPower_W] = useState(100);
   const [rackDensity, setRackDensity] = useState<'low' | 'medium' | 'high' | 'custom'>('medium');
   const [thermalPower, setThermalPower] = useState(10);
   const [airFlow, setAirFlow] = useState(2395);
@@ -384,6 +386,10 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
         setMaterialType(defaults.properties?.material || "default");
       }
       setTemperature(defaults.properties?.temperature ?? (type === 'rack' || type === 'topVentBox' || type === 'sideVentBox' ? 40 : 20));
+      if (type === 'block' || type === 'custom') {
+        setThermalBCMode((defaults.properties as any)?.thermalBCMode ?? 'fixedT');
+        setThermalPower_W((defaults.properties as any)?.thermalPower_W ?? 100);
+      }
       const savedDensity = defaults.serverProperties?.rackDensity ?? 'medium';
       setRackDensity(savedDensity);
       if (savedDensity === 'custom') {
@@ -481,11 +487,19 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
         ? {
             temperature: temperature
           }
-        : {
-            material: materialType,
-            temperature: temperature,
-            emissivity: getCurrentEmissivity()
-          };
+        : (type === 'block' || type === 'custom')
+          ? {
+              material: materialType,
+              temperature: temperature,
+              emissivity: getCurrentEmissivity(),
+              thermalBCMode,
+              ...(thermalBCMode === 'fixedQ' ? { thermalPower_W } : {})
+            }
+          : {
+              material: materialType,
+              temperature: temperature,
+              emissivity: getCurrentEmissivity()
+            };
     
     const furnitureData = {
       name: furnitureName,
@@ -998,21 +1012,73 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
               </h4>
               
               <div className="space-y-4">
-                {/* Temperature - Only for non-vent furniture */}
+                {/* Thermal BC — block/custom: toggle T vs Q; others: plain temperature */}
                 {type !== 'vent' && type !== 'nozzle' && (
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="temperature" className="text-right">
-                      {(type === 'rack' || type === 'topVentBox' || type === 'sideVentBox') ? 'Temperature Chassis' : 'Temperature'}
-                    </Label>
-                    <Input
-                      id="temperature"
-                      type="number"
-                      value={temperature}
-                      onChange={(e) => setTemperature(Number(e.target.value))}
-                      className="col-span-2"
-                    />
-                    <span className="text-sm">°C</span>
-                  </div>
+                  (type === 'block' || type === 'custom') ? (
+                    <div className="space-y-3">
+                      {/* Mode toggle */}
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label className="text-right text-sm">Thermal BC</Label>
+                        <div className="col-span-3 flex rounded-md border overflow-hidden w-fit">
+                          <button
+                            type="button"
+                            onClick={() => setThermalBCMode('fixedT')}
+                            className={`px-3 py-1.5 text-xs font-medium transition-colors ${thermalBCMode === 'fixedT' ? 'bg-slate-800 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'}`}
+                          >
+                            Temperature
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setThermalBCMode('fixedQ')}
+                            className={`px-3 py-1.5 text-xs font-medium transition-colors border-l ${thermalBCMode === 'fixedQ' ? 'bg-slate-800 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'}`}
+                          >
+                            Heat Flux
+                          </button>
+                        </div>
+                      </div>
+                      {/* Conditional input */}
+                      {thermalBCMode === 'fixedT' ? (
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="temperature" className="text-right">Temperature</Label>
+                          <Input
+                            id="temperature"
+                            type="number"
+                            value={temperature}
+                            onChange={(e) => setTemperature(Number(e.target.value))}
+                            className="col-span-2"
+                          />
+                          <span className="text-sm">°C</span>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="thermalPower_W" className="text-right">Power Q</Label>
+                          <Input
+                            id="thermalPower_W"
+                            type="number"
+                            min={0}
+                            value={thermalPower_W}
+                            onChange={(e) => setThermalPower_W(Number(e.target.value))}
+                            className="col-span-2"
+                          />
+                          <span className="text-sm">W</span>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="temperature" className="text-right">
+                        {(type === 'rack' || type === 'topVentBox' || type === 'sideVentBox') ? 'Temperature Chassis' : 'Temperature'}
+                      </Label>
+                      <Input
+                        id="temperature"
+                        type="number"
+                        value={temperature}
+                        onChange={(e) => setTemperature(Number(e.target.value))}
+                        className="col-span-2"
+                      />
+                      <span className="text-sm">°C</span>
+                    </div>
+                  )
                 )}
 
                 {/* Material/Emissivity system — always for chassis types, conditional for vents (only when closed) */}
