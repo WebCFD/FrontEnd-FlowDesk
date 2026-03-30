@@ -523,6 +523,9 @@ export default function Analysis() {
 
   const [openReport, setOpenReport] = useState<ReportDef | null>(null);
   const [comfortZoneError, setComfortZoneError] = useState(false);
+  const [dcZoneHeight, setDcZoneHeight] = useState<"bottom_rack_0.5m" | "mid_rack_1.0m" | "top_rack_1.5m">("mid_rack_1.0m");
+  const [dcAshraeError, setDcAshraeError] = useState(false);
+  const [dcStagError, setDcStagError] = useState(false);
 
   const { data: simulation, isLoading, error } = useQuery<Simulation>({
     queryKey: [`/api/simulations/${simulationId}`],
@@ -925,6 +928,52 @@ export default function Analysis() {
                     />
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* ── DC Zone Maps ── */}
+            {isDataCenter && hasPost && !dcAshraeError && !dcStagError && (
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-wide">Spatial Zone Maps</h3>
+                  <div className="flex rounded-lg border border-slate-200 overflow-hidden text-xs">
+                    {(["bottom_rack_0.5m", "mid_rack_1.0m", "top_rack_1.5m"] as const).map((h) => (
+                      <button
+                        key={h}
+                        onClick={() => { setDcZoneHeight(h); setDcAshraeError(false); setDcStagError(false); }}
+                        className={`px-3 py-1.5 font-medium transition-colors ${dcZoneHeight === h ? "bg-slate-700 text-white" : "text-slate-600 hover:bg-slate-50"}`}
+                      >
+                        {h === "bottom_rack_0.5m" ? "z = 0.5 m" : h === "mid_rack_1.0m" ? "z = 1.0 m" : "z = 1.5 m"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                    <div className="px-4 py-2 bg-slate-50 border-b border-slate-200 flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-green-500" />
+                      <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">ASHRAE A2 Zone Map</span>
+                    </div>
+                    <img
+                      src={`${postUrl(`images/dc_ashrae_zone_${dcZoneHeight}.png`)}`}
+                      alt="ASHRAE temperature zone map"
+                      className="w-full"
+                      onError={() => setDcAshraeError(true)}
+                    />
+                  </div>
+                  <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                    <div className="px-4 py-2 bg-slate-50 border-b border-slate-200 flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-red-500" />
+                      <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Stagnation Zone Map</span>
+                    </div>
+                    <img
+                      src={`${postUrl(`images/dc_stagnation_zone_${dcZoneHeight}.png`)}`}
+                      alt="Stagnation zone map"
+                      className="w-full"
+                      onError={() => setDcStagError(true)}
+                    />
+                  </div>
+                </div>
               </div>
             )}
 

@@ -669,6 +669,169 @@ def render_dc_slice_png(slice_mesh, z_height: float, post_path: str,
     return png_path
 
 
+def generate_dc_ashrae_zone_png(slice_mesh, name: str, z: float, post_path: str) -> str:
+    """
+    Generate ASHRAE A2 temperature zone map PNG (top-down scatter).
+
+    Color coding:
+        Green  (#22c55e) — T ≤ 27°C  — well within ASHRAE A2 limits
+        Yellow (#f59e0b) — 27 < T ≤ 35°C — approaching limit
+        Red    (#ef4444) — T > 35°C   — ASHRAE A2 violation
+
+    Analogous to IS comfort_zone_*.png but for datacenter temperature compliance.
+    """
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        import matplotlib.patches as mpatches
+
+        T_raw = slice_mesh.point_data.get("T", None)
+        if T_raw is None or len(T_raw) == 0:
+            logger.warning(f"       ASHRAE zone PNG: no T field in slice {name}")
+            return ""
+
+        T_c = T_raw - 273.15 if float(T_raw.mean()) > 100.0 else T_raw.copy()
+        pts = np.array(slice_mesh.points)
+        x, y = pts[:, 0], pts[:, 1]
+
+        mask_green  = T_c <= 27.0
+        mask_yellow = (T_c > 27.0) & (T_c <= 35.0)
+        mask_red    = T_c > 35.0
+
+        n = len(T_c)
+        pct_green  = 100.0 * mask_green.sum()  / n if n > 0 else 0.0
+        pct_yellow = 100.0 * mask_yellow.sum() / n if n > 0 else 0.0
+        pct_red    = 100.0 * mask_red.sum()    / n if n > 0 else 0.0
+
+        fig, ax = plt.subplots(figsize=(8, 6), dpi=120)
+        fig.patch.set_facecolor("white")
+        ax.set_facecolor("#f8fafc")
+
+        s = 4
+        if mask_red.any():
+            ax.scatter(x[mask_red],    y[mask_red],    c="#ef4444", s=s, alpha=0.75, linewidths=0, zorder=2)
+        if mask_yellow.any():
+            ax.scatter(x[mask_yellow], y[mask_yellow], c="#f59e0b", s=s, alpha=0.80, linewidths=0, zorder=3)
+        if mask_green.any():
+            ax.scatter(x[mask_green],  y[mask_green],  c="#22c55e", s=s, alpha=0.75, linewidths=0, zorder=4)
+
+        ax.set_aspect("equal", adjustable="box")
+        ax.set_xlabel("X [m]", fontsize=10)
+        ax.set_ylabel("Y [m]", fontsize=10)
+        plane_label = name.replace("_", " ").title()
+        ax.set_title(
+            f"ASHRAE A2 Zone Map — {plane_label} (z = {z} m)\n"
+            f"OK (≤27°C): {pct_green:.1f}%  |  Warning (27–35°C): {pct_yellow:.1f}%  |  "
+            f"Violation (>35°C): {pct_red:.1f}%",
+            fontsize=10, fontweight="bold", pad=10,
+        )
+
+        patches = [
+            mpatches.Patch(facecolor="#22c55e", label=f"OK ≤ 27°C  ({pct_green:.1f}%)"),
+            mpatches.Patch(facecolor="#f59e0b", label=f"Warning 27–35°C  ({pct_yellow:.1f}%)"),
+            mpatches.Patch(facecolor="#ef4444", label=f"Violation > 35°C  ({pct_red:.1f}%)"),
+        ]
+        ax.legend(handles=patches, loc="upper right", fontsize=9,
+                  framealpha=0.9, edgecolor="#e2e8f0")
+        ax.grid(True, alpha=0.3, linestyle="--", linewidth=0.5)
+        ax.tick_params(labelsize=9)
+        plt.tight_layout()
+
+        images_dir = os.path.join(post_path, "images")
+        os.makedirs(images_dir, exist_ok=True)
+        png_path = os.path.join(images_dir, f"dc_ashrae_zone_{name}_{z}m.png")
+        fig.savefig(png_path, dpi=120, bbox_inches="tight", facecolor="white")
+        plt.close(fig)
+
+        logger.info(f"       Saved ASHRAE zone PNG: {os.path.basename(png_path)}")
+        return png_path
+    except Exception as e:
+        logger.warning(f"       Could not generate ASHRAE zone PNG for {name}: {e}")
+        return ""
+
+
+def generate_dc_stagnation_zone_png(slice_mesh, name: str, z: float, post_path: str) -> str:
+    """
+    Generate stagnation zone map PNG (top-down scatter).
+
+    Color coding:
+        Green (#22c55e) — U ≥ 0.05 m/s — active airflow
+        Red   (#ef4444) — U < 0.05 m/s  — stagnation zone
+
+    Shows *where* stagnant zones are, complementing the scalar stagnation_pct metric.
+    """
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        import matplotlib.patches as mpatches
+
+        U_raw = slice_mesh.point_data.get("U", None)
+        if U_raw is None:
+            logger.warning(f"       Stagnation PNG: no U field in slice {name}")
+            return ""
+
+        if len(U_raw.shape) > 1:
+            U_mag = np.linalg.norm(U_raw, axis=1)
+        else:
+            U_mag = U_raw.copy()
+
+        pts = np.array(slice_mesh.points)
+        x, y = pts[:, 0], pts[:, 1]
+
+        STAG_THRESHOLD = 0.05  # m/s — matches stagnation_pct calculation
+        mask_active = U_mag >= STAG_THRESHOLD
+        mask_stag   = ~mask_active
+
+        n = len(U_mag)
+        pct_stag   = 100.0 * mask_stag.sum()   / n if n > 0 else 0.0
+        pct_active = 100.0 * mask_active.sum() / n if n > 0 else 0.0
+
+        fig, ax = plt.subplots(figsize=(8, 6), dpi=120)
+        fig.patch.set_facecolor("white")
+        ax.set_facecolor("#f8fafc")
+
+        s = 4
+        if mask_stag.any():
+            ax.scatter(x[mask_stag],   y[mask_stag],   c="#ef4444", s=s, alpha=0.75, linewidths=0, zorder=2)
+        if mask_active.any():
+            ax.scatter(x[mask_active], y[mask_active], c="#22c55e", s=s, alpha=0.75, linewidths=0, zorder=3)
+
+        ax.set_aspect("equal", adjustable="box")
+        ax.set_xlabel("X [m]", fontsize=10)
+        ax.set_ylabel("Y [m]", fontsize=10)
+        plane_label = name.replace("_", " ").title()
+        ax.set_title(
+            f"Stagnation Zone Map — {plane_label} (z = {z} m)\n"
+            f"Active flow (U ≥ 0.05 m/s): {pct_active:.1f}%  |  "
+            f"Stagnation (U < 0.05 m/s): {pct_stag:.1f}%",
+            fontsize=10, fontweight="bold", pad=10,
+        )
+
+        patches = [
+            mpatches.Patch(facecolor="#22c55e", label=f"Active flow ≥ 0.05 m/s  ({pct_active:.1f}%)"),
+            mpatches.Patch(facecolor="#ef4444", label=f"Stagnation < 0.05 m/s  ({pct_stag:.1f}%)"),
+        ]
+        ax.legend(handles=patches, loc="upper right", fontsize=9,
+                  framealpha=0.9, edgecolor="#e2e8f0")
+        ax.grid(True, alpha=0.3, linestyle="--", linewidth=0.5)
+        ax.tick_params(labelsize=9)
+        plt.tight_layout()
+
+        images_dir = os.path.join(post_path, "images")
+        os.makedirs(images_dir, exist_ok=True)
+        png_path = os.path.join(images_dir, f"dc_stagnation_zone_{name}_{z}m.png")
+        fig.savefig(png_path, dpi=120, bbox_inches="tight", facecolor="white")
+        plt.close(fig)
+
+        logger.info(f"       Saved stagnation zone PNG: {os.path.basename(png_path)}")
+        return png_path
+    except Exception as e:
+        logger.warning(f"       Could not generate stagnation zone PNG for {name}: {e}")
+        return ""
+
+
 def analyze_dc_slices(internal_mesh, post_path: str) -> dict:
     """
     Analyze temperature and velocity in horizontal slices at rack heights.
@@ -724,9 +887,13 @@ def analyze_dc_slices(internal_mesh, post_path: str) -> dict:
         vtk_path = os.path.join(vtk_dir, f"dc_slice_{name}_{z}m.vtk")
         sl.save(vtk_path)
 
-        # Render PNGs
+        # Render continuous PNGs (T colormap + U_mag colormap)
         render_dc_slice_png(sl, z, post_path, variable="T")
         render_dc_slice_png(sl, z, post_path, variable="U_mag")
+
+        # Render binary zone maps (ASHRAE compliance + stagnation)
+        generate_dc_ashrae_zone_png(sl, name, z, post_path)
+        generate_dc_stagnation_zone_png(sl, name, z, post_path)
 
     return slice_results
 
