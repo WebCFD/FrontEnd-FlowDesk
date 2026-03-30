@@ -178,6 +178,23 @@ def analyze_dc_rack_patches(internal_mesh, multiblock, rack_info: dict) -> dict:
         # Convert K → °C if stored in Kelvin (buoyantSimpleFoam stores K)
         T_inlet_values = T_raw - 273.15 if float(T_raw.mean()) > 100.0 else T_raw.copy()
 
+        # ── Sanity filter: discard solid-cell artefacts ───────────────────────
+        # Sampling internal_mesh at inlet patch points can hit solid cells (T≈0°C
+        # after K→C) or near-wall hot spots (T>>60°C). These are not physically
+        # meaningful for ASHRAE compliance and corrupt all percentile statistics.
+        T_physical = T_inlet_values[(T_inlet_values >= 5.0) & (T_inlet_values <= 60.0)]
+        if len(T_physical) >= 5:
+            logger.info(
+                f"       Sanity filter: {len(T_inlet_values)} → {len(T_physical)} pts "
+                f"(removed {len(T_inlet_values) - len(T_physical)} artefacts)"
+            )
+            T_inlet_values = T_physical
+        else:
+            logger.warning(
+                f"       Sanity filter removed too many points ({len(T_physical)} left) "
+                f"— using raw values (possible mesh/boundary issue)"
+            )
+
         # ── Compute T_outlet from physics ─────────────────────────────────────
         # ΔT = Q [W] / (ṁ [kg/s] × Cp [J/(kg·K)])
         # ṁ  = Q̇_vol [m³/s] × ρ_air [kg/m³]
@@ -383,12 +400,23 @@ def calculate_cooling_efficiency(rack_info: dict, rack_metrics: dict,
     else:
         quality = "Poor — significant bypass/mixing losses"
 
+    # Partial thermal PUE proxy
+    # pPUE_thermal = Q_CRAC / Q_IT  (= 1/η when valid)
+    # Represents how many kW of cooling infrastructure are needed per kW of IT load.
+    # Ideal = 1.0; real DCs typically 1.05–1.30.
+    if eta > 0.05:
+        pPUE_thermal = float(round(1.0 / eta, 3))
+    else:
+        pPUE_thermal = None  # not calculable when CRAC balance fails
+
     logger.info(f"    * Q_IT_total = {Q_IT_kW:.2f} kW")
     logger.info(f"    * Q_CRAC = {Q_CRAC_kW:.2f} kW  (ṁ={mass_flow_crac:.4f} kg/s, ΔT={delta_T_crac:.1f}°C)")
     logger.info(f"    * η_cooling = {eta:.3f}  [{quality}]")
+    logger.info(f"    * pPUE_thermal = {pPUE_thermal}")
 
     return {
         "eta_cooling": float(eta),
+        "pPUE_thermal": pPUE_thermal,
         "Q_IT_kW": float(Q_IT_kW),
         "Q_CRAC_kW": float(Q_CRAC_kW),
         "T_supply": float(T_supply),
@@ -396,6 +424,83 @@ def calculate_cooling_efficiency(rack_info: dict, rack_metrics: dict,
         "delta_T_crac": float(delta_T_crac),
         "mass_flow_crac_kgs": float(mass_flow_crac),
         "quality": quality,
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SUPPLY / RETURN HEAT INDICES (SHI / RHI)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def calculate_shi_rhi(rack_metrics: dict, rack_info: dict,
+                      T_supply_actual: float) -> dict:
+    """
+    Calculate Supply Heat Index (SHI) and Return Heat Index (RHI).
+
+    Definitions per ASHRAE TC9.9 / Green Grid GG004:
+
+        SHI = (T_supply_actual - T_supply_design) / ΔT_design
+            Measures hot-aisle air recirculating back to the cold aisle.
+            SHI = 0: no recirculation (ideal)
+            SHI = 1: supply air is fully contaminated (complete mixing)
+
+        RHI = (T_return_design - T_return_actual) / ΔT_design
+            Measures cold air bypassing IT equipment and reaching the return.
+            RHI = 0: no bypass (ideal)
+            RHI = 1: all supply air bypasses IT load
+
+    where ΔT_design = T_return_design - T_supply_design (default 12 °C).
+
+    Target: SHI < 0.1 and RHI < 0.1 for a well-designed DC.
+    """
+    if not rack_metrics or not rack_info:
+        return {"SHI": None, "RHI": None, "note": "insufficient rack data"}
+
+    # Design supply temperature from JSON boundary conditions
+    T_supply_design = float(np.mean(
+        [r.get("T_inlet_set", 22.0) for r in rack_info.values()]
+    ))
+    T_return_design = T_supply_design + 12.0  # standard design ΔT
+
+    denom = T_return_design - T_supply_design  # = 12.0 °C
+    if abs(denom) < 0.5:
+        return {"SHI": None, "RHI": None,
+                "note": "T_return_design ≈ T_supply_design — cannot compute"}
+
+    T_return_actual = float(np.mean(
+        [m["T_outlet_mean"] for m in rack_metrics.values()]
+    ))
+
+    SHI = (T_supply_actual - T_supply_design) / denom
+    RHI = (T_return_design - T_return_actual) / denom
+
+    # Clamp to a display-safe range
+    SHI = float(np.clip(SHI, -0.5, 2.0))
+    RHI = float(np.clip(RHI, -0.5, 2.0))
+
+    def _shi_label(v):
+        if v < 0.1:  return "Excellent"
+        if v < 0.2:  return "Good"
+        if v < 0.40: return "Acceptable"
+        return "Poor — significant recirculation"
+
+    def _rhi_label(v):
+        if v < 0.1:  return "Excellent"
+        if v < 0.2:  return "Good"
+        if v < 0.40: return "Acceptable"
+        return "Poor — significant cold bypass"
+
+    logger.info(f"    * SHI = {SHI:.3f}  ({_shi_label(SHI)})")
+    logger.info(f"    * RHI = {RHI:.3f}  ({_rhi_label(RHI)})")
+
+    return {
+        "SHI": SHI,
+        "RHI": RHI,
+        "T_supply_design": float(T_supply_design),
+        "T_return_design": float(T_return_design),
+        "T_supply_actual": float(T_supply_actual),
+        "T_return_actual": float(T_return_actual),
+        "SHI_quality": _shi_label(SHI),
+        "RHI_quality": _rhi_label(RHI),
     }
 
 
@@ -439,15 +544,24 @@ def read_crac_mass_flows(sim_path: str, T_field: np.ndarray) -> tuple:
     total_inlet_m3s = sum(phi for _, phi in inlet_flows)
     mass_flow_kgs = total_inlet_m3s * RHO_AIR  # volumetric → mass flow [kg/s]
 
-    # CRAC supply temperature: use minimum T in the domain (cold supply air)
+    # CRAC supply temperature: P5 of the domain T field (cold supply air).
+    # CRITICAL: filter out solid-cell artefacts (T≈0°C or T>60°C) before
+    # computing P5, otherwise contaminated cells make T_supply appear near 0°C,
+    # which inverts the CRAC energy balance and sets η_cooling = 0.
     if T_field is not None and len(T_field) > 0:
-        T_celsius = T_field - 273.15 if T_field.mean() > 100 else T_field
-        T_supply = float(np.percentile(T_celsius, 5))  # P5 ≈ supply temperature
+        T_celsius = T_field - 273.15 if T_field.mean() > 100 else T_field.copy()
+        T_valid = T_celsius[(T_celsius >= 5.0) & (T_celsius <= 60.0)]
+        if len(T_valid) > 100:
+            T_supply = float(np.percentile(T_valid, 5))
+            logger.info(f"       T_supply filter: {len(T_valid):,}/{len(T_celsius):,} valid cells used")
+        else:
+            T_supply = 22.0  # fallback
+            logger.warning("       T_supply: too few valid cells after filter — defaulting to 22°C")
     else:
         T_supply = 22.0  # fallback
 
     logger.info(f"    * Total CRAC inlet flow: {total_inlet_m3s:.6f} m³/s = {mass_flow_kgs:.4f} kg/s")
-    logger.info(f"    * Estimated T_supply (P5 of domain): {T_supply:.1f}°C")
+    logger.info(f"    * Estimated T_supply (P5 of filtered domain): {T_supply:.1f}°C")
 
     return mass_flow_kgs, T_supply
 
@@ -696,10 +810,12 @@ _CSS_BASE = """
 
 
 def generate_dc_rack_report(rack_metrics: dict, rci: dict, rti: dict,
-                              cooling_eff: dict, post_path: str,
+                              cooling_eff: dict, shi_rhi: dict,
+                              post_path: str,
                               case_name: str = "DC_Case") -> str:
     """
-    Generate HTML report: per-rack table with T_inlet percentiles, ΔT, RTI, RCI, η_cooling.
+    Generate HTML report: per-rack table with T_inlet percentiles, ΔT, RTI, RCI, η_cooling,
+    SHI, RHI, and pPUE_thermal.
     """
     logger.info("    * Generating DC rack report")
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -708,8 +824,13 @@ def generate_dc_rack_report(rack_metrics: dict, rci: dict, rti: dict,
     RCI_LO = rci.get("RCI_LO", 0.0)
     RTI    = rti.get("RTI", 0.0)
     eta    = cooling_eff.get("eta_cooling", 0.0)
+    pPUE   = cooling_eff.get("pPUE_thermal", None)
     n_ok   = rci.get("n_ashrae_ok", 0)
     n_tot  = rci.get("n_racks", 1)
+    SHI    = shi_rhi.get("SHI", None) if shi_rhi else None
+    RHI    = shi_rhi.get("RHI", None) if shi_rhi else None
+    shi_q  = shi_rhi.get("SHI_quality", "N/A") if shi_rhi else "N/A"
+    rhi_q  = shi_rhi.get("RHI_quality", "N/A") if shi_rhi else "N/A"
 
     html = f"""<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -757,6 +878,27 @@ def generate_dc_rack_report(rack_metrics: dict, rci: dict, rti: dict,
         <div class="value {_color(n_ok / max(n_tot, 1) * 100, 90, 70)}">{n_ok}/{n_tot}</div>
         <div style="font-size:0.75em;color:#6c757d;margin-top:8px">
             Racks within 10–35°C<br>Inlet temperature
+        </div>
+    </div>
+    <div class="summary-metric">
+        <div class="label">SHI</div>
+        <div class="value {_color(1.0 - (SHI if SHI is not None else 1.0), 0.9, 0.8)}">{f"{SHI:.3f}" if SHI is not None else "N/A"}</div>
+        <div style="font-size:0.75em;color:#6c757d;margin-top:8px">
+            Supply Heat Index<br>Target &lt; 0.1 · {shi_q}
+        </div>
+    </div>
+    <div class="summary-metric">
+        <div class="label">RHI</div>
+        <div class="value {_color(1.0 - (RHI if RHI is not None else 1.0), 0.9, 0.8)}">{f"{RHI:.3f}" if RHI is not None else "N/A"}</div>
+        <div style="font-size:0.75em;color:#6c757d;margin-top:8px">
+            Return Heat Index<br>Target &lt; 0.1 · {rhi_q}
+        </div>
+    </div>
+    <div class="summary-metric">
+        <div class="label">pPUE Thermal</div>
+        <div class="value {_color(2.0 - (pPUE if pPUE is not None else 2.0), 0.8, 0.6)}">{f"{pPUE:.2f}" if pPUE is not None else "N/A"}</div>
+        <div style="font-size:0.75em;color:#6c757d;margin-top:8px">
+            Cooling overhead / IT load<br>Ideal ≈ 1.05–1.20
         </div>
     </div>
 </div>
@@ -1121,11 +1263,12 @@ def run_data_centers(case_name: str, sim_path: str, post_path: str) -> None:
     rack_metrics = analyze_dc_rack_patches(internal_mesh, multiblock, rack_info)
 
     # 5 ── Thermal indices ────────────────────────────────────────────────────
-    logger.info("\n5 - Computing RCI, RTI, cooling efficiency")
+    logger.info("\n5 - Computing RCI, RTI, cooling efficiency, SHI/RHI")
     rci = calculate_rci(rack_metrics)
     rti = calculate_rti(rack_metrics, T_supply)
     cooling_eff = calculate_cooling_efficiency(rack_info, rack_metrics,
                                                 mass_flow_crac, T_supply)
+    shi_rhi = calculate_shi_rhi(rack_metrics, rack_info, T_supply)
 
     # 6 ── Horizontal slices at rack heights ──────────────────────────────────
     logger.info("\n6 - Analyzing horizontal slices at rack heights")
@@ -1133,7 +1276,7 @@ def run_data_centers(case_name: str, sim_path: str, post_path: str) -> None:
 
     # 7 ── Generate HTML reports ──────────────────────────────────────────────
     logger.info("\n7 - Generating HTML reports")
-    generate_dc_rack_report(rack_metrics, rci, rti, cooling_eff, post_path, case_name)
+    generate_dc_rack_report(rack_metrics, rci, rti, cooling_eff, shi_rhi, post_path, case_name)
     generate_dc_thermal_report(slice_results, post_path, case_name)
     generate_dc_airflow_report(slice_results, post_path, case_name)
 
@@ -1154,11 +1297,12 @@ def run_data_centers(case_name: str, sim_path: str, post_path: str) -> None:
         return obj
 
     metrics_all = {
-        "rack_metrics":  rack_metrics,
-        "rci":           rci,
-        "rti":           rti,
+        "rack_metrics":       rack_metrics,
+        "rci":                rci,
+        "rti":                rti,
         "cooling_efficiency": cooling_eff,
-        "slice_results": slice_results,
+        "shi_rhi":            shi_rhi,
+        "slice_results":      slice_results,
     }
     metrics_path = os.path.join(post_path, "dc_metrics.json")
     with open(metrics_path, "w") as f:

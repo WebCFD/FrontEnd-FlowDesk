@@ -93,12 +93,23 @@ interface DcMetrics {
   };
   cooling_efficiency: {
     eta_cooling: number;
+    pPUE_thermal: number | null;
     Q_IT_kW: number;
     Q_CRAC_kW: number;
     T_supply: number;
     T_return_mean: number;
     delta_T_crac: number;
     quality: string;
+  };
+  shi_rhi?: {
+    SHI: number | null;
+    RHI: number | null;
+    SHI_quality: string;
+    RHI_quality: string;
+    T_supply_design: number;
+    T_return_design: number;
+    T_supply_actual: number;
+    T_return_actual: number;
   };
   slice_results: Record<string, {
     height_m: number;
@@ -235,6 +246,38 @@ function etaLabel(v: number): string {
   if (v >= 80) return "Good ≥80%";
   if (v >= 50) return "Moderate ≥50%";
   return "Poor — bypass losses";
+}
+function shiStatus(v: number | null): StatusColor {
+  if (v === null) return "yellow";
+  if (v < 0.1) return "green";
+  if (v < 0.2) return "yellow";
+  return "red";
+}
+function shiLabel(v: number | null, q?: string): string {
+  if (v === null) return "N/A";
+  return q ?? (v < 0.1 ? "Excellent" : v < 0.2 ? "Good" : "Poor — recirculation");
+}
+function rhiStatus(v: number | null): StatusColor {
+  if (v === null) return "yellow";
+  if (v < 0.1) return "green";
+  if (v < 0.2) return "yellow";
+  return "red";
+}
+function rhiLabel(v: number | null, q?: string): string {
+  if (v === null) return "N/A";
+  return q ?? (v < 0.1 ? "Excellent" : v < 0.2 ? "Good" : "Poor — bypass");
+}
+function pPUEStatus(v: number | null): StatusColor {
+  if (v === null) return "yellow";
+  if (v <= 1.2) return "green";
+  if (v <= 1.5) return "yellow";
+  return "red";
+}
+function pPUELabel(v: number | null): string {
+  if (v === null) return "N/A";
+  if (v <= 1.2) return "Excellent ≤1.20";
+  if (v <= 1.5) return "Acceptable ≤1.50";
+  return "Poor >1.50";
 }
 
 // ── IS status helpers ──────────────────────────────────────────────────────
@@ -532,6 +575,7 @@ export default function Analysis() {
   const rci = dcMetrics?.rci;
   const rti = dcMetrics?.rti;
   const eff = dcMetrics?.cooling_efficiency;
+  const shiRhi = dcMetrics?.shi_rhi;
   const rackCount = rci ? rci.n_racks : 0;
   const ashraeOk = rci ? rci.n_ashrae_ok : 0;
   const ashraePct = rackCount > 0 ? (ashraeOk / rackCount) * 100 : 0;
@@ -818,42 +862,69 @@ export default function Analysis() {
 
             {/* ── DataCenter KPI row ── */}
             {isDataCenter && hasDCMetrics && rci && rti && eff && (
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
-                <DcKpiCard
-                  label="RCI High"
-                  value={`${fmt(rci.RCI_HI, 0)}%`}
-                  sub={rciLabel(rci.RCI_HI)}
-                  status={rciStatus(rci.RCI_HI)}
-                  icon={Gauge}
-                />
-                <DcKpiCard
-                  label="RCI Low"
-                  value={`${fmt(rci.RCI_LO, 0)}%`}
-                  sub={rciLabel(rci.RCI_LO)}
-                  status={rciStatus(rci.RCI_LO)}
-                  icon={Gauge}
-                />
-                <DcKpiCard
-                  label="RTI"
-                  value={fmt(rti.RTI, 2)}
-                  sub={rtiLabel(rti.RTI)}
-                  status={rtiStatus(rti.RTI)}
-                  icon={TrendingUp}
-                />
-                <DcKpiCard
-                  label="η Cooling"
-                  value={`${fmt(eff.eta_cooling, 0)}%`}
-                  sub={etaLabel(eff.eta_cooling)}
-                  status={etaStatus(eff.eta_cooling)}
-                  icon={Zap}
-                />
-                <DcKpiCard
-                  label="ASHRAE A2"
-                  value={`${fmt(ashraePct, 0)}%`}
-                  sub={`${ashraeOk}/${rackCount} racks OK`}
-                  status={ashraePct === 100 ? "green" : ashraePct >= 50 ? "yellow" : "red"}
-                  icon={Server}
-                />
+              <div className="space-y-3 mb-6">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                  <DcKpiCard
+                    label="RCI High"
+                    value={`${fmt(rci.RCI_HI, 0)}%`}
+                    sub={rciLabel(rci.RCI_HI)}
+                    status={rciStatus(rci.RCI_HI)}
+                    icon={Gauge}
+                  />
+                  <DcKpiCard
+                    label="RCI Low"
+                    value={`${fmt(rci.RCI_LO, 0)}%`}
+                    sub={rciLabel(rci.RCI_LO)}
+                    status={rciStatus(rci.RCI_LO)}
+                    icon={Gauge}
+                  />
+                  <DcKpiCard
+                    label="RTI"
+                    value={fmt(rti.RTI, 2)}
+                    sub={rtiLabel(rti.RTI)}
+                    status={rtiStatus(rti.RTI)}
+                    icon={TrendingUp}
+                  />
+                  <DcKpiCard
+                    label="η Cooling"
+                    value={`${fmt(eff.eta_cooling, 0)}%`}
+                    sub={etaLabel(eff.eta_cooling)}
+                    status={etaStatus(eff.eta_cooling)}
+                    icon={Zap}
+                  />
+                  <DcKpiCard
+                    label="ASHRAE A2"
+                    value={`${fmt(ashraePct, 0)}%`}
+                    sub={`${ashraeOk}/${rackCount} racks OK`}
+                    status={ashraePct === 100 ? "green" : ashraePct >= 50 ? "yellow" : "red"}
+                    icon={Server}
+                  />
+                </div>
+                {shiRhi && (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <DcKpiCard
+                      label="SHI"
+                      value={shiRhi.SHI !== null ? fmt(shiRhi.SHI, 3) : "N/A"}
+                      sub={shiLabel(shiRhi.SHI, shiRhi.SHI_quality)}
+                      status={shiStatus(shiRhi.SHI)}
+                      icon={Flame}
+                    />
+                    <DcKpiCard
+                      label="RHI"
+                      value={shiRhi.RHI !== null ? fmt(shiRhi.RHI, 3) : "N/A"}
+                      sub={rhiLabel(shiRhi.RHI, shiRhi.RHI_quality)}
+                      status={rhiStatus(shiRhi.RHI)}
+                      icon={Zap}
+                    />
+                    <DcKpiCard
+                      label="pPUE Thermal"
+                      value={eff.pPUE_thermal !== null && eff.pPUE_thermal !== undefined ? fmt(eff.pPUE_thermal, 2) : "N/A"}
+                      sub={pPUELabel(eff.pPUE_thermal ?? null)}
+                      status={pPUEStatus(eff.pPUE_thermal ?? null)}
+                      icon={TrendingUp}
+                    />
+                  </div>
+                )}
               </div>
             )}
 
