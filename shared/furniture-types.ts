@@ -23,6 +23,8 @@ export interface FurnitureItem {
     density?: number;
     heatCapacity?: number;
     emissivity?: number;
+    thermalBCMode?: 'fixedT' | 'fixedQ';
+    thermalPower_W?: number;
   };
   
   simulationProperties?: {

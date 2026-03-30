@@ -387,8 +387,8 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       }
       setTemperature(defaults.properties?.temperature ?? (type === 'rack' || type === 'topVentBox' || type === 'sideVentBox' ? 40 : 20));
       if (type === 'block' || type === 'custom') {
-        setThermalBCMode((defaults.properties as any)?.thermalBCMode ?? 'fixedT');
-        setThermalPower_W((defaults.properties as any)?.thermalPower_W ?? 100);
+        setThermalBCMode(defaults.properties?.thermalBCMode ?? 'fixedT');
+        setThermalPower_W(defaults.properties?.thermalPower_W ?? 100);
       }
       const savedDensity = defaults.serverProperties?.rackDensity ?? 'medium';
       setRackDensity(savedDensity);

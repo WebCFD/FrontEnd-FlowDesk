@@ -4264,7 +4264,9 @@ export default function WizardDesign() {
               properties: {
                 material: simProps.material || simProps.chassisMaterial || 'wood',
                 emissivity: simProps.emissivity || simProps.chassisEmissivity || 0.9,
-                temperature: simProps.temperature || simProps.chassisTemperature || 20
+                temperature: simProps.temperature || simProps.chassisTemperature || 20,
+                ...(simProps.thermalBCMode ? { thermalBCMode: simProps.thermalBCMode } : {}),
+                ...(simProps.thermalPower_W !== undefined ? { thermalPower_W: simProps.thermalPower_W } : {})
               },
               ...(mappedType === 'nozzle' && {
                 simulationProperties: {
