@@ -293,6 +293,7 @@ def export_to_fms(geo_mesh_dict, sim_path, fms_filename):
             f.write(f"solid {solid_name}\n")
             mesh = mesh.triangulate()
             faces = mesh.cells.reshape((-1, 4))
+            skipped = 0
             for face in faces:
                 assert face[0] == 3
                 pts = mesh.points[face[1:4]]
@@ -300,11 +301,13 @@ def export_to_fms(geo_mesh_dict, sim_path, fms_filename):
                 v2 = pts[2] - pts[0]
                 normal = np.cross(v1, v2)
                 norm = np.linalg.norm(normal)
-                if norm > 0:
-                    normal /= norm
-                else:
-                    normal = np.array([0.0, 0.0, 0.0])
+                if norm < 1e-12:
+                    skipped += 1
+                    continue
+                normal /= norm
                 write_facet(f, normal, pts)
+            if skipped:
+                logger.warning(f"[STL export] Skipped {skipped} zero-area triangle(s) in solid '{solid_name}'")
             f.write(f"endsolid {solid_name}\n")
     
     return stl_filename

@@ -1021,6 +1021,20 @@ def create_floor_mesh(patch_df: pd.DataFrame, level_name: str, level_data: Dict[
     walls_mesh = pv.merge(wall_meshes)
     walls_mesh.clean(tolerance=1e-3, absolute=True, inplace=True)
 
+    # Remove degenerate (zero-area) cells that can cause cfMesh topology errors
+    walls_mesh = walls_mesh.triangulate()
+    cell_sizes = walls_mesh.compute_cell_sizes(length=False, area=True, volume=False)
+    areas = cell_sizes.cell_data.get("Area", cell_sizes.cell_data.get("area", None))
+    if areas is not None:
+        degenerate_mask = areas > 1e-8
+        n_removed = int((~degenerate_mask).sum())
+        if n_removed:
+            logger.warning(
+                f"[create_floor_mesh] Removed {n_removed} degenerate cell(s) "
+                f"(area < 1e-8 m²) from walls mesh — likely at corners with coincident vertices"
+            )
+        walls_mesh = walls_mesh.extract_cells(degenerate_mask)
+
     # Process boundaries floor and ceiling
     wall_boundaries = walls_mesh.extract_feature_edges(
         boundary_edges=True,
