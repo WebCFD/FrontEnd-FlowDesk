@@ -490,7 +490,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
         : (type === 'block' || type === 'custom')
           ? {
               material: materialType,
-              temperature: temperature,
+              ...(thermalBCMode === 'fixedT' ? { temperature } : {}),
               emissivity: getCurrentEmissivity(),
               thermalBCMode,
               ...(thermalBCMode === 'fixedQ' ? { thermalPower_W } : {})

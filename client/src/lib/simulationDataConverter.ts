@@ -984,8 +984,9 @@ export function generateSimulationData(
       }
       
       // Non-rack furniture: standard export with position/rotation/dimensions
+      const isFixedQ = properties.thermalBCMode === 'fixedQ';
       const baseSimulationProperties = {
-        temperature: properties.temperature || simulationProperties.airTemperature || 20,
+        ...(!isFixedQ ? { temperature: properties.temperature || simulationProperties.airTemperature || 20 } : {}),
         material: properties.material || 'default',
         emissivity: properties.emissivity || 0.90,
         ...(properties.thermalBCMode ? { thermalBCMode: properties.thermalBCMode } : {}),

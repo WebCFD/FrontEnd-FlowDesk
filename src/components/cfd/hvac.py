@@ -520,7 +520,10 @@ def define_initial_files(sim_path, patch_df):
                             new_bc_data["mode"]        = 'flux'
                             new_bc_data["q"]           = q_w_per_m2   # bare float; fixed below
                             new_bc_data["kappaMethod"] = 'fluidThermo'
-                            new_bc_data["value"]       = row['T_(°C)'] + 273.15  # foamlib adds 'uniform'
+                            # T_(°C) may be None/NaN for fixedQ blocks (no temperature BC set) — use 20°C as initial guess
+                            t_celsius = row.get('T_(°C)', None)
+                            t_init_k = (float(t_celsius) + 273.15) if (t_celsius is not None and str(t_celsius).strip() not in ('', 'nan')) else 293.15
+                            new_bc_data["value"]       = t_init_k     # foamlib adds 'uniform'
                         else:
                             new_bc_data["type"] = 'fixedValue'
                             new_bc_data["value"] = row['T_(°C)'] + 273.15

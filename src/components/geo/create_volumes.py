@@ -273,9 +273,11 @@ def create_block_mesh(patch_df: pd.DataFrame, data: Dict[str, Any]) -> Tuple[pd.
     sim = data.get('simulationProperties', {})
     thermal_bc_mode = sim.get('thermalBCMode', 'fixedT')
     thermal_power_w = float(sim.get('thermalPower_W', 0.0))
+    # For fixedQ blocks, temperature is not the active BC — leave T column empty
+    block_temp = None if thermal_bc_mode == 'fixedQ' else sim.get('temperature', DEFAULT_TEMPERATURE)
     new_patch = get_wall_bc_dict(
         patch_id,
-        temperature=sim.get('temperature', DEFAULT_TEMPERATURE),
+        temperature=block_temp,
         emissivity=sim.get('emissivity', 0.9),
         material=sim.get('material', 'default')
     )
