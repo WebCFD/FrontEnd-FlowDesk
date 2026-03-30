@@ -479,6 +479,7 @@ export default function Analysis() {
   const simulationId = params?.id ? parseInt(params.id, 10) : null;
 
   const [openReport, setOpenReport] = useState<ReportDef | null>(null);
+  const [comfortZoneError, setComfortZoneError] = useState(false);
 
   const { data: simulation, isLoading, error } = useQuery<Simulation>({
     queryKey: [`/api/simulations/${simulationId}`],
@@ -723,6 +724,26 @@ export default function Analysis() {
                     ppd={ppdMean}
                     status={comfortStatus(comfortPct)}
                   />
+                )}
+
+                {/* Comfort zone map image */}
+                {!comfortZoneError && hasPost && (
+                  <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
+                    <div className="px-4 py-2.5 border-b bg-slate-50 flex items-center gap-2">
+                      <Eye className="h-3.5 w-3.5 text-slate-400" />
+                      <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">
+                        Comfort Zone Map — Seated Plane (0.6 m)
+                      </span>
+                      <span className="text-[10px] text-slate-400 ml-auto">ISO 7730 · |PMV| ≤ 0.5</span>
+                    </div>
+                    <img
+                      src={postUrl("images/comfort_zone_seated.png")}
+                      alt="Comfort zone map at seated height"
+                      className="w-full block"
+                      style={{ maxHeight: '420px', objectFit: 'contain', background: 'white' }}
+                      onError={() => setComfortZoneError(true)}
+                    />
+                  </div>
                 )}
 
                 {/* Secondary KPIs: DR · Velocity · Temperature · ADPI · ev */}

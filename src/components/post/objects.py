@@ -214,6 +214,73 @@ def render_isometric_png(slice_mesh, name, z_height, post_path, variable='PMV', 
     logger.info(f"       Saved PNG: {os.path.basename(png_path)}")
 
 
+def generate_comfort_zone_png(slice_mesh, name, z_height, post_path):
+    """
+    Generate binary comfort zone PNG using matplotlib top-down 2D scatter.
+    Green = comfortable (|PMV| ≤ 0.5), Red = discomfort — ISO 7730.
+    """
+    try:
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+        import matplotlib.patches as mpatches
+
+        if 'PMV' not in slice_mesh.point_data:
+            logger.warning(f"PMV field not in slice mesh for {name} — skipping comfort zone PNG")
+            return
+
+        pmv = np.array(slice_mesh.point_data['PMV'])
+        pts = np.array(slice_mesh.points)
+        x, y = pts[:, 0], pts[:, 1]
+
+        comfort_mask = (pmv >= -0.5) & (pmv <= 0.5)
+        n_total = len(pmv)
+        comfort_pct = 100.0 * comfort_mask.sum() / n_total if n_total > 0 else 0.0
+
+        fig, ax = plt.subplots(figsize=(8, 6), dpi=120)
+        fig.patch.set_facecolor('white')
+        ax.set_facecolor('#f8fafc')
+
+        # Plot discomfort first (behind), comfort on top
+        disc_x, disc_y = x[~comfort_mask], y[~comfort_mask]
+        if len(disc_x) > 0:
+            ax.scatter(disc_x, disc_y, c='#ef4444', s=4, alpha=0.75, linewidths=0, zorder=2)
+
+        com_x, com_y = x[comfort_mask], y[comfort_mask]
+        if len(com_x) > 0:
+            ax.scatter(com_x, com_y, c='#22c55e', s=4, alpha=0.75, linewidths=0, zorder=3)
+
+        ax.set_aspect('equal', adjustable='box')
+        ax.set_xlabel('X [m]', fontsize=10)
+        ax.set_ylabel('Y [m]', fontsize=10)
+        ax.set_title(
+            f'Comfort Zone Map — {name.capitalize()} (z = {z_height} m)\n'
+            f'Comfortable area: {comfort_pct:.1f}%  |  PMV threshold: ±0.5 (ISO 7730)',
+            fontsize=10, fontweight='bold', pad=10
+        )
+
+        green_patch = mpatches.Patch(facecolor='#22c55e',
+                                     label=f'Comfortable (|PMV| ≤ 0.5): {comfort_pct:.1f}%')
+        red_patch   = mpatches.Patch(facecolor='#ef4444',
+                                     label=f'Discomfort  (|PMV| > 0.5): {100 - comfort_pct:.1f}%')
+        ax.legend(handles=[green_patch, red_patch], loc='upper right',
+                  fontsize=9, framealpha=0.9, edgecolor='#e2e8f0')
+
+        ax.grid(True, alpha=0.3, linestyle='--', linewidth=0.5)
+        ax.tick_params(labelsize=9)
+        plt.tight_layout()
+
+        images_dir = os.path.join(post_path, 'images')
+        os.makedirs(images_dir, exist_ok=True)
+        png_path = os.path.join(images_dir, f'comfort_zone_{name}.png')
+        fig.savefig(png_path, dpi=120, bbox_inches='tight', facecolor='white')
+        plt.close(fig)
+
+        logger.info(f"       Saved comfort zone PNG: {os.path.basename(png_path)}")
+    except Exception as e:
+        logger.warning(f"       Could not generate comfort zone PNG for {name}: {e}")
+
+
 def analyze_comfort_planes(sim_path, post_path, internal_mesh=None):
     """
     Analyze PMV/PPD thermal comfort in 3 horizontal planes.
@@ -307,9 +374,12 @@ def analyze_comfort_planes(sim_path, post_path, internal_mesh=None):
         
         # Render PMV image
         render_isometric_png(slice_mesh, name, z_height, post_path, variable='PMV')
-        
+
         # Render PPD image
         render_isometric_png(slice_mesh, name, z_height, post_path, variable='PPD')
+
+        # Render binary comfort zone map (green/red)
+        generate_comfort_zone_png(slice_mesh, name, z_height, post_path)
     
     # Convert numpy types to Python natives for JSON serialization
     def convert_numpy_types(obj):
@@ -717,6 +787,19 @@ def generate_html_report(results, post_path, case_name='CFD_Case'):
                 <span class="{status_class} status-badge">{status_text} Comfort</span>
             </div>
             
+            <!-- Binary comfort zone map -->
+            <div style="margin-bottom:20px;text-align:center">
+                <img src="images/comfort_zone_{plane_name}.png"
+                     alt="Comfort zone map at {z_height}m"
+                     style="max-width:640px;width:100%;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.12)"
+                     onerror="this.parentElement.style.display='none'">
+                <p style="font-size:0.82em;color:#6c757d;margin-top:6px">
+                    Comfort Zone Map &mdash;
+                    <span style="color:#22c55e;font-weight:700">&#9679;</span> Comfortable (|PMV| &le; 0.5) &nbsp;
+                    <span style="color:#ef4444;font-weight:700">&#9679;</span> Discomfort
+                </p>
+            </div>
+
             <div class="images-container">
                 <div class="image-box">
                     <img src="images/comfort_plane_{plane_name}_{z_height}m_PMV.png" alt="PMV at {z_height}m">
