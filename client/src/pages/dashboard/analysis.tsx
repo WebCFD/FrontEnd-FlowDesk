@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRoute } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import DashboardLayout from "@/components/layout/dashboard-layout";
@@ -9,7 +9,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import {
   Eye, ArrowLeft, Thermometer, Wind, RefreshCw, Settings,
   TrendingUp, AlertCircle, CheckCircle, ExternalLink,
-  Server, Flame, Gauge, Zap,
+  Server, Flame, Gauge, Zap, Printer, FileText,
 } from "lucide-react";
 import { useLocation } from "wouter";
 import VTKViewer from "@/components/visualization/VTKViewer";
@@ -33,6 +33,8 @@ interface FlowPlane {
   U_comfort_pct: number;
   T_comfort_pct: number;
   DR_mean?: number;
+  DR_max?: number;
+  DR_high_risk_pct?: number;
 }
 interface FlowMetrics {
   ankle?: FlowPlane; seated: FlowPlane; standing: FlowPlane; head: FlowPlane;
@@ -40,7 +42,21 @@ interface FlowMetrics {
 }
 
 interface VentPlane { ADPI_pct: number; CO2_compliant_pct: number; stagnation_pct: number; }
-interface VentMetrics { seated: VentPlane; standing: VentPlane; }
+interface VentGlobal {
+  ACH?: number;
+  ev?: number;
+  mean_age?: number;
+  CO2_mean?: number;
+  CO2_max?: number;
+  ev_method?: string;
+  volume_m3?: number;
+}
+interface VentMetrics {
+  seated: VentPlane;
+  standing: VentPlane;
+  head?: VentPlane;
+  global?: VentGlobal;
+}
 
 // ── DataCenter types ────────────────────────────────────────────────────────
 interface RackMetric {
@@ -184,60 +200,12 @@ const DC_REPORTS: ReportDef[] = [
   },
 ];
 
-// ── Small helpers ──────────────────────────────────────────────────────────
+// ── Shared helpers ──────────────────────────────────────────────────────────
 type StatusColor = "green" | "yellow" | "red";
-
-function KpiCard({
-  label, value, sub, ok,
-}: {
-  label: string; value: string; sub?: string; ok?: boolean;
-}) {
-  return (
-    <div className="flex flex-col gap-1 rounded-xl border bg-white px-5 py-4 shadow-sm">
-      <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">{label}</span>
-      <span className="text-2xl font-bold text-slate-800 leading-none">{value}</span>
-      {sub !== undefined && (
-        <span className="flex items-center gap-1 text-[11px] text-slate-500 mt-0.5">
-          {ok === true && <CheckCircle className="h-3 w-3 text-green-500" />}
-          {ok === false && <AlertCircle className="h-3 w-3 text-amber-500" />}
-          {sub}
-        </span>
-      )}
-    </div>
-  );
-}
-
-function DcKpiCard({
-  label, value, sub, status, icon: Icon,
-}: {
-  label: string; value: string; sub?: string; status: StatusColor; icon?: React.ComponentType<{ className?: string }>;
-}) {
-  const colors: Record<StatusColor, { badge: string; icon: string; border: string }> = {
-    green:  { badge: "bg-green-100 text-green-800 border-green-200", icon: "text-green-500", border: "border-l-green-400" },
-    yellow: { badge: "bg-amber-100 text-amber-800 border-amber-200",  icon: "text-amber-500",  border: "border-l-amber-400" },
-    red:    { badge: "bg-red-100 text-red-800 border-red-200",        icon: "text-red-500",    border: "border-l-red-400" },
-  };
-  const c = colors[status];
-  return (
-    <div className={`flex flex-col gap-1 rounded-xl border bg-white px-5 py-4 shadow-sm border-l-4 ${c.border}`}>
-      <div className="flex items-center gap-2">
-        {Icon && <Icon className={`h-4 w-4 ${c.icon}`} />}
-        <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">{label}</span>
-      </div>
-      <span className="text-2xl font-bold text-slate-800 leading-none">{value}</span>
-      {sub !== undefined && (
-        <span className={`inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full mt-1 border w-fit ${c.badge}`}>
-          {status === "green" && <CheckCircle className="h-3 w-3" />}
-          {status !== "green" && <AlertCircle className="h-3 w-3" />}
-          {sub}
-        </span>
-      )}
-    </div>
-  );
-}
 
 function fmt(v: number, decimals = 1) { return v.toFixed(decimals); }
 
+// ── DC status helpers ──────────────────────────────────────────────────────
 function rciStatus(v: number): StatusColor {
   if (v >= 91) return "green";
   if (v >= 75) return "yellow";
@@ -267,6 +235,241 @@ function etaLabel(v: number): string {
   if (v >= 80) return "Good ≥80%";
   if (v >= 50) return "Moderate ≥50%";
   return "Poor — bypass losses";
+}
+
+// ── IS status helpers ──────────────────────────────────────────────────────
+function comfortStatus(v: number): StatusColor {
+  if (v >= 80) return "green";
+  if (v >= 50) return "yellow";
+  return "red";
+}
+function comfortLabel(v: number): string {
+  if (v >= 80) return "Comfortable ≥80%";
+  if (v >= 50) return "Acceptable ≥50%";
+  return "Deficient <50%";
+}
+
+function drStatus(v: number): StatusColor {
+  if (v < 10) return "green";
+  if (v < 20) return "yellow";
+  return "red";
+}
+function drLabel(v: number): string {
+  if (v < 10) return "Low risk <10%";
+  if (v < 20) return "Moderate <20%";
+  return "High risk ≥20%";
+}
+
+function velStatus(v: number): StatusColor {
+  if (v <= 0.2) return "green";
+  if (v <= 0.25) return "yellow";
+  return "red";
+}
+function velLabel(v: number): string {
+  if (v <= 0.2) return "Optimal ≤0.20 m/s";
+  if (v <= 0.25) return "Acceptable ≤0.25 m/s";
+  return "Elevated >0.25 m/s";
+}
+
+function tempStatus(v: number): StatusColor {
+  if (v >= 20 && v <= 26) return "green";
+  if (v >= 18 && v <= 28) return "yellow";
+  return "red";
+}
+function tempLabel(v: number): string {
+  if (v >= 20 && v <= 26) return "In comfort range";
+  if (v >= 18 && v <= 28) return "Near limits";
+  return "Outside comfort range";
+}
+
+function adpiStatus(v: number): StatusColor {
+  if (v >= 80) return "green";
+  if (v >= 60) return "yellow";
+  return "red";
+}
+function adpiLabel(v: number): string {
+  if (v >= 80) return "Good ≥80%";
+  if (v >= 60) return "Acceptable ≥60%";
+  return "Poor <60%";
+}
+
+// ev via transient_decay: ratio τ_ideal/τ_actual — higher is better
+// ev ≥ 3 = Excellent (very fast CO₂ removal), ≥ 1 = Good, < 1 = Poor
+function evStatus(ev: number, method?: string): StatusColor {
+  if (method === "transient_decay") {
+    if (ev >= 3) return "green";
+    if (ev >= 1) return "yellow";
+    return "red";
+  }
+  // classical ev
+  if (ev >= 1.2) return "green";
+  if (ev >= 0.8) return "yellow";
+  return "red";
+}
+function evLabel(ev: number, method?: string): string {
+  if (method === "transient_decay") {
+    if (ev >= 3) return "Excellent mixing";
+    if (ev >= 1) return "Good";
+    return "Poor — stagnation";
+  }
+  if (ev >= 1.2) return "Displacement flow";
+  if (ev >= 0.8) return "Good mixing";
+  return "Poor — short-circuit";
+}
+
+// ── DC KPI card (used for DataCenters) ─────────────────────────────────────
+function DcKpiCard({
+  label, value, sub, status, icon: Icon,
+}: {
+  label: string; value: string; sub?: string; status: StatusColor; icon?: React.ComponentType<{ className?: string }>;
+}) {
+  const colors: Record<StatusColor, { badge: string; icon: string; border: string }> = {
+    green:  { badge: "bg-green-100 text-green-800 border-green-200", icon: "text-green-500", border: "border-l-green-400" },
+    yellow: { badge: "bg-amber-100 text-amber-800 border-amber-200",  icon: "text-amber-500",  border: "border-l-amber-400" },
+    red:    { badge: "bg-red-100 text-red-800 border-red-200",        icon: "text-red-500",    border: "border-l-red-400" },
+  };
+  const c = colors[status];
+  return (
+    <div className={`flex flex-col gap-1 rounded-xl border bg-white px-5 py-4 shadow-sm border-l-4 ${c.border}`}>
+      <div className="flex items-center gap-2">
+        {Icon && <Icon className={`h-4 w-4 ${c.icon}`} />}
+        <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">{label}</span>
+      </div>
+      <span className="text-2xl font-bold text-slate-800 leading-none">{value}</span>
+      {sub !== undefined && (
+        <span className={`inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full mt-1 border w-fit ${c.badge}`}>
+          {status === "green" && <CheckCircle className="h-3 w-3" />}
+          {status !== "green" && <AlertCircle className="h-3 w-3" />}
+          {sub}
+        </span>
+      )}
+    </div>
+  );
+}
+
+// ── IS KPI card (secondary metrics for IndoorSpaces) ───────────────────────
+function IsKpiCard({
+  label, value, sub, status, icon: Icon,
+}: {
+  label: string; value: string; sub: string; status: StatusColor; icon?: React.ComponentType<{ className?: string }>;
+}) {
+  const colors: Record<StatusColor, { badge: string; icon: string; border: string }> = {
+    green:  { badge: "bg-green-100 text-green-800 border-green-200", icon: "text-green-500", border: "border-l-green-400" },
+    yellow: { badge: "bg-amber-100 text-amber-800 border-amber-200",  icon: "text-amber-500",  border: "border-l-amber-400" },
+    red:    { badge: "bg-red-100 text-red-800 border-red-200",        icon: "text-red-500",    border: "border-l-red-400" },
+  };
+  const c = colors[status];
+  return (
+    <div className={`flex flex-col gap-1 rounded-xl border bg-white px-4 py-4 shadow-sm border-l-4 ${c.border}`}>
+      <div className="flex items-center gap-2">
+        {Icon && <Icon className={`h-3.5 w-3.5 ${c.icon}`} />}
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">{label}</span>
+      </div>
+      <span className="text-xl font-bold text-slate-800 leading-none">{value}</span>
+      <span className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full mt-0.5 border w-fit ${c.badge}`}>
+        {status === "green" ? <CheckCircle className="h-3 w-3" /> : <AlertCircle className="h-3 w-3" />}
+        {sub}
+      </span>
+    </div>
+  );
+}
+
+// ── Comfort hero card (star KPI for IndoorSpaces) ──────────────────────────
+function ComfortHeroCard({
+  comfortPct, pmvMean, ppd, status,
+}: {
+  comfortPct: number; pmvMean: number; ppd?: number; status: StatusColor;
+}) {
+  const colors: Record<StatusColor, { bg: string; bar: string; badge: string; border: string; text: string }> = {
+    green:  { bg: "bg-green-50",  bar: "bg-green-500",  badge: "bg-green-100 text-green-800 border-green-200", border: "border-l-green-500",  text: "text-green-700" },
+    yellow: { bg: "bg-amber-50",  bar: "bg-amber-500",  badge: "bg-amber-100 text-amber-800 border-amber-200", border: "border-l-amber-500",  text: "text-amber-700" },
+    red:    { bg: "bg-red-50",    bar: "bg-red-500",    badge: "bg-red-100 text-red-800 border-red-200",       border: "border-l-red-500",    text: "text-red-700" },
+  };
+  const c = colors[status];
+  return (
+    <div className={`rounded-xl border ${c.bg} ${c.border} border-l-4 shadow-sm px-6 py-5 flex flex-col gap-3`}>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Thermometer className={`h-4 w-4 ${c.text}`} />
+          <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">Thermal Comfort Area</span>
+        </div>
+        <span className={`inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-1 rounded-full border ${c.badge}`}>
+          {status === "green" ? <CheckCircle className="h-3 w-3" /> : <AlertCircle className="h-3 w-3" />}
+          {comfortLabel(comfortPct)}
+        </span>
+      </div>
+      <div className="flex items-end gap-3">
+        <span className="text-5xl font-black text-slate-800 leading-none">{fmt(comfortPct, 0)}%</span>
+        <div className="flex flex-col gap-0.5 mb-0.5">
+          <span className="text-[11px] text-slate-500">of occupied area</span>
+          <span className="text-[11px] text-slate-500">within PMV −0.5 to +0.5</span>
+        </div>
+      </div>
+      {/* Progress bar */}
+      <div className="w-full bg-white/70 rounded-full h-2.5 overflow-hidden border border-white">
+        <div
+          className={`h-full rounded-full transition-all ${c.bar}`}
+          style={{ width: `${Math.min(comfortPct, 100)}%` }}
+        />
+      </div>
+      <div className="flex items-center gap-4 text-[11px] text-slate-500">
+        <span>PMV mean: <span className="font-semibold text-slate-700">{fmt(pmvMean, 2)}</span> · seated plane</span>
+        {ppd !== undefined && (
+          <span>PPD mean: <span className="font-semibold text-slate-700">{fmt(ppd, 0)}%</span></span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Executive Summary panel ────────────────────────────────────────────────
+interface SummaryRow {
+  label: string;
+  value: string;
+  note: string;
+  status: StatusColor;
+}
+
+function ExecSummary({
+  rows, simName, onPrint,
+}: {
+  rows: SummaryRow[]; simName: string; onPrint: () => void;
+}) {
+  const dot: Record<StatusColor, string> = {
+    green:  "bg-green-500",
+    yellow: "bg-amber-400",
+    red:    "bg-red-500",
+  };
+  const textColor: Record<StatusColor, string> = {
+    green:  "text-green-700",
+    yellow: "text-amber-700",
+    red:    "text-red-700",
+  };
+  return (
+    <div id="is-exec-summary" className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      <div className="flex items-center justify-between px-5 py-3 border-b bg-slate-50">
+        <div className="flex items-center gap-2">
+          <FileText className="h-4 w-4 text-slate-500" />
+          <span className="text-sm font-semibold text-slate-700">Executive Summary</span>
+          <span className="text-[11px] text-slate-400 ml-1">— {simName}</span>
+        </div>
+        <Button variant="outline" size="sm" className="h-7 text-xs gap-1.5" onClick={onPrint}>
+          <Printer className="h-3.5 w-3.5" />
+          Download PDF
+        </Button>
+      </div>
+      <div className="divide-y divide-slate-100">
+        {rows.map((row) => (
+          <div key={row.label} className="flex items-center px-5 py-2.5 gap-3">
+            <span className={`flex-shrink-0 w-2 h-2 rounded-full ${dot[row.status]}`} />
+            <span className="text-xs text-slate-600 flex-1">{row.label}</span>
+            <span className="text-sm font-semibold text-slate-800 w-28 text-right">{row.value}</span>
+            <span className={`text-[11px] font-medium w-44 text-right ${textColor[row.status]}`}>{row.note}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 // ── Main page ──────────────────────────────────────────────────────────────
@@ -332,6 +535,124 @@ export default function Analysis() {
   const ashraeOk = rci ? rci.n_ashrae_ok : 0;
   const ashraePct = rackCount > 0 ? (ashraeOk / rackCount) * 100 : 0;
 
+  // IS derived values
+  const comfortPct = comfort?.seated?.comfort_area_pct ?? 0;
+  const pmvMean = comfort?.seated?.pmv_mean ?? 0;
+  const ppdMean = comfort?.seated?.ppd_mean;
+  const drMean = flow?.ankle?.DR_mean;
+  const drHighPct = flow?.ankle?.DR_high_risk_pct;
+  const uMean = flow?.seated?.U_mean;
+  const tMean = flow?.seated?.T_mean;
+  const adpiPct = vent?.seated?.ADPI_pct;
+  const ev = vent?.global?.ev;
+  const evMethod = vent?.global?.ev_method;
+  const ach = vent?.global?.ACH;
+
+  // Executive summary rows for IS
+  const summaryRows: SummaryRow[] = [];
+  if (comfort?.seated) {
+    summaryRows.push({
+      label: "Thermal Comfort Area (seated · PMV ±0.5)",
+      value: `${fmt(comfortPct, 0)}%`,
+      note: comfortLabel(comfortPct),
+      status: comfortStatus(comfortPct),
+    });
+  }
+  if (drMean !== undefined) {
+    summaryRows.push({
+      label: "Draft Rate — ankle level (ISO 7730)",
+      value: `${fmt(drMean, 1)}%`,
+      note: drLabel(drMean),
+      status: drStatus(drMean),
+    });
+  }
+  if (uMean !== undefined) {
+    summaryRows.push({
+      label: "Mean air velocity (seated plane)",
+      value: `${fmt(uMean, 2)} m/s`,
+      note: velLabel(uMean),
+      status: velStatus(uMean),
+    });
+  }
+  if (tMean !== undefined) {
+    summaryRows.push({
+      label: "Mean air temperature (seated plane)",
+      value: `${fmt(tMean, 1)} °C`,
+      note: tempLabel(tMean),
+      status: tempStatus(tMean),
+    });
+  }
+  if (adpiPct !== undefined) {
+    summaryRows.push({
+      label: "ADPI — Air Diffusion Performance Index",
+      value: `${fmt(adpiPct, 0)}%`,
+      note: adpiLabel(adpiPct),
+      status: adpiStatus(adpiPct),
+    });
+  }
+  if (ev !== undefined) {
+    const evMethodShort = evMethod === "transient_decay" ? "transient decay" : "classical";
+    summaryRows.push({
+      label: `Ventilation effectiveness εᵥ (${evMethodShort})`,
+      value: fmt(ev, evMethod === "transient_decay" ? 1 : 2),
+      note: evLabel(ev, evMethod),
+      status: evStatus(ev, evMethod),
+    });
+  }
+  if (ach !== undefined) {
+    summaryRows.push({
+      label: "Air Changes per Hour (ACH)",
+      value: `${fmt(ach, 2)} h⁻¹`,
+      note: ach >= 6 ? "Adequate ventilation" : ach >= 2 ? "Low — check supply" : "Insufficient",
+      status: ach >= 6 ? "green" : ach >= 2 ? "yellow" : "red",
+    });
+  }
+
+  // PDF print handler
+  const handlePrint = useCallback(() => {
+    const summaryEl = document.getElementById("is-exec-summary");
+    if (!summaryEl) return;
+    const w = window.open("", "_blank", "width=900,height=700");
+    if (!w) return;
+    const simName = simulation?.name ?? "Simulation";
+    const date = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+    const dot: Record<StatusColor, string> = { green: "#22c55e", yellow: "#f59e0b", red: "#ef4444" };
+    const textCol: Record<StatusColor, string> = { green: "#15803d", yellow: "#b45309", red: "#b91c1c" };
+    const rowsHtml = summaryRows.map(r => `
+      <tr>
+        <td style="padding:8px 12px;border-bottom:1px solid #f1f5f9">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${dot[r.status]};margin-right:8px;vertical-align:middle"></span>
+          <span style="font-size:12px;color:#475569">${r.label}</span>
+        </td>
+        <td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;text-align:right;font-size:13px;font-weight:700;color:#1e293b">${r.value}</td>
+        <td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;text-align:right;font-size:11px;font-weight:600;color:${textCol[r.status]}">${r.note}</td>
+      </tr>`).join("");
+    w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
+      <title>CFD Executive Summary — ${simName}</title>
+      <style>
+        body{font-family:system-ui,sans-serif;margin:0;padding:24px;color:#1e293b;background:#fff}
+        h1{font-size:20px;font-weight:800;margin:0 0 4px}
+        .meta{font-size:12px;color:#64748b;margin-bottom:20px}
+        table{width:100%;border-collapse:collapse;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+        th{background:#f8fafc;padding:8px 12px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#94a3b8;font-weight:600}
+        th:nth-child(2),th:nth-child(3){text-align:right}
+        .footer{margin-top:16px;font-size:10px;color:#94a3b8;text-align:right}
+        @media print{body{padding:16px}}
+      </style></head><body>
+      <h1>CFD Indoor Comfort — Executive Summary</h1>
+      <div class="meta">Simulation: <strong>${simName}</strong> &nbsp;·&nbsp; Report date: ${date}</div>
+      <table>
+        <thead><tr>
+          <th>KPI</th><th style="text-align:right">Value</th><th style="text-align:right">Assessment</th>
+        </tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+      <div class="footer">Generated by FlowDesk CFD Platform · ${date}</div>
+      <script>window.onload=()=>{window.print()}</script>
+      </body></html>`);
+    w.document.close();
+  }, [summaryRows, simulation]);
+
   return (
     <DashboardLayout>
       <div className="flex items-center gap-4 mb-8">
@@ -391,41 +712,76 @@ export default function Analysis() {
               <h2 className="text-xl font-semibold">Reports &amp; Metrics</h2>
             </div>
 
-            {/* ── IndoorSpaces KPI row ── */}
+            {/* ── IndoorSpaces KPI section ── */}
             {!isDataCenter && hasISMetrics && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+              <div className="space-y-3 mb-6">
+                {/* Hero: Comfort Area */}
                 {comfort?.seated && (
-                  <KpiCard
-                    label="Comfort area"
-                    value={`${fmt(comfort.seated.comfort_area_pct, 0)}%`}
-                    sub={`PMV ${fmt(comfort.seated.pmv_mean)} · seated plane`}
-                    ok={comfort.seated.comfort_area_pct >= 50}
+                  <ComfortHeroCard
+                    comfortPct={comfortPct}
+                    pmvMean={pmvMean}
+                    ppd={ppdMean}
+                    status={comfortStatus(comfortPct)}
                   />
                 )}
-                {flow?.seated && (
-                  <KpiCard
-                    label="Mean velocity"
-                    value={`${fmt(flow.seated.U_mean, 2)} m/s`}
-                    sub={`${fmt(flow.seated.U_comfort_pct, 0)}% in comfort range`}
-                    ok={flow.seated.U_mean < 0.25}
-                  />
-                )}
-                {flow?.seated && (
-                  <KpiCard
-                    label="Mean temperature"
-                    value={`${fmt(flow.seated.T_mean, 1)} °C`}
-                    sub={flow.vertical_gradient
-                      ? `ΔT head-ankle: ${fmt(flow.vertical_gradient.delta_T_head_ankle, 1)} K`
-                      : undefined}
-                    ok={flow.seated.T_mean >= 20 && flow.seated.T_mean <= 26}
-                  />
-                )}
-                {vent?.seated && (
-                  <KpiCard
-                    label="ADPI"
-                    value={`${fmt(vent.seated.ADPI_pct, 0)}%`}
-                    sub={`CO₂ compliant: ${fmt(vent.seated.CO2_compliant_pct, 0)}%`}
-                    ok={vent.seated.ADPI_pct >= 60}
+
+                {/* Secondary KPIs: DR · Velocity · Temperature · ADPI · ev */}
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                  {drMean !== undefined && (
+                    <IsKpiCard
+                      label="Draft Rate"
+                      value={`${fmt(drMean, 1)}%`}
+                      sub={drLabel(drMean)}
+                      status={drStatus(drMean)}
+                      icon={Wind}
+                    />
+                  )}
+                  {uMean !== undefined && (
+                    <IsKpiCard
+                      label="Mean velocity"
+                      value={`${fmt(uMean, 2)} m/s`}
+                      sub={`${fmt(flow?.seated?.U_comfort_pct ?? 0, 0)}% in range`}
+                      status={velStatus(uMean)}
+                      icon={Wind}
+                    />
+                  )}
+                  {tMean !== undefined && (
+                    <IsKpiCard
+                      label="Mean temp."
+                      value={`${fmt(tMean, 1)} °C`}
+                      sub={flow?.vertical_gradient
+                        ? `ΔT: ${fmt(flow.vertical_gradient.delta_T_head_ankle, 1)} K`
+                        : tempLabel(tMean)}
+                      status={tempStatus(tMean)}
+                      icon={Thermometer}
+                    />
+                  )}
+                  {adpiPct !== undefined && (
+                    <IsKpiCard
+                      label="ADPI"
+                      value={`${fmt(adpiPct, 0)}%`}
+                      sub={adpiLabel(adpiPct)}
+                      status={adpiStatus(adpiPct)}
+                      icon={Gauge}
+                    />
+                  )}
+                  {ev !== undefined && (
+                    <IsKpiCard
+                      label="εᵥ ventilation"
+                      value={fmt(ev, evMethod === "transient_decay" ? 1 : 2)}
+                      sub={evLabel(ev, evMethod)}
+                      status={evStatus(ev, evMethod)}
+                      icon={RefreshCw}
+                    />
+                  )}
+                </div>
+
+                {/* Executive Summary */}
+                {summaryRows.length > 0 && (
+                  <ExecSummary
+                    rows={summaryRows}
+                    simName={simulation.name}
+                    onPrint={handlePrint}
                   />
                 )}
               </div>
