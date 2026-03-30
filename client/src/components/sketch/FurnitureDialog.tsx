@@ -1051,11 +1051,12 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                         </div>
                       ) : (
                         <div className="grid grid-cols-4 items-center gap-4">
-                          <Label htmlFor="thermalPower_W" className="text-right">Power Q</Label>
+                          <Label htmlFor="thermalPower_W" className="text-right">Q [W]</Label>
                           <Input
                             id="thermalPower_W"
                             type="number"
-                            min={0}
+                            min={0.001}
+                            step={0.1}
                             value={thermalPower_W}
                             onChange={(e) => setThermalPower_W(Number(e.target.value))}
                             className="col-span-2"
