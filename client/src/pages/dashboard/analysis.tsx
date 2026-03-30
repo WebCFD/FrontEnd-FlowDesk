@@ -714,20 +714,6 @@ export default function Analysis() {
             )}
           </p>
 
-          {/* ── 3D Viewer ── */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Eye className="h-5 w-5" />
-                3D Visualization
-              </CardTitle>
-              <CardDescription>Interactive 3D visualization of simulation results</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <VTKViewer simulationId={simulation.id} className="w-full" />
-            </CardContent>
-          </Card>
-
           {/* ── Reports section ── */}
           <div>
             <div className="flex items-center gap-2 mb-5">
@@ -898,6 +884,20 @@ export default function Analysis() {
               })}
             </div>
           </div>
+
+          {/* ── 3D Viewer ── */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Eye className="h-5 w-5" />
+                3D Visualization
+              </CardTitle>
+              <CardDescription>Interactive 3D visualization of simulation results</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <VTKViewer simulationId={simulation.id} className="w-full" />
+            </CardContent>
+          </Card>
         </div>
       )}
 
