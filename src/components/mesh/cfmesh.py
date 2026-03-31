@@ -312,7 +312,11 @@ def export_to_fms(geo_mesh_dict, sim_path, fms_filename):
                 cell_normals=True,
                 point_normals=False,
             )
-            faces = mesh.cells.reshape((-1, 4))
+            # After extract_surface() the mesh is always PolyData.
+            # PyVista ≥ 0.45 uses .faces on PolyData (same flat [3,i,j,k,...] format),
+            # while UnstructuredGrid uses .cells — pick the right one.
+            _cells_arr = mesh.faces if isinstance(mesh, pv.PolyData) else mesh.cells
+            faces = _cells_arr.reshape((-1, 4))
             skipped = 0
             for face in faces:
                 assert face[0] == 3
