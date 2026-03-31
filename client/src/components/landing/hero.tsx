@@ -82,7 +82,7 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            <Button size="lg" onClick={() => {
+            <Button size="lg" variant="destructive" onClick={() => {
               setLocation("/dashboard");
               setTimeout(() => window.scrollTo(0, 0), 100);
             }}>Get Started</Button>
