@@ -220,6 +220,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   
   // Estado para la posición a lo largo del wall (0-100%)
   const [wallPosition, setWallPosition] = useState(50);
+
+  // Unidades de visualización para los campos de posición
+  const [positionUnit, setPositionUnit] = useState<'percent' | 'cm'>('percent');
+  const [heightUnit, setHeightUnit] = useState<'percent' | 'cm'>('percent');
   
   // Estado para el tipo de forma (rectangular/circular)
   const [shapeType, setShapeType] = useState<'rectangular' | 'circular'>('rectangular');
@@ -330,6 +334,60 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         props.onPositionUpdate(newPosition);
       }
     }
+  };
+
+  // ── Helpers de conversión % ↔ cm para Position along Wall ──
+  const getWallGeometryCm = () => {
+    if (!('wallContext' in props) || !props.wallContext) return null;
+    const { wallStart, wallEnd } = props.wallContext;
+    const PIXELS_TO_CM = 1.25;
+    const wallLengthPx = Math.sqrt(
+      Math.pow(wallEnd.x - wallStart.x, 2) + Math.pow(wallEnd.y - wallStart.y, 2)
+    );
+    const wallLengthCm = wallLengthPx * PIXELS_TO_CM;
+    const elementWidth = (values as any).width || localWidth || 50;
+    const effectiveLengthCm = Math.max(0, wallLengthCm - elementWidth);
+    const halfWidth = elementWidth / 2;
+    return { wallLengthCm, effectiveLengthCm, halfWidth };
+  };
+
+  const wallPctToCm = (pct: number): number => {
+    const geo = getWallGeometryCm();
+    if (!geo) return 0;
+    return Math.round(((pct / 100) * geo.effectiveLengthCm + geo.halfWidth) * 10) / 10;
+  };
+
+  const wallCmToPct = (cm: number): number => {
+    const geo = getWallGeometryCm();
+    if (!geo || geo.effectiveLengthCm <= 0) return 50;
+    return Math.round(((cm - geo.halfWidth) / geo.effectiveLengthCm) * 10000) / 100;
+  };
+
+  // ── Helpers de conversión % ↔ cm para Center Height ──
+  const getCeilingHeightCm = (): number => {
+    if ('wallContext' in props && props.wallContext) return props.wallContext.ceilingHeight;
+    return 270;
+  };
+
+  const getElementHeightCm = (): number => {
+    return (values as any).height || localHeight || 100;
+  };
+
+  const heightPctToCm = (pct: number): number => {
+    const ceilH = getCeilingHeightCm();
+    const elemH = getElementHeightCm();
+    const effectiveRange = Math.max(0, ceilH - elemH);
+    const halfH = elemH / 2;
+    return Math.round(((pct / 100) * effectiveRange + halfH) * 10) / 10;
+  };
+
+  const heightCmToPct = (cm: number): number => {
+    const ceilH = getCeilingHeightCm();
+    const elemH = getElementHeightCm();
+    const effectiveRange = Math.max(0, ceilH - elemH);
+    const halfH = elemH / 2;
+    if (effectiveRange <= 0) return 50;
+    return Math.round(((cm - halfH) / effectiveRange) * 10000) / 100;
   };
 
   // Función para manejar cambios de Width (similar a handleWallPositionChange)
@@ -1356,27 +1414,38 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                   </div>
                   
                   <div className="space-y-3">
-                    {/* CENTER HEIGHT - NEW IMPLEMENTATION BASED ON POSITION ALONG WALL PATTERN */}
+                    {/* CENTER HEIGHT */}
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label htmlFor="center-height" className="text-xs text-slate-600">
-                          Center Height
-                        </Label>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <HelpCircle className="h-3 w-3 text-slate-400 hover:text-slate-600 cursor-help" />
-                            </TooltipTrigger>
-                            <TooltipContent side="right" sideOffset={5}>
-                              <p className="text-xs max-w-48">
-                                {type === 'door' 
-                                  ? "For doors, center height is automatically calculated as half the door height."
-                                  : "Height from floor to the center of the element in the vertical axis of the space. Mounting height = Sill height + half element height."
-                                }
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="center-height" className="text-xs text-slate-600">
+                            Center Height
+                          </Label>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <HelpCircle className="h-3 w-3 text-slate-400 hover:text-slate-600 cursor-help" />
+                              </TooltipTrigger>
+                              <TooltipContent side="right" sideOffset={5}>
+                                <p className="text-xs max-w-48">
+                                  {type === 'door'
+                                    ? "For doors, center height is automatically calculated as half the door height."
+                                    : "Vertical position of the element center. 0% = element resting on floor, 100% = element touching ceiling."}
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                        {type !== 'door' && (
+                          <div className="flex rounded overflow-hidden border border-slate-200 text-xs">
+                            <button type="button"
+                              className={`px-2 py-0.5 transition-colors ${heightUnit === 'percent' ? 'bg-blue-500 text-white' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
+                              onClick={() => setHeightUnit('percent')}>%</button>
+                            <button type="button"
+                              className={`px-2 py-0.5 transition-colors ${heightUnit === 'cm' ? 'bg-blue-500 text-white' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
+                              onClick={() => setHeightUnit('cm')}>cm</button>
+                          </div>
+                        )}
                       </div>
                       <div className="flex items-center space-x-2">
                         <Input
@@ -1384,22 +1453,15 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           type="number"
                           step="any"
                           inputMode="decimal"
-                          value={distanceToFloor}
+                          value={type === 'door' ? distanceToFloor : (heightUnit === 'percent' ? parseFloat(heightCmToPct(distanceToFloor).toFixed(2)) : distanceToFloor)}
                           onChange={(e) => {
                             if (type !== 'door') {
                               const value = Number(e.target.value);
-                              const rounded = Math.round(value * 100) / 100;
-                              setDistanceToFloor(rounded);
-                              
-                              // Update form values for persistence
-                              setValues(prev => {
-                                const newValues = { ...prev, distanceToFloor: rounded };
-                                return newValues;
-                              });
-                              
-                              // Real-time callback for Canvas2D updates - following Position Along Wall pattern
+                              const cmValue = heightUnit === 'percent' ? heightPctToCm(value) : Math.round(value * 100) / 100;
+                              setDistanceToFloor(cmValue);
+                              setValues(prev => ({ ...prev, distanceToFloor: cmValue }));
                               if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
-                                props.onDimensionsUpdate({ distanceToFloor: rounded });
+                                props.onDimensionsUpdate({ distanceToFloor: cmValue });
                               }
                             }
                           }}
@@ -1408,59 +1470,76 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           disabled={type === 'door'}
                           readOnly={type === 'door'}
                         />
-                        <span className="text-xs text-slate-500">cm</span>
+                        <span className="text-xs text-slate-500">{type === 'door' ? 'cm' : heightUnit}</span>
                       </div>
-                      {type === 'door' && (
-                        <p className="text-xs text-gray-500 mt-1">
-                          Half of the door height
+                      {type === 'door' ? (
+                        <p className="text-xs text-gray-500 mt-1">Half of the door height</p>
+                      ) : (
+                        <p className="text-xs text-gray-400">
+                          {heightUnit === 'percent'
+                            ? `≈ ${distanceToFloor.toFixed(1)} cm from floor`
+                            : `≈ ${Math.max(0, Math.min(100, heightCmToPct(distanceToFloor))).toFixed(1)} %`}
                         </p>
                       )}
                     </div>
-                    
-                    {/* Posición a lo largo del wall */}
+
+                    {/* POSITION ALONG WALL */}
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Label htmlFor="wall-position" className="text-xs text-slate-600">
-                          Position along Wall
-                        </Label>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <HelpCircle className="h-3 w-3 text-slate-400 hover:text-slate-600 cursor-help" />
-                            </TooltipTrigger>
-                            <TooltipContent side="right" sideOffset={5}>
-                              <p className="text-xs max-w-48">
-                                Horizontal position of the element center relative to the wall total length. 0% = start of wall, 100% = end of wall.
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor="wall-position" className="text-xs text-slate-600">
+                            Position along Wall
+                          </Label>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <HelpCircle className="h-3 w-3 text-slate-400 hover:text-slate-600 cursor-help" />
+                              </TooltipTrigger>
+                              <TooltipContent side="right" sideOffset={5}>
+                                <p className="text-xs max-w-48">
+                                  Horizontal position along the wall. 0% = element at start of wall, 100% = element at end of wall. Element never overflows the wall.
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                        <div className="flex rounded overflow-hidden border border-slate-200 text-xs">
+                          <button type="button"
+                            className={`px-2 py-0.5 transition-colors ${positionUnit === 'percent' ? 'bg-blue-500 text-white' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
+                            onClick={() => setPositionUnit('percent')}>%</button>
+                          <button type="button"
+                            className={`px-2 py-0.5 transition-colors ${positionUnit === 'cm' ? 'bg-blue-500 text-white' : 'bg-white text-slate-500 hover:bg-slate-50'}`}
+                            onClick={() => setPositionUnit('cm')}>cm</button>
+                        </div>
                       </div>
                       <div className="flex items-center space-x-2">
                         <Input
                           id="wall-position"
                           type="number"
-                          min="0"
-                          max="100"
+                          min={positionUnit === 'percent' ? '0' : undefined}
+                          max={positionUnit === 'percent' ? '100' : undefined}
                           step="any"
                           inputMode="decimal"
-                          value={parseFloat(wallPosition.toFixed(2))}
+                          value={positionUnit === 'percent' ? parseFloat(wallPosition.toFixed(2)) : parseFloat(wallPctToCm(wallPosition).toFixed(1))}
                           onChange={(e) => {
                             const value = parseFloat(e.target.value);
                             if (!isNaN(value)) {
-                              // Permitir hasta 2 decimales
-                              const roundedValue = Math.round(value * 100) / 100;
-                              handleWallPositionChange(roundedValue);
+                              const pct = positionUnit === 'percent'
+                                ? Math.round(value * 100) / 100
+                                : wallCmToPct(value);
+                              handleWallPositionChange(Math.max(0, Math.min(100, pct)));
                             }
                           }}
                           className="h-8 text-sm"
-                          placeholder="50.00"
+                          placeholder={positionUnit === 'percent' ? '50.00' : '100.0'}
                         />
-                        <span className="text-xs text-slate-500">%</span>
+                        <span className="text-xs text-slate-500">{positionUnit === 'percent' ? '%' : 'cm'}</span>
                       </div>
-                      <div className="text-xs text-gray-500">
-                        0% = start of wall, 100% = end of wall
-                      </div>
+                      <p className="text-xs text-gray-400">
+                        {positionUnit === 'percent'
+                          ? `≈ ${wallPctToCm(wallPosition).toFixed(1)} cm from start`
+                          : `≈ ${wallPosition.toFixed(1)} % along wall`}
+                      </p>
                     </div>
                   </div>
                 </div>
