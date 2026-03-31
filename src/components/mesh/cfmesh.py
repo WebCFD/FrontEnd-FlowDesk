@@ -293,6 +293,8 @@ def export_to_fms(geo_mesh_dict, sim_path, fms_filename):
             f.write(f"solid {solid_name}\n")
             mesh = mesh.triangulate()
             # Fix inconsistent winding order:
+            # 0. extract_surface() converts UnstructuredGrid → PolyData (required
+            #    for clean() and compute_normals(), which only exist on PolyData).
             # 1. clean() merges duplicate vertices so triangles share edges,
             #    allowing VTK to propagate a consistent orientation.
             # 2. compute_normals(consistent_normals=True, auto_orient_normals=True)
@@ -301,6 +303,7 @@ def export_to_fms(geo_mesh_dict, sim_path, fms_filename):
             #    can produce CW and CCW triangles on the same face, which causes
             #    cfMesh's quadric fitting to fail at shared corners with
             #    contradictory normals.
+            mesh = mesh.extract_surface()  # UnstructuredGrid → PolyData if needed
             mesh = mesh.clean()
             mesh = mesh.compute_normals(
                 consistent_normals=True,
