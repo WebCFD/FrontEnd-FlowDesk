@@ -509,17 +509,21 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'T'):
                         thermal_bc_mode = row.get('thermalBCMode', 'fixedT')
                         if thermal_bc_mode == 'fixedQ':
-                            # Heat flux BC: externalWallHeatFluxTemperature
+                            # Heat flux BC: atmTurbulentHeatFluxTemperature
+                            # Note: externalWallHeatFluxTemperature is for compressible solvers only
+                            # (requires kappaMethod fluidThermo / thermophysicalProperties).
+                            # buoyantBoussinesqSimpleFoam is incompressible → use atmTurbulentHeatFluxTemperature
+                            # which derives kappa from the turbulence model (compatible with Boussinesq).
                             thermal_power_w  = float(row.get('thermalPower_W', 0.0) or 0.0)
                             surface_area_m2  = float(row.get('surface_area_m2', 1.0) or 1.0)
                             q_w_per_m2 = thermal_power_w / surface_area_m2 if surface_area_m2 > 0 else 0.0
                             logger.info(f"    BC {row['id']} (wall/fixedQ): Q={thermal_power_w}W A={surface_area_m2:.4f}m² q={q_w_per_m2:.2f}W/m²")
                             # foamlib writes scalar values without 'uniform'; post-processing
                             # in the T-file step below will insert 'uniform' before the q value.
-                            new_bc_data["type"]        = 'externalWallHeatFluxTemperature'
-                            new_bc_data["mode"]        = 'flux'
-                            new_bc_data["q"]           = q_w_per_m2   # bare float; fixed below
-                            new_bc_data["kappaMethod"] = 'fluidThermo'
+                            new_bc_data["type"]       = 'atmTurbulentHeatFluxTemperature'
+                            new_bc_data["heatSource"] = 'flux'
+                            new_bc_data["q"]          = q_w_per_m2   # bare float; fixed below
+                            new_bc_data["Cp0"]        = 1005         # J/(kg·K) specific heat of air
                             # T_(°C) may be None/NaN for fixedQ blocks (no temperature BC set) — use 20°C as initial guess
                             t_celsius = row.get('T_(°C)', None)
                             t_init_k = (float(t_celsius) + 273.15) if (t_celsius is not None and str(t_celsius).strip() not in ('', 'nan')) else 293.15
@@ -788,7 +792,7 @@ def define_initial_files(sim_path, patch_df):
         logger.info("    * Rack T boundary conditions post-processed successfully")
 
     # ── Post-process 0.orig/T: fix 'q X;' → 'q uniform X;' for fixedQ blocks ──
-    # foamlib writes bare scalar values; OpenFOAM's externalWallHeatFluxTemperature
+    # foamlib writes bare scalar values; OpenFOAM's atmTurbulentHeatFluxTemperature
     # requires PatchFunction1<scalar> format: 'q uniform X;'
     fixedq_patches = patch_df[patch_df['thermalBCMode'] == 'fixedQ'] \
         if 'thermalBCMode' in patch_df.columns else pd.DataFrame()
@@ -796,16 +800,16 @@ def define_initial_files(sim_path, patch_df):
         t_file = os.path.join(initial_path, 'T')
         with open(t_file, 'r', encoding='utf-8') as _f:
             _t_content = _f.read()
-        # Within any externalWallHeatFluxTemperature block, replace 'q   X;' with 'q   uniform X;'
+        # Within any atmTurbulentHeatFluxTemperature block, replace 'q   X;' with 'q   uniform X;'
         _t_content = _re.sub(
-            r'(type\s+externalWallHeatFluxTemperature\s*;[^}]*?\bq\s+)([0-9eE+\-.]+)(\s*;)',
+            r'(type\s+atmTurbulentHeatFluxTemperature\s*;[^}]*?\bq\s+)([0-9eE+\-.]+)(\s*;)',
             r'\1uniform \2\3',
             _t_content,
             flags=_re.DOTALL
         )
         with open(t_file, 'w', encoding='utf-8') as _f:
             _f.write(_t_content)
-        logger.info(f"    * Fixed {len(fixedq_patches)} externalWallHeatFluxTemperature 'q' field(s) in 0.orig/T")
+        logger.info(f"    * Fixed {len(fixedq_patches)} atmTurbulentHeatFluxTemperature 'q' field(s) in 0.orig/T")
 
 
 def setup(case_path: str, simulation_type: str = 'comfortTest', transient: bool = False, n_cpu: int = 2) -> list:
@@ -968,20 +972,6 @@ def setup(case_path: str, simulation_type: str = 'comfortTest', transient: bool 
         # Solution: buoyantPimpleFoam will develop velocity field from rest in 2-3 timesteps
     ])
     
-    # Locate libheatTransfer.so (needed for externalWallHeatFluxTemperature BC)
-    # In OpenFOAM.com 2412, this may be in a modules subdirectory not included
-    # in the default LD_LIBRARY_PATH of the HPC job environment.
-    script_commands.extend([
-        'echo "==================== LOCATING OPTIONAL LIBRARIES ===================="',
-        '_HEAT_LIB=$(find "${WM_PROJECT_DIR}" "${FOAM_MODULES:-/dev/null}" -name "libheatTransfer.so" 2>/dev/null | head -1)',
-        'if [ -n "$_HEAT_LIB" ]; then',
-        '    export LD_LIBRARY_PATH="$(dirname "$_HEAT_LIB"):${LD_LIBRARY_PATH}"',
-        '    echo "✓ libheatTransfer.so found and added to LD_LIBRARY_PATH: $_HEAT_LIB"',
-        'else',
-        '    echo "⚠ libheatTransfer.so NOT found under $WM_PROJECT_DIR — externalWallHeatFluxTemperature BC will fail"',
-        'fi',
-    ])
-
     # Run solver: TRANSIENT or STEADY
     if transient:
         # ========== TRANSIENT: Single execution with ultra-conservative settings ==========
