@@ -1523,9 +1523,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               const raw = parseFloat(e.target.value);
                               if (!isNaN(raw)) {
                                 const ceilH = getCeilingHeightCm();
+                                const halfH = getElementHeightCm() / 2;
                                 const cmValue = heightUnit === 'percent'
                                   ? heightPctToCm(raw)
-                                  : Math.max(0, Math.min(ceilH, Math.round(raw * 100) / 100));
+                                  : Math.max(halfH, Math.min(ceilH - halfH, Math.round(raw * 100) / 100));
                                 setDistanceToFloor(cmValue);
                                 setValues(prev => ({ ...prev, distanceToFloor: cmValue }));
                                 if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
@@ -1539,9 +1540,10 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               const raw = parseFloat(heightInputStr);
                               if (!isNaN(raw)) {
                                 const ceilH = getCeilingHeightCm();
+                                const halfH = getElementHeightCm() / 2;
                                 const cmValue = heightUnit === 'percent'
                                   ? heightPctToCm(raw)
-                                  : Math.max(0, Math.min(ceilH, Math.round(raw * 100) / 100));
+                                  : Math.max(halfH, Math.min(ceilH - halfH, Math.round(raw * 100) / 100));
                                 setDistanceToFloor(cmValue);
                                 setValues(prev => ({ ...prev, distanceToFloor: cmValue }));
                                 if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
@@ -1551,11 +1553,12 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               // Re-sync display string from committed value
                               const rawForSync = parseFloat(heightInputStr);
                               const ceilHSync = getCeilingHeightCm();
+                              const halfHSync = getElementHeightCm() / 2;
                               const committedSync = isNaN(rawForSync)
                                 ? distanceToFloor
                                 : heightUnit === 'percent'
                                   ? heightPctToCm(rawForSync)
-                                  : Math.max(0, Math.min(ceilHSync, rawForSync));
+                                  : Math.max(halfHSync, Math.min(ceilHSync - halfHSync, rawForSync));
                               setHeightInputStr(
                                 heightUnit === 'percent'
                                   ? heightCmToPct(committedSync).toFixed(2)
