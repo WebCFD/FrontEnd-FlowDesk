@@ -292,6 +292,23 @@ def export_to_fms(geo_mesh_dict, sim_path, fms_filename):
         for solid_name, mesh in geo_mesh_dict.items():
             f.write(f"solid {solid_name}\n")
             mesh = mesh.triangulate()
+            # Fix inconsistent winding order:
+            # 1. clean() merges duplicate vertices so triangles share edges,
+            #    allowing VTK to propagate a consistent orientation.
+            # 2. compute_normals(consistent_normals=True, auto_orient_normals=True)
+            #    reorders cell vertices so all normals point outward (into the
+            #    fluid domain). Without this, PyVista's per-patch cell extraction
+            #    can produce CW and CCW triangles on the same face, which causes
+            #    cfMesh's quadric fitting to fail at shared corners with
+            #    contradictory normals.
+            mesh = mesh.clean()
+            mesh = mesh.compute_normals(
+                consistent_normals=True,
+                auto_orient_normals=True,
+                flip_normals=False,
+                cell_normals=True,
+                point_normals=False,
+            )
             faces = mesh.cells.reshape((-1, 4))
             skipped = 0
             for face in faces:
