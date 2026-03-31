@@ -968,6 +968,20 @@ def setup(case_path: str, simulation_type: str = 'comfortTest', transient: bool 
         # Solution: buoyantPimpleFoam will develop velocity field from rest in 2-3 timesteps
     ])
     
+    # Locate libheatTransfer.so (needed for externalWallHeatFluxTemperature BC)
+    # In OpenFOAM.com 2412, this may be in a modules subdirectory not included
+    # in the default LD_LIBRARY_PATH of the HPC job environment.
+    script_commands.extend([
+        'echo "==================== LOCATING OPTIONAL LIBRARIES ===================="',
+        '_HEAT_LIB=$(find "${WM_PROJECT_DIR}" "${FOAM_MODULES:-/dev/null}" -name "libheatTransfer.so" 2>/dev/null | head -1)',
+        'if [ -n "$_HEAT_LIB" ]; then',
+        '    export LD_LIBRARY_PATH="$(dirname "$_HEAT_LIB"):${LD_LIBRARY_PATH}"',
+        '    echo "✓ libheatTransfer.so found and added to LD_LIBRARY_PATH: $_HEAT_LIB"',
+        'else',
+        '    echo "⚠ libheatTransfer.so NOT found under $WM_PROJECT_DIR — externalWallHeatFluxTemperature BC will fail"',
+        'fi',
+    ])
+
     # Run solver: TRANSIENT or STEADY
     if transient:
         # ========== TRANSIENT: Single execution with ultra-conservative settings ==========
