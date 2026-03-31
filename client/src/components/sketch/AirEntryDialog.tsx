@@ -231,8 +231,9 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
 
   
   const [distanceToFloor, setDistanceToFloor] = useState<number>(() => {
-    if ('initialValues' in props && (props as any).initialValues?.distanceToFloor) {
-      return (props as any).initialValues.distanceToFloor as number;
+    if (props.type !== 'wall') {
+      const dtf = props.initialValues?.distanceToFloor;
+      if (dtf != null) return dtf;
     }
     return 0;
   });
