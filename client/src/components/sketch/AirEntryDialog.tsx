@@ -1514,6 +1514,16 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           onChange={(e) => {
                             if (type !== 'door') {
                               setHeightInputStr(e.target.value);
+                              const raw = parseFloat(e.target.value);
+                              if (!isNaN(raw)) {
+                                const cmValue = heightUnit === 'percent' ? heightPctToCm(raw) : Math.round(raw * 100) / 100;
+                                const clamped = Math.max(0, cmValue);
+                                setDistanceToFloor(clamped);
+                                setValues(prev => ({ ...prev, distanceToFloor: clamped }));
+                                if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
+                                  props.onDimensionsUpdate({ distanceToFloor: clamped });
+                                }
+                              }
                             }
                           }}
                           onBlur={() => {
@@ -1592,7 +1602,16 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           step="any"
                           inputMode="decimal"
                           value={wallPosInputStr}
-                          onChange={(e) => setWallPosInputStr(e.target.value)}
+                          onChange={(e) => {
+                            setWallPosInputStr(e.target.value);
+                            const raw = parseFloat(e.target.value);
+                            if (!isNaN(raw)) {
+                              const pct = positionUnit === 'percent'
+                                ? Math.round(raw * 100) / 100
+                                : wallCmToPct(raw);
+                              handleWallPositionChange(Math.max(0, Math.min(100, pct)));
+                            }
+                          }}
                           onBlur={() => {
                             const raw = parseFloat(wallPosInputStr);
                             const pct = !isNaN(raw)
