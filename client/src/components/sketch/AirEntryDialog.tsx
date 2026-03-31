@@ -275,6 +275,20 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   const [localWidth, setLocalWidth] = useState(50);
   const [localHeight, setLocalHeight] = useState(50);
 
+  // String buffer states — allow typing intermediate values without blocking
+  const [emissivityStr, setEmissivityStr] = useState('0.90');
+  const [elementEmissivityStr, setElementEmissivityStr] = useState(
+    getDefaultEmissivity('open').toFixed(2)
+  );
+  const [wallPosInputStr, setWallPosInputStr] = useState('50.00');
+  const [heightInputStr, setHeightInputStr] = useState('0');
+
+  // Refs to detect whether each input is currently focused
+  const emissivityInputRef = useRef<HTMLInputElement>(null);
+  const elementEmissivityInputRef = useRef<HTMLInputElement>(null);
+  const wallPosInputRef = useRef<HTMLInputElement>(null);
+  const heightInputRef = useRef<HTMLInputElement>(null);
+
   // Función para calcular la nueva posición basada en el porcentaje del wall
   const calculatePositionFromPercentage = (percentage: number) => {
     if (!('wallContext' in props) || !props.wallContext) return null;
@@ -735,6 +749,46 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     }
   }, [isEditing, props.type, 'initialValues' in props ? props.initialValues?.width : null, 'initialValues' in props ? props.initialValues?.height : null, 'initialValues' in props ? (props.initialValues as any)?.wallPosition : null, 'initialValues' in props ? (props.initialValues as any)?.properties?.wallPosition : null]);
 
+  // Sync string buffer states from numeric counterparts when they change programmatically
+  // (e.g., material selector changes emissivity, canvas drag changes wallPosition)
+  // Guard: skip if that input is currently focused (user is actively typing)
+  useEffect(() => {
+    if (document.activeElement !== emissivityInputRef.current) {
+      const v = (values as any).emissivity;
+      if (v !== undefined) setEmissivityStr(Number(v).toFixed(2));
+    }
+  }, [values]);
+
+  useEffect(() => {
+    if (document.activeElement !== elementEmissivityInputRef.current) {
+      setElementEmissivityStr(elementEmissivity.toFixed(2));
+    }
+  }, [elementEmissivity]);
+
+  useEffect(() => {
+    if (document.activeElement !== wallPosInputRef.current) {
+      setWallPosInputStr(
+        positionUnit === 'percent'
+          ? wallPosition.toFixed(2)
+          : wallPctToCm(wallPosition).toFixed(1)
+      );
+    }
+  }, [wallPosition, positionUnit]);
+
+  useEffect(() => {
+    if (document.activeElement !== heightInputRef.current) {
+      if (type === 'door') {
+        setHeightInputStr(String(distanceToFloor));
+      } else {
+        setHeightInputStr(
+          heightUnit === 'percent'
+            ? heightCmToPct(distanceToFloor).toFixed(2)
+            : String(distanceToFloor)
+        );
+      }
+    }
+  }, [distanceToFloor, heightUnit, type]);
+
   function getDefaultValues() {
     // Obtener valores iniciales según el tipo de props
     const initialValues = props.type === 'wall' 
@@ -1162,14 +1216,16 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                       Custom ε
                     </Label>
                     <Input
+                      ref={emissivityInputRef}
                       id="custom-emissivity"
                       type="number"
-                      value={(values as { emissivity?: number }).emissivity || 0.90}
-                      onChange={(e) => {
-                        const value = parseFloat(e.target.value);
-                        if (!isNaN(value) && value >= 0 && value <= 1) {
-                          setValues(prev => ({ ...prev, emissivity: value }));
-                        }
+                      value={emissivityStr}
+                      onChange={(e) => setEmissivityStr(e.target.value)}
+                      onBlur={() => {
+                        const v = parseFloat(emissivityStr);
+                        const clamped = isNaN(v) ? 0.90 : Math.min(1, Math.max(0, v));
+                        setEmissivityStr(clamped.toFixed(2));
+                        setValues(prev => ({ ...prev, emissivity: clamped }));
                       }}
                       className="col-span-3"
                       min={0}
@@ -1449,20 +1505,36 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                       </div>
                       <div className="flex items-center space-x-2">
                         <Input
+                          ref={heightInputRef}
                           id="center-height"
                           type="number"
                           step="any"
                           inputMode="decimal"
-                          value={type === 'door' ? distanceToFloor : (heightUnit === 'percent' ? parseFloat(heightCmToPct(distanceToFloor).toFixed(2)) : distanceToFloor)}
+                          value={type === 'door' ? distanceToFloor : heightInputStr}
                           onChange={(e) => {
                             if (type !== 'door') {
-                              const value = Number(e.target.value);
-                              const cmValue = heightUnit === 'percent' ? heightPctToCm(value) : Math.round(value * 100) / 100;
-                              setDistanceToFloor(cmValue);
-                              setValues(prev => ({ ...prev, distanceToFloor: cmValue }));
-                              if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
-                                props.onDimensionsUpdate({ distanceToFloor: cmValue });
+                              setHeightInputStr(e.target.value);
+                            }
+                          }}
+                          onBlur={() => {
+                            if (type !== 'door') {
+                              const raw = parseFloat(heightInputStr);
+                              if (!isNaN(raw)) {
+                                const cmValue = heightUnit === 'percent' ? heightPctToCm(raw) : Math.round(raw * 100) / 100;
+                                const clamped = Math.max(0, cmValue);
+                                setDistanceToFloor(clamped);
+                                setValues(prev => ({ ...prev, distanceToFloor: clamped }));
+                                if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
+                                  props.onDimensionsUpdate({ distanceToFloor: clamped });
+                                }
                               }
+                              // Re-sync display string from committed value
+                              const committed = isNaN(parseFloat(heightInputStr)) ? distanceToFloor : Math.max(0, heightUnit === 'percent' ? heightPctToCm(parseFloat(heightInputStr)) : parseFloat(heightInputStr));
+                              setHeightInputStr(
+                                heightUnit === 'percent'
+                                  ? heightCmToPct(committed).toFixed(2)
+                                  : String(committed)
+                              );
                             }
                           }}
                           className={`h-8 text-sm ${type === 'door' ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''}`}
@@ -1514,21 +1586,25 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                       </div>
                       <div className="flex items-center space-x-2">
                         <Input
+                          ref={wallPosInputRef}
                           id="wall-position"
                           type="number"
-                          min={positionUnit === 'percent' ? '0' : undefined}
-                          max={positionUnit === 'percent' ? '100' : undefined}
                           step="any"
                           inputMode="decimal"
-                          value={positionUnit === 'percent' ? parseFloat(wallPosition.toFixed(2)) : parseFloat(wallPctToCm(wallPosition).toFixed(1))}
-                          onChange={(e) => {
-                            const value = parseFloat(e.target.value);
-                            if (!isNaN(value)) {
-                              const pct = positionUnit === 'percent'
-                                ? Math.round(value * 100) / 100
-                                : wallCmToPct(value);
-                              handleWallPositionChange(Math.max(0, Math.min(100, pct)));
-                            }
+                          value={wallPosInputStr}
+                          onChange={(e) => setWallPosInputStr(e.target.value)}
+                          onBlur={() => {
+                            const raw = parseFloat(wallPosInputStr);
+                            const pct = !isNaN(raw)
+                              ? Math.max(0, Math.min(100, positionUnit === 'percent' ? Math.round(raw * 100) / 100 : wallCmToPct(raw)))
+                              : wallPosition;
+                            if (!isNaN(raw)) handleWallPositionChange(pct);
+                            // Re-sync using the freshly computed pct (avoids stale state)
+                            setWallPosInputStr(
+                              positionUnit === 'percent'
+                                ? pct.toFixed(2)
+                                : wallPctToCm(pct).toFixed(1)
+                            );
                           }}
                           className="h-8 text-sm"
                           placeholder={positionUnit === 'percent' ? '50.00' : '100.0'}
@@ -1928,16 +2004,18 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           <Label className="text-xs text-slate-600">Custom Emissivity</Label>
                           <div className="flex items-center space-x-2">
                             <Input
+                              ref={elementEmissivityInputRef}
                               type="number"
                               step="0.01"
                               min="0"
                               max="1"
-                              value={elementEmissivity}
-                              onChange={(e) => {
-                                const value = parseFloat(e.target.value);
-                                if (!isNaN(value) && value >= 0 && value <= 1) {
-                                  setElementEmissivity(value);
-                                }
+                              value={elementEmissivityStr}
+                              onChange={(e) => setElementEmissivityStr(e.target.value)}
+                              onBlur={() => {
+                                const v = parseFloat(elementEmissivityStr);
+                                const clamped = isNaN(v) ? 0.90 : Math.min(1, Math.max(0, v));
+                                setElementEmissivityStr(clamped.toFixed(2));
+                                setElementEmissivity(clamped);
                               }}
                               className="h-8 text-sm"
                               placeholder="0.90"
