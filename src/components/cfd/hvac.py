@@ -524,6 +524,7 @@ def define_initial_files(sim_path, patch_df):
                             new_bc_data["heatSource"] = 'flux'
                             new_bc_data["q"]          = q_w_per_m2   # bare float; fixed below
                             new_bc_data["Cp0"]        = 1005         # J/(kg·K) specific heat of air
+                            new_bc_data["alphaEff"]   = "alphaEff"  # name of alphaEff field in mesh registry
                             # T_(°C) may be None/NaN for fixedQ blocks (no temperature BC set) — use 20°C as initial guess
                             t_celsius = row.get('T_(°C)', None)
                             t_init_k = (float(t_celsius) + 273.15) if (t_celsius is not None and str(t_celsius).strip() not in ('', 'nan')) else 293.15
