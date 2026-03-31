@@ -230,8 +230,12 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   
 
   
-  // Estado para la distancia al suelo
-  const [distanceToFloor, setDistanceToFloor] = useState(0);
+  const [distanceToFloor, setDistanceToFloor] = useState<number>(() => {
+    if ('initialValues' in props && (props as any).initialValues?.distanceToFloor) {
+      return (props as any).initialValues.distanceToFloor as number;
+    }
+    return 0;
+  });
 
 
 
@@ -392,7 +396,8 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
     const elemH = getElementHeightCm();
     const effectiveRange = Math.max(0, ceilH - elemH);
     const halfH = elemH / 2;
-    return Math.round(((pct / 100) * effectiveRange + halfH) * 10) / 10;
+    const raw = Math.round(((pct / 100) * effectiveRange + halfH) * 10) / 10;
+    return Math.max(halfH, Math.min(ceilH - halfH, raw));
   };
 
   const heightCmToPct = (cm: number): number => {
@@ -782,7 +787,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
       } else {
         setHeightInputStr(
           heightUnit === 'percent'
-            ? heightCmToPct(distanceToFloor).toFixed(2)
+            ? Math.max(0, Math.min(100, heightCmToPct(distanceToFloor))).toFixed(2)
             : String(distanceToFloor)
         );
       }
@@ -1516,12 +1521,14 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                               setHeightInputStr(e.target.value);
                               const raw = parseFloat(e.target.value);
                               if (!isNaN(raw)) {
-                                const cmValue = heightUnit === 'percent' ? heightPctToCm(raw) : Math.round(raw * 100) / 100;
-                                const clamped = Math.max(0, cmValue);
-                                setDistanceToFloor(clamped);
-                                setValues(prev => ({ ...prev, distanceToFloor: clamped }));
+                                const ceilH = getCeilingHeightCm();
+                                const cmValue = heightUnit === 'percent'
+                                  ? heightPctToCm(raw)
+                                  : Math.max(0, Math.min(ceilH, Math.round(raw * 100) / 100));
+                                setDistanceToFloor(cmValue);
+                                setValues(prev => ({ ...prev, distanceToFloor: cmValue }));
                                 if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
-                                  props.onDimensionsUpdate({ distanceToFloor: clamped });
+                                  props.onDimensionsUpdate({ distanceToFloor: cmValue });
                                 }
                               }
                             }
@@ -1530,20 +1537,28 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             if (type !== 'door') {
                               const raw = parseFloat(heightInputStr);
                               if (!isNaN(raw)) {
-                                const cmValue = heightUnit === 'percent' ? heightPctToCm(raw) : Math.round(raw * 100) / 100;
-                                const clamped = Math.max(0, cmValue);
-                                setDistanceToFloor(clamped);
-                                setValues(prev => ({ ...prev, distanceToFloor: clamped }));
+                                const ceilH = getCeilingHeightCm();
+                                const cmValue = heightUnit === 'percent'
+                                  ? heightPctToCm(raw)
+                                  : Math.max(0, Math.min(ceilH, Math.round(raw * 100) / 100));
+                                setDistanceToFloor(cmValue);
+                                setValues(prev => ({ ...prev, distanceToFloor: cmValue }));
                                 if (props.type !== 'wall' && 'onDimensionsUpdate' in props && props.onDimensionsUpdate) {
-                                  props.onDimensionsUpdate({ distanceToFloor: clamped });
+                                  props.onDimensionsUpdate({ distanceToFloor: cmValue });
                                 }
                               }
                               // Re-sync display string from committed value
-                              const committed = isNaN(parseFloat(heightInputStr)) ? distanceToFloor : Math.max(0, heightUnit === 'percent' ? heightPctToCm(parseFloat(heightInputStr)) : parseFloat(heightInputStr));
+                              const rawForSync = parseFloat(heightInputStr);
+                              const ceilHSync = getCeilingHeightCm();
+                              const committedSync = isNaN(rawForSync)
+                                ? distanceToFloor
+                                : heightUnit === 'percent'
+                                  ? heightPctToCm(rawForSync)
+                                  : Math.max(0, Math.min(ceilHSync, rawForSync));
                               setHeightInputStr(
                                 heightUnit === 'percent'
-                                  ? heightCmToPct(committed).toFixed(2)
-                                  : String(committed)
+                                  ? heightCmToPct(committedSync).toFixed(2)
+                                  : String(committedSync)
                               );
                             }
                           }}

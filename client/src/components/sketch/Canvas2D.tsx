@@ -3389,6 +3389,9 @@ export default function Canvas2D({
           }
         } : item
       ));
+
+      // Belt-and-suspenders: guarantee a draw cycle even if React batches the above
+      setForceRedraw(prev => prev + 1);
     }
   };
 
@@ -3420,6 +3423,9 @@ export default function Canvas2D({
           }
         } : item
       ));
+
+      // Belt-and-suspenders: guarantee a draw cycle even if React batches the above
+      setForceRedraw(prev => prev + 1);
     }
   };
 
