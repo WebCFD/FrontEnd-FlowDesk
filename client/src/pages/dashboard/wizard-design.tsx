@@ -2425,14 +2425,17 @@ export default function WizardDesign() {
                             id="ceiling-height"
                             type="number"
                             value={ceilingHeight}
-                            min={200}
-                            max={500}
-                            step={10}
+                            min={0}
+                            max={1000}
+                            step={5}
                             onChange={(e) => {
-                              const value = parseInt(e.target.value);
-                              if (!isNaN(value) && value >= 200 && value <= 500) {
-                                setCeilingHeight(value);
-                              }
+                              const value = parseFloat(e.target.value);
+                              if (!isNaN(value)) setCeilingHeight(value);
+                            }}
+                            onBlur={(e) => {
+                              const value = parseFloat(e.target.value);
+                              if (isNaN(value) || value < 0) setCeilingHeight(0);
+                              else if (value > 1000) setCeilingHeight(1000);
                             }}
                             className="w-24"
                           />
@@ -2482,14 +2485,17 @@ export default function WizardDesign() {
                                   <Input
                                     type="number"
                                     value={floorParams.ceilingHeight}
-                                    min={200}
-                                    max={500}
-                                    step={10}
+                                    min={0}
+                                    max={1000}
+                                    step={5}
                                     onChange={(e) => {
-                                      const value = parseInt(e.target.value);
-                                      if (!isNaN(value) && value >= 200 && value <= 500) {
-                                        updateFloorParameter(floorName, 'ceilingHeight', value);
-                                      }
+                                      const value = parseFloat(e.target.value);
+                                      if (!isNaN(value)) updateFloorParameter(floorName, 'ceilingHeight', value);
+                                    }}
+                                    onBlur={(e) => {
+                                      const value = parseFloat(e.target.value);
+                                      if (isNaN(value) || value < 0) updateFloorParameter(floorName, 'ceilingHeight', 0);
+                                      else if (value > 1000) updateFloorParameter(floorName, 'ceilingHeight', 1000);
                                     }}
                                     className="w-16 h-8 text-xs"
                                   />
