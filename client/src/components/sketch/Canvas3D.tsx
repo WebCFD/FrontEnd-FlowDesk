@@ -1528,15 +1528,19 @@ export default function Canvas3D({
   const createWallContext = (airEntry: AirEntry) => {
     const associatedWall = findAssociatedWall(airEntry);
     const wallId = associatedWall?.id || `${currentFloor}_wall_unknown`;
-    const currentCeilingHeight = floorParameters[currentFloor]?.ceilingHeight || ceilingHeight;
-    
+    // floorParameters.ceilingHeight is already in cm (e.g., 250).
+    // The ceilingHeight prop is in metres (wizard-design divides cm by 100 before passing it).
+    // Only apply the ×100 conversion when falling back to the metres-based prop.
+    const ceilingHeightCm = floorParameters[currentFloor]?.ceilingHeight
+      ?? (ceilingHeight * 100);
+
     return {
       wallId,
       floorName: currentFloor,
       wallStart: { x: airEntry.line.start.x, y: airEntry.line.start.y },
       wallEnd: { x: airEntry.line.end.x, y: airEntry.line.end.y },
       clickPosition: { x: airEntry.position.x, y: airEntry.position.y },
-      ceilingHeight: currentCeilingHeight * 100 // Convert to cm
+      ceilingHeight: ceilingHeightCm // already in cm
     };
   };
 
