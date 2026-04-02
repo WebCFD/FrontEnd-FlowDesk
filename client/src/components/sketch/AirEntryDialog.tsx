@@ -791,7 +791,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
           : String(distanceToFloor)
       );
     }
-  }, [distanceToFloor, heightUnit, type]);
+  }, [distanceToFloor, heightUnit, type, localHeight]);
 
   function getDefaultValues() {
     // Obtener valores iniciales según el tipo de props
