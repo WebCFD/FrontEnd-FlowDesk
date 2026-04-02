@@ -257,7 +257,7 @@ def run(case_name: str = "cases/cfd_case", simulation_type: str = "IndoorSpaces"
     logger.info(f"Post-processing output: {post_path}")
     os.makedirs(post_path, exist_ok=True)
 
-    # Load building_config.json (used by DataCenters and IndustrialCooling)
+    # Load building_config.json — passed to IndustrialCooling; DataCenters reads it internally
     json_payload = {}
     _json_path = os.path.join(sim_path, "..", "geo", "building_config.json")
     if os.path.isfile(_json_path):

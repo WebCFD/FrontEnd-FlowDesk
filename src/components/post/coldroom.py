@@ -167,8 +167,7 @@ def extract_evaporator_info_from_json(json_payload: dict) -> dict:
 # HORIZONTAL SLICE ANALYSIS
 # ─────────────────────────────────────────────────────────────────────────────
 
-def analyze_coldroom_slices(internal_mesh, post_path: str,
-                             evaporator_ids: list = None) -> dict:
+def analyze_coldroom_slices(internal_mesh, post_path: str) -> dict:
     """
     Analyze temperature and velocity at 3 product heights.
 
@@ -201,7 +200,8 @@ def analyze_coldroom_slices(internal_mesh, post_path: str,
             sl = internal_mesh.slice(normal="z", origin=(0, 0, z))
 
         if sl.n_points == 0:
-            logger.warning(f"       Slice at z={z}m returned 0 points — skipping")
+            logger.warning(f"       Slice at z={z}m returned 0 points — writing empty placeholder")
+            slice_results[name] = {"height_m": z, "plane_name": name, "empty": True}
             continue
 
         metrics = {"height_m": z, "plane_name": name}
@@ -1197,10 +1197,7 @@ def run_industrial_cooling(case_name: str, sim_path: str, post_path: str,
 
     # 6 ── Horizontal slice analysis ──────────────────────────────────────────
     logger.info("\n6 - Analyzing horizontal slices at product heights (0.5m, 1.5m, 2.5m)")
-    slice_results = analyze_coldroom_slices(
-        internal_mesh, post_path,
-        evaporator_ids=evap_info.get("evaporator_ids", []),
-    )
+    slice_results = analyze_coldroom_slices(internal_mesh, post_path)
 
     # 7 ── ADE (Air Distribution Effectiveness) ───────────────────────────────
     logger.info("\n7 - Estimating ADE (Air Distribution Effectiveness)")
