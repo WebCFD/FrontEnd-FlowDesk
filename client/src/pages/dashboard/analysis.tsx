@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { useRoute } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import DashboardLayout from "@/components/layout/dashboard-layout";
@@ -123,6 +123,38 @@ interface DcMetrics {
   }>;
 }
 
+// ── IndustrialCooling (Cold Room) types ─────────────────────────────────────
+interface ColdRoomSlice {
+  height_m: number;
+  T_mean: number;
+  T_std: number;
+  T_min: number;
+  T_max: number;
+  T_p05: number;
+  T_p95: number;
+  U_mean: number;
+  pct_stagnation: number;
+}
+interface ColdRoomMetrics {
+  t_setpoint_inferred: number;
+  room_type: "refrigeration" | "freezing" | "unknown";
+  slices: {
+    low: ColdRoomSlice;
+    mid: ColdRoomSlice;
+    high: ColdRoomSlice;
+  };
+  energy: {
+    ACH: number;
+    Q_transmission_W: number;
+    volume_m3: number;
+  };
+  evaporator: {
+    ADE: number | null;
+    U_mean_discharge: number | null;
+    U_mean_product: number | null;
+  };
+}
+
 // ── Report definitions ─────────────────────────────────────────────────────
 interface ReportDef {
   id: string;
@@ -208,6 +240,49 @@ const DC_REPORTS: ReportDef[] = [
     color: "text-teal-500",
     bg: "bg-teal-50",
     border: "border-teal-100",
+  },
+];
+
+const CR_REPORTS: ReportDef[] = [
+  {
+    id: "cr_thermal",
+    name: "Thermal Uniformity",
+    desc: "Temperature distribution across horizontal slices, TNU and hot/cold spot analysis",
+    file: "cr_thermal_report.html",
+    icon: Thermometer,
+    color: "text-cyan-600",
+    bg: "bg-cyan-50",
+    border: "border-cyan-100",
+  },
+  {
+    id: "cr_airflow",
+    name: "Airflow Distribution",
+    desc: "Velocity fields, stagnation zones and evaporator discharge uniformity",
+    file: "cr_airflow_report.html",
+    icon: Wind,
+    color: "text-teal-500",
+    bg: "bg-teal-50",
+    border: "border-teal-100",
+  },
+  {
+    id: "cr_energy",
+    name: "Energy & Infiltration",
+    desc: "Transmission loads, ACH and estimated infiltration heat gains",
+    file: "cr_energy_report.html",
+    icon: Zap,
+    color: "text-amber-500",
+    bg: "bg-amber-50",
+    border: "border-amber-100",
+  },
+  {
+    id: "cr_summary",
+    name: "Executive Summary",
+    desc: "Full performance overview with compliance status for all cold room KPIs",
+    file: "cr_summary_report.html",
+    icon: FileText,
+    color: "text-slate-600",
+    bg: "bg-slate-50",
+    border: "border-slate-200",
   },
 ];
 
@@ -358,6 +433,63 @@ function evLabel(ev: number, method?: string): string {
   if (ev >= 1.2) return "Displacement flow";
   if (ev >= 0.8) return "Good mixing";
   return "Poor — short-circuit";
+}
+
+// ── CR (Cold Room) status helpers ───────────────────────────────────────────
+function normalCDF(x: number): number {
+  const a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741;
+  const a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
+  const sign = x < 0 ? -1 : 1;
+  const ax = Math.abs(x) / Math.SQRT2;
+  const t = 1.0 / (1.0 + p * ax);
+  const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-ax * ax);
+  return 0.5 * (1.0 + sign * y);
+}
+
+function crComplianceStatus(v: number): StatusColor {
+  if (v >= 95) return "green";
+  if (v >= 80) return "yellow";
+  return "red";
+}
+function crComplianceLabel(v: number): string {
+  if (v >= 95) return "Compliant ≥95%";
+  if (v >= 80) return "Marginal ≥80%";
+  return "Non-compliant <80%";
+}
+
+function crTnuStatus(v: number, roomType: string): StatusColor {
+  const limit = roomType === "freezing" ? 3 : 2;
+  if (v < limit) return "green";
+  if (v < limit * 2) return "yellow";
+  return "red";
+}
+function crTnuLabel(v: number, roomType: string): string {
+  const limit = roomType === "freezing" ? 3 : 2;
+  if (v < limit) return `Uniform <${limit}°C`;
+  if (v < limit * 2) return `Moderate <${limit * 2}°C`;
+  return `High ΔT ≥${limit * 2}°C`;
+}
+
+function crSpotStatus(v: number): StatusColor {
+  if (v < 5) return "green";
+  if (v < 15) return "yellow";
+  return "red";
+}
+function crSpotLabel(v: number): string {
+  if (v < 5) return "Acceptable <5%";
+  if (v < 15) return "Moderate <15%";
+  return "High ≥15%";
+}
+
+function crStagnationStatus(v: number): StatusColor {
+  if (v < 15) return "green";
+  if (v < 25) return "yellow";
+  return "red";
+}
+function crStagnationLabel(v: number): string {
+  if (v < 15) return "Good <15%";
+  if (v < 25) return "Moderate <25%";
+  return "Poor ≥25%";
 }
 
 // ── DC KPI card (used for DataCenters) ─────────────────────────────────────
@@ -515,6 +647,122 @@ function ExecSummary({
   );
 }
 
+// ── Cold Room Config Card ────────────────────────────────────────────────────
+interface CrParams {
+  tSetpoint: number;
+  toleranceHi: number;
+  toleranceLo: number;
+  cop: string;
+  doorWidth: string;
+  doorHeight: string;
+  openingsPerDay: string;
+  tExternal: string;
+}
+
+function CrConfigCard({
+  params,
+  onChange,
+  roomType,
+}: {
+  params: CrParams;
+  onChange: (p: CrParams) => void;
+  roomType: string;
+}) {
+  const [showOptional, setShowOptional] = useState(false);
+  const roomTypeLabel = roomType === "freezing" ? "Freezing (< −18 °C)" : roomType === "refrigeration" ? "Refrigeration (0 – 8 °C)" : "Unknown";
+  const field = (label: string, val: string, key: keyof CrParams, unit: string, step = "0.1") => (
+    <div className="flex flex-col gap-1">
+      <label className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">{label}</label>
+      <div className="flex items-center gap-1">
+        <input
+          type="number"
+          step={step}
+          value={val}
+          onChange={e => onChange({ ...params, [key]: e.target.value })}
+          className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
+        />
+        <span className="text-xs text-slate-400 whitespace-nowrap">{unit}</span>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="rounded-xl border border-cyan-200 bg-cyan-50/40 shadow-sm overflow-hidden mb-6">
+      <div className="flex items-center justify-between px-5 py-3 border-b border-cyan-100 bg-cyan-50">
+        <div className="flex items-center gap-2">
+          <Thermometer className="h-4 w-4 text-cyan-600" />
+          <span className="text-sm font-semibold text-slate-700">Cold Room Parameters</span>
+          <span className="text-[11px] text-slate-400 ml-1">— adjust thresholds to recalculate KPIs</span>
+        </div>
+        <span className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-cyan-100 text-cyan-700 border border-cyan-200">
+          {roomTypeLabel}
+        </span>
+      </div>
+      <div className="px-5 py-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+        <div className="flex flex-col gap-1">
+          <label className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">T Setpoint</label>
+          <div className="flex items-center gap-1">
+            <input
+              type="number"
+              step="0.5"
+              value={params.tSetpoint}
+              onChange={e => onChange({ ...params, tSetpoint: parseFloat(e.target.value) || 0 })}
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
+            />
+            <span className="text-xs text-slate-400 whitespace-nowrap">°C</span>
+          </div>
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Tolerance +</label>
+          <div className="flex items-center gap-1">
+            <input
+              type="number"
+              step="0.5"
+              min="0"
+              value={params.toleranceHi}
+              onChange={e => onChange({ ...params, toleranceHi: parseFloat(e.target.value) || 0 })}
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
+            />
+            <span className="text-xs text-slate-400 whitespace-nowrap">°C</span>
+          </div>
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Tolerance −</label>
+          <div className="flex items-center gap-1">
+            <input
+              type="number"
+              step="0.5"
+              min="0"
+              value={params.toleranceLo}
+              onChange={e => onChange({ ...params, toleranceLo: parseFloat(e.target.value) || 0 })}
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400"
+            />
+            <span className="text-xs text-slate-400 whitespace-nowrap">°C</span>
+          </div>
+        </div>
+        <div className="col-span-2 sm:col-span-1 flex items-end">
+          <button
+            onClick={() => setShowOptional(v => !v)}
+            className="flex items-center gap-1.5 text-xs font-medium text-cyan-600 hover:text-cyan-800 transition-colors"
+          >
+            <Settings className="h-3.5 w-3.5" />
+            {showOptional ? "Hide" : "Show"} optional fields (SEC / Q_infiltration)
+          </button>
+        </div>
+      </div>
+      {showOptional && (
+        <div className="px-5 pb-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 border-t border-cyan-100 pt-4">
+          {field("COP Evaporator", params.cop, "cop", "", "0.1")}
+          {field("Door width", params.doorWidth, "doorWidth", "m", "0.1")}
+          {field("Door height", params.doorHeight, "doorHeight", "m", "0.1")}
+          {field("Openings / day", params.openingsPerDay, "openingsPerDay", "n", "1")}
+          {field("T external", params.tExternal, "tExternal", "°C", "0.5")}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Main page ──────────────────────────────────────────────────────────────
 export default function Analysis() {
   const [, params] = useRoute("/dashboard/analysis/:id");
@@ -527,6 +775,17 @@ export default function Analysis() {
   const [dcAshraeError, setDcAshraeError] = useState(false);
   const [dcStagError, setDcStagError] = useState(false);
 
+  const [crParams, setCrParams] = useState<CrParams>({
+    tSetpoint: 4,
+    toleranceHi: 2,
+    toleranceLo: 2,
+    cop: "",
+    doorWidth: "",
+    doorHeight: "",
+    openingsPerDay: "",
+    tExternal: "20",
+  });
+
   const { data: simulation, isLoading, error } = useQuery<Simulation>({
     queryKey: [`/api/simulations/${simulationId}`],
     enabled: simulationId !== null && !isNaN(simulationId!),
@@ -537,25 +796,26 @@ export default function Analysis() {
 
   const simulationType: string = (simulation?.jsonConfig as Record<string, unknown> | null)?.simulationType as string ?? "IndoorSpaces";
   const isDataCenter = simulationType === "DataCenters";
+  const isColdRoom = simulationType === "IndustrialCooling";
 
-  // IndoorSpaces metrics — only after simulation type is known to avoid spurious DC requests
+  // IndoorSpaces metrics — only after simulation type is known to avoid spurious DC/CR requests
   const { data: comfort } = useQuery<ComfortMetrics>({
     queryKey: [`/api/simulations/${simulationId}/post/comfort_metrics.json`],
-    enabled: hasPost && !!simulation && !isDataCenter,
+    enabled: hasPost && !!simulation && !isDataCenter && !isColdRoom,
     queryFn: () => fetch(postUrl("comfort_metrics.json")).then(r => r.ok ? r.json() : null),
     retry: false,
   });
 
   const { data: flow } = useQuery<FlowMetrics>({
     queryKey: [`/api/simulations/${simulationId}/post/flow_metrics.json`],
-    enabled: hasPost && !!simulation && !isDataCenter,
+    enabled: hasPost && !!simulation && !isDataCenter && !isColdRoom,
     queryFn: () => fetch(postUrl("flow_metrics.json")).then(r => r.ok ? r.json() : null),
     retry: false,
   });
 
   const { data: vent } = useQuery<VentMetrics>({
     queryKey: [`/api/simulations/${simulationId}/post/ventilation_metrics.json`],
-    enabled: hasPost && !!simulation && !isDataCenter,
+    enabled: hasPost && !!simulation && !isDataCenter && !isColdRoom,
     queryFn: () => fetch(postUrl("ventilation_metrics.json")).then(r => r.ok ? r.json() : null),
     retry: false,
   });
@@ -568,11 +828,20 @@ export default function Analysis() {
     retry: false,
   });
 
+  // IndustrialCooling (Cold Room) metrics
+  const { data: crMetrics } = useQuery<ColdRoomMetrics>({
+    queryKey: [`/api/simulations/${simulationId}/post/coldroom_metrics.json`],
+    enabled: hasPost && !!simulation && isColdRoom,
+    queryFn: () => fetch(postUrl("coldroom_metrics.json")).then(r => r.ok ? r.json() : null),
+    retry: false,
+  });
+
   const hasISMetrics = !!(comfort || flow || vent);
   const hasDCMetrics = !!dcMetrics;
+  const hasCRMetrics = !!crMetrics;
 
-  const activeReports = isDataCenter ? DC_REPORTS : IS_REPORTS;
-  const reportsGridCols = isDataCenter ? "sm:grid-cols-3" : "sm:grid-cols-2 lg:grid-cols-4";
+  const activeReports = isColdRoom ? CR_REPORTS : isDataCenter ? DC_REPORTS : IS_REPORTS;
+  const reportsGridCols = isColdRoom ? "sm:grid-cols-2 lg:grid-cols-4" : isDataCenter ? "sm:grid-cols-3" : "sm:grid-cols-2 lg:grid-cols-4";
 
   // DC derived values
   const rci = dcMetrics?.rci;
@@ -595,6 +864,78 @@ export default function Analysis() {
   const ev = vent?.global?.ev;
   const evMethod = vent?.global?.ev_method;
   const ach = vent?.global?.ACH;
+
+  // CR: initialise params when metrics first load
+  useEffect(() => {
+    if (crMetrics) {
+      setCrParams(prev => ({
+        ...prev,
+        tSetpoint: crMetrics.t_setpoint_inferred,
+      }));
+    }
+  }, [crMetrics]);
+
+  // CR reactive KPI calculations
+  const crKpis = useMemo(() => {
+    if (!crMetrics) return null;
+    const slices = [crMetrics.slices.low, crMetrics.slices.mid, crMetrics.slices.high];
+    const { tSetpoint, toleranceHi, toleranceLo } = crParams;
+    const thHi = tSetpoint + toleranceHi;
+    const thLo = tSetpoint - toleranceLo;
+
+    // Temperature compliance: slices whose T_mean is inside the band
+    const compliantSlices = slices.filter(s => s.T_mean >= thLo && s.T_mean <= thHi).length;
+    const compliance_pct = (compliantSlices / slices.length) * 100;
+
+    // TNU: max T_max − min T_min across slices
+    const tnu = Math.max(...slices.map(s => s.T_max)) - Math.min(...slices.map(s => s.T_min));
+
+    // Hot/Cold spot % using normal distribution approximation per slice
+    let hotPct = 0, coldPct = 0;
+    for (const s of slices) {
+      const stdSafe = s.T_std > 0 ? s.T_std : 0.001;
+      hotPct += (1 - normalCDF((thHi - s.T_mean) / stdSafe)) * 100;
+      coldPct += normalCDF((thLo - s.T_mean) / stdSafe) * 100;
+    }
+    hotPct /= slices.length;
+    coldPct /= slices.length;
+
+    // Stagnation: mean across slices
+    const stagnation_pct = slices.reduce((acc, s) => acc + s.pct_stagnation, 0) / slices.length;
+
+    // Q_transmission: direct from energy
+    const q_transmission = crMetrics.energy.Q_transmission_W;
+
+    // Optional: Q_infiltration (Gosney-Olama)
+    const cop = parseFloat(crParams.cop);
+    const dw = parseFloat(crParams.doorWidth);
+    const dh = parseFloat(crParams.doorHeight);
+    const openings = parseFloat(crParams.openingsPerDay);
+    const tExt = parseFloat(crParams.tExternal);
+
+    let q_infiltration: number | null = null;
+    let sec: number | null = null;
+
+    if (!isNaN(dw) && dw > 0 && !isNaN(dh) && dh > 0 && !isNaN(openings) && openings > 0 && !isNaN(tExt)) {
+      const A = dw * dh;
+      const deltaT = Math.abs(tExt - tSetpoint);
+      const T_avg_K = ((tExt + tSetpoint) / 2) + 273.15;
+      const g = 9.81;
+      const rho = 1.293;
+      const cp = 1006;
+      const t_open_s = 30; // assumed 30 s per opening
+      const f_open = (openings * t_open_s) / 86400;
+      const v_char = Math.sqrt(2 * g * dh * deltaT / T_avg_K);
+      q_infiltration = 0.221 * A * v_char * rho * cp * deltaT * f_open;
+    }
+
+    if (!isNaN(cop) && cop > 0 && crMetrics.energy.volume_m3 > 0) {
+      const q_total = q_transmission + (q_infiltration ?? 0);
+      sec = (q_total / cop) * 8760 / 1000 / crMetrics.energy.volume_m3;
+    }
+
+    return { compliance_pct, tnu, hotPct, coldPct, stagnation_pct, q_transmission, q_infiltration, sec };
+  }, [crMetrics, crParams]);
 
   // Executive summary rows for IS
   const summaryRows: SummaryRow[] = [];
@@ -751,6 +1092,12 @@ export default function Analysis() {
               <Badge variant="outline" className="text-sm border-blue-200 text-blue-700 bg-blue-50">
                 <Server className="h-3 w-3 mr-1" />
                 Data Center
+              </Badge>
+            )}
+            {isColdRoom && (
+              <Badge variant="outline" className="text-sm border-cyan-200 text-cyan-700 bg-cyan-50">
+                <Thermometer className="h-3 w-3 mr-1" />
+                Cold Room
               </Badge>
             )}
           </div>
@@ -928,6 +1275,97 @@ export default function Analysis() {
                     />
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* ── Cold Room KPI section ── */}
+            {isColdRoom && hasCRMetrics && crKpis && (
+              <div className="space-y-4 mb-6">
+                <CrConfigCard
+                  params={crParams}
+                  onChange={setCrParams}
+                  roomType={crMetrics!.room_type}
+                />
+                {/* Primary KPI row — 6 cards */}
+                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+                  <DcKpiCard
+                    label="Temp. Compliance"
+                    value={`${fmt(crKpis.compliance_pct, 0)}%`}
+                    sub={crComplianceLabel(crKpis.compliance_pct)}
+                    status={crComplianceStatus(crKpis.compliance_pct)}
+                    icon={Thermometer}
+                  />
+                  <DcKpiCard
+                    label="TNU"
+                    value={`${fmt(crKpis.tnu, 2)} °C`}
+                    sub={crTnuLabel(crKpis.tnu, crMetrics!.room_type)}
+                    status={crTnuStatus(crKpis.tnu, crMetrics!.room_type)}
+                    icon={TrendingUp}
+                  />
+                  <DcKpiCard
+                    label="Hot Spot"
+                    value={`${fmt(crKpis.hotPct, 1)}%`}
+                    sub={crSpotLabel(crKpis.hotPct)}
+                    status={crSpotStatus(crKpis.hotPct)}
+                    icon={Flame}
+                  />
+                  <DcKpiCard
+                    label="Cold Spot"
+                    value={`${fmt(crKpis.coldPct, 1)}%`}
+                    sub={crSpotLabel(crKpis.coldPct)}
+                    status={crSpotStatus(crKpis.coldPct)}
+                    icon={AlertCircle}
+                  />
+                  <DcKpiCard
+                    label="Stagnation"
+                    value={`${fmt(crKpis.stagnation_pct, 1)}%`}
+                    sub={crStagnationLabel(crKpis.stagnation_pct)}
+                    status={crStagnationStatus(crKpis.stagnation_pct)}
+                    icon={Wind}
+                  />
+                  <DcKpiCard
+                    label="Q transmission"
+                    value={`${(crKpis.q_transmission / 1000).toFixed(2)} kW`}
+                    sub={`ACH ${fmt(crMetrics!.energy.ACH, 1)} h⁻¹`}
+                    status="yellow"
+                    icon={Zap}
+                  />
+                </div>
+                {/* Secondary KPI row — SEC & Q_infiltration */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <DcKpiCard
+                    label="SEC"
+                    value={crKpis.sec !== null ? `${fmt(crKpis.sec, 2)} kWh/m³/y` : "N/A"}
+                    sub={crKpis.sec !== null ? "Specific Energy" : "Enter COP to calculate"}
+                    status={crKpis.sec !== null ? (crKpis.sec < 80 ? "green" : crKpis.sec < 150 ? "yellow" : "red") : "yellow"}
+                    icon={Gauge}
+                  />
+                  <DcKpiCard
+                    label="Q infiltration"
+                    value={crKpis.q_infiltration !== null ? `${(crKpis.q_infiltration / 1000).toFixed(2)} kW` : "N/A"}
+                    sub={crKpis.q_infiltration !== null ? "Gosney-Olama" : "Enter door data"}
+                    status={crKpis.q_infiltration !== null ? (crKpis.q_infiltration < crKpis.q_transmission * 0.2 ? "green" : crKpis.q_infiltration < crKpis.q_transmission * 0.5 ? "yellow" : "red") : "yellow"}
+                    icon={RefreshCw}
+                  />
+                  {crMetrics!.evaporator.ADE !== null && (
+                    <DcKpiCard
+                      label="ADE Evaporator"
+                      value={`${fmt(crMetrics!.evaporator.ADE ?? 0, 2)}`}
+                      sub={crMetrics!.evaporator.ADE! >= 0.8 ? "Good ≥0.80" : crMetrics!.evaporator.ADE! >= 0.6 ? "Moderate ≥0.60" : "Poor <0.60"}
+                      status={crMetrics!.evaporator.ADE! >= 0.8 ? "green" : crMetrics!.evaporator.ADE! >= 0.6 ? "yellow" : "red"}
+                      icon={TrendingUp}
+                    />
+                  )}
+                  {crMetrics!.evaporator.U_mean_discharge !== null && (
+                    <DcKpiCard
+                      label="U discharge"
+                      value={`${fmt(crMetrics!.evaporator.U_mean_discharge ?? 0, 2)} m/s`}
+                      sub="Evaporator discharge"
+                      status="yellow"
+                      icon={Wind}
+                    />
+                  )}
+                </div>
               </div>
             )}
 
