@@ -389,6 +389,70 @@
 
   </div>
 
+  <!-- 3D VTK Viewer -->
+  <p class="section-title">3D Visualization</p>
+  <div class="standards-grid" style="grid-template-columns:1fr;">
+    <div class="standard-card">
+      <h4>Available 3D Datasets — VTK Web Viewer</h4>
+      <div style="font-size:0.85em;color:#8b949e;margin-bottom:14px;line-height:1.6;">
+        The following VTK files are available for interactive 3D inspection in the FlowDesk viewer.
+        Open the analysis dashboard and select the <strong>3D View</strong> tab to explore
+        temperature and velocity fields, boundary surfaces, and horizontal slice planes.
+      </div>
+      <div class="standard-row">
+        <span class="param">Boundary surface</span>
+        <span class="val" id="vtk-surface">vtk/surface_3d.vtp</span>
+      </div>
+      <div class="standard-row">
+        <span class="param">Internal volume (T, U, p fields)</span>
+        <span class="val" id="vtk-volume">vtk/volume_internal.vtu</span>
+      </div>
+      <div class="standard-row">
+        <span class="param">Slice — low product (0.5 m)</span>
+        <span class="val">vtk/cr_slice_low_0.5m.vtk</span>
+      </div>
+      <div class="standard-row">
+        <span class="param">Slice — mid product (1.5 m)</span>
+        <span class="val">vtk/cr_slice_mid_1.5m.vtk</span>
+      </div>
+      <div class="standard-row">
+        <span class="param">Slice — high product (2.5 m)</span>
+        <span class="val">vtk/cr_slice_high_2.5m.vtk</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data files -->
+  <p class="section-title">Data Files</p>
+  <div class="standards-grid">
+    <div class="standard-card">
+      <h4>JSON Metrics</h4>
+      <div class="standard-row">
+        <span class="param">All KPIs (metrics + slices)</span>
+        <span class="val"><a href="coldroom_metrics.json" target="_blank" style="color:#0891b2;">coldroom_metrics.json</a></span>
+      </div>
+    </div>
+    <div class="standard-card">
+      <h4>HTML Sub-Reports</h4>
+      <div class="standard-row">
+        <span class="param">Thermal uniformity</span>
+        <span class="val"><a href="cr_thermal_report.html" style="color:#0891b2;">cr_thermal_report.html</a></span>
+      </div>
+      <div class="standard-row">
+        <span class="param">Airflow distribution</span>
+        <span class="val"><a href="cr_airflow_report.html" style="color:#0891b2;">cr_airflow_report.html</a></span>
+      </div>
+      <div class="standard-row">
+        <span class="param">Energy &amp; infiltration</span>
+        <span class="val"><a href="cr_energy_report.html" style="color:#0891b2;">cr_energy_report.html</a></span>
+      </div>
+      <div class="standard-row">
+        <span class="param">Executive summary</span>
+        <span class="val"><a href="cr_summary_report.html" style="color:#0891b2;">cr_summary_report.html</a></span>
+      </div>
+    </div>
+  </div>
+
   <!-- Standards reference -->
   <p class="section-title">Standards &amp; Thresholds</p>
   <div class="standards-grid">

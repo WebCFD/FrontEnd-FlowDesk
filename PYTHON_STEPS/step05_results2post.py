@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 import shutil
 import logging
 import subprocess
@@ -256,6 +257,17 @@ def run(case_name: str = "cases/cfd_case", simulation_type: str = "IndoorSpaces"
     logger.info(f"Post-processing output: {post_path}")
     os.makedirs(post_path, exist_ok=True)
 
+    # Load building_config.json (used by DataCenters and IndustrialCooling)
+    json_payload = {}
+    _json_path = os.path.join(sim_path, "..", "geo", "building_config.json")
+    if os.path.isfile(_json_path):
+        try:
+            with open(_json_path, "r") as _f:
+                json_payload = json.load(_f)
+            logger.info(f"    * Loaded building_config.json: {_json_path}")
+        except Exception as _je:
+            logger.warning(f"    * Failed to load building_config.json: {_je}")
+
     # Dispatch to the correct post-processing pipeline
     if simulation_type == "IndoorSpaces":
         run_indoor_spaces(case_name, sim_path, post_path)
@@ -266,7 +278,7 @@ def run(case_name: str = "cases/cfd_case", simulation_type: str = "IndoorSpaces"
             "FireAndSmoke post-processing is not yet implemented."
         )
     elif simulation_type == "IndustrialCooling":
-        run_industrial_cooling(case_name, sim_path, post_path)
+        run_industrial_cooling(case_name, sim_path, post_path, json_payload)
 
     # Copy index.html template to post directory (all types that have one)
     _copy_index_html(post_path, simulation_type)

@@ -106,6 +106,42 @@ def extract_evaporator_info_from_json(json_payload: dict) -> dict:
                 except (ValueError, TypeError):
                     pass
 
+    # Collect inlet positions for ADE patch sampling
+    evaporator_positions = []
+    levels = json_payload.get("levels", {})
+    for level_id, level_data in levels.items():
+        for wall in level_data.get("walls", []):
+            for opening in wall.get("openings", []):
+                role = opening.get("role", "")
+                if role in ("inlet", "supply", "evaporator"):
+                    pos = opening.get("position", None) or opening.get("center", None)
+                    if pos is not None:
+                        try:
+                            evaporator_positions.append([float(pos[0]), float(pos[1]), float(pos[2])])
+                        except (TypeError, IndexError, ValueError):
+                            pass
+        for obj in level_data.get("furniture", []):
+            faces = obj.get("faces", {})
+            for face_name, face_data in faces.items():
+                role = face_data.get("role", "")
+                if role in ("inlet", "supply", "evaporator"):
+                    pos = face_data.get("position", None) or obj.get("position", None)
+                    if pos is not None:
+                        try:
+                            evaporator_positions.append([float(pos[0]), float(pos[1]), float(pos[2])])
+                        except (TypeError, IndexError, ValueError):
+                            pass
+
+    for entry in json_payload.get("airEntries", []):
+        role = entry.get("role", "")
+        if role in ("inlet", "supply", "evaporator"):
+            pos = entry.get("position", None) or entry.get("center", None)
+            if pos is not None:
+                try:
+                    evaporator_positions.append([float(pos[0]), float(pos[1]), float(pos[2])])
+                except (TypeError, IndexError, ValueError):
+                    pass
+
     if inlet_temps:
         t_setpoint = float(min(inlet_temps))
     else:
@@ -115,14 +151,15 @@ def extract_evaporator_info_from_json(json_payload: dict) -> dict:
 
     room_type = "freezing" if t_setpoint <= -10.0 else "refrigeration"
 
-    logger.info(f"    * Evaporator BCs found: {len(inlet_temps)} inlets")
+    logger.info(f"    * Evaporator BCs found: {len(inlet_temps)} inlets, {len(evaporator_positions)} positions")
     logger.info(f"    * T_setpoint inferred: {t_setpoint:.1f}°C → room_type = {room_type}")
 
     return {
-        "t_setpoint_inferred": t_setpoint,
-        "room_type": room_type,
-        "evaporator_temps": inlet_temps,
-        "evaporator_ids": evaporator_ids,
+        "t_setpoint_inferred":  t_setpoint,
+        "room_type":            room_type,
+        "evaporator_temps":     inlet_temps,
+        "evaporator_ids":       evaporator_ids,
+        "evaporator_positions": evaporator_positions,
     }
 
 
@@ -349,36 +386,81 @@ def estimate_volume_from_mesh(internal_mesh) -> float:
         return 1.0
 
 
-def estimate_ade(internal_mesh, evaporator_ids: list = None) -> dict:
+def estimate_ade(internal_mesh, evaporator_info: dict = None) -> dict:
     """
     Estimate Air Distribution Effectiveness (ADE).
 
     ADE = U_mean in product zone / U_mean near evaporator discharge.
-    Approximate by comparing slices: ADE = U_mean(mid) / U_mean(high).
-    Returns dict with ADE and U_mean_discharge.
-    """
-    try:
-        sl_mid  = internal_mesh.slice(normal="z", origin=(0, 0, SLICE_HEIGHTS["mid"]))
-        sl_high = internal_mesh.slice(normal="z", origin=(0, 0, SLICE_HEIGHTS["high"]))
 
-        def _umean(sl):
+    If evaporator positions are available from the JSON payload (via evaporator_info),
+    the discharge velocity is sampled from points near the evaporator patch locations.
+    Otherwise falls back to the high-level slice (z = 2.5 m) as a proxy for the
+    evaporator discharge zone.
+
+    Args:
+        internal_mesh: PyVista combined mesh with velocity field U
+        evaporator_info: dict returned by extract_evaporator_info_from_json(), which may
+            contain 'evaporator_positions' (list of [x, y, z] or None).
+
+    Returns:
+        dict with: ADE, U_mean_discharge, U_mean_product
+    """
+    evaporator_info = evaporator_info or {}
+    evaporator_positions = evaporator_info.get("evaporator_positions", None)
+
+    try:
+        # ── Product-zone velocity — mid slice (z = 1.5 m) ────────────────────
+        sl_mid = internal_mesh.slice(normal="z", origin=(0, 0, SLICE_HEIGHTS["mid"]))
+
+        def _umean_slice(sl):
             U = sl.point_data.get("U", None)
             if U is None or sl.n_points == 0:
                 return None
             mag = np.linalg.norm(U, axis=1) if len(U.shape) > 1 else U.copy()
             return float(np.mean(mag))
 
-        u_product   = _umean(sl_mid)
-        u_discharge = _umean(sl_high)
+        u_product = _umean_slice(sl_mid)
+
+        # ── Discharge velocity — use evaporator patch positions from JSON ─────
+        u_discharge = None
+        if evaporator_positions and len(evaporator_positions) > 0:
+            # Sample U at points near each evaporator position (radius = 0.5 m)
+            SAMPLE_RADIUS = 0.5  # m
+            all_points = np.array(internal_mesh.points)
+            U_all = internal_mesh.point_data.get("U", None)
+
+            if U_all is not None and len(U_all) > 0:
+                near_mags = []
+                for pos in evaporator_positions:
+                    pos_arr = np.array(pos, dtype=float)
+                    dists = np.linalg.norm(all_points - pos_arr, axis=1)
+                    mask = dists < SAMPLE_RADIUS
+                    if mask.sum() > 0:
+                        U_near = U_all[mask]
+                        mag_near = np.linalg.norm(U_near, axis=1) if len(U_near.shape) > 1 else U_near.copy()
+                        near_mags.extend(mag_near.tolist())
+
+                if near_mags:
+                    u_discharge = float(np.mean(near_mags))
+                    logger.info(
+                        f"    * ADE: sampled {len(near_mags)} points near {len(evaporator_positions)} "
+                        f"evaporator patch(es) → U_discharge = {u_discharge:.3f} m/s"
+                    )
+
+        # Fallback to high slice if patch-based sampling failed
+        if u_discharge is None:
+            sl_high = internal_mesh.slice(normal="z", origin=(0, 0, SLICE_HEIGHTS["high"]))
+            u_discharge = _umean_slice(sl_high)
+            logger.info(f"    * ADE: no evaporator positions → using high slice proxy, U_discharge = {u_discharge}")
 
         if u_product is not None and u_discharge is not None and u_discharge > 1e-6:
-            ADE = u_product / u_discharge
+            ADE = float(u_product / u_discharge)
         else:
             ADE = None
 
         logger.info(f"    * ADE: U_product={u_product}, U_discharge={u_discharge}, ADE={ADE}")
         return {
-            "ADE":              float(ADE) if ADE is not None else None,
+            "ADE":              ADE,
             "U_mean_discharge": float(u_discharge) if u_discharge is not None else None,
             "U_mean_product":   float(u_product) if u_product is not None else None,
         }
@@ -1047,17 +1129,21 @@ def generate_cr_summary_report(slice_results: dict, energy: dict,
 # MAIN ORCHESTRATOR
 # ─────────────────────────────────────────────────────────────────────────────
 
-def run_industrial_cooling(case_name: str, sim_path: str, post_path: str) -> None:
+def run_industrial_cooling(case_name: str, sim_path: str, post_path: str,
+                            json_payload: dict = None) -> None:
     """
     Run Industrial Cooling (Cold Room) post-processing pipeline.
 
-    Reads evaporator metadata from geo/building_config.json, loads CFD results,
-    computes thermal and airflow KPIs, generates 4 HTML reports + JSON metrics.
+    Reads evaporator metadata from the provided json_payload (or falls back to
+    geo/building_config.json if not supplied), loads CFD results, computes thermal
+    and airflow KPIs, and generates 4 HTML reports + coldroom_metrics.json.
 
     Args:
-        case_name: Name of the simulation case
-        sim_path:  Path to simulation directory (with VTK/)
-        post_path: Path to post-processing output directory
+        case_name:    Name of the simulation case
+        sim_path:     Path to simulation directory (with VTK/)
+        post_path:    Path to post-processing output directory
+        json_payload: Pre-loaded building_config.json dict (passed by step05).
+                      If None, the function loads it from geo/building_config.json.
     """
     logger.info("\n=========== RUNNING INDUSTRIAL COOLING (COLD ROOM) POST-PROCESSING ===========")
     logger.info(f"Simulation path: {sim_path}")
@@ -1066,15 +1152,18 @@ def run_industrial_cooling(case_name: str, sim_path: str, post_path: str) -> Non
     os.makedirs(post_path, exist_ok=True)
 
     # 1 ── Load JSON evaporator metadata ──────────────────────────────────────
-    json_path = os.path.join(sim_path, "..", "geo", "building_config.json")
-    if not os.path.isfile(json_path):
-        logger.warning(f"    * building_config.json not found at {json_path}")
-        logger.warning("    * Proceeding with defaults (T_setpoint = −18°C)")
-        json_payload = {}
+    if json_payload is None:
+        json_path = os.path.join(sim_path, "..", "geo", "building_config.json")
+        if not os.path.isfile(json_path):
+            logger.warning(f"    * building_config.json not found at {json_path}")
+            logger.warning("    * Proceeding with defaults (T_setpoint = −18°C)")
+            json_payload = {}
+        else:
+            with open(json_path, "r") as f:
+                json_payload = json.load(f)
+            logger.info(f"\n1 - Loaded JSON config: {json_path}")
     else:
-        with open(json_path, "r") as f:
-            json_payload = json.load(f)
-        logger.info(f"\n1 - Loaded JSON config: {json_path}")
+        logger.info("\n1 - Using pre-loaded json_payload from caller")
 
     logger.info("\n1b - Extracting evaporator info from JSON")
     evap_info = extract_evaporator_info_from_json(json_payload)
@@ -1115,7 +1204,7 @@ def run_industrial_cooling(case_name: str, sim_path: str, post_path: str) -> Non
 
     # 7 ── ADE (Air Distribution Effectiveness) ───────────────────────────────
     logger.info("\n7 - Estimating ADE (Air Distribution Effectiveness)")
-    evaporator = estimate_ade(internal_mesh, evap_info.get("evaporator_ids", []))
+    evaporator = estimate_ade(internal_mesh, evap_info)
 
     # 8 ── Generate HTML reports ──────────────────────────────────────────────
     logger.info("\n8 - Generating HTML reports")
