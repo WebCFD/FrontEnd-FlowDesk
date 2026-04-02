@@ -5633,7 +5633,29 @@ export default function Canvas3D({
         
         const position3D = transform2DTo3D(position);
         mesh.position.set(position3D.x, position3D.y, zPosition);
-        
+
+        // Also move the independent scene objects that must stay co-located with the mesh:
+        // airEntryVentArrow (flow-direction arrows group) and flowTypeLabel (M/P/V letter sprite).
+        // These are added directly to the scene (not as mesh children), so they must be repositioned manually.
+        if (sceneRef.current) {
+          const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(mesh.quaternion);
+          sceneRef.current.traverse((obj) => {
+            if (
+              obj.userData?.floorName === floorName &&
+              obj.userData?.entryIndex === entryIndex
+            ) {
+              if (obj.userData?.type === 'airEntryVentArrow') {
+                obj.position.set(position3D.x, position3D.y, zPosition);
+              } else if (obj.userData?.type === 'flowTypeLabel') {
+                obj.position.set(
+                  position3D.x + forward.x * 12,
+                  position3D.y + forward.y * 12,
+                  zPosition + forward.z * 12 + 10,
+                );
+              }
+            }
+          });
+        }
 
       }
     }
