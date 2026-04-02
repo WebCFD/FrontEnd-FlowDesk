@@ -126,6 +126,8 @@ interface DcMetrics {
 // ── IndustrialCooling (Cold Room) types ─────────────────────────────────────
 interface ColdRoomSlice {
   height_m: number;
+  plane_name?: string;
+  empty?: boolean;
   T_mean: number;
   T_std: number;
   T_min: number;
@@ -133,7 +135,11 @@ interface ColdRoomSlice {
   T_p05: number;
   T_p95: number;
   U_mean: number;
+  U_max?: number;
+  U_std?: number;
   pct_stagnation: number;
+  pct_high_vel?: number;
+  VUI?: number;
 }
 interface ColdRoomMetrics {
   t_setpoint_inferred: number;
@@ -878,14 +884,21 @@ export default function Analysis() {
   // CR reactive KPI calculations
   const crKpis = useMemo(() => {
     if (!crMetrics) return null;
-    const slices = [crMetrics.slices.low, crMetrics.slices.mid, crMetrics.slices.high];
+    const slices = [crMetrics.slices.low, crMetrics.slices.mid, crMetrics.slices.high]
+      .filter(s => !s.empty && s.T_mean !== undefined && s.T_std !== undefined);
+    if (slices.length === 0) return null;
     const { tSetpoint, toleranceHi, toleranceLo } = crParams;
     const thHi = tSetpoint + toleranceHi;
     const thLo = tSetpoint - toleranceLo;
 
-    // Temperature compliance: slices whose T_mean is inside the band
-    const compliantSlices = slices.filter(s => s.T_mean >= thLo && s.T_mean <= thHi).length;
-    const compliance_pct = (compliantSlices / slices.length) * 100;
+    // Temperature compliance: Gaussian-integral estimate of fraction of points inside [thLo, thHi]
+    // For each slice: P(thLo ≤ T ≤ thHi) = CDF(thHi) − CDF(thLo) given N(T_mean, T_std)
+    // Averaged across the three product-height planes.
+    const compliance_pct = slices.reduce((acc, s) => {
+      const stdSafe = s.T_std > 0 ? s.T_std : 0.001;
+      const p = normalCDF((thHi - s.T_mean) / stdSafe) - normalCDF((thLo - s.T_mean) / stdSafe);
+      return acc + Math.max(0, Math.min(1, p)) * 100;
+    }, 0) / slices.length;
 
     // TNU: max T_max − min T_min across slices
     const tnu = Math.max(...slices.map(s => s.T_max)) - Math.min(...slices.map(s => s.T_min));
