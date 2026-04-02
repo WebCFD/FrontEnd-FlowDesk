@@ -3391,8 +3391,8 @@ export default function Canvas3D({
         const arrowHorizontal = entry.type === 'vent' ? (entryProps.horizontalAngle ?? 0) : 0;
 
         const arrowsGroup = new THREE.Group();
-        arrowsGroup.position.copy(mesh.position);
-        arrowsGroup.quaternion.copy(mesh.quaternion);
+        // Parent to mesh so it follows all position/rotation updates automatically
+        arrowsGroup.position.set(0, 0, 0);
         arrowsGroup.userData = {
           type: 'airEntryVentArrow',
           floorName: floorData.name,
@@ -3409,21 +3409,19 @@ export default function Canvas3D({
             child.renderOrder = 3;
           }
         });
-        // Add directly to scene (not via objects array) so THREE.Group children are preserved
-        sceneRef.current?.add(arrowsGroup);
+        // Add as child of mesh — position/rotation updates propagate automatically
+        mesh.add(arrowsGroup);
 
         // Add flow-type letter badge for open entries
         if (arrowState !== 'closed') {
           const typeColor = 0x000000;
           const letter = getFlowTypeLetter(entry.type, entryProps.flowType);
           const labelSprite = createFlowTypeLabelSprite(letter, typeColor);
-          labelSprite.position.set(
-            mesh.position.x + forward.x * 12,
-            mesh.position.y + forward.y * 12,
-            mesh.position.z + forward.z * 12 + 10,
-          );
+          // Local-space offset: 12 units outward (local Z = wall forward), 10 units up wall (local Y)
+          // THREE.Sprite maintains billboard (face-camera) regardless of parent rotation
+          labelSprite.position.set(0, 10, 12);
           labelSprite.userData = { type: 'flowTypeLabel', floorName: floorData.name, entryIndex: index, airEntryId: entryId };
-          sceneRef.current?.add(labelSprite);
+          mesh.add(labelSprite);
         }
       }
       const coordSysData = orientationData;
@@ -5634,28 +5632,6 @@ export default function Canvas3D({
         const position3D = transform2DTo3D(position);
         mesh.position.set(position3D.x, position3D.y, zPosition);
 
-        // Also move the independent scene objects that must stay co-located with the mesh:
-        // airEntryVentArrow (flow-direction arrows group) and flowTypeLabel (M/P/V letter sprite).
-        // These are added directly to the scene (not as mesh children), so they must be repositioned manually.
-        if (sceneRef.current) {
-          const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(mesh.quaternion);
-          sceneRef.current.traverse((obj) => {
-            if (
-              obj.userData?.floorName === floorName &&
-              obj.userData?.entryIndex === entryIndex
-            ) {
-              if (obj.userData?.type === 'airEntryVentArrow') {
-                obj.position.set(position3D.x, position3D.y, zPosition);
-              } else if (obj.userData?.type === 'flowTypeLabel') {
-                obj.position.set(
-                  position3D.x + forward.x * 12,
-                  position3D.y + forward.y * 12,
-                  zPosition + forward.z * 12 + 10,
-                );
-              }
-            }
-          });
-        }
 
       }
     }
@@ -5739,15 +5715,6 @@ export default function Canvas3D({
         return;
       }
 
-      if (object.userData?.type === 'airEntryVentArrow') {
-        toRemove.push(object);
-        return;
-      }
-
-      if (object.userData?.type === 'flowTypeLabel') {
-        toRemove.push(object);
-        return;
-      }
 
       if (
         object instanceof THREE.Mesh ||
