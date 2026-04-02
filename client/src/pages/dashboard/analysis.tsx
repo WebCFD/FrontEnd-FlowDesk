@@ -872,16 +872,17 @@ export default function Analysis() {
   const ach = vent?.global?.ACH;
 
   // CR: initialise params from JSON on first load only (useRef guard prevents refetch overwrite)
-  const crInitializedRef = useRef(false);
+  // Guard resets when simulation ID changes to pick up the correct setpoint for the new sim.
+  const crInitializedRef = useRef<number | null>(null);
   useEffect(() => {
-    if (crMetrics && !crInitializedRef.current) {
-      crInitializedRef.current = true;
+    if (crMetrics && crInitializedRef.current !== simulationId) {
+      crInitializedRef.current = simulationId;
       setCrParams(prev => ({
         ...prev,
         tSetpoint: crMetrics.t_setpoint_inferred,
       }));
     }
-  }, [crMetrics]);
+  }, [crMetrics, simulationId]);
 
   // CR reactive KPI calculations
   const crKpis = useMemo(() => {
@@ -1352,7 +1353,7 @@ export default function Analysis() {
                   <DcKpiCard
                     label="SEC"
                     value={crKpis.sec !== null ? `${fmt(crKpis.sec, 2)} kWh/m³/y` : "N/A"}
-                    sub={crKpis.sec !== null ? "Specific Energy" : "Enter COP to calculate"}
+                    sub={crKpis.sec !== null ? "Specific Energy" : "Enter COP + door data"}
                     status={crKpis.sec !== null ? (crKpis.sec < 80 ? "green" : crKpis.sec < 150 ? "yellow" : "red") : "yellow"}
                     icon={Gauge}
                   />
