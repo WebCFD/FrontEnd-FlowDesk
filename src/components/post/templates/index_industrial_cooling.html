@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cold Room CFD Report</title>
+  <style>
+    /* ── Reset & base ─────────────────────────────────────────────────────── */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+                   'Helvetica Neue', Arial, sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+    }
+
+    /* ── Header ───────────────────────────────────────────────────────────── */
+    .header {
+      background: linear-gradient(135deg, #0c1a2e 0%, #0e3a5f 60%, #0891b2 100%);
+      padding: 48px 40px 36px;
+      text-align: center;
+      border-bottom: 2px solid #30363d;
+    }
+    .header h1 {
+      font-size: 2.6em;
+      font-weight: 300;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+      color: #f0f6fc;
+    }
+    .header .badge {
+      display: inline-block;
+      background: #0e3a5f;
+      border: 1px solid #0891b2;
+      color: #67e8f9;
+      font-size: 0.85em;
+      padding: 4px 16px;
+      border-radius: 20px;
+      margin-top: 8px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+    .header .meta {
+      margin-top: 14px;
+      font-size: 0.9em;
+      color: #8b949e;
+    }
+
+    /* ── KPI bar ──────────────────────────────────────────────────────────── */
+    .kpi-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      padding: 32px 24px;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+    }
+    .kpi-card {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      padding: 20px 28px;
+      min-width: 160px;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+    .kpi-card:hover { border-color: #0891b2; }
+    .kpi-label {
+      font-size: 0.72em;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: #8b949e;
+      margin-bottom: 8px;
+    }
+    .kpi-value {
+      font-size: 2.1em;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .kpi-note {
+      font-size: 0.7em;
+      color: #6e7681;
+      margin-top: 6px;
+    }
+    /* KPI color states */
+    .ok     { color: #3fb950; }
+    .warn   { color: #d29922; }
+    .danger { color: #f85149; }
+    .info   { color: #67e8f9; }
+
+    /* ── Main grid ────────────────────────────────────────────────────────── */
+    .main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px 24px 60px;
+    }
+
+    .section-title {
+      font-size: 1.1em;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #8b949e;
+      margin-bottom: 20px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #30363d;
+    }
+
+    /* ── Report cards grid ────────────────────────────────────────────────── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-bottom: 48px;
+    }
+
+    .report-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .report-card:hover {
+      border-color: #0891b2;
+      box-shadow: 0 4px 24px rgba(8, 145, 178, 0.12);
+    }
+
+    .card-icon-bar { height: 6px; }
+    .card-icon-bar.thermal  { background: linear-gradient(90deg, #0891b2, #06b6d4); }
+    .card-icon-bar.airflow  { background: linear-gradient(90deg, #1d4ed8, #3b82f6); }
+    .card-icon-bar.energy   { background: linear-gradient(90deg, #16a34a, #22c55e); }
+    .card-icon-bar.summary  { background: linear-gradient(90deg, #7c3aed, #a855f7); }
+
+    .card-body { padding: 24px; }
+    .card-icon { font-size: 2.4em; margin-bottom: 12px; }
+    .card-title {
+      font-size: 1.2em;
+      font-weight: 600;
+      color: #f0f6fc;
+      margin-bottom: 8px;
+    }
+    .card-desc {
+      font-size: 0.88em;
+      color: #8b949e;
+      line-height: 1.6;
+    }
+    .card-metrics {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #30363d;
+    }
+    .card-metric-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82em;
+      padding: 4px 0;
+      color: #8b949e;
+    }
+    .card-metric-row span:last-child { font-weight: 600; color: #e6edf3; }
+    .card-footer {
+      padding: 14px 24px;
+      background: #0d1117;
+      border-top: 1px solid #30363d;
+      font-size: 0.82em;
+      color: #0891b2;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .card-footer::after { content: "→"; }
+
+    /* ── Standards section ────────────────────────────────────────────────── */
+    .standards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+    .standard-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 20px;
+    }
+    .standard-card h4 { font-size: 0.95em; color: #0891b2; margin-bottom: 10px; }
+    .standard-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82em;
+      padding: 5px 0;
+      border-bottom: 1px solid #21262d;
+    }
+    .standard-row:last-child { border-bottom: none; }
+    .standard-row .param { color: #8b949e; }
+    .standard-row .val   { color: #e6edf3; font-weight: 500; }
+
+    /* ── Footer ───────────────────────────────────────────────────────────── */
+    .footer {
+      background: #161b22;
+      border-top: 1px solid #30363d;
+      padding: 24px 40px;
+      text-align: center;
+      font-size: 0.82em;
+      color: #6e7681;
+    }
+    .footer a { color: #0891b2; text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    /* ── Responsive ───────────────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .cards-grid     { grid-template-columns: 1fr; }
+      .standards-grid { grid-template-columns: 1fr; }
+      .kpi-bar        { gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ─────────────────────────────────────────────────────────────── -->
+<div class="header">
+  <h1>Cold Room Cooling Analysis</h1>
+  <div class="badge">OpenFOAM CFD Report — Industrial Cooling</div>
+  <div class="meta">
+    Simulation type: <strong>IndustrialCooling</strong> &nbsp;|&nbsp;
+    Standards: <strong>EN 12830 / HACCP / EN 1366</strong>
+  </div>
+</div>
+
+<!-- ── KPI BAR ────────────────────────────────────────────────────────────── -->
+<div class="kpi-bar">
+
+  <div class="kpi-card">
+    <div class="kpi-label">T Compliance</div>
+    <div class="kpi-value" id="kpi-compliance">—</div>
+    <div class="kpi-note">Slices within ±ΔT of T_setpoint &nbsp;|&nbsp; Target ≥ 95%</div>
+  </div>
+
+  <div class="kpi-card">
+    <div class="kpi-label">TNU</div>
+    <div class="kpi-value" id="kpi-tnu">—</div>
+    <div class="kpi-note">Temp Non-Uniformity &nbsp;|&nbsp; Target &lt; 2°C (refrig) / &lt; 3°C (freeze)</div>
+  </div>
+
+  <div class="kpi-card">
+    <div class="kpi-label">Stagnation</div>
+    <div class="kpi-value" id="kpi-stagnation">—</div>
+    <div class="kpi-note">U &lt; 0.10 m/s &nbsp;|&nbsp; Target &lt; 15%</div>
+  </div>
+
+  <div class="kpi-card">
+    <div class="kpi-label">High Velocity</div>
+    <div class="kpi-value" id="kpi-high-vel">—</div>
+    <div class="kpi-note">U &gt; 2.0 m/s (dehydration) &nbsp;|&nbsp; Target &lt; 5%</div>
+  </div>
+
+  <div class="kpi-card">
+    <div class="kpi-label">ACH</div>
+    <div class="kpi-value" id="kpi-ach">—</div>
+    <div class="kpi-note">Air changes/hour &nbsp;|&nbsp; Target 20–40 (freeze) / 40–60 (refrig)</div>
+  </div>
+
+  <div class="kpi-card">
+    <div class="kpi-label">Q_transmission</div>
+    <div class="kpi-value info" id="kpi-qtrans">—</div>
+    <div class="kpi-note">Wall heat gain (CFD)</div>
+  </div>
+
+</div>
+
+<!-- ── MAIN CONTENT ───────────────────────────────────────────────────────── -->
+<div class="main">
+
+  <!-- Report cards -->
+  <p class="section-title">CFD Analysis Reports</p>
+  <div class="cards-grid">
+
+    <!-- Thermal Uniformity -->
+    <a href="cr_thermal_report.html" class="report-card">
+      <div class="card-icon-bar thermal"></div>
+      <div class="card-body">
+        <div class="card-icon">🌡️</div>
+        <div class="card-title">Thermal Uniformity Report</div>
+        <div class="card-desc">
+          Temperature statistics at 3 product heights (0.5m, 1.5m, 2.5m).
+          TNU, hot spot area, cold spot area, T_P95 and T_P05 per slice.
+        </div>
+        <div class="card-metrics">
+          <div class="card-metric-row">
+            <span>TNU (global)</span>
+            <span id="metric-tnu">—</span>
+          </div>
+          <div class="card-metric-row">
+            <span>T_setpoint</span>
+            <span id="metric-tsetpoint">—</span>
+          </div>
+          <div class="card-metric-row">
+            <span>Room type</span>
+            <span id="metric-roomtype">—</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">Open Thermal Report</div>
+    </a>
+
+    <!-- Airflow Distribution -->
+    <a href="cr_airflow_report.html" class="report-card">
+      <div class="card-icon-bar airflow"></div>
+      <div class="card-body">
+        <div class="card-icon">💨</div>
+        <div class="card-title">Airflow Distribution Report</div>
+        <div class="card-desc">
+          Velocity uniformity (VUI), stagnation zones (U&nbsp;&lt;&nbsp;0.10&nbsp;m/s),
+          high-velocity areas (U&nbsp;&gt;&nbsp;2.0&nbsp;m/s) and Air Distribution Effectiveness (ADE).
+        </div>
+        <div class="card-metrics">
+          <div class="card-metric-row">
+            <span>Stagnation area (avg)</span>
+            <span id="metric-stagnation">—</span>
+          </div>
+          <div class="card-metric-row">
+            <span>High-velocity area (avg)</span>
+            <span id="metric-high-vel">—</span>
+          </div>
+          <div class="card-metric-row">
+            <span>ADE</span>
+            <span id="metric-ade">—</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">Open Airflow Report</div>
+    </a>
+
+    <!-- Energy & Infiltration -->
+    <a href="cr_energy_report.html" class="report-card">
+      <div class="card-icon-bar energy"></div>
+      <div class="card-body">
+        <div class="card-icon">⚡</div>
+        <div class="card-title">Energy &amp; Infiltration Report</div>
+        <div class="card-desc">
+          Air changes per hour (ACH) from evaporator mass flow, wall heat transmission
+          Q_transmission from CFD. Q_infiltration and SEC available after user inputs COP &amp; door data.
+        </div>
+        <div class="card-metrics">
+          <div class="card-metric-row">
+            <span>ACH</span>
+            <span id="metric-ach">—</span>
+          </div>
+          <div class="card-metric-row">
+            <span>Q_transmission</span>
+            <span id="metric-qtrans">—</span>
+          </div>
+          <div class="card-metric-row">
+            <span>Room volume (bbox)</span>
+            <span id="metric-volume">—</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">Open Energy Report</div>
+    </a>
+
+    <!-- Executive Summary -->
+    <a href="cr_summary_report.html" class="report-card">
+      <div class="card-icon-bar summary"></div>
+      <div class="card-body">
+        <div class="card-icon">📋</div>
+        <div class="card-title">Executive Summary</div>
+        <div class="card-desc">
+          One-page overview with all 6 KPIs and traffic-light status: Temperature
+          Compliance, TNU, Hot Spot Area, Stagnation, ACH, Q_transmission.
+        </div>
+        <div class="card-metrics">
+          <div class="card-metric-row">
+            <span>T Compliance</span>
+            <span id="metric-compliance">—</span>
+          </div>
+          <div class="card-metric-row">
+            <span>Overall assessment</span>
+            <span id="metric-assessment">—</span>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">Open Executive Summary</div>
+    </a>
+
+  </div>
+
+  <!-- Standards reference -->
+  <p class="section-title">Standards &amp; Thresholds</p>
+  <div class="standards-grid">
+
+    <div class="standard-card">
+      <h4>Temperature Uniformity (EN 12830 / HACCP)</h4>
+      <div class="standard-row">
+        <span class="param">TNU target (refrigeration)</span>
+        <span class="val">&lt; 2°C</span>
+      </div>
+      <div class="standard-row">
+        <span class="param">TNU target (freezing)</span>
+        <span class="val">&lt; 3°C</span>
+      </div>
+      <div class="standard-row">
+        <span class="param">Refrigeration setpoint</span>
+        <span class="val">0 – 8°C (product dependent)</span>
+      </div>
+      <div class="standard-row">
+        <span class="param">Freezing setpoint</span>
+        <span class="val">−30 – −18°C (product dependent)</span>
+      </div>
+    </div>
+
+    <div class="standard-card">
+      <h4>Airflow Performance</h4>
+      <div class="standard-row">
+        <span class="param">Stagnation target</span>
+        <span class="val ok">&lt; 15% (U &lt; 0.10 m/s)</span>
+      </div>
+      <div class="standard-row">
+        <span class="param">High-velocity limit</span>
+        <span class="val warn">&lt; 5% (U &gt; 2.0 m/s)</span>
+      </div>
+      <div class="standard-row">
+        <span class="param">VUI target</span>
+        <span class="val ok">&gt; 0.60</span>
+      </div>
+      <div class="standard-row">
+        <span class="param">ADE target</span>
+        <span class="val ok">&gt; 0.70</span>
+      </div>
+    </div>
+
+    <div class="standard-card">
+      <h4>Air Changes per Hour — ACH</h4>
+      <div class="standard-row">
+        <span class="param">Refrigeration (0–8°C)</span>
+        <span class="val">40–60 h⁻¹</span>
+      </div>
+      <div class="standard-row">
+        <span class="param">Freezing (−30 to −18°C)</span>
+        <span class="val">20–40 h⁻¹</span>
+      </div>
+      <div class="standard-row">
+        <span class="param">Below target</span>
+        <span class="val warn">Insufficient air renewal</span>
+      </div>
+      <div class="standard-row">
+        <span class="param">Above target</span>
+        <span class="val warn">Excess energy consumption</span>
+      </div>
+    </div>
+
+    <div class="standard-card">
+      <h4>Energy Metrics</h4>
+      <div class="standard-row">
+        <span class="param">SEC — Refrigeration</span>
+        <span class="val">3.0–5.0 kWh/m³/year (typical)</span>
+      </div>
+      <div class="standard-row">
+        <span class="param">SEC — Freezing</span>
+        <span class="val">8.0–15.0 kWh/m³/year (typical)</span>
+      </div>
+      <div class="standard-row">
+        <span class="param">Q_infiltration</span>
+        <span class="val">Gosney-Olama analytical model</span>
+      </div>
+      <div class="standard-row">
+        <span class="param">COP reference</span>
+        <span class="val">Refrig: 3.0–4.5 &nbsp;|&nbsp; Freeze: 1.5–2.5</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── FOOTER ─────────────────────────────────────────────────────────────── -->
+<div class="footer">
+  <strong>FlowDesk CFD Platform</strong> — Industrial Cooling Analysis
+  &nbsp;|&nbsp;
+  Solver: OpenFOAM buoyantSimpleFoam
+  &nbsp;|&nbsp;
+  Standards: EN 12830, HACCP, EN 1366, ASHRAE 62.1
+</div>
+
+<!-- ── KPI LOADER ─────────────────────────────────────────────────────────── -->
+<script>
+/**
+ * Load coldroom_metrics.json and populate the KPI cards with real values.
+ * Falls back gracefully if the file is not present.
+ */
+async function loadMetrics() {
+  try {
+    const resp = await fetch('coldroom_metrics.json');
+    if (!resp.ok) throw new Error('coldroom_metrics.json not found');
+    const data = await resp.json();
+
+    const slices   = data.slices   || {};
+    const energy   = data.energy   || {};
+    const evap     = data.evaporator || {};
+    const roomType = data.room_type || 'refrigeration';
+    const tSetpt   = data.t_setpoint_inferred ?? null;
+
+    const tnuTarget = roomType === 'freezing' ? 3.0 : 2.0;
+    const achLo     = roomType === 'freezing' ? 20  : 40;
+    const achHi     = roomType === 'freezing' ? 40  : 60;
+
+    // Compute global values from slices
+    const sliceVals = Object.values(slices);
+
+    const avgStagnation = sliceVals.length > 0
+      ? sliceVals.reduce((s, m) => s + (m.pct_stagnation ?? 0), 0) / sliceVals.length : 0;
+    const avgHighVel = sliceVals.length > 0
+      ? sliceVals.reduce((s, m) => s + (m.pct_high_vel ?? 0), 0) / sliceVals.length : 0;
+    const allTmax = sliceVals.map(m => m.T_max ?? -999).filter(v => v > -999);
+    const allTmin = sliceVals.map(m => m.T_min ?? 999).filter(v => v < 999);
+    const globalTNU = allTmax.length > 0
+      ? (Math.max(...allTmax) - Math.min(...allTmin)) : 0;
+
+    // Temperature compliance (slices where T_mean within ±2*tnuTarget of setpoint)
+    const allTMean = sliceVals.map(m => m.T_mean).filter(v => v !== undefined);
+    const compliantSlices = tSetpt !== null
+      ? allTMean.filter(t => Math.abs(t - tSetpt) <= tnuTarget * 2).length
+      : 0;
+    const compliancePct = allTMean.length > 0
+      ? (compliantSlices / allTMean.length) * 100 : 0;
+
+    const ACH    = energy.ACH    ?? null;
+    const QTrans = energy.Q_transmission_W ?? null;
+    const ADE    = evap.ADE    ?? null;
+
+    // ── Helpers ──────────────────────────────────────────────────────────
+    function setKpi(id, text, cls) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = text;
+      el.className = 'kpi-value ' + (cls || 'info');
+    }
+    function setEl(id, text) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = text;
+    }
+    function colorPct(v, good, warn, higherIsBetter = false) {
+      if (higherIsBetter) {
+        return v >= good ? 'ok' : v >= warn ? 'warn' : 'danger';
+      }
+      return v <= good ? 'ok' : v <= warn ? 'warn' : 'danger';
+    }
+
+    // ── KPI bar ──────────────────────────────────────────────────────────
+    setKpi('kpi-compliance',
+      compliancePct !== null ? compliancePct.toFixed(0) + '%' : '—',
+      colorPct(compliancePct, 95, 80, true));
+
+    setKpi('kpi-tnu',
+      globalTNU !== null ? globalTNU.toFixed(2) + '°C' : '—',
+      colorPct(globalTNU, tnuTarget, tnuTarget * 1.5, false));
+
+    setKpi('kpi-stagnation',
+      avgStagnation !== null ? avgStagnation.toFixed(1) + '%' : '—',
+      colorPct(avgStagnation, 15, 25, false));
+
+    setKpi('kpi-high-vel',
+      avgHighVel !== null ? avgHighVel.toFixed(1) + '%' : '—',
+      colorPct(avgHighVel, 5, 15, false));
+
+    setKpi('kpi-ach',
+      ACH !== null ? ACH.toFixed(1) : '—',
+      ACH !== null ? colorPct(ACH, achLo, achLo * 0.7, true) : 'info');
+
+    setKpi('kpi-qtrans',
+      QTrans !== null ? QTrans.toFixed(0) + ' W' : '—', 'info');
+
+    // ── Card metrics ─────────────────────────────────────────────────────
+    setEl('metric-tnu',        globalTNU.toFixed(2) + '°C');
+    setEl('metric-tsetpoint',  tSetpt !== null ? tSetpt.toFixed(1) + '°C' : '—');
+    setEl('metric-roomtype',   roomType === 'freezing' ? 'Freezing' : 'Refrigeration');
+    setEl('metric-stagnation', avgStagnation.toFixed(1) + '%');
+    setEl('metric-high-vel',   avgHighVel.toFixed(1) + '%');
+    setEl('metric-ade',        ADE !== null ? ADE.toFixed(2) : 'N/A');
+    setEl('metric-ach',        ACH !== null ? ACH.toFixed(1) + ' h⁻¹' : '—');
+    setEl('metric-qtrans',     QTrans !== null ? QTrans.toFixed(0) + ' W' : '—');
+    setEl('metric-volume',     energy.volume_m3 !== undefined ? energy.volume_m3.toFixed(1) + ' m³' : '—');
+    setEl('metric-compliance', compliancePct.toFixed(0) + '%');
+
+    // Overall assessment
+    const issues = [];
+    if (globalTNU > tnuTarget)         issues.push('High TNU');
+    if (avgStagnation > 15)            issues.push('Stagnation zones');
+    if (avgHighVel > 5)                issues.push('High-velocity areas');
+    if (ACH !== null && ACH < achLo)   issues.push('Low ACH');
+    setEl('metric-assessment',
+      issues.length === 0 ? '✓ All KPIs nominal' : '⚠ ' + issues.join(', '));
+
+  } catch (err) {
+    console.warn('Cold room metrics not available:', err.message);
+  }
+}
+
+loadMetrics();
+</script>
+
+</body>
+</html>

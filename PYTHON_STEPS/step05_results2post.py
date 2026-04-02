@@ -18,6 +18,7 @@ from src.components.post.objects import (
 from src.components.post.ventilation import analyze_ventilation_planes, generate_ventilation_html_report
 from src.components.post.setup_summary import analyze_setup_summary, generate_setup_html_report
 from src.components.post.datacenter import run_data_centers
+from src.components.post.coldroom import run_industrial_cooling
 from src.components.tools.performance import PerformanceMonitor
 from src.components.tools.export_debug import load_foam_results
 
@@ -57,8 +58,9 @@ def _copy_index_html(post_path: str, simulation_type: str) -> None:
     """
     # Template map: simulation type → template filename
     template_map = {
-        "IndoorSpaces": "index_indoor_spaces.html",
-        "DataCenters":  "index_data_centers.html",
+        "IndoorSpaces":     "index_indoor_spaces.html",
+        "DataCenters":      "index_data_centers.html",
+        "IndustrialCooling": "index_industrial_cooling.html",
     }
     template_name = template_map.get(simulation_type, "index_indoor_spaces.html")
     templates_dir = os.path.join(project_root, "src", "components", "post", "templates")
@@ -232,7 +234,7 @@ def run(case_name: str = "cases/cfd_case", simulation_type: str = "IndoorSpaces"
       - IndoorSpaces    : PMV/PPD comfort + flow + ventilation + setup
       - DataCenters     : rack thermal analysis (RCI, RTI, η_cooling) + thermal/airflow maps
       - FireAndSmoke    : (not yet implemented)
-      - IndustrialCooling: (not yet implemented)
+      - IndustrialCooling: slice thermal + airflow + ACH + Q_transmission → 4 HTML reports + coldroom_metrics.json
 
     Args:
         case_name: Name of the simulation case (folder inside cases/)
@@ -264,9 +266,7 @@ def run(case_name: str = "cases/cfd_case", simulation_type: str = "IndoorSpaces"
             "FireAndSmoke post-processing is not yet implemented."
         )
     elif simulation_type == "IndustrialCooling":
-        raise NotImplementedError(
-            "IndustrialCooling post-processing is not yet implemented."
-        )
+        run_industrial_cooling(case_name, sim_path, post_path)
 
     # Copy index.html template to post directory (all types that have one)
     _copy_index_html(post_path, simulation_type)
