@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { useRoute } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import DashboardLayout from "@/components/layout/dashboard-layout";
@@ -871,9 +871,11 @@ export default function Analysis() {
   const evMethod = vent?.global?.ev_method;
   const ach = vent?.global?.ACH;
 
-  // CR: initialise params when metrics first load
+  // CR: initialise params from JSON on first load only (useRef guard prevents refetch overwrite)
+  const crInitializedRef = useRef(false);
   useEffect(() => {
-    if (crMetrics) {
+    if (crMetrics && !crInitializedRef.current) {
+      crInitializedRef.current = true;
       setCrParams(prev => ({
         ...prev,
         tSetpoint: crMetrics.t_setpoint_inferred,
@@ -942,8 +944,9 @@ export default function Analysis() {
       q_infiltration = 0.221 * A * v_char * rho * cp * deltaT * f_open;
     }
 
-    if (!isNaN(cop) && cop > 0 && crMetrics.energy.volume_m3 > 0) {
-      const q_total = q_transmission + (q_infiltration ?? 0);
+    // SEC requires COP *and* a valid Q_infiltration estimate (door data must be filled)
+    if (!isNaN(cop) && cop > 0 && q_infiltration !== null && crMetrics.energy.volume_m3 > 0) {
+      const q_total = q_transmission + q_infiltration;
       sec = (q_total / cop) * 8760 / 1000 / crMetrics.energy.volume_m3;
     }
 
