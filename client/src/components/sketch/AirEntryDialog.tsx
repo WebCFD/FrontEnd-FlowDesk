@@ -782,16 +782,14 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   }, [wallPosition, positionUnit]);
 
   useEffect(() => {
-    if (document.activeElement !== heightInputRef.current) {
-      if (type === 'door') {
-        setHeightInputStr(String(distanceToFloor));
-      } else {
-        setHeightInputStr(
-          heightUnit === 'percent'
-            ? Math.max(0, Math.min(100, heightCmToPct(distanceToFloor))).toFixed(2)
-            : String(distanceToFloor)
-        );
-      }
+    if (type === 'door') {
+      setHeightInputStr(String(distanceToFloor));
+    } else {
+      setHeightInputStr(
+        heightUnit === 'percent'
+          ? Math.max(0, Math.min(100, heightCmToPct(distanceToFloor))).toFixed(2)
+          : String(distanceToFloor)
+      );
     }
   }, [distanceToFloor, heightUnit, type]);
 

@@ -7947,7 +7947,7 @@ export const generateSharedFloorGeometry = (
           const width = entry.dimensions.width;
           const height = entry.dimensions.height;
           const distanceToFloor = entry.dimensions.distanceToFloor || 0;
-          const zPosition = baseHeight + (entry.type === "door" ? height / 2 : distanceToFloor + height / 2);
+          const zPosition = baseHeight + (entry.type === "door" ? height / 2 : distanceToFloor);
 
           const geometry = new THREE.PlaneGeometry(width, height);
           const material = new THREE.MeshPhongMaterial({
