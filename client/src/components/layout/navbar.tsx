@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "wouter";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -25,11 +25,18 @@ export default function Navbar() {
   const [location, setLocation] = useLocation();
   const { user, setUser } = useAuth();
 
+  // Hide navbar on dashboard routes OR when user is logged in
+  const isDashboardRoute = location.startsWith("/dashboard");
+
+  if (isDashboardRoute || (user && !user.isAnonymous)) {
+    return null;
+  }
+
   const handleLogout = async () => {
     try {
       await fetch("/api/auth/logout", {
         method: "POST",
-        credentials: "include"
+        credentials: "include",
       });
       setUser(null);
       setLocation("/");
@@ -41,93 +48,136 @@ export default function Navbar() {
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({ behavior: "smooth" });
     }
   };
 
   const handleLogoClick = () => {
-    if (location === '/') {
-      // Si ya estamos en la landing page, hacer scroll al top
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (location === "/") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
-      // Si estamos en otra página, navegar a la landing page
-      setLocation('/');
+      setLocation("/");
     }
   };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b shadow-sm">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <div 
+        <div
           className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
           onClick={handleLogoClick}
         >
-          <img 
-            src="/assets/logo.png" 
-            alt="FlowDesk Logo" 
+          <img
+            src="/assets/logo.png"
+            alt="FlowDesk Logo"
             className="h-16 w-16 object-contain"
           />
           <span className="text-2xl font-bold text-primary">FlowDesk</span>
         </div>
-
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuLink 
-                className={`${navigationMenuTriggerStyle()} ${location !== '/' ? 'text-gray-300 cursor-not-allowed hover:text-gray-300' : ''}`}
-                onClick={location === '/' ? () => scrollToSection('case-studies') : undefined}
-                style={{ cursor: location === '/' ? 'pointer' : 'not-allowed' }}
+              <NavigationMenuLink
+                className={`${navigationMenuTriggerStyle()} ${
+                  location !== "/"
+                    ? "text-gray-300 cursor-not-allowed hover:text-gray-300"
+                    : ""
+                }`}
+                onClick={
+                  location === "/"
+                    ? () => scrollToSection("case-studies")
+                    : undefined
+                }
+                style={{
+                  cursor: location === "/" ? "pointer" : "not-allowed",
+                }}
               >
                 Case Studies
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink 
-                className={`${navigationMenuTriggerStyle()} ${location !== '/' ? 'text-gray-300 cursor-not-allowed hover:text-gray-300' : ''}`}
-                onClick={location === '/' ? () => scrollToSection('about') : undefined}
-                style={{ cursor: location === '/' ? 'pointer' : 'not-allowed' }}
+              <NavigationMenuLink
+                className={`${navigationMenuTriggerStyle()} ${
+                  location !== "/"
+                    ? "text-gray-300 cursor-not-allowed hover:text-gray-300"
+                    : ""
+                }`}
+                onClick={
+                  location === "/" ? () => scrollToSection("about") : undefined
+                }
+                style={{
+                  cursor: location === "/" ? "pointer" : "not-allowed",
+                }}
               >
                 About Us
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink 
-                className={`${navigationMenuTriggerStyle()} ${location !== '/' ? 'text-gray-300 cursor-not-allowed hover:text-gray-300' : ''}`}
-                onClick={location === '/' ? () => scrollToSection('certifications') : undefined}
-                style={{ cursor: location === '/' ? 'pointer' : 'not-allowed' }}
+              <NavigationMenuLink
+                className={`${navigationMenuTriggerStyle()} ${
+                  location !== "/"
+                    ? "text-gray-300 cursor-not-allowed hover:text-gray-300"
+                    : ""
+                }`}
+                onClick={
+                  location === "/"
+                    ? () => scrollToSection("certifications")
+                    : undefined
+                }
+                style={{
+                  cursor: location === "/" ? "pointer" : "not-allowed",
+                }}
               >
                 Certifications
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink 
-                className={`${navigationMenuTriggerStyle()} ${location !== '/' ? 'text-gray-300 cursor-not-allowed hover:text-gray-300' : ''}`}
-                onClick={location === '/' ? () => scrollToSection('pricing') : undefined}
-                style={{ cursor: location === '/' ? 'pointer' : 'not-allowed' }}
+              <NavigationMenuLink
+                className={`${navigationMenuTriggerStyle()} ${
+                  location !== "/"
+                    ? "text-gray-300 cursor-not-allowed hover:text-gray-300"
+                    : ""
+                }`}
+                onClick={
+                  location === "/"
+                    ? () => scrollToSection("pricing")
+                    : undefined
+                }
+                style={{
+                  cursor: location === "/" ? "pointer" : "not-allowed",
+                }}
               >
                 Pricing
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <NavigationMenuLink 
-                className={`${navigationMenuTriggerStyle()} ${location !== '/' ? 'text-gray-300 cursor-not-allowed hover:text-gray-300' : ''}`}
-                onClick={location === '/' ? () => scrollToSection('contact') : undefined}
-                style={{ cursor: location === '/' ? 'pointer' : 'not-allowed' }}
+              <NavigationMenuLink
+                className={`${navigationMenuTriggerStyle()} ${
+                  location !== "/"
+                    ? "text-gray-300 cursor-not-allowed hover:text-gray-300"
+                    : ""
+                }`}
+                onClick={
+                  location === "/"
+                    ? () => scrollToSection("contact")
+                    : undefined
+                }
+                style={{
+                  cursor: location === "/" ? "pointer" : "not-allowed",
+                }}
               >
                 Contact Us
               </NavigationMenuLink>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
-
         <div className="flex items-center gap-3">
           {user && !user.isAnonymous ? (
-            // Usuario logueado - mostrar dropdown con información del usuario
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  className="h-9 px-3 flex items-center gap-2 text-sm font-medium hover:bg-gray-100 transition-colors"
+                <Button
+                  variant="ghost"
+                  className="h-9 px-3 flex items-center gap-2 text-sm font-medium hover:bg-gray-100"
                 >
                   <div className="w-7 h-7 bg-primary/10 rounded-full flex items-center justify-center">
                     <User className="h-4 w-4 text-primary" />
@@ -140,24 +190,25 @@ export default function Navbar() {
                   <p className="font-medium text-gray-900">{user.username}</p>
                   <p className="text-gray-500 truncate">{user.email}</p>
                 </div>
-                <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-2 text-sm">
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 text-sm"
+                >
                   <LogOut className="h-4 w-4" />
                   Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            // Usuario no logueado - mostrar botones de login y registro
             <>
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 className="h-9 px-4 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100"
                 onClick={() => setIsLoginOpen(true)}
               >
                 Log in
               </Button>
-              
-              <Button 
+              <Button
                 className="h-9 px-4 text-sm font-medium"
                 onClick={() => setIsRegisterOpen(true)}
               >
@@ -167,15 +218,11 @@ export default function Navbar() {
           )}
         </div>
       </div>
-
-      <RegisterModal 
+      <RegisterModal
         isOpen={isRegisterOpen}
         onClose={() => setIsRegisterOpen(false)}
       />
-      <LoginModal
-        isOpen={isLoginOpen}
-        onClose={() => setIsLoginOpen(false)}
-      />
+      <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
     </header>
   );
 }

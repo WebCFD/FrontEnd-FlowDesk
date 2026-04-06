@@ -1,4 +1,6 @@
 import DashboardSidebar from "./dashboard-sidebar";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -6,24 +8,20 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ children, fullHeight }: DashboardLayoutProps) {
-  if (fullHeight) {
-    return (
-      <div className="flex h-[calc(100vh-64px)] overflow-hidden">
-        <DashboardSidebar />
-        <main className="flex-1 bg-background overflow-hidden flex flex-col">
-          <div className="flex-1 min-h-0 overflow-hidden flex flex-col px-6 pt-8">
-            {children}
-          </div>
-        </main>
-      </div>
-    );
-  }
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <div className="flex min-h-screen">
-      <DashboardSidebar />
-      <main className="flex-1 bg-background">
-        <div className="container mx-auto px-6 py-8">
+    <div className="min-h-screen bg-background">
+      <DashboardSidebar onCollapseChange={setIsCollapsed} />
+      
+      <main className={cn(
+        "transition-all duration-300",
+        isCollapsed ? "ml-16" : "ml-52"
+      )}>
+        <div className={cn(
+          "px-6",
+          fullHeight ? "h-screen overflow-auto pt-8" : "py-8"
+        )}>
           {children}
         </div>
       </main>
