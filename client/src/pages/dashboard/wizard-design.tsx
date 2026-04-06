@@ -293,7 +293,7 @@ export default function WizardDesign() {
   const [, setLocation] = useLocation();
   const { user, setReturnTo } = useAuth();
   const { viewportOffset, gridSize, canvasHeightPercentage, menuWidthPercentage, setGridSize } = useSketchStore();
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(1);
   const [simulationName, setSimulationName] = useState("MySim");
   const [cfdType, setCfdType] = useState(() => {
     const stored = sessionStorage.getItem('selectedCFDType');
@@ -1046,7 +1046,7 @@ export default function WizardDesign() {
   };
 
   const steps = [
-    { id: 0, name: "Quick Guide" },
+    // { id: 0, name: "Quick Guide" },
     { id: 1, name: "Contour Design" },
     { id: 2, name: "Add Elements" },
     { id: 3, name: "Validate Case" },
@@ -1710,103 +1710,103 @@ export default function WizardDesign() {
   );
   };
 
-  const renderStep0 = () => (
-    <>
-      <div className="mt-4 space-y-6">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-xl">
-              <Play className="h-5 w-5 text-primary" />
-              Welcome to the Simulation Wizard
-            </CardTitle>
-            <CardDescription>
-              Watch this short video to learn how FlowDesk works, then jump right in.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="aspect-video rounded-lg overflow-hidden border bg-black">
-              <iframe
-                width="100%"
-                height="100%"
-                src="https://www.youtube.com/embed/-cyPLRfry7k"
-                title="FlowDesk Tutorial"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-          </CardContent>
-        </Card>
+  // const renderStep0 = () => (
+  //   <>
+  //     <div className="mt-4 space-y-6">
+  //       <Card>
+  //         <CardHeader className="pb-3">
+  //           <CardTitle className="flex items-center gap-2 text-xl">
+  //             <Play className="h-5 w-5 text-primary" />
+  //             Welcome to the Simulation Wizard
+  //           </CardTitle>
+  //           <CardDescription>
+  //             Watch this short video to learn how FlowDesk works, then jump right in.
+  //           </CardDescription>
+  //         </CardHeader>
+  //         <CardContent>
+  //           <div className="aspect-video rounded-lg overflow-hidden border bg-black">
+  //             <iframe
+  //               width="100%"
+  //               height="100%"
+  //               src="https://www.youtube.com/embed/-cyPLRfry7k"
+  //               title="FlowDesk Tutorial"
+  //               frameBorder="0"
+  //               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  //               allowFullScreen
+  //             />
+  //           </div>
+  //         </CardContent>
+  //       </Card>
 
-        <div>
-          <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-3">What you'll do in 3 steps</h3>
-          <div className="grid gap-4 md:grid-cols-3">
-            <Card className="border-l-4 border-l-primary/60 hover:shadow-md transition-shadow">
-              <CardContent className="pt-5 pb-4">
-                <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-lg bg-primary/10 text-primary shrink-0">
-                    <Pencil className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-sm">Step 1 — Draw Your Room</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Sketch the room contour, set dimensions, and configure walls and openings.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+  //       <div>
+  //         <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide mb-3">What you'll do in 3 steps</h3>
+  //         <div className="grid gap-4 md:grid-cols-3">
+  //           <Card className="border-l-4 border-l-primary/60 hover:shadow-md transition-shadow">
+  //             <CardContent className="pt-5 pb-4">
+  //               <div className="flex items-start gap-3">
+  //                 <div className="p-2 rounded-lg bg-primary/10 text-primary shrink-0">
+  //                   <Pencil className="h-5 w-5" />
+  //                 </div>
+  //                 <div>
+  //                   <p className="font-medium text-sm">Step 1 — Draw Your Room</p>
+  //                   <p className="text-xs text-muted-foreground mt-1">
+  //                     Sketch the room contour, set dimensions, and configure walls and openings.
+  //                   </p>
+  //                 </div>
+  //               </div>
+  //             </CardContent>
+  //           </Card>
 
-            <Card className="border-l-4 border-l-primary/60 hover:shadow-md transition-shadow">
-              <CardContent className="pt-5 pb-4">
-                <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-lg bg-primary/10 text-primary shrink-0">
-                    <Box className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-sm">Step 2 — Place Elements</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Add furniture, people, equipment, and air entries to your layout.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+  //           <Card className="border-l-4 border-l-primary/60 hover:shadow-md transition-shadow">
+  //             <CardContent className="pt-5 pb-4">
+  //               <div className="flex items-start gap-3">
+  //                 <div className="p-2 rounded-lg bg-primary/10 text-primary shrink-0">
+  //                   <Box className="h-5 w-5" />
+  //                 </div>
+  //                 <div>
+  //                   <p className="font-medium text-sm">Step 2 — Place Elements</p>
+  //                   <p className="text-xs text-muted-foreground mt-1">
+  //                     Add furniture, people, equipment, and air entries to your layout.
+  //                   </p>
+  //                 </div>
+  //               </div>
+  //             </CardContent>
+  //           </Card>
 
-            <Card className="border-l-4 border-l-primary/60 hover:shadow-md transition-shadow">
-              <CardContent className="pt-5 pb-4">
-                <div className="flex items-start gap-3">
-                  <div className="p-2 rounded-lg bg-primary/10 text-primary shrink-0">
-                    <Rocket className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-sm">Step 3 — Run Simulation</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Review your configuration, choose a package, and launch the CFD analysis.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+  //           <Card className="border-l-4 border-l-primary/60 hover:shadow-md transition-shadow">
+  //             <CardContent className="pt-5 pb-4">
+  //               <div className="flex items-start gap-3">
+  //                 <div className="p-2 rounded-lg bg-primary/10 text-primary shrink-0">
+  //                   <Rocket className="h-5 w-5" />
+  //                 </div>
+  //                 <div>
+  //                   <p className="font-medium text-sm">Step 3 — Run Simulation</p>
+  //                   <p className="text-xs text-muted-foreground mt-1">
+  //                     Review your configuration, choose a package, and launch the CFD analysis.
+  //                   </p>
+  //                 </div>
+  //               </div>
+  //             </CardContent>
+  //           </Card>
+  //         </div>
+  //       </div>
 
-        <Card className="bg-primary/5 border-primary/20">
-          <CardContent className="py-4">
-            <div className="flex items-center gap-3">
-              <Lightbulb className="h-5 w-5 text-primary shrink-0" />
-              <div>
-                <p className="text-sm font-medium">Pro tip</p>
-                <p className="text-xs text-muted-foreground">
-                  You can save and load your designs at any point. Use the Files menu in Steps 1 & 2 to manage your work.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </>
-  );
+  //       <Card className="bg-primary/5 border-primary/20">
+  //         <CardContent className="py-4">
+  //           <div className="flex items-center gap-3">
+  //             <Lightbulb className="h-5 w-5 text-primary shrink-0" />
+  //             <div>
+  //               <p className="text-sm font-medium">Pro tip</p>
+  //               <p className="text-xs text-muted-foreground">
+  //                 You can save and load your designs at any point. Use the Files menu in Steps 1 & 2 to manage your work.
+  //               </p>
+  //             </div>
+  //           </div>
+  //         </CardContent>
+  //       </Card>
+  //     </div>
+  //   </>
+  // );
 
   const renderStep1 = () => (
     <>
@@ -4690,7 +4690,7 @@ export default function WizardDesign() {
         {renderStepIndicator()}
         {(step === 0 || step === 3) && (
           <div className="flex-1 min-h-0 overflow-y-auto mt-4">
-            {step === 0 && renderStep0()}
+            {/* {step === 0 && renderStep0()} */}
             {step === 3 && renderStep3()}
           </div>
         )}

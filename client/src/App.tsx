@@ -10,6 +10,7 @@ import Profile from "@/pages/dashboard/profile";
 import NewSimulation from "@/pages/dashboard/new-simulation";
 import WizardDesign from "@/pages/dashboard/wizard-design";
 import Analysis from "@/pages/dashboard/analysis";
+import Learning from "@/pages/dashboard/learning";
 import AdminDatabasePage from "@/pages/admindatabase";
 import ActivatePage from "@/pages/activate";
 import Privacy from "@/pages/privacy";
@@ -21,11 +22,13 @@ import Footer from "@/components/layout/footer";
 import { ProtectedRoute } from "@/lib/protected-route";
 import { useAuth } from "@/hooks/use-auth";
 import { useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+
       <Route path="/dashboard">
         <ProtectedRoute>
           <Dashboard />
@@ -37,23 +40,29 @@ function Router() {
           <NewSimulation />
         </ProtectedRoute>
       </Route>
-      {/* Remove ProtectedRoute wrapper to allow direct access */}
+
       <Route path="/dashboard/wizard-design" component={WizardDesign} />
+
+      <Route path="/dashboard/learning" component={Learning} />
+
       <Route path="/dashboard/analysis/:id">
         <ProtectedRoute>
           <Analysis />
         </ProtectedRoute>
       </Route>
+
       <Route path="/dashboard/settings">
         <ProtectedRoute>
           <Settings />
         </ProtectedRoute>
       </Route>
+
       <Route path="/dashboard/profile">
         <ProtectedRoute>
           <Profile />
         </ProtectedRoute>
       </Route>
+
       <Route path="/admindatabase" component={AdminDatabasePage} />
       <Route path="/activate" component={ActivatePage} />
       <Route path="/privacy" component={Privacy} />
@@ -65,27 +74,31 @@ function Router() {
 }
 
 function App() {
-  const { setUser } = useAuth();
+  const { setUser, user } = useAuth();
   const [location] = useLocation();
-  const isDashboard = location.startsWith("/dashboard");
 
-  // Check if user is already authenticated on app startup
+  const isDashboard = location.startsWith("/dashboard");
+  const isLoggedIn = user && !user.isAnonymous;
+
+  const showNavbar = !isDashboard && !isLoggedIn;
+  const showFooter = !isDashboard;
+
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
         const response = await fetch("/api/auth/user", {
           credentials: "include",
         });
+
         if (response.ok) {
           const userData = await response.json();
           setUser({
             username: userData.username,
             email: userData.email,
-            isAnonymous: false
+            isAnonymous: false,
           });
         }
-      } catch (error) {
-        // User not authenticated, keep user as null
+      } catch {
         console.log("User not authenticated on startup");
       }
     };
@@ -97,12 +110,15 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <>
         <div className="min-h-screen flex flex-col">
-          <Navbar />
-          <main className="flex-1 pt-16">
+          {showNavbar && <Navbar />}
+
+          <main className={cn("flex-1", showNavbar && "pt-16")}>
             <Router />
           </main>
-          {!isDashboard && <Footer />}
+
+          {showFooter && <Footer />}
         </div>
+
         <Toaster />
       </>
     </QueryClientProvider>

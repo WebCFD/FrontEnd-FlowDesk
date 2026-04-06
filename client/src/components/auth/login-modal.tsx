@@ -94,7 +94,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       setUser({
         username: data.username,
         email: data.email,
-        isAnonymous: false
+        isAnonymous: false,
       });
 
       // Check if we're switching to a different user (but not from no-login to login)
@@ -115,12 +115,13 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
       }
 
       onClose();
-      // Only redirect if there's a specific returnTo path stored
-      if (returnTo) {
-        setLocation(returnTo);
-        setReturnTo(null); // Clear the stored path
-      }
-      // If no returnTo path, stay on current page
+      
+      // Redirect to dashboard after successful login
+      setLocation("/dashboard");
+      
+      // Clear returnTo after redirect
+      setReturnTo(null);
+      
     } catch (error) {
       toast({
         variant: "destructive",
