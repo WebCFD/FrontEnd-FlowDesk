@@ -3681,6 +3681,23 @@ export default function Canvas3D({
               sceneRef.current!.add(dimGroup);
             }
           }
+        } else {
+          // For all other furniture types (e.g. vents, nozzles, tables, etc.) that already
+          // exist in the scene: sync userData.simulationProperties and userData.properties
+          // from the current store so JSON export and the dialog always see up-to-date values.
+          sceneRef.current!.traverse((child) => {
+            if (
+              child.userData?.furnitureId === furnitureItem.id &&
+              child.userData?.type === 'furniture'
+            ) {
+              if (furnitureItem.simulationProperties !== undefined) {
+                child.userData.simulationProperties = furnitureItem.simulationProperties;
+              }
+              if (furnitureItem.properties !== undefined) {
+                child.userData.properties = furnitureItem.properties;
+              }
+            }
+          });
         }
       });
     }
@@ -6933,24 +6950,13 @@ export default function Canvas3D({
     setFurnitureContextMenu(null);
   }, [furnitureContextMenu, finalFloors, onFurnitureAdd, onDeleteFurniture, onFurnitureAdded]);
 
-  // Memoize simulation properties from 3D object to prevent infinite loops
+  // Store is the authoritative source for simulationProperties.
+  // The scene's userData may be stale (existing furniture groups are not re-created on scene
+  // rebuild when the same furnitureId already exists). Real-time updates during dialog editing
+  // flow FROM dialog → scene via handleRealTimePropertiesUpdate, not the reverse.
   const currentSimulationProperties = useMemo(() => {
-    if (!editingFurniture || !sceneRef.current) {
-      return editingFurniture?.item.simulationProperties;
-    }
-
-    let updatedSimulationProperties = editingFurniture.item.simulationProperties;
-    
-    sceneRef.current.traverse((child) => {
-      if (child.userData.furnitureId === editingFurniture.item.id && child.userData.type === 'furniture') {
-        if (child.userData.simulationProperties) {
-          updatedSimulationProperties = child.userData.simulationProperties;
-        }
-      }
-    });
-    
-    return updatedSimulationProperties;
-  }, [editingFurniture?.item.id, editingFurniture?.item.simulationProperties]);
+    return editingFurniture?.item.simulationProperties;
+  }, [editingFurniture?.item.simulationProperties]);
 
   const handleRealTimePropertiesUpdate = (properties: {
     state?: 'open' | 'closed';
