@@ -7624,6 +7624,7 @@ export default function Canvas3D({
             position: editingFurniture.item.position,
             rotation: editingFurniture.item.rotation,
             scale: editingFurniture.item.scale || { x: 1, y: 1, z: 1 },
+            dimensions: editingFurniture.item.dimensions,
             properties: editingFurniture.item.properties || {
               temperature: 20,
               thermalConductivity: 0.12,
