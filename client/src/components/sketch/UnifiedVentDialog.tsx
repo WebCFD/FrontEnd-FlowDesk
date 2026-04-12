@@ -42,6 +42,7 @@ interface UnifiedVentDialogProps {
     position: { x: number; y: number; z: number };
     rotation: { x: number; y: number; z: number };
     scale: { x: number; y: number; z: number };
+    dimensions?: { width: number; height: number; depth?: number };
     properties?: {
       temperature?: number;
       material?: string;
@@ -156,6 +157,12 @@ export default function UnifiedVentDialog(props: UnifiedVentDialogProps) {
   }, [onPositionUpdate, onRotationUpdate, onScaleUpdate, onPropertiesUpdate, debugKey]);
 
   const [currentDimensions, setCurrentDimensions] = useState(() => {
+    // Prefer explicit dimensions from the store (set by JSON import or previous dialog save)
+    // Fall back to deriving from scale for legacy items that only have scale
+    const dims = props.initialValues?.dimensions;
+    if (dims?.width !== undefined && dims?.height !== undefined) {
+      return { width: dims.width, height: dims.height };
+    }
     const scale = props.initialValues?.scale || { x: 1, y: 1, z: 1 };
     return {
       width: scale.x * 50,

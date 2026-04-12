@@ -7297,6 +7297,19 @@ export default function Canvas3D({
 
       // Save data to persistent store
       if (onUpdateFurniture) {
+        // For vents, encode the chosen width/height into dimensions and reset scale to {1,1,1}
+        // so createFurnitureModel (which does scale = dims/default * furnitureItem.scale) does
+        // not double-scale the vent on the next scene rebuild.
+        const isVentType = editingFurniture.item.type === 'vent';
+        const ventDimensionsOverride = isVentType && data.scale ? {
+          dimensions: {
+            ...editingFurniture.item.dimensions,
+            width: data.scale.x * 50,
+            height: data.scale.y * 50,
+          },
+          scale: { x: 1, y: 1, z: 1 }
+        } : {};
+
         const updatedFurnitureItem: FurnitureItem = {
           ...editingFurniture.item,
           name: data.name,
@@ -7306,13 +7319,14 @@ export default function Canvas3D({
           properties: data.properties,
           simulationProperties: (() => {
             const sp = data.simulationProperties ?? editingFurniture.item.simulationProperties;
-            if (editingFurniture.item.type === 'vent' && sp) {
+            if (isVentType && sp) {
               return { ...sp, ventRotation: data.rotation.z * 180 / Math.PI };
             }
             return sp;
           })(),
           ...(data.serverProperties && { serverProperties: data.serverProperties }),
           ...(data.nozzleProperties && { nozzleProperties: data.nozzleProperties }),
+          ...ventDimensionsOverride,
           updatedAt: Date.now()
         };
 
