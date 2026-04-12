@@ -1017,6 +1017,21 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
         ...(mode === 'furnVent' && {
           position: element3DPosition,
           rotation: element3DRotation,
+          simulationProperties: {
+            state: elementState,
+            airOrientation: airDirection,
+            flowType: ventMeasurementType,
+            flowValue: customIntensity,
+            flowIntensity: intensityLevel === 'custom' ? 'medium' : intensityLevel,
+            ...(intensityLevel === 'custom' && { customIntensityValue: customIntensity }),
+            airTemperature: elementTemperature,
+            verticalAngle: verticalAngle,
+            horizontalAngle: horizontalAngle,
+            ventRotation: ventRotation,
+            shape: shapeType,
+            material: elementMaterial,
+            emissivity: elementEmissivity,
+          },
         }),
         properties: {
           state: elementState,
