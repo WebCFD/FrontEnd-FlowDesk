@@ -7112,12 +7112,11 @@ export default function Canvas3D({
           z: data.position.z - parentPosition.z
         };
         
-        // For horizontal vents (floor/ceiling), derive rotation directly from ventRotation
-        // to avoid coordinate system subtraction errors
+        // For vents use data.rotation directly (set by element3DRotation in dialog),
+        // for others subtract parent rotation to get local coordinates
         let localRotation;
-        if (editingFurniture.item.type === 'vent' && data.simulationProperties?.ventRotation !== undefined) {
-          const ventRotRad = data.simulationProperties.ventRotation * Math.PI / 180;
-          localRotation = { x: data.rotation.x, y: data.rotation.y, z: ventRotRad };
+        if (editingFurniture.item.type === 'vent') {
+          localRotation = { x: data.rotation.x, y: data.rotation.y, z: data.rotation.z };
         } else {
           localRotation = {
             x: data.rotation.x - parentRotation.x,
