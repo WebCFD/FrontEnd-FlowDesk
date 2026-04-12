@@ -3989,7 +3989,8 @@ export default function WizardDesign() {
               const ceilingVentHeight = ceilingVentShape === 'circular'
                 ? ceilingVentWidth
                 : ((entry.dimensions?.height || 0.5) * 100);
-              const ceilingVentRotationRad = ceilingVentShape === 'circular' ? 0 : ((entry.position?.rotation || 0) * Math.PI) / 180;
+              const ceilingVentRotationRad = ceilingVentShape === 'circular' ? 0
+                : (entry.rotation?.z ?? ((entry.position?.rotation ?? 0) * Math.PI / 180));
 
               horizontalVents.push({
                 id: entry.id,
