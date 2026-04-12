@@ -124,7 +124,6 @@ interface AirEntryExport {
       y: number;
       z: number;
     };
-    rotation?: number;
   };
   rotation?: {
     x: number;
@@ -543,11 +542,15 @@ export function generateSimulationData(
                 x: parseFloat(wallNormal.x.toFixed(5)),
                 y: parseFloat(wallNormal.y.toFixed(5)),
                 z: parseFloat(wallNormal.z.toFixed(5))
-              },
-              ...(entry.type === 'vent' && entryPropsForPosition?.ventRotation
-                ? { rotation: entryPropsForPosition.ventRotation }
-                : {})
+              }
             },
+            ...(entry.type === 'vent' ? {
+              rotation: {
+                x: 0,
+                y: 0,
+                z: parseFloat(((entryPropsForPosition?.ventRotation ?? 0) * Math.PI / 180).toFixed(7))
+              }
+            } : {}),
             dimensions: (() => {
               const shape = ((entry.dimensions as any).shape || "rectangular") as "rectangular" | "circular";
               if (shape === "circular") {
@@ -1080,12 +1083,7 @@ export function generateSimulationData(
             x: 0,
             y: 0,
             z: isFloorVent ? 1 : -1 // Normal hacia arriba para floor, hacia abajo para ceiling
-          },
-          ...((() => {
-            const shape = ventObj.userData?.simulationProperties?.shape;
-            const rot = ventObj.userData?.simulationProperties?.ventRotation;
-            return (shape !== 'circular' && rot) ? { rotation: rot } : {};
-          })())
+          }
         },
         rotation: {
           x: ventObj.rotation.x,

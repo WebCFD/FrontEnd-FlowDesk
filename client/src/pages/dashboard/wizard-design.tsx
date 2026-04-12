@@ -3833,9 +3833,11 @@ export default function WizardDesign() {
                     ...((entry.simulation?.horizontalAngle ?? entry.simulation?.airOrientation?.horizontalAngle) !== undefined && {
                       horizontalAngle: entry.simulation?.horizontalAngle ?? entry.simulation?.airOrientation?.horizontalAngle
                     }),
-                    ...(entry.position?.rotation !== undefined && {
-                      ventRotation: entry.position.rotation
-                    })
+                    ...(entry.rotation?.z !== undefined || entry.position?.rotation !== undefined ? {
+                      ventRotation: entry.rotation?.z !== undefined
+                        ? entry.rotation.z * 180 / Math.PI
+                        : entry.position.rotation
+                    } : {})
                   },
                   line: wallLine // Asociar con la línea de pared correcta
                 });
@@ -3917,9 +3919,11 @@ export default function WizardDesign() {
                 ...((entry.simulation?.horizontalAngle ?? entry.simulation?.airOrientation?.horizontalAngle) !== undefined && {
                   horizontalAngle: entry.simulation?.horizontalAngle ?? entry.simulation?.airOrientation?.horizontalAngle
                 }),
-                ...(entry.position?.rotation !== undefined && {
-                  ventRotation: entry.position.rotation
-                })
+                ...(entry.rotation?.z !== undefined || entry.position?.rotation !== undefined ? {
+                  ventRotation: entry.rotation?.z !== undefined
+                    ? entry.rotation.z * 180 / Math.PI
+                    : entry.position.rotation
+                } : {})
               },
               line: closestLine // Asociar con la línea más cercana
             });
@@ -4019,7 +4023,10 @@ export default function WizardDesign() {
                   flowType: reverseMapFlowType(entry.simulation?.flowType),
                   flowIntensity: entry.simulation?.flowIntensity || 'medium',
                   shape: ceilingVentShape,
-                  ventRotation: ceilingVentShape === 'circular' ? 0 : (entry.position?.rotation || 0),
+                  ventRotation: ceilingVentShape === 'circular' ? 0
+                    : entry.rotation?.z !== undefined
+                      ? entry.rotation.z * 180 / Math.PI
+                      : (entry.position?.rotation ?? 0),
                   // Mapear customValue solo cuando flowIntensity es "custom"
                   ...(entry.simulation?.flowIntensity === 'custom' && entry.simulation?.customValue && {
                     customIntensityValue: entry.simulation.customValue
@@ -4054,7 +4061,8 @@ export default function WizardDesign() {
               const floorVentHeight = floorVentShape === 'circular'
                 ? floorVentWidth
                 : ((entry.dimensions?.height || 0.5) * 100);
-              const floorVentRotationRad = floorVentShape === 'circular' ? 0 : ((entry.position?.rotation || 0) * Math.PI) / 180;
+              const floorVentRotationRad = floorVentShape === 'circular' ? 0
+                : (entry.rotation?.z ?? ((entry.position?.rotation ?? 0) * Math.PI / 180));
 
               horizontalVents.push({
                 id: entry.id,
@@ -4088,7 +4096,10 @@ export default function WizardDesign() {
                   flowType: reverseMapFlowType(entry.simulation?.flowType),
                   flowIntensity: entry.simulation?.flowIntensity || 'medium',
                   shape: floorVentShape,
-                  ventRotation: floorVentShape === 'circular' ? 0 : (entry.position?.rotation || 0),
+                  ventRotation: floorVentShape === 'circular' ? 0
+                    : entry.rotation?.z !== undefined
+                      ? entry.rotation.z * 180 / Math.PI
+                      : (entry.position?.rotation ?? 0),
                   // Mapear customValue solo cuando flowIntensity es "custom"
                   ...(entry.simulation?.flowIntensity === 'custom' && entry.simulation?.customValue && {
                     customIntensityValue: entry.simulation.customValue
