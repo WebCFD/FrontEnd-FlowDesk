@@ -4020,7 +4020,9 @@ export default function WizardDesign() {
                   airTemperature: entry.simulation?.temperature || 20,
                   material: entry.simulation?.material || 'default',
                   emissivity: entry.simulation?.emissivity ?? 0.90,
-                  airOrientation: entry.simulation?.airDirection || 'inflow',
+                  airOrientation: entry.simulation?.state === 'closed'
+                    ? 'closed'
+                    : (entry.simulation?.airDirection || 'inflow'),
                   flowType: reverseMapFlowType(entry.simulation?.flowType),
                   flowIntensity: entry.simulation?.flowIntensity || 'medium',
                   shape: ceilingVentShape,
@@ -4093,7 +4095,9 @@ export default function WizardDesign() {
                   airTemperature: entry.simulation?.temperature || 20,
                   material: entry.simulation?.material || 'default',
                   emissivity: entry.simulation?.emissivity ?? 0.90,
-                  airOrientation: entry.simulation?.airDirection || 'inflow',
+                  airOrientation: entry.simulation?.state === 'closed'
+                    ? 'closed'
+                    : (entry.simulation?.airDirection || 'inflow'),
                   flowType: reverseMapFlowType(entry.simulation?.flowType),
                   flowIntensity: entry.simulation?.flowIntensity || 'medium',
                   shape: floorVentShape,
