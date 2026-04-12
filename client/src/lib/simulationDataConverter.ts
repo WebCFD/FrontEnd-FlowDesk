@@ -126,6 +126,11 @@ interface AirEntryExport {
     };
     rotation?: number;
   };
+  rotation?: {
+    x: number;
+    y: number;
+    z: number;
+  };
   dimensions: 
     | {
         width: number;
@@ -1081,6 +1086,11 @@ export function generateSimulationData(
             const rot = ventObj.userData?.simulationProperties?.ventRotation;
             return (shape !== 'circular' && rot) ? { rotation: rot } : {};
           })())
+        },
+        rotation: {
+          x: ventObj.rotation.x,
+          y: ventObj.rotation.y,
+          z: ventObj.rotation.z
         },
         dimensions: (() => {
           const sp = ventObj.userData?.simulationProperties;
