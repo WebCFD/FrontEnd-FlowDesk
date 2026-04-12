@@ -3453,6 +3453,9 @@ export default function WizardDesign() {
               } else if (entry.type === 'vent' && entry.properties.flowType === 'Pressure') {
                 // AirEntry Vents solo si su flowType es 'Pressure' (y están abiertas)
                 pressureBCs += 1;
+              } else if (entry.type === 'vent' && orientation === 'equilibrium') {
+                // Equilibrium vents are open pressure boundaries (zero-gauge pressure reference)
+                pressureBCs += 1;
               }
             }
           }
@@ -3477,6 +3480,9 @@ export default function WizardDesign() {
 
               // Contar Pressure BCs para FurnVent objects
               if (item.simulationProperties.flowType === 'Pressure') {
+                pressureBCs += 1;
+              } else if (item.simulationProperties.airDirection === 'equilibrium') {
+                // Equilibrium vents are open pressure boundaries (zero-gauge pressure reference)
                 pressureBCs += 1;
               }
             }
