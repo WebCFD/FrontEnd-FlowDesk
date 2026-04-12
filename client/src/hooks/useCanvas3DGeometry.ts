@@ -113,8 +113,8 @@ export function useCanvas3DGeometry(
     const camera = new THREE.PerspectiveCamera(
       75,
       width / height,
-      0.1,
-      10000
+      0.01,
+      500000
     );
     
     if (presentationMode) {

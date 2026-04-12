@@ -3818,8 +3818,8 @@ export default function Canvas3D({
     const camera = new THREE.PerspectiveCamera(
       45,
       containerRef.current.clientWidth / containerRef.current.clientHeight,
-      1,
-      10000,
+      0.01,
+      500000,
     );
     camera.position.set(0, -1000, 1000);
     camera.lookAt(0, 0, 0);

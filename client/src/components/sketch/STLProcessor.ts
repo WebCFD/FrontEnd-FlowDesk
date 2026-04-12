@@ -19,7 +19,7 @@ export class STLProcessor {
 
   constructor() {
     // Setup thumbnail generation components
-    this.thumbnailCamera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+    this.thumbnailCamera = new THREE.PerspectiveCamera(45, 1, 0.01, 100000);
     this.thumbnailScene = new THREE.Scene();
     this.thumbnailScene.background = new THREE.Color(0xf8f9fa);
     
