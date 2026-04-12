@@ -2807,8 +2807,10 @@ export default function WizardDesign() {
                   
                   const totalInflow = conditions ? (conditions.airEntry.inflow + conditions.furnVent.inflow) : 0;
                   const totalOutflow = conditions ? (conditions.airEntry.outflow + conditions.furnVent.outflow) : 0;
+                  const totalEquilibrium = conditions ? conditions.equilibrium : 0;
+                  const totalOpenBCs = totalInflow + totalOutflow + totalEquilibrium;
                   const totalPressureBCs = conditions ? conditions.pressureBCs : 0;
-                  const hasValidBoundaryConditions = totalInflow >= 1 && totalOutflow >= 1;
+                  const hasValidBoundaryConditions = totalOpenBCs === 0 || totalEquilibrium >= 1 || (totalInflow >= 1 && totalOutflow >= 1);
                   const hasValidPressureConditions = totalPressureBCs >= 1;
                   
                   // Stair connectivity validation
@@ -2845,6 +2847,15 @@ export default function WizardDesign() {
                           </span>
                         </div>
                         <div className="flex justify-between">
+                          <span className="text-gray-600">Equilibrium:</span>
+                          <span className="font-medium text-black">
+                            {totalEquilibrium}
+                            <span className="text-gray-500 ml-1">
+                              ({conditions ? conditions.airEntry.equilibrium : "0"} AirEntries, {conditions ? conditions.furnVent.equilibrium : "0"} Horiz. Vents)
+                            </span>
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
                           <span className="text-gray-600">Pressure BCs:</span>
                           <span className="font-medium text-black">
                             {conditions ? conditions.pressureBCs : "0"}
@@ -2867,7 +2878,7 @@ export default function WizardDesign() {
                             <div className="ml-2">
                               <h5 className="text-xs font-medium text-red-800">Insufficient Boundary Conditions (IBC)</h5>
                               <p className="text-xs text-red-700 mt-1">
-                                Your simulation needs at least one Air-inlet and one Air-outlet. Please return to Step 1, or Step 2 and configure the Air Direction field. Set up at least one Inflow (where air enters) and one Outflow (where air exits) using either Wall Air Entries 2D or Floor/Ceiling Air Entries. Without these airflow boundaries, the simulation cannot determine how air moves through your space.
+                                Your simulation needs a valid airflow boundary configuration. Accepted combinations: at least one Inflow + one Outflow, at least one Inflow + one Equilibrium, at least one Outflow + one Equilibrium, or only Equilibrium vents. Configure the Air Direction field in Step 1 or Step 2 using Wall Air Entries or Floor/Ceiling Air Entries.
                               </p>
                             </div>
                           </div>
@@ -3410,8 +3421,10 @@ export default function WizardDesign() {
   const calculateBoundaryConditions = () => {
     let airEntryInflow = 0;
     let airEntryOutflow = 0;
+    let airEntryEquilibrium = 0;
     let furnVentInflow = 0;
     let furnVentOutflow = 0;
+    let furnVentEquilibrium = 0;
     let pressureBCs = 0; // Contador de boundary conditions de presión
 
     Object.entries(rawFloors).forEach(([floorName, floorData]) => {
@@ -3428,6 +3441,8 @@ export default function WizardDesign() {
                 airEntryInflow += 1;
               } else if (orientation === 'outflow') {
                 airEntryOutflow += 1;
+              } else if (orientation === 'equilibrium') {
+                airEntryEquilibrium += 1;
               }
 
               // Contar Pressure BCs para AirEntry elements
@@ -3456,6 +3471,8 @@ export default function WizardDesign() {
                 furnVentInflow += 1;
               } else if (item.simulationProperties.airDirection === 'outflow') {
                 furnVentOutflow += 1;
+              } else if (item.simulationProperties.airDirection === 'equilibrium') {
+                furnVentEquilibrium += 1;
               }
 
               // Contar Pressure BCs para FurnVent objects
@@ -3468,17 +3485,22 @@ export default function WizardDesign() {
       }
     });
 
+    const totalEquilibrium = airEntryEquilibrium + furnVentEquilibrium;
+
     return {
       airEntry: {
         inflow: airEntryInflow,
         outflow: airEntryOutflow,
-        total: airEntryInflow + airEntryOutflow
+        equilibrium: airEntryEquilibrium,
+        total: airEntryInflow + airEntryOutflow + airEntryEquilibrium
       },
       furnVent: {
         inflow: furnVentInflow,
         outflow: furnVentOutflow,
-        total: furnVentInflow + furnVentOutflow
+        equilibrium: furnVentEquilibrium,
+        total: furnVentInflow + furnVentOutflow + furnVentEquilibrium
       },
+      equilibrium: totalEquilibrium,
       pressureBCs: pressureBCs // Total de boundary conditions de presión
     };
   };
@@ -3488,8 +3510,14 @@ export default function WizardDesign() {
       const conditions = calculateBoundaryConditions();
       const totalInflow = conditions.airEntry.inflow + conditions.furnVent.inflow;
       const totalOutflow = conditions.airEntry.outflow + conditions.furnVent.outflow;
+      const totalEquilibrium = conditions.equilibrium;
       const totalPressureBCs = conditions.pressureBCs;
-      const hasValidBoundary = totalInflow >= 1 && totalOutflow >= 1;
+      const totalOpenBCs = totalInflow + totalOutflow + totalEquilibrium;
+      // Valid boundary if:
+      //   - no open air BCs at all (totalOpenBCs === 0), OR
+      //   - at least one equilibrium (acts as both inlet and outlet), OR
+      //   - has both inflow and outflow
+      const hasValidBoundary = totalOpenBCs === 0 || totalEquilibrium >= 1 || (totalInflow >= 1 && totalOutflow >= 1);
       const hasValidPressure = totalPressureBCs >= 1;
 
       const stats = calculateDesignStats();
