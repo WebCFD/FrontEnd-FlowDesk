@@ -1814,7 +1814,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             type="number"
                             min="-360"
                             max="360"
-                            step="1"
+                            step="0.01"
                             value={ventRotation}
                             onChange={(e) => handleVentRotationChange(Number(e.target.value))}
                             className="h-8 text-sm"
