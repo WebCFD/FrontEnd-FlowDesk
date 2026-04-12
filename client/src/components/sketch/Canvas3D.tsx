@@ -7296,16 +7296,16 @@ export default function Canvas3D({
           ...editingFurniture.item,
           name: data.name,
           position: data.position,
-          rotation: (() => {
-            const ventRot = data.simulationProperties?.ventRotation ?? (data.properties as any)?.ventRotation;
-            if (editingFurniture.item.type === 'vent' && ventRot !== undefined) {
-              return { x: data.rotation.x, y: data.rotation.y, z: ventRot * Math.PI / 180 };
-            }
-            return data.rotation;
-          })(),
+          rotation: data.rotation,
           scale: data.scale,
           properties: data.properties,
-          simulationProperties: data.simulationProperties ?? editingFurniture.item.simulationProperties,
+          simulationProperties: (() => {
+            const sp = data.simulationProperties ?? editingFurniture.item.simulationProperties;
+            if (editingFurniture.item.type === 'vent' && sp) {
+              return { ...sp, ventRotation: data.rotation.z * 180 / Math.PI };
+            }
+            return sp;
+          })(),
           ...(data.serverProperties && { serverProperties: data.serverProperties }),
           ...(data.nozzleProperties && { nozzleProperties: data.nozzleProperties }),
           updatedAt: Date.now()
