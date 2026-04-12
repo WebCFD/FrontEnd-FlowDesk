@@ -545,7 +545,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
   };
 
   const handleVentRotationChange = (newRotation: number) => {
-    const clamped = Math.min(360, Math.max(0, newRotation));
+    const clamped = Math.min(360, Math.max(-360, newRotation));
     setVentRotation(clamped);
     
     // Update form values for persistence
@@ -1812,7 +1812,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           <Input
                             id="vent-rotation"
                             type="number"
-                            min="0"
+                            min="-360"
                             max="360"
                             step="1"
                             value={ventRotation}
@@ -1823,7 +1823,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                           <span className="text-xs text-slate-500">degrees</span>
                         </div>
                         <p className="text-xs text-gray-500">
-                          0° to 360° around vent normal
+                          -360° to 360° around vent normal
                         </p>
                       </div>
                     )}
