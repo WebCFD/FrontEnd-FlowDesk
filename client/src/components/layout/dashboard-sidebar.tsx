@@ -30,6 +30,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/use-auth";
+import LoginModal from "@/components/auth/login-modal";
+import RegisterModal from "@/components/auth/register-modal";
 
 interface SidebarItem {
   icon: LucideIcon;
@@ -44,7 +46,12 @@ interface DashboardSidebarProps {
 
 const sidebarItems: SidebarItem[] = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
-  { icon: Wand2, label: "Build Model", href: "/dashboard/wizard-design", isSpecial: true },
+  {
+    icon: Wand2,
+    label: "Build Model",
+    href: "/dashboard/wizard-design",
+    isSpecial: true,
+  },
   { icon: Settings, label: "Settings", href: "/dashboard/settings" },
   { icon: Play, label: "Learning", href: "/dashboard/learning" },
 ];
@@ -52,15 +59,24 @@ const sidebarItems: SidebarItem[] = [
 const COLLAPSE_BREAKPOINT = 1280;
 const COLLAPSE_STORAGE_KEY = "sidebar-collapsed";
 
-export default function DashboardSidebar({ onCollapseChange }: DashboardSidebarProps) {
+export default function DashboardSidebar({
+  onCollapseChange,
+}: DashboardSidebarProps) {
   const [location, setLocation] = useLocation();
   const { toast } = useToast();
   const { reset } = useRoomStore();
   const { setUser } = useAuth();
 
+  const [userData, setUserData] = useState<{
+    username: string;
+    email: string;
+    id: number;
+  } | null>(null);
 
-  const [userData, setUserData] = useState<{ username: string; email: string; id: number } | null>(null);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+
   const [isCollapsed, setIsCollapsed] = useState(() => {
     const saved = localStorage.getItem(COLLAPSE_STORAGE_KEY);
     if (saved !== null) {
@@ -68,12 +84,15 @@ export default function DashboardSidebar({ onCollapseChange }: DashboardSidebarP
     }
     return window.innerWidth < COLLAPSE_BREAKPOINT;
   });
+
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
+
   const userButtonRef = useRef<HTMLButtonElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
-  const baseClasses = "w-full flex items-center px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 text-gray-700";
+  const baseClasses =
+    "w-full flex items-center px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 text-gray-700";
 
   const getItemClasses = (isActive: boolean) =>
     cn(
@@ -92,8 +111,12 @@ export default function DashboardSidebar({ onCollapseChange }: DashboardSidebarP
   const renderNavItem = (item: SidebarItem) => {
     const Icon = item.icon;
     const isActive = location === item.href;
+
     const content = (
-      <div className={cn(getItemClasses(isActive), "cursor-pointer")} onClick={() => setLocation(item.href)}>
+      <div
+        className={cn(getItemClasses(isActive), "cursor-pointer")}
+        onClick={() => setLocation(item.href)}
+      >
         <div className={cn("flex justify-center", isCollapsed ? "w-full" : "w-6")}>
           <Icon className="h-5 w-5" />
         </div>
@@ -105,9 +128,7 @@ export default function DashboardSidebar({ onCollapseChange }: DashboardSidebarP
       return (
         <TooltipProvider key={item.href} delayDuration={300}>
           <Tooltip>
-            <TooltipTrigger asChild>
-              {content}
-            </TooltipTrigger>
+            <TooltipTrigger asChild>{content}</TooltipTrigger>
             <TooltipContent side="right" className="ml-2">
               <p>{item.label}</p>
             </TooltipContent>
@@ -115,17 +136,20 @@ export default function DashboardSidebar({ onCollapseChange }: DashboardSidebarP
         </TooltipProvider>
       );
     }
+
     return content;
   };
 
   const renderSpecialNavItem = (item: SidebarItem) => {
     const Icon = item.icon;
     const isActive = location === item.href;
+
     const content = (
       <button
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
+
           if (location === "/dashboard") {
             window.dispatchEvent(new CustomEvent("openCFDSelector"));
           } else {
@@ -146,9 +170,7 @@ export default function DashboardSidebar({ onCollapseChange }: DashboardSidebarP
       return (
         <TooltipProvider key={item.href} delayDuration={300}>
           <Tooltip>
-            <TooltipTrigger asChild>
-              {content}
-            </TooltipTrigger>
+            <TooltipTrigger asChild>{content}</TooltipTrigger>
             <TooltipContent side="right" className="ml-2">
               <p>{item.label}</p>
             </TooltipContent>
@@ -156,99 +178,114 @@ export default function DashboardSidebar({ onCollapseChange }: DashboardSidebarP
         </TooltipProvider>
       );
     }
+
     return content;
   };
 
   useEffect(() => {
     async function fetchUserData() {
       try {
-        const response = await fetch("/api/auth/user", { credentials: "include" });
+        const response = await fetch("/api/auth/user", {
+          credentials: "include",
+        });
+
         if (response.ok) {
           const data = await response.json();
           setUserData(data);
-        } else setUserData(null);
+        } else {
+          setUserData(null);
+        }
       } catch {
         setUserData(null);
       }
     }
+
     fetchUserData();
-  }, []);
+  }, [isLoginOpen, isRegisterOpen]);
 
   useEffect(() => {
     localStorage.setItem(COLLAPSE_STORAGE_KEY, isCollapsed.toString());
     onCollapseChange?.(isCollapsed);
   }, [isCollapsed, onCollapseChange]);
 
-  // Handle window resize for auto-collapse on small screens
-  useEffect(() => {
-    let resizeTimeout: NodeJS.Timeout;
-    
-    const handleResize = () => {
-      const hasManualPreference = localStorage.getItem(COLLAPSE_STORAGE_KEY) !== null;
-      if (hasManualPreference) return;
-      
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => {
-        const shouldCollapse = window.innerWidth < COLLAPSE_BREAKPOINT;
-        setIsCollapsed(shouldCollapse);
-      }, 150);
-    };
-    
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      clearTimeout(resizeTimeout);
-    };
-  }, []);
+ useEffect(() => {
+  let resizeTimeout: NodeJS.Timeout;
+
+  const handleResize = () => {
+    clearTimeout(resizeTimeout);
+
+    resizeTimeout = setTimeout(() => {
+      setIsCollapsed(window.innerWidth < COLLAPSE_BREAKPOINT);
+    }, 150);
+  };
+
+  handleResize(); // also apply on mount
+
+  window.addEventListener("resize", handleResize);
+
+  return () => {
+    window.removeEventListener("resize", handleResize);
+    clearTimeout(resizeTimeout);
+  };
+}, []);
 
   const handleLogout = async () => {
-  try {
-    const response = await fetch("/api/auth/logout", {
-      method: "POST",
-      credentials: "include",
-    });
-    if (response.ok) {
-      reset();
-      customFurnitureStore.reset();
-      
-      // Clear user from auth context
-      setUser(null);
-      
-      // Clear localStorage
-      localStorage.removeItem(COLLAPSE_STORAGE_KEY);
-      localStorage.removeItem(COLLAPSE_STORAGE_KEY + '_manual');
-      
-      toast({ title: "Success!", description: "You have been logged out." });
-      setLocation("/");
-      
-      // Force a re-render by reloading the page after a short delay
-      setTimeout(() => {
-        window.location.reload();
-      }, 100);
-    } else throw new Error();
-  } catch {
-    toast({ variant: "destructive", title: "Error", description: "Failed to logout. Please try again." });
-  }
-};
+    try {
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        reset();
+        customFurnitureStore.reset();
+        setUser(null);
+        setUserData(null);
+
+        localStorage.removeItem(COLLAPSE_STORAGE_KEY);
+        localStorage.removeItem(COLLAPSE_STORAGE_KEY + "_manual");
+
+        toast({
+          title: "Success!",
+          description: "You have been logged out.",
+        });
+
+        setShowUserMenu(false);
+        setLocation("/");
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
+      } else {
+        throw new Error();
+      }
+    } catch {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to logout. Please try again.",
+      });
+    }
+  };
 
   useEffect(() => {
     if (showUserMenu && userButtonRef.current && userMenuRef.current) {
       const buttonRect = userButtonRef.current.getBoundingClientRect();
       const menuRect = userMenuRef.current.getBoundingClientRect();
       const viewportHeight = window.innerHeight;
-      
+
       let top = buttonRect.top;
-      
+
       if (top + menuRect.height > viewportHeight - 10) {
         top = buttonRect.bottom - menuRect.height;
       }
-      
+
       if (top < 10) {
         top = 10;
       }
-      
+
       setMenuPosition({
-        top: top,
+        top,
         left: buttonRect.right + 16,
       });
     }
@@ -256,13 +293,19 @@ export default function DashboardSidebar({ onCollapseChange }: DashboardSidebarP
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (showUserMenu && userMenuRef.current && !userMenuRef.current.contains(event.target as Node) && 
-          userButtonRef.current && !userButtonRef.current.contains(event.target as Node)) {
+      if (
+        showUserMenu &&
+        userMenuRef.current &&
+        !userMenuRef.current.contains(event.target as Node) &&
+        userButtonRef.current &&
+        !userButtonRef.current.contains(event.target as Node)
+      ) {
         setShowUserMenu(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showUserMenu]);
 
   const renderCollapseButton = () => {
@@ -272,7 +315,11 @@ export default function DashboardSidebar({ onCollapseChange }: DashboardSidebarP
         className={getCollapsedButtonClasses()}
       >
         <div className={cn("flex justify-center", isCollapsed ? "w-full" : "w-6")}>
-          {isCollapsed ? <PanelLeftOpen className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
+          {isCollapsed ? (
+            <PanelLeftOpen className="h-5 w-5" />
+          ) : (
+            <PanelLeftClose className="h-5 w-5" />
+          )}
         </div>
         {!isCollapsed && <span className="ml-3">Collapse sidebar</span>}
       </button>
@@ -282,9 +329,7 @@ export default function DashboardSidebar({ onCollapseChange }: DashboardSidebarP
       return (
         <TooltipProvider delayDuration={300}>
           <Tooltip>
-            <TooltipTrigger asChild>
-              {button}
-            </TooltipTrigger>
+            <TooltipTrigger asChild>{button}</TooltipTrigger>
             <TooltipContent side="right" className="ml-2">
               <p>Expand sidebar</p>
             </TooltipContent>
@@ -292,6 +337,7 @@ export default function DashboardSidebar({ onCollapseChange }: DashboardSidebarP
         </TooltipProvider>
       );
     }
+
     return button;
   };
 
@@ -302,100 +348,131 @@ export default function DashboardSidebar({ onCollapseChange }: DashboardSidebarP
         isCollapsed ? "w-16" : "w-52"
       )}
     >
-      {/* HEADER - Larger logo when collapsed, reduced padding */}
       <div className={cn("flex-shrink-0", isCollapsed ? "p-2" : "p-4")}>
-        <Link href="/dashboard" className="flex items-center justify-center gap-2">
-          <img 
-            src="/assets/logo.png" 
-            alt="Logo" 
+        <Link href="/" className="flex items-center justify-center gap-2">
+          <img
+            src="/assets/logo.png"
+            alt="Logo"
             className={cn(
-              "object-contain transition-all duration-300",
+              "object-contain transition-all duration-300 cursor-pointer",
               isCollapsed ? "h-12 w-12" : "h-10 w-10"
-            )} 
+            )}
           />
           {!isCollapsed && <span className="text-xl font-bold">FlowDesk</span>}
         </Link>
       </div>
 
-      {/* SEPARATOR AFTER LOGO */}
       <div className="mx-3 h-px bg-gray-200" />
 
-      {/* NAV - Reduced padding to bring closer to logo */}
       <nav className="flex-1 px-2 py-3 overflow-y-auto">
         <div className="space-y-1">
-          {sidebarItems.map((item) => 
+          {sidebarItems.map((item) =>
             item.isSpecial ? renderSpecialNavItem(item) : renderNavItem(item)
           )}
         </div>
       </nav>
 
-      {/* SEPARATOR BEFORE COLLAPSE BUTTON */}
       <div className="mx-3 h-px bg-gray-200" />
 
-      {/* COLLAPSE + USER MENU */}
       <div className="p-3 flex flex-col gap-2">
-        {/* COLLAPSE BUTTON */}
         {renderCollapseButton()}
 
-        {/* USER DROPDOWN - No separator between collapse and user */}
-        {userData && (
-          <div>
-            <button
-              ref={userButtonRef}
-              onClick={() => setShowUserMenu((prev) => !prev)}
-              className={getCollapsedButtonClasses()}
+        <div>
+          <button
+            ref={userButtonRef}
+            onClick={() => setShowUserMenu((prev) => !prev)}
+            className={getCollapsedButtonClasses()}
+          >
+            <div
+              className={cn(
+                "flex justify-center",
+                isCollapsed ? "w-full" : "w-6"
+              )}
             >
-              <div className={cn("flex justify-center", isCollapsed ? "w-full" : "w-6")}>
-                <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center">
-                  {userData.username[0].toUpperCase()}
-                </div>
+              <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center">
+                {(userData?.username?.[0] || "G").toUpperCase()}
               </div>
-              {!isCollapsed && <span className="ml-3">{userData.username}</span>}
-            </button>
-
-            {showUserMenu && (
-              <div
-                ref={userMenuRef}
-                className="fixed bg-white border border-gray-200 rounded-md shadow-lg z-50 min-w-[220px]"
-                style={{
-                  top: `${menuPosition.top}px`,
-                  left: `${menuPosition.left}px`,
-                }}
-              >
-                <div className="px-4 py-3 border-b border-gray-100">
-                  <p className="font-medium text-gray-900">{userData.username}</p>
-                  <p className="text-sm text-gray-500 mt-0.5 break-all">{userData.email}</p>
-                </div>
-                <button
-                  onClick={() => {
-                    setShowUserMenu(false);
-                    setLocation("/dashboard/profile");
-                  }}
-                  className="w-full text-left px-4 py-2.5 hover:bg-gray-50 transition-colors text-gray-700"
-                >
-                  Account
-                </button>
-                <button
-                  onClick={() => {
-                    setShowUserMenu(false);
-                    setShowLogoutDialog(true);
-                  }}
-                  className="w-full text-left px-4 py-2.5 hover:bg-gray-50 transition-colors text-gray-700 border-t border-gray-100"
-                >
-                  Log Out
-                </button>
-              </div>
+            </div>
+            {!isCollapsed && (
+              <span className="ml-3">{userData?.username || "Guest"}</span>
             )}
-          </div>
-        )}
+          </button>
+
+          {showUserMenu && (
+            <div
+              ref={userMenuRef}
+              className="fixed bg-white border border-gray-200 rounded-md shadow-lg z-50 min-w-[220px]"
+              style={{
+                top: `${menuPosition.top}px`,
+                left: `${menuPosition.left}px`,
+              }}
+            >
+              <div className="px-4 py-3 border-b border-gray-100">
+                <p className="font-medium text-gray-900">
+                  {userData?.username || "Guest"}
+                </p>
+                <p className="text-sm text-gray-500 mt-0.5 break-all">
+                  {userData?.email || "Not logged in"}
+                </p>
+              </div>
+
+              {userData ? (
+                <>
+                  <button
+                    onClick={() => {
+                      setShowUserMenu(false);
+                      setLocation("/dashboard/profile");
+                    }}
+                    className="w-full text-left px-4 py-2.5 hover:bg-gray-50 transition-colors text-gray-700"
+                  >
+                    Account
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setShowUserMenu(false);
+                      setShowLogoutDialog(true);
+                    }}
+                    className="w-full text-left px-4 py-2.5 hover:bg-gray-50 transition-colors text-gray-700 border-t border-gray-100"
+                  >
+                    Log Out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => {
+                      setShowUserMenu(false);
+                      setIsLoginOpen(true);
+                    }}
+                    className="w-full text-left px-4 py-2.5 hover:bg-gray-50 transition-colors text-gray-700"
+                  >
+                    Log In
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setShowUserMenu(false);
+                      setIsRegisterOpen(true);
+                    }}
+                    className="w-full text-left px-4 py-2.5 hover:bg-gray-50 transition-colors text-gray-700 border-t border-gray-100"
+                  >
+                    Sign Up
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* LOGOUT DIALOG */}
       <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Confirm Logout</AlertDialogTitle>
-            <AlertDialogDescription>Are you sure you want to logout?</AlertDialogDescription>
+            <AlertDialogDescription>
+              Are you sure you want to logout?
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
@@ -410,6 +487,16 @@ export default function DashboardSidebar({ onCollapseChange }: DashboardSidebarP
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+      />
+
+      <RegisterModal
+        isOpen={isRegisterOpen}
+        onClose={() => setIsRegisterOpen(false)}
+      />
     </div>
   );
 }
