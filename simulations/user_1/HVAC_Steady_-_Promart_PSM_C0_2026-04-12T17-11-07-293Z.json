@@ -1,0 +1,1222 @@
+{
+  "case_name": "Promart_PSM_C0",
+  "simulationType": "IndoorSpaces",
+  "version": "1.0",
+  "levels": {
+    "0": {
+      "height": 12,
+      "deck": 0.35,
+      "ceiling": {
+        "temp": 38,
+        "emissivity": 0.9,
+        "airEntries": [
+          {
+            "id": "Vent 0F-23",
+            "type": "vent",
+            "position": {
+              "x": 49.70399999999999,
+              "y": 113.417,
+              "z": 12,
+              "normal": {
+                "x": 0,
+                "y": 0,
+                "z": -1
+              }
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": -0.263997435
+            },
+            "dimensions": {
+              "width": 0.5,
+              "height": 0.5,
+              "shape": "rectangular"
+            },
+            "simulation": {
+              "state": "closed",
+              "temperature": 38,
+              "material": "default",
+              "emissivity": 0.9
+            }
+          },
+          {
+            "id": "Vent 0F-24",
+            "type": "vent",
+            "position": {
+              "x": 43.33700000000001,
+              "y": 89.863,
+              "z": 12,
+              "normal": {
+                "x": 0,
+                "y": 0,
+                "z": -1
+              }
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": -0.263997435
+            },
+            "dimensions": {
+              "width": 0.5,
+              "height": 0.5,
+              "shape": "rectangular"
+            },
+            "simulation": {
+              "state": "closed",
+              "temperature": 38,
+              "material": "default",
+              "emissivity": 0.9
+            }
+          },
+          {
+            "id": "Vent 0F-25",
+            "type": "vent",
+            "position": {
+              "x": 36.97,
+              "y": 66.308,
+              "z": 12,
+              "normal": {
+                "x": 0,
+                "y": 0,
+                "z": -1
+              }
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": -0.263997435
+            },
+            "dimensions": {
+              "width": 0.5,
+              "height": 0.5,
+              "shape": "rectangular"
+            },
+            "simulation": {
+              "state": "closed",
+              "temperature": 38,
+              "material": "default",
+              "emissivity": 0.9
+            }
+          },
+          {
+            "id": "Vent 0F-26",
+            "type": "vent",
+            "position": {
+              "x": 30.603,
+              "y": 42.753,
+              "z": 12,
+              "normal": {
+                "x": 0,
+                "y": 0,
+                "z": -1
+              }
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": -0.263997435
+            },
+            "dimensions": {
+              "width": 0.5,
+              "height": 0.5,
+              "shape": "rectangular"
+            },
+            "simulation": {
+              "state": "closed",
+              "temperature": 38,
+              "material": "default",
+              "emissivity": 0.9
+            }
+          },
+          {
+            "id": "Vent 0F-27",
+            "type": "vent",
+            "position": {
+              "x": 24.236,
+              "y": 19.199,
+              "z": 12,
+              "normal": {
+                "x": 0,
+                "y": 0,
+                "z": -1
+              }
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": -0.263997435
+            },
+            "dimensions": {
+              "width": 0.5,
+              "height": 0.5,
+              "shape": "rectangular"
+            },
+            "simulation": {
+              "state": "closed",
+              "temperature": 38,
+              "material": "default",
+              "emissivity": 0.9
+            }
+          }
+        ]
+      },
+      "floor": {
+        "temp": 26,
+        "emissivity": 0.9,
+        "airEntries": []
+      },
+      "walls": [
+        {
+          "id": "wall_0F_1",
+          "start": {
+            "x": 73.94,
+            "y": 122.514
+          },
+          "end": {
+            "x": 41.21,
+            "y": 0
+          },
+          "temp": 28,
+          "material": "default",
+          "emissivity": 0.9,
+          "airEntries": []
+        },
+        {
+          "id": "wall_0F_2",
+          "start": {
+            "x": 41.21,
+            "y": 0
+          },
+          "end": {
+            "x": 6.303,
+            "y": 0
+          },
+          "temp": 28,
+          "material": "default",
+          "emissivity": 0.9,
+          "airEntries": [
+            {
+              "id": "Vent 0F-1",
+              "type": "vent",
+              "position": {
+                "x": 39.271,
+                "y": -0.001,
+                "z": 6.3,
+                "normal": {
+                  "x": 0,
+                  "y": -1,
+                  "z": 0
+                }
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "dimensions": {
+                "width": 1.8,
+                "height": 1.9,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 26,
+                "airDirection": "inflow",
+                "flowDirection": {
+                  "x": 0,
+                  "y": -1,
+                  "z": 0
+                },
+                "verticalAngle": 0,
+                "horizontalAngle": 0,
+                "flowType": "velocity",
+                "flowIntensity": "custom",
+                "customValue": 2.1
+              }
+            },
+            {
+              "id": "Vent 0F-2",
+              "type": "vent",
+              "position": {
+                "x": 35.392,
+                "y": 0,
+                "z": 6.3,
+                "normal": {
+                  "x": 0,
+                  "y": -1,
+                  "z": 0
+                }
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "dimensions": {
+                "width": 1.8,
+                "height": 1.9,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 26,
+                "airDirection": "inflow",
+                "flowDirection": {
+                  "x": 0,
+                  "y": -1,
+                  "z": 0
+                },
+                "verticalAngle": 0,
+                "horizontalAngle": 0,
+                "flowType": "velocity",
+                "flowIntensity": "custom",
+                "customValue": 2.1
+              }
+            },
+            {
+              "id": "Vent 0F-3",
+              "type": "vent",
+              "position": {
+                "x": 31.513,
+                "y": 0,
+                "z": 6.3,
+                "normal": {
+                  "x": 0,
+                  "y": -1,
+                  "z": 0
+                }
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "dimensions": {
+                "width": 1.8,
+                "height": 1.9,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 26,
+                "airDirection": "inflow",
+                "flowDirection": {
+                  "x": 0,
+                  "y": -1,
+                  "z": 0
+                },
+                "verticalAngle": 0,
+                "horizontalAngle": 0,
+                "flowType": "velocity",
+                "flowIntensity": "custom",
+                "customValue": 2.1
+              }
+            },
+            {
+              "id": "Vent 0F-4",
+              "type": "vent",
+              "position": {
+                "x": 27.634,
+                "y": 0,
+                "z": 6.3,
+                "normal": {
+                  "x": 0,
+                  "y": -1,
+                  "z": 0
+                }
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "dimensions": {
+                "width": 1.8,
+                "height": 1.9,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 26,
+                "airDirection": "inflow",
+                "flowDirection": {
+                  "x": 0,
+                  "y": -1,
+                  "z": 0
+                },
+                "verticalAngle": 0,
+                "horizontalAngle": 0,
+                "flowType": "velocity",
+                "flowIntensity": "custom",
+                "customValue": 2.1
+              }
+            },
+            {
+              "id": "Vent 0F-5",
+              "type": "vent",
+              "position": {
+                "x": 23.756,
+                "y": 0,
+                "z": 6.3,
+                "normal": {
+                  "x": 0,
+                  "y": -1,
+                  "z": 0
+                }
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "dimensions": {
+                "width": 1.8,
+                "height": 1.9,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 26,
+                "airDirection": "inflow",
+                "flowDirection": {
+                  "x": 0,
+                  "y": -1,
+                  "z": 0
+                },
+                "verticalAngle": 0,
+                "horizontalAngle": 0,
+                "flowType": "velocity",
+                "flowIntensity": "custom",
+                "customValue": 2.1
+              }
+            },
+            {
+              "id": "Vent 0F-6",
+              "type": "vent",
+              "position": {
+                "x": 19.878,
+                "y": 0,
+                "z": 6.3,
+                "normal": {
+                  "x": 0,
+                  "y": -1,
+                  "z": 0
+                }
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "dimensions": {
+                "width": 1.8,
+                "height": 1.9,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 26,
+                "airDirection": "inflow",
+                "flowDirection": {
+                  "x": 0,
+                  "y": -1,
+                  "z": 0
+                },
+                "verticalAngle": 0,
+                "horizontalAngle": 0,
+                "flowType": "velocity",
+                "flowIntensity": "custom",
+                "customValue": 2.1
+              }
+            },
+            {
+              "id": "Vent 0F-7",
+              "type": "vent",
+              "position": {
+                "x": 15.999,
+                "y": 0,
+                "z": 6.3,
+                "normal": {
+                  "x": 0,
+                  "y": -1,
+                  "z": 0
+                }
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "dimensions": {
+                "width": 1.8,
+                "height": 1.9,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 26,
+                "airDirection": "inflow",
+                "flowDirection": {
+                  "x": 0,
+                  "y": -1,
+                  "z": 0
+                },
+                "verticalAngle": 0,
+                "horizontalAngle": 0,
+                "flowType": "velocity",
+                "flowIntensity": "custom",
+                "customValue": 2.1
+              }
+            },
+            {
+              "id": "Vent 0F-8",
+              "type": "vent",
+              "position": {
+                "x": 12.121,
+                "y": 0,
+                "z": 6.3,
+                "normal": {
+                  "x": 0,
+                  "y": -1,
+                  "z": 0
+                }
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "dimensions": {
+                "width": 1.8,
+                "height": 1.9,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 26,
+                "airDirection": "inflow",
+                "flowDirection": {
+                  "x": 0,
+                  "y": -1,
+                  "z": 0
+                },
+                "verticalAngle": 0,
+                "horizontalAngle": 0,
+                "flowType": "velocity",
+                "flowIntensity": "custom",
+                "customValue": 2.1
+              }
+            },
+            {
+              "id": "Vent 0F-9",
+              "type": "vent",
+              "position": {
+                "x": 8.242,
+                "y": 0,
+                "z": 6.3,
+                "normal": {
+                  "x": 0,
+                  "y": -1,
+                  "z": 0
+                }
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "dimensions": {
+                "width": 1.8,
+                "height": 1.9,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 26,
+                "airDirection": "inflow",
+                "flowDirection": {
+                  "x": 0,
+                  "y": -1,
+                  "z": 0
+                },
+                "verticalAngle": 0,
+                "horizontalAngle": 0,
+                "flowType": "velocity",
+                "flowIntensity": "custom",
+                "customValue": 2.1
+              }
+            }
+          ]
+        },
+        {
+          "id": "wall_0F_3",
+          "start": {
+            "x": 6.303,
+            "y": 0
+          },
+          "end": {
+            "x": 8.539,
+            "y": 8.242
+          },
+          "temp": 28,
+          "material": "default",
+          "emissivity": 0.9,
+          "airEntries": []
+        },
+        {
+          "id": "wall_0F_4",
+          "start": {
+            "x": 8.539,
+            "y": 8.242
+          },
+          "end": {
+            "x": 0,
+            "y": 10.568
+          },
+          "temp": 28,
+          "material": "default",
+          "emissivity": 0.9,
+          "airEntries": []
+        },
+        {
+          "id": "wall_0F_5",
+          "start": {
+            "x": 0,
+            "y": 10.568
+          },
+          "end": {
+            "x": 21.166,
+            "y": 85.501
+          },
+          "temp": 28,
+          "material": "default",
+          "emissivity": 0.9,
+          "airEntries": [
+            {
+              "id": "Vent 0F-10",
+              "type": "vent",
+              "position": {
+                "x": 19.946,
+                "y": 81.183,
+                "z": 4.9,
+                "normal": {
+                  "x": 0.96235,
+                  "y": 0.27183,
+                  "z": 0
+                }
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "dimensions": {
+                "width": 3.52,
+                "height": 3.95,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 26,
+                "airDirection": "equilibrium",
+                "flowDirection": {
+                  "x": -0.96235,
+                  "y": 0.27183,
+                  "z": 0
+                },
+                "verticalAngle": 0,
+                "horizontalAngle": 0,
+                "flowType": "velocity",
+                "flowIntensity": "0"
+              }
+            },
+            {
+              "id": "Vent 0F-11",
+              "type": "vent",
+              "position": {
+                "x": 17.287,
+                "y": 71.768,
+                "z": 4.9,
+                "normal": {
+                  "x": 0.96235,
+                  "y": 0.27183,
+                  "z": 0
+                }
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "dimensions": {
+                "width": 3.52,
+                "height": 3.95,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 26,
+                "airDirection": "equilibrium",
+                "flowDirection": {
+                  "x": -0.96235,
+                  "y": 0.27183,
+                  "z": 0
+                },
+                "verticalAngle": 0,
+                "horizontalAngle": 0,
+                "flowType": "velocity",
+                "flowIntensity": "0"
+              }
+            },
+            {
+              "id": "Vent 0F-12",
+              "type": "vent",
+              "position": {
+                "x": 14.628,
+                "y": 62.353,
+                "z": 4.9,
+                "normal": {
+                  "x": 0.96235,
+                  "y": 0.27183,
+                  "z": 0
+                }
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "dimensions": {
+                "width": 3.52,
+                "height": 3.95,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 26,
+                "airDirection": "equilibrium",
+                "flowDirection": {
+                  "x": -0.96235,
+                  "y": 0.27183,
+                  "z": 0
+                },
+                "verticalAngle": 0,
+                "horizontalAngle": 0,
+                "flowType": "velocity",
+                "flowIntensity": "0"
+              }
+            },
+            {
+              "id": "Vent 0F-13",
+              "type": "vent",
+              "position": {
+                "x": 11.968,
+                "y": 52.937,
+                "z": 4.9,
+                "normal": {
+                  "x": 0.96235,
+                  "y": 0.27183,
+                  "z": 0
+                }
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "dimensions": {
+                "width": 3.52,
+                "height": 3.95,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 26,
+                "airDirection": "equilibrium",
+                "flowDirection": {
+                  "x": -0.96235,
+                  "y": 0.27183,
+                  "z": 0
+                },
+                "verticalAngle": 0,
+                "horizontalAngle": 0,
+                "flowType": "velocity",
+                "flowIntensity": "0"
+              }
+            },
+            {
+              "id": "Vent 0F-14",
+              "type": "vent",
+              "position": {
+                "x": 9.309,
+                "y": 43.522,
+                "z": 4.9,
+                "normal": {
+                  "x": 0.96235,
+                  "y": 0.27183,
+                  "z": 0
+                }
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "dimensions": {
+                "width": 3.52,
+                "height": 3.95,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 26,
+                "airDirection": "equilibrium",
+                "flowDirection": {
+                  "x": -0.96235,
+                  "y": 0.27183,
+                  "z": 0
+                },
+                "verticalAngle": 0,
+                "horizontalAngle": 0,
+                "flowType": "velocity",
+                "flowIntensity": "0"
+              }
+            },
+            {
+              "id": "Vent 0F-15",
+              "type": "vent",
+              "position": {
+                "x": 6.649,
+                "y": 34.107,
+                "z": 4.9,
+                "normal": {
+                  "x": 0.96235,
+                  "y": 0.27183,
+                  "z": 0
+                }
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "dimensions": {
+                "width": 3.52,
+                "height": 3.95,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 26,
+                "airDirection": "equilibrium",
+                "flowDirection": {
+                  "x": -0.96235,
+                  "y": 0.27183,
+                  "z": 0
+                },
+                "verticalAngle": 0,
+                "horizontalAngle": 0,
+                "flowType": "velocity",
+                "flowIntensity": "0"
+              }
+            },
+            {
+              "id": "Vent 0F-16",
+              "type": "vent",
+              "position": {
+                "x": 3.99,
+                "y": 24.692,
+                "z": 4.9,
+                "normal": {
+                  "x": 0.96235,
+                  "y": 0.27183,
+                  "z": 0
+                }
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "dimensions": {
+                "width": 3.52,
+                "height": 3.95,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 26,
+                "airDirection": "equilibrium",
+                "flowDirection": {
+                  "x": -0.96235,
+                  "y": 0.27183,
+                  "z": 0
+                },
+                "verticalAngle": 0,
+                "horizontalAngle": 0,
+                "flowType": "velocity",
+                "flowIntensity": "0"
+              }
+            },
+            {
+              "id": "Vent 0F-17",
+              "type": "vent",
+              "position": {
+                "x": 1.33,
+                "y": 15.276,
+                "z": 4.9,
+                "normal": {
+                  "x": 0.96235,
+                  "y": 0.27183,
+                  "z": 0
+                }
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "dimensions": {
+                "width": 3.52,
+                "height": 3.95,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 26,
+                "airDirection": "equilibrium",
+                "flowDirection": {
+                  "x": -0.96235,
+                  "y": 0.27183,
+                  "z": 0
+                },
+                "verticalAngle": 0,
+                "horizontalAngle": 0,
+                "flowType": "velocity",
+                "flowIntensity": "0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "wall_0F_6",
+          "start": {
+            "x": 21.166,
+            "y": 85.501
+          },
+          "end": {
+            "x": 22.829,
+            "y": 90.853
+          },
+          "temp": 28,
+          "material": "default",
+          "emissivity": 0.9,
+          "airEntries": [
+            {
+              "id": "Vent 0F-18",
+              "type": "vent",
+              "position": {
+                "x": 22.737,
+                "y": 90.56,
+                "z": 4.9,
+                "normal": {
+                  "x": 0.95496,
+                  "y": 0.29673,
+                  "z": 0
+                }
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "dimensions": {
+                "width": 3.52,
+                "height": 3.95,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 26,
+                "airDirection": "equilibrium",
+                "flowDirection": {
+                  "x": -0.95496,
+                  "y": 0.29673,
+                  "z": 0
+                },
+                "verticalAngle": 0,
+                "horizontalAngle": 0,
+                "flowType": "velocity",
+                "flowIntensity": "0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "wall_0F_7",
+          "start": {
+            "x": 22.829,
+            "y": 90.853
+          },
+          "end": {
+            "x": 23.963,
+            "y": 94.4
+          },
+          "temp": 28,
+          "material": "default",
+          "emissivity": 0.9,
+          "airEntries": []
+        },
+        {
+          "id": "wall_0F_8",
+          "start": {
+            "x": 23.963,
+            "y": 94.4
+          },
+          "end": {
+            "x": 25.243,
+            "y": 97.991
+          },
+          "temp": 28,
+          "material": "default",
+          "emissivity": 0.9,
+          "airEntries": []
+        },
+        {
+          "id": "wall_0F_9",
+          "start": {
+            "x": 25.243,
+            "y": 97.991
+          },
+          "end": {
+            "x": 29.159,
+            "y": 109.384
+          },
+          "temp": 28,
+          "material": "default",
+          "emissivity": 0.9,
+          "airEntries": [
+            {
+              "id": "Vent 0F-19",
+              "type": "vent",
+              "position": {
+                "x": 29.054,
+                "y": 109.079,
+                "z": 4.9,
+                "normal": {
+                  "x": 0.9457,
+                  "y": 0.32505,
+                  "z": 0
+                }
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "dimensions": {
+                "width": 3.52,
+                "height": 3.95,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 26,
+                "airDirection": "equilibrium",
+                "flowDirection": {
+                  "x": -0.9457,
+                  "y": 0.32505,
+                  "z": 0
+                },
+                "verticalAngle": 0,
+                "horizontalAngle": 0,
+                "flowType": "velocity",
+                "flowIntensity": "0"
+              }
+            },
+            {
+              "id": "Vent 0F-20",
+              "type": "vent",
+              "position": {
+                "x": 25.874,
+                "y": 99.827,
+                "z": 4.9,
+                "normal": {
+                  "x": 0.9457,
+                  "y": 0.32505,
+                  "z": 0
+                }
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "dimensions": {
+                "width": 3.52,
+                "height": 3.95,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 26,
+                "airDirection": "equilibrium",
+                "flowDirection": {
+                  "x": -0.9457,
+                  "y": 0.32505,
+                  "z": 0
+                },
+                "verticalAngle": 0,
+                "horizontalAngle": 0,
+                "flowType": "velocity",
+                "flowIntensity": "0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "wall_0F_10",
+          "start": {
+            "x": 29.159,
+            "y": 109.384
+          },
+          "end": {
+            "x": 29.571,
+            "y": 109.915
+          },
+          "temp": 28,
+          "material": "default",
+          "emissivity": 0.9,
+          "airEntries": []
+        },
+        {
+          "id": "wall_0F_11",
+          "start": {
+            "x": 29.571,
+            "y": 109.915
+          },
+          "end": {
+            "x": 37.588,
+            "y": 131.967
+          },
+          "temp": 28,
+          "material": "default",
+          "emissivity": 0.9,
+          "airEntries": [
+            {
+              "id": "Vent 0F-21",
+              "type": "vent",
+              "position": {
+                "x": 35.916,
+                "y": 127.37,
+                "z": 4.9,
+                "normal": {
+                  "x": 0.93982,
+                  "y": 0.34167,
+                  "z": 0
+                }
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "dimensions": {
+                "width": 3.52,
+                "height": 3.95,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 26,
+                "airDirection": "equilibrium",
+                "flowDirection": {
+                  "x": -0.93982,
+                  "y": 0.34167,
+                  "z": 0
+                },
+                "verticalAngle": 0,
+                "horizontalAngle": 0,
+                "flowType": "velocity",
+                "flowIntensity": "0"
+              }
+            },
+            {
+              "id": "Vent 0F-22",
+              "type": "vent",
+              "position": {
+                "x": 32.573,
+                "y": 118.175,
+                "z": 4.9,
+                "normal": {
+                  "x": 0.93982,
+                  "y": 0.34167,
+                  "z": 0
+                }
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "dimensions": {
+                "width": 3.52,
+                "height": 3.95,
+                "shape": "rectangular"
+              },
+              "simulation": {
+                "state": "open",
+                "temperature": 26,
+                "airDirection": "equilibrium",
+                "flowDirection": {
+                  "x": -0.93982,
+                  "y": 0.34167,
+                  "z": 0
+                },
+                "verticalAngle": 0,
+                "horizontalAngle": 0,
+                "flowType": "velocity",
+                "flowIntensity": "0"
+              }
+            }
+          ]
+        },
+        {
+          "id": "wall_0F_12",
+          "start": {
+            "x": 37.588,
+            "y": 131.967
+          },
+          "end": {
+            "x": 38.077,
+            "y": 132.208
+          },
+          "temp": 28,
+          "material": "default",
+          "emissivity": 0.9,
+          "airEntries": []
+        },
+        {
+          "id": "wall_0F_13",
+          "start": {
+            "x": 38.077,
+            "y": 132.208
+          },
+          "end": {
+            "x": 73.94,
+            "y": 122.514
+          },
+          "temp": 28,
+          "material": "default",
+          "emissivity": 0.9,
+          "airEntries": []
+        }
+      ],
+      "stairs": [],
+      "furniture": []
+    }
+  },
+  "solverType": "SteadySim"
+}
