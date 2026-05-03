@@ -29,9 +29,7 @@ boundaryCellSize $BOUNDARY_CELL_SIZE;
 $LOCAL_REFINEMENT
 
 
-/*
 $BOUNDARY_LAYERS
-*/
 
 
 // Para flujo interno
@@ -47,14 +45,15 @@ renameBoundary
     defaultType wall;
 }
 
-/*
+// Mesh quality improvement: cfMesh will attempt to fix cells that violate these thresholds.
+// maxNonOrthogonality triggers vertex/edge smoothing for highly skewed cells.
+// minCellVolume targets near-zero and negative-volume cells (e.g. at polygon wall corners).
 meshQualitySettings
 {
     maxNonOrthogonality 65;
     maxBoundarySkewness 20;
     maxInternalSkewness 4;
-    minCellVolume 1e-13;
-    minFaceArea 1e-13;
+    minCellVolume       1e-8;   // catches cells with V < 1e-8 m³ (incl. negative volumes)
+    minFaceArea         1e-13;
 }
-*/
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

@@ -6,4 +6,7 @@ vite.config.ts.*
 *.tar.gz
 attached_assets/
 cases/
-.tmp_inductiva/
+.tmp_inductiva/PYTHON_STEPS/mainPipeline.py
+PYTHON_STEPS/pipeline_exceptions.py
+PYTHON_STEPS/JSON_EX/
+PYTHON_STEPS/MAINPIPELINE_USAGE.md

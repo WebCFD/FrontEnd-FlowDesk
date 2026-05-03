@@ -26,22 +26,72 @@ def create_surfaceFeatureExtractDict(template_path, sim_path, stl_filename):
 
 def calculate_adaptive_cell_size(geo_mesh):
     """
-    Calculate base cell size for cfMesh.
-    Using FIXED cell size of 0.1m for uniform mesh throughout the domain.
-    This ensures consistent mesh quality and predictable cell count.
+    Calculate base cell size for cfMesh using volume-based adaptive scaling.
+
+    Algorithm:
+      base_cell_size = REF_CELL * (volume / REF_VOLUME)^(1/3)
+
+    The cube-root scaling keeps the BULK cell count approximately constant
+    across all room sizes: N_cells = V / cell³ = V / (C·V^(1/3))³ = const.
+    The extra computational cost for large rooms comes exclusively from the
+    fixed-size local refinement zones (vents, doors, furniture) — exactly
+    where the physics demands it.
+
+    Reference calibration:
+      REF_VOLUME = 200 m³  (≈ 5×13×3 m typical office)
+      REF_CELL   = 0.10 m  → ~300k bulk cells for that reference
+
+    Limits:
+      - Minimum: 0.10 m    (never go below reference quality)
+      - Maximum: height/10  (at least 10 cells vertically — physical floor)
+
+    Coarsening scale factor (smooth transition via _coarsening_alpha):
+      - Small rooms  (V ≤ 1500 m³): ×1.00  (original quality)
+      - Large rooms  (V ≥ 5000 m³): ×1.20  (20% coarser bulk for speed)
+      - In between: linear interpolation
     """
     bounds = geo_mesh.bounds
     x_range = bounds[1] - bounds[0]
     y_range = bounds[3] - bounds[2]
     z_range = bounds[5] - bounds[4]
-    max_dim = max(x_range, y_range, z_range)
-    
-    # Fixed cell size: 0.1m for uniform mesh
-    base_cell_size = 0.1
-    logger.info(f"    * Geometry bounds: X={x_range:.2f}m, Y={y_range:.2f}m, Z={z_range:.2f}m")
-    logger.info(f"    * Using FIXED cell size: {base_cell_size:.4f}m (uniform mesh)")
-    logger.info(f"    * Expected cells in domain: ~{(x_range/base_cell_size) * (y_range/base_cell_size) * (z_range/base_cell_size):.0f}")
-    
+    volume  = x_range * y_range * z_range
+
+    # --- Calibration constants ---
+    REF_VOLUME = 200.0   # m³  — reference room
+    REF_CELL   = 0.10    # m   — cell size at reference volume
+
+    # --- Smooth scale factor: 1.0 (small) → 1.20 (large) ---
+    alpha        = _coarsening_alpha(volume)
+    scale_factor = 1.0 + 0.20 * alpha
+
+    # --- Continuous cube-root formula with smooth scale ---
+    volume_ratio  = volume / REF_VOLUME
+    raw_cell_size = REF_CELL * (volume_ratio ** (1.0 / 3.0)) * scale_factor
+
+    # --- Physical limits ---
+    min_cell_size = REF_CELL            # never coarser than reference
+    max_cell_size = z_range / 10.0      # at least 10 cells across height
+
+    base_cell_size = max(min_cell_size, min(raw_cell_size, max_cell_size))
+
+    # --- Room size category for human-readable logging ---
+    if volume <= 500:
+        category = "SMALL   (≤500 m³)"
+    elif volume <= 3_000:
+        category = "MEDIUM  (500–3k m³)"
+    elif volume <= 20_000:
+        category = "LARGE   (3k–20k m³)"
+    else:
+        category = "MEGA    (>20k m³)"
+
+    logger.info(f"    * Geometry bounds : X={x_range:.2f}m  Y={y_range:.2f}m  Z={z_range:.2f}m")
+    logger.info(f"    * Volume          : {volume:.1f} m³  →  category: {category}")
+    logger.info(f"    * Coarsening alpha: {alpha:.3f}  (scale={scale_factor:.3f})")
+    logger.info(f"    * Raw cell size   : {raw_cell_size:.4f}m  (before limits)")
+    logger.info(f"    * Limits applied  : min={min_cell_size:.3f}m  max(H/10)={max_cell_size:.3f}m")
+    logger.info(f"    * Adaptive base cell size : {base_cell_size:.4f}m")
+    logger.info(f"    * Est. bulk cells (bbox)  : ~{volume / base_cell_size**3:.0f}")
+
     return base_cell_size
 
 
@@ -54,191 +104,375 @@ def validate_geometry(geo_mesh, geo_df):
     logger.info(f"✓ Geometry validation passed: {geo_mesh.n_cells} cells, {len(geo_df)} boundary conditions")
 
 
-def generate_local_refinement_block(geo_df, base_cell_size):
-    """Generate localRefinement block for critical patches (window/vent/door) and furniture objects."""
+# =============================================================================
+# ABSOLUTE local-refinement sizes — physically calibrated, independent of
+# room dimensions.  These ensure adequate resolution of jets, boundary layers
+# and furniture geometry no matter how large the room is.
+# cfMesh transitions automatically between these fine zones and the coarse
+# bulk via its octree refinement.
+# =============================================================================
+_ABS = {
+    # (cellSize [m], refinementThickness [m])
+    # Values match the original relative formula evaluated at base_cell_size = 0.1 m
+    # (the reference cell size for small rooms).  They are now frozen as absolute
+    # constants so that feature resolution does NOT degrade as the room grows.
+    "vent":    (0.025,   0.050),  # base/4,  base/2   — ~72 cells across 1.8 m vent
+    "window":  (0.025,   0.050),  # base/4,  base/2
+    "door":    (0.025,   0.050),  # base/4,  base/2
+    "person":  (0.00625, 0.0125), # base/16, base/8   — fine body boundary layer
+    "block":   (0.025,   0.100),  # base/4,  base
+    "table":   (0.0125,  0.100),  # base/8,  base
+    "chair":   (0.005,   0.0125), # base/20, base/8   — finest geometry
+    "stairs":  (0.025,   0.400),  # base/4,  4×base
+    "other":   (0.0125,  0.00625),# base/8,  base/16
+}
+
+# =============================================================================
+# SMOOTH COARSENING TRANSITION
+# For small/medium rooms the mesh behaves as the original (fine boundary,
+# no extra scale).  For large rooms the bulk and boundary coarsen smoothly.
+#
+#   V < V_START  → alpha = 0  →  scale=1.00, boundary_ratio=0.50 (original)
+#   V > V_END    → alpha = 1  →  scale=1.20, boundary_ratio=0.67 (coarser)
+#   in between   → linear interpolation
+# =============================================================================
+_TRANSITION_V_START = 1500.0   # m³ — transition starts here
+_TRANSITION_V_END   = 5000.0   # m³ — fully in large-room regime above this
+
+
+def _coarsening_alpha(volume):
+    """Return 0 for small rooms, 1 for large rooms, interpolated in between."""
+    raw = (volume - _TRANSITION_V_START) / (_TRANSITION_V_END - _TRANSITION_V_START)
+    return max(0.0, min(1.0, raw))
+
+
+# Target number of cells per vent/door/window face.
+# sqrt(area / N_CELLS_PER_PATCH) gives the cell size that places ~N cells
+# on the face, which equals ~sqrt(N) cells across each linear dimension.
+# N=400 → ~20 cells across a 1.8m vent (90mm cells) or a 3.52m vent (180mm).
+_N_CELLS_PER_PATCH = 400
+
+# Maximum allowed octree level gap between local refinement and the bulk.
+# Keeping this ≤ 4 prevents exponential cell counts in large rooms where
+# the bulk cell (~1m) and the vent cell (~0.025m) would otherwise span
+# 5+ octree levels, creating tens of millions of transition cells.
+# For small rooms the abs limit (_ABS) is finer → this cap has no effect.
+_MAX_LEVELS_FROM_BULK = 4
+
+
+def _apply_level_cap(cell_size, thickness, base_cell_size):
+    """
+    Enforce a maximum octree level gap between local and bulk cell sizes.
+
+    min_from_bulk = base_cell_size / 2^_MAX_LEVELS_FROM_BULK
+    cell_size     = max(abs_cell_size, min_from_bulk)
+    thickness     = max(abs_thickness, 2 × cell_size)   [always ≥ 2 cells thick]
+
+    Examples (MAX_LEVELS=4):
+      bulk=0.10m (small room) → min=0.0063m < 0.025m abs → unchanged ✓
+      bulk=1.00m (Promart)    → min=0.0625m > 0.025m abs → cap=0.0625m
+    """
+    min_from_bulk     = base_cell_size / (2 ** _MAX_LEVELS_FROM_BULK)
+    capped_cell_size  = max(cell_size, min_from_bulk)
+    capped_thickness  = max(thickness, 2.0 * capped_cell_size)
+    return capped_cell_size, capped_thickness
+
+
+def _area_cell_size(patch_id, abs_floor, abs_thickness, base_cell_size, area_map):
+    """
+    Compute area-adaptive cell size for a single patch.
+
+    Formula:  cell_size = max(abs_floor, sqrt(patch_area / N_CELLS_PER_PATCH))
+
+    The area formula ensures ~sqrt(N_CELLS_PER_PATCH) cells across each
+    linear dimension of the patch, regardless of its physical size.
+    - N=400 → ~20 cells across a 1.8m vent (90mm cells) and
+               ~20 cells across a 3.52m vent (180mm cells).
+
+    Constraints applied in order:
+      1. abs_floor   — never finer than the physical minimum (e.g. 25mm for vents)
+      2. max → bulk  — never coarser than the bulk (must still refine!)
+      3. _apply_level_cap — raises to bulk/2^MAX_LEVELS if area formula is too fine
+
+    Returns (cell_size, thickness).
+    """
+    if area_map and patch_id in area_map:
+        area          = area_map[patch_id]
+        area_cs       = np.sqrt(area / _N_CELLS_PER_PATCH)
+        cell_size     = max(abs_floor, area_cs)          # 1. physical floor
+        cell_size     = min(cell_size, base_cell_size * 0.95)  # 2. always finer than bulk
+    else:
+        cell_size = abs_floor
+
+    cell_size, thickness = _apply_level_cap(cell_size, abs_thickness, base_cell_size)
+    return cell_size, thickness
+
+
+def generate_local_refinement_block(geo_df, base_cell_size, area_map=None):
+    """
+    Generate localRefinement block for critical patches and furniture.
+
+    Cell sizes are computed per-patch using the area-adaptive formula
+    (see _area_cell_size) when area_map is provided, or fall back to the
+    absolute calibration in _ABS otherwise.  In both cases the level cap
+    ensures no more than _MAX_LEVELS_FROM_BULK octree levels from the bulk,
+    preventing OOM kills in large rooms.
+
+    area_map  : dict {patch_id → surface_area_m2}, computed from geo_mesh_dict
+                in prepare_cfmesh().  If None, uses absolute _ABS sizes.
+    """
     blocks = []
-    
-    # 1. Critical patches (window/vent/door): cellSize = base/2
-    critical_patterns = ['window', 'vent', 'door']
-    refinement_cell_size = base_cell_size / 2.0  # 0.025m for base 0.1m
-    refinement_thickness = base_cell_size / 2.0  # 0.05m for base 0.1m
-    
+
+    # ------------------------------------------------------------------
+    # 1. Critical surface patches: vent / window / door
+    # ------------------------------------------------------------------
+    # cfMesh regex matching is case-sensitive; detect actual capitalisation
+    # from geo_df so the meshDict wildcard always matches the STL patch names.
+    import re as _re
+    critical_patterns = ["vent", "window", "door"]
+
     for pattern in critical_patterns:
-        # Check if any patch matches this pattern
-        matching_patches = geo_df[geo_df['id'].str.contains(pattern, case=False, na=False)]
-        if len(matching_patches) > 0:
-            logger.info(f"    * {pattern}.* patches: localRefinement cellSize={refinement_cell_size:.4f}m, thickness={refinement_thickness:.2f}m")
-            blocks.append(f"""    "{pattern}.*"
-    {{
-        cellSize {refinement_cell_size:.6f};
-        refinementThickness {refinement_thickness:.6f};
-    }}""")
-    
-    # 2. Furniture objects (object_*): Add to localRefinement with TYPE-SPECIFIC parameters
-    # cfMesh does NOT support wildcards, must list each patch explicitly
-    object_patches = geo_df[geo_df['id'].str.startswith('object_', na=False)]
+        all_matching = geo_df[geo_df["id"].str.contains(pattern, case=False, na=False)]
+        if len(all_matching) == 0:
+            continue
+
+        # --- Exclude CLOSED vents (type="wall") from flow refinement ---
+        # Closed vents are solid walls that require no flow resolution.
+        # MORE IMPORTANTLY: closed ceiling/floor vents sit co-planar with their
+        # parent surface (same Z coordinate). cfMesh's proximity refinement detects
+        # two surfaces at the same location and over-refines to minCellSize,
+        # creating 1mm cells on a 0.5×0.5m vent → 212k faces per vent → OOM.
+        open_matching  = all_matching[all_matching["type"] != "wall"]
+        closed_patches = all_matching[all_matching["type"] == "wall"]
+
+        if len(closed_patches) > 0:
+            logger.info(
+                f"    * {pattern}: excluding {len(closed_patches)} CLOSED (wall) patches "
+                f"from localRefinement → {[str(p) for p in closed_patches['id'].tolist()]}"
+            )
+
+        if len(open_matching) == 0:
+            continue
+
+        abs_floor, abs_thickness = _ABS[pattern]
+
+        # When area_map is available, each patch gets its own size →
+        # always use EXPLICIT names (no wildcard), regardless of closed/open mix.
+        use_explicit = (area_map is not None) or (len(closed_patches) > 0)
+
+        if use_explicit:
+            log_mode = "AREA-ADAPTIVE per patch" if area_map else "EXPLICIT names — closed vents excluded"
+            logger.info(
+                f"    * {pattern} ({len(open_matching)} open patches)  [{log_mode}]"
+            )
+            for pid in open_matching["id"]:
+                cs, th = _area_cell_size(
+                    str(pid), abs_floor, abs_thickness, base_cell_size, area_map
+                )
+                if cs >= base_cell_size:
+                    logger.info(f"      → {pid}: skipped (cs={cs:.4f}m ≥ bulk={base_cell_size:.4f}m)")
+                    continue
+                area_info = ""
+                if area_map and str(pid) in area_map:
+                    area_info = f"  area={area_map[str(pid)]:.3f}m²"
+                logger.info(f"      → {pid}: cellSize={cs:.4f}m  thickness={th:.4f}m{area_info}")
+                blocks.append(
+                    f"    {pid}\n"
+                    f"    {{\n"
+                    f"        cellSize {cs:.6f};\n"
+                    f"        refinementThickness {th:.6f};\n"
+                    f"    }}"
+                )
+        else:
+            # All vents are open, no area_map → safe to use wildcard
+            cs, th = _apply_level_cap(abs_floor, abs_thickness, base_cell_size)
+            if cs >= base_cell_size:
+                logger.info(f"    * {pattern}.* : skipped (cs={cs:.4f}m ≥ bulk)")
+                continue
+            first_id = str(open_matching.iloc[0]["id"])
+            m = _re.match(r'^([A-Za-z]+)', first_id)
+            actual_prefix = m.group(1) if m else pattern
+            cfmesh_pattern = f"{actual_prefix}.*"
+            logger.info(
+                f"    * {cfmesh_pattern} ({len(open_matching)} patches) : "
+                f"cellSize={cs:.4f}m  thickness={th:.4f}m  [wildcard]"
+            )
+            blocks.append(
+                f'    "{cfmesh_pattern}"\n'
+                f"    {{\n"
+                f"        cellSize {cs:.6f};\n"
+                f"        refinementThickness {th:.6f};\n"
+                f"    }}"
+            )
+
+    # ------------------------------------------------------------------
+    # 2. Furniture / objects  (explicit names — cfMesh has no wildcards)
+    # ------------------------------------------------------------------
+    object_patches = geo_df[geo_df["id"].str.startswith("object_", na=False)]
     if len(object_patches) > 0:
-        logger.info(f"    * 3D Objects: {len(object_patches)} patches found")
-        logger.info(f"      → Applying differentiated refinement by object type:")
-        
-        # Group objects by type for organized logging
-        obj_types = {'person': [], 'block': [], 'table': [], 'chair': [], 'stairs': [], 'other': []}
-        
-        for patch_id in object_patches['id']:
-            patch_lower = patch_id.lower()
-            if 'person' in patch_lower:
-                obj_types['person'].append(patch_id)
-            elif 'block' in patch_lower:
-                obj_types['block'].append(patch_id)
-            elif 'mesa' in patch_lower or 'table' in patch_lower:
-                obj_types['table'].append(patch_id)
-            elif 'silla' in patch_lower or 'chair' in patch_lower:
-                obj_types['chair'].append(patch_id)
-            elif 'stair' in patch_lower:
-                obj_types['stairs'].append(patch_id)
+        logger.info(f"    * 3D Objects: {len(object_patches)} patches — absolute refinement sizes")
+
+        obj_types = {
+            "person": [], "block": [], "table": [],
+            "chair": [], "stairs": [], "other": [],
+        }
+        for patch_id in object_patches["id"]:
+            pl = patch_id.lower()
+            if "person" in pl:
+                obj_types["person"].append(patch_id)
+            elif "block" in pl:
+                obj_types["block"].append(patch_id)
+            elif "mesa" in pl or "table" in pl:
+                obj_types["table"].append(patch_id)
+            elif "silla" in pl or "chair" in pl:
+                obj_types["chair"].append(patch_id)
+            elif "stair" in pl:
+                obj_types["stairs"].append(patch_id)
             else:
-                obj_types['other'].append(patch_id)
-        
-        # Log and create blocks for each type
-        if obj_types['person']:
-            cell_size, thickness = base_cell_size / 16.0, base_cell_size / 8.0
-            logger.info(f"      → Person ({len(obj_types['person'])}): cellSize={cell_size:.4f}m (base/8), thickness={thickness:.4f}m")
-            for patch_id in obj_types['person']:
+                obj_types["other"].append(patch_id)
+
+        for obj_type, patch_ids in obj_types.items():
+            if not patch_ids:
+                continue
+            cell_size, thickness = _ABS[obj_type]
+
+            if cell_size >= base_cell_size:
+                logger.info(
+                    f"      → {obj_type} ({len(patch_ids)}): skipped "
+                    f"(abs {cell_size}m ≥ base {base_cell_size:.4f}m)"
+                )
+                continue
+
+            logger.info(
+                f"      → {obj_type} ({len(patch_ids)}): "
+                f"cellSize={cell_size}m (ABS)  thickness={thickness}m"
+            )
+            for patch_id in patch_ids:
                 logger.info(f"          - {patch_id}")
-                blocks.append(f"""    {patch_id}
-    {{
-        cellSize {cell_size:.6f};
-        refinementThickness {thickness:.6f};
-    }}""")
-        
-        if obj_types['block']:
-            cell_size, thickness = base_cell_size / 4.0, base_cell_size
-            logger.info(f"      → Block ({len(obj_types['block'])}): cellSize={cell_size:.4f}m (base/2), thickness={thickness:.4f}m")
-            for patch_id in obj_types['block']:
-                logger.info(f"          - {patch_id}")
-                blocks.append(f"""    {patch_id}
-    {{
-        cellSize {cell_size:.6f};
-        refinementThickness {thickness:.6f};
-    }}""")
-        
-        if obj_types['table']:
-            cell_size, thickness = base_cell_size / 8.0, base_cell_size
-            logger.info(f"      → Mesa/Table ({len(obj_types['table'])}): cellSize={cell_size:.4f}m (base/2), thickness={thickness:.4f}m")
-            for patch_id in obj_types['table']:
-                logger.info(f"          - {patch_id}")
-                blocks.append(f"""    {patch_id}
-    {{
-        cellSize {cell_size:.6f};
-        refinementThickness {thickness:.6f};
-    }}""")
-        
-        if obj_types['chair']:
-            cell_size, thickness = base_cell_size / 20.0, base_cell_size / 8.0
-            logger.info(f"      → Silla/Chair ({len(obj_types['chair'])}): cellSize={cell_size:.4f}m (base/2), thickness={thickness:.4f}m")
-            for patch_id in obj_types['chair']:
-                logger.info(f"          - {patch_id}")
-                blocks.append(f"""    {patch_id}
-    {{
-        cellSize {cell_size:.6f};
-        refinementThickness {thickness:.6f};
-    }}""")
-        
-        if obj_types['stairs']:
-            cell_size, thickness = base_cell_size / 4.0, 4.0 * base_cell_size
-            logger.info(f"      → Stairs ({len(obj_types['stairs'])}): cellSize={cell_size:.4f}m (base/2), thickness={thickness:.4f}m")
-            for patch_id in obj_types['stairs']:
-                logger.info(f"          - {patch_id}")
-                blocks.append(f"""    {patch_id}
-    {{
-        cellSize {cell_size:.6f};
-        refinementThickness {thickness:.6f};
-    }}""")
-        
-        if obj_types['other']:
-            cell_size, thickness = base_cell_size / 8.0, base_cell_size / 16.0
-            logger.info(f"      → Other objects ({len(obj_types['other'])}): cellSize={cell_size:.4f}m (base/4), thickness={thickness:.4f}m")
-            for patch_id in obj_types['other']:
-                logger.info(f"          - {patch_id}")
-                blocks.append(f"""    {patch_id}
-    {{
-        cellSize {cell_size:.6f};
-        refinementThickness {thickness:.6f};
-    }}""")
-    
+                blocks.append(
+                    f"    {patch_id}\n"
+                    f"    {{\n"
+                    f"        cellSize {cell_size:.6f};\n"
+                    f"        refinementThickness {thickness:.6f};\n"
+                    f"    }}"
+                )
+
     if blocks:
-        return "// Refinamiento LOCAL en BCs críticos y objetos 3D\nlocalRefinement\n{\n" + "\n    \n".join(blocks) + "\n}"
+        return (
+            "// Refinamiento LOCAL — tamaños ABSOLUTOS, independientes del tamaño de la sala\n"
+            "localRefinement\n{\n"
+            + "\n    \n".join(blocks)
+            + "\n}"
+        )
     else:
         return "// No critical patches or furniture objects found for localRefinement"
 
 
 def generate_boundary_layers_block(geo_df, base_cell_size):
-    """Generate boundaryLayers block with global settings and critical patch overrides."""
-    base_n_layers = 0
-    base_thickness_ratio = 1
-    base_first_layer = base_cell_size * 0.4  # 0.02m for base 0.1m
-    
-    critical_patterns = ['window', 'vent', 'door']
-    critical_n_layers = 0
-    
-    # Build patchBoundaryLayers for critical patches
-    patch_blocks = []
-    for pattern in critical_patterns:
-        matching_patches = geo_df[geo_df['id'].str.contains(pattern, case=False, na=False)]
-        if len(matching_patches) > 0:
-            logger.info(f"    * {pattern}.* patches: {critical_n_layers} boundary layers (critical)")
-            patch_blocks.append(f"""        "{pattern}.*"
-        {{
-            nLayers {critical_n_layers};
-            allowDiscontinuity 1;
-        }}""")
-    
-    # Build full boundaryLayers block
-    result = f"""// Boundary layers - celdas prismáticas en BCs
+    """
+    Generate boundaryLayers block with adaptive first-layer thickness.
+
+    maxFirstLayerThickness is scaled with the bulk cell size to avoid triggering
+    cfMesh's automatic boundary-layer subdivision.  For large rooms, a 5mm first
+    layer next to a 0.67m bulk cell creates a 134:1 aspect-ratio prism; cfMesh
+    auto-splits those prisms, multiplying BL cell count by 2–4× and causing OOM.
+
+    Formula: firstLayer = max(0.005, base_cell_size / 20)
+      Small room  (bulk=0.10m): max(0.005, 0.005) = 0.005m  (original, unchanged)
+      Promart     (bulk=1.00m): max(0.005, 0.050) = 0.050m  (50mm, no auto-split)
+    """
+    n_layers        = 3
+    thickness_ratio = 1.2
+    first_layer     = max(0.005, base_cell_size / 20.0)   # adaptive, floor at 5mm
+
+    result = f"""// Boundary layers — adaptive firstLayerThickness (bulk/20, min 5mm)
+// Prevents cfMesh auto-subdivision of extreme-aspect-ratio prism cells in large rooms.
 boundaryLayers
 {{
-    nLayers {base_n_layers};
-    thicknessRatio {base_thickness_ratio};
-    maxFirstLayerThickness {base_first_layer:.6f};"""
-    
-    if patch_blocks:
-        result += "\n    \n    patchBoundaryLayers\n    {\n" + "\n        \n".join(patch_blocks) + "\n    }"
-    
-    result += "\n}"
-    
-    logger.info(f"    * Global boundary layers: {base_n_layers} layers, ratio={base_thickness_ratio}, firstLayer={base_first_layer:.4f}m")
-    
+    nLayers {n_layers};
+    thicknessRatio {thickness_ratio};
+    maxFirstLayerThickness {first_layer:.6f};
+}}"""
+
+    logger.info(
+        f"    * Boundary layers: {n_layers} layers, ratio={thickness_ratio}, "
+        f"firstLayer={first_layer*1000:.1f}mm  (bulk/20 = {base_cell_size/20:.4f}m)"
+    )
     return result
 
 
-def create_meshDict(template_path, sim_path, stl_filename, geo_mesh, geo_df):
-    """Create meshDict for cfMesh cartesianMesh with optimized settings."""
-    input_path = os.path.join(template_path, "system", "meshDict") 
-    output_path = os.path.join(sim_path, "system", "meshDict") 
+def create_meshDict(template_path, sim_path, stl_filename, geo_mesh, geo_df,
+                    area_map=None):
+    """
+    Create meshDict for cfMesh cartesianMesh with adaptive cell sizes.
+
+    Cell size strategy
+    ------------------
+    maxCellSize     : adaptive bulk — cube-root of volume, with smooth scale ×1.0→×1.20
+    boundaryCellSize: smooth transition:
+                        small rooms  → base × 0.50  (original: base/2)
+                        large rooms  → base × 0.67  (coarser for speed)
+                        in between   → linear interpolation via _coarsening_alpha
+    minCellSize     : adaptive — max(0.005, bulk/16), bounds octree depth
+    localRefinement : area-adaptive per-patch sizes (see _area_cell_size, _ABS)
+    area_map        : {patch_name → surface_area_m2} from geo_mesh_dict
+    """
+    input_path = os.path.join(template_path, "system", "meshDict")
+    output_path = os.path.join(sim_path, "system", "meshDict")
     validate_geometry(geo_mesh, geo_df)
-    
-    # Calculate cell sizes
+
+    # --- Adaptive bulk cell size (volume-based, includes smooth scale factor) ---
     base_cell_size = calculate_adaptive_cell_size(geo_mesh)
 
-    boundary_cell_size = base_cell_size / 2.0  # 0.05m for base 0.1m
-    min_cell_size = base_cell_size / 2.0     # 0.0125m for base 0.1m
-    
-    # Generate dynamic blocks
-    local_refinement = generate_local_refinement_block(geo_df, base_cell_size)
-    boundary_layers = generate_boundary_layers_block(geo_df, base_cell_size)
-    
-    # Generate filenames
+    # --- Smooth boundary ratio: 0.50 (small rooms) → 0.67 (large rooms) ---
+    bounds = geo_mesh.bounds
+    volume = (bounds[1]-bounds[0]) * (bounds[3]-bounds[2]) * (bounds[5]-bounds[4])
+    alpha             = _coarsening_alpha(volume)
+    boundary_ratio    = 0.50 + 0.17 * alpha          # 0.50 → 0.67
+    boundary_cell_size = max(base_cell_size * boundary_ratio, 0.10)
+
+    # --- Global minimum: adaptive — never more than _MAX_LEVELS_FROM_BULK below bulk ---
+    abs_min_cell_size     = 0.005
+    capped_min_cell_size  = base_cell_size / (2 ** _MAX_LEVELS_FROM_BULK)
+    min_cell_size         = max(abs_min_cell_size, capped_min_cell_size)
+
+    # Also cap minCellSize to the smallest actual localRefinement cellSize so
+    # cfMesh doesn't build octree levels no patch actually needs.
+    if area_map:
+        finest_patch_size = min_cell_size   # will tighten in generate_local_refinement_block
+        # Approximate: sqrt(min_area / N_CELLS), floored at abs minimum
+        open_mask = geo_df["type"] != "wall"
+        open_areas = [area_map[pid] for pid in geo_df[open_mask]["id"] if pid in area_map]
+        if open_areas:
+            min_open_area = min(open_areas)
+            area_cs       = np.sqrt(min_open_area / _N_CELLS_PER_PATCH)
+            finest_patch_size = max(0.005, min(area_cs, base_cell_size * 0.95))
+            finest_patch_size, _ = _apply_level_cap(finest_patch_size, 0.0, base_cell_size)
+        min_cell_size = min(min_cell_size, finest_patch_size)
+        min_cell_size = max(min_cell_size, 0.005)
+
+    # --- Generate dynamic blocks ---
+    local_refinement = generate_local_refinement_block(geo_df, base_cell_size, area_map)
+    boundary_layers  = generate_boundary_layers_block(geo_df, base_cell_size)
+
+    # --- FMS filename ---
     fms_filename = stl_filename.replace(".stl", ".fms")
-    
-    str_replace_dict = dict()
-    str_replace_dict["$FMS_FILENAME"] = fms_filename
-    str_replace_dict["$MAX_CELL_SIZE"] = f"{base_cell_size:.6f}"
-    str_replace_dict["$BOUNDARY_CELL_SIZE"] = f"{boundary_cell_size:.6f}"
-    str_replace_dict["$MIN_CELL_SIZE"] = f"{min_cell_size:.6f}"
-    str_replace_dict["$LOCAL_REFINEMENT"] = local_refinement
-    str_replace_dict["$BOUNDARY_LAYERS"] = boundary_layers
-    
-    logger.info(f"    * Cell sizes: max={base_cell_size:.4f}m, boundary={boundary_cell_size:.4f}m, min={min_cell_size:.4f}m")
+
+    str_replace_dict = {
+        "$FMS_FILENAME":       fms_filename,
+        "$MAX_CELL_SIZE":      f"{base_cell_size:.6f}",
+        "$BOUNDARY_CELL_SIZE": f"{boundary_cell_size:.6f}",
+        "$MIN_CELL_SIZE":      f"{min_cell_size:.6f}",
+        "$LOCAL_REFINEMENT":   local_refinement,
+        "$BOUNDARY_LAYERS":    boundary_layers,
+    }
+
+    logger.info(
+        f"    * meshDict cell sizes → "
+        f"max(bulk)={base_cell_size:.4f}m  "
+        f"boundary={boundary_cell_size:.4f}m  "
+        f"min(abs)={min_cell_size}m"
+    )
     replace_in_file(input_path, output_path, str_replace_dict)
 
 
@@ -369,13 +603,30 @@ def prepare_cfmesh(geo_mesh, sim_path, geo_df, fms_filename="geometry.fms"):
     
     logger.info(f"    * Exporting geometry to STL format: {fms_filename}")
     stl_filename = export_to_fms(geo_mesh_dict, sim_path, fms_filename)
-    
+
+    # ------------------------------------------------------------------
+    # Compute patch surface areas from the actual geometry (before export).
+    # area_map {patch_name → m²} is used by create_meshDict to size each
+    # vent/door/window cell proportionally to its physical face area.
+    # extract_surface() handles both PolyData and UnstructuredGrid inputs.
+    # ------------------------------------------------------------------
+    logger.info("    * Computing patch surface areas for adaptive localRefinement")
+    area_map = {}
+    for patch_name, pmesh in geo_mesh_dict.items():
+        try:
+            surf = pmesh.extract_surface() if hasattr(pmesh, "extract_surface") else pmesh
+            area_map[patch_name] = float(surf.area)
+        except Exception as exc:
+            logger.warning(f"      ⚠ Could not compute area for '{patch_name}': {exc}")
+    logger.info(f"      → {len(area_map)} patch areas computed "
+                f"(total = {sum(area_map.values()):.1f} m²)")
+
     # Use PROJECT_ROOT for robust path resolution (independent of execution directory)
     template_path = str(PROJECT_ROOT / "data" / "settings" / "mesh" / "cfmesh")
     logger.info(f"    * Creating cfMesh configuration files from template: {template_path}")
-    
+
     logger.info("    * Creating meshDict with optimized settings")
-    create_meshDict(template_path, sim_path, stl_filename, geo_mesh, geo_df)
+    create_meshDict(template_path, sim_path, stl_filename, geo_mesh, geo_df, area_map=area_map)
     
     expected_patches = geo_df["id"].tolist()
     expected_patches_str = ", ".join(expected_patches)

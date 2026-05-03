@@ -10,12 +10,12 @@ application       buoyantBoussinesqSimpleFoam;
 startFrom         latestTime;
 startTime         0;
 stopAt            endTime;
-endTime           30;
+endTime           1000;
 deltaT            1;
 writeControl      timeStep;    // Write by iteration number
-writeInterval     30;           // Write at final iteration
+writeInterval     5;            // Write every 5 iterations (diagnostic snapshots at 25, 35, 45...)
 adjustTimeStep    no;
-purgeWrite        5;            // Keep only 5 most recent timesteps (SPOT restart safe)
+purgeWrite        3;            // Keep only 3 most recent timesteps (SPOT restart safe)
 writeFormat       ascii;
 writePrecision    6;
 writeCompression  off;
