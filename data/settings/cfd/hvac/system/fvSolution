@@ -116,7 +116,7 @@ solvers
 
 SIMPLE
 {
-    nNonOrthogonalCorrectors 6;  // Increased to 6 for maximum pressure-velocity coupling
+    nNonOrthogonalCorrectors 3;
     consistent          yes;
     pRefCell            0;
     pRefValue           0;  // Gauge pressure reference (p = p_rgh + g·h)
