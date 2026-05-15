@@ -575,7 +575,8 @@ export function generateSimulationData(
           if (entry.type === "window" || entry.type === "door") {
             const defaultMaterial = entry.type === "window" ? "glass" : "wood";
             const defaultEmissivity = entry.type === "window" ? 0.92 : 0.90;
-            const airOrientation = (entryProps?.airOrientation as "inflow" | "outflow" | "equilibrium" | "closed") || "equilibrium";
+            const rawAirOrientation = (entryProps?.airOrientation as "inflow" | "outflow" | "equilibrium" | "closed") || "inflow";
+            const airOrientation = rawAirOrientation === "equilibrium" ? "closed" : rawAirOrientation;
             
             if (airOrientation === "closed") {
               airEntryBase.simulation = {
@@ -588,14 +589,14 @@ export function generateSimulationData(
               const wdFlowDir = computeWallFlowDirection(inwardWallNormal, 0, 0, 0, airOrientation);
               airEntryBase.simulation = {
                 state: "open",
-                airDirection: airOrientation as "inflow" | "outflow" | "equilibrium",
+                airDirection: airOrientation as "inflow" | "outflow",
                 flowDirection: wdFlowDir,
                 verticalAngle: 0,
                 horizontalAngle: 0,
-                flowIntensity: airOrientation === "equilibrium" ? ("0" as any) : (entryProps?.flowIntensity || "low"),
+                flowIntensity: entryProps?.flowIntensity || "low",
                 temperature: entryProps?.temperature || 20
               };
-              if (airOrientation !== "equilibrium" && entryProps?.flowIntensity === "custom" && entryProps?.customIntensityValue !== undefined) {
+              if (entryProps?.flowIntensity === "custom" && entryProps?.customIntensityValue !== undefined) {
                 airEntryBase.simulation.customValue = entryProps.customIntensityValue;
               }
             }
@@ -605,7 +606,8 @@ export function generateSimulationData(
               airEntryBase.dimensions.shape = "rectangular";
             }
           } else if (entry.type === "vent") {
-            const ventAirOrientation = entryProps?.airOrientation || "closed";
+            const rawVentAirOrientation = (entryProps?.airOrientation as "inflow" | "outflow" | "equilibrium" | "closed") || "closed";
+            const ventAirOrientation = rawVentAirOrientation === "equilibrium" ? "closed" : rawVentAirOrientation;
             
             let simulation: any;
             
@@ -625,16 +627,16 @@ export function generateSimulationData(
               simulation = {
                 state: "open",
                 temperature: entryProps?.temperature || 20,
-                airDirection: ventAirOrientation as "inflow" | "outflow" | "equilibrium",
+                airDirection: ventAirOrientation as "inflow" | "outflow",
                 flowDirection: wallFlowDir,
                 verticalAngle: vθv,
                 horizontalAngle: vθh,
                 flowType: rawFlowType === "Air Mass Flow" ? "massFlow"
                   : rawFlowType === "Pressure" ? "pressure"
                   : "velocity",
-                flowIntensity: ventAirOrientation === "equilibrium" ? ("0" as any) : (entryProps?.flowIntensity || "medium")
+                flowIntensity: entryProps?.flowIntensity || "medium"
               };
-              if (ventAirOrientation !== "equilibrium" && entryProps?.flowIntensity === "custom" && entryProps?.customIntensityValue !== undefined) {
+              if (entryProps?.flowIntensity === "custom" && entryProps?.customIntensityValue !== undefined) {
                 simulation.customValue = entryProps.customIntensityValue;
               }
             }
