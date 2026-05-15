@@ -1,5 +1,6 @@
 {pkgs}: {
   deps = [
+    pkgs.nettools
     pkgs.e2fsprogs
     pkgs.krb5
     pkgs.xorg.libXi
