@@ -4206,8 +4206,9 @@ export default function WizardDesign() {
               const dimD = norm(depthDir);
               
               // Compute rotation from depth direction (Y-axis in local space)
-              // Export rotation: global depthDir = (-sinZ, cosZ), so rotZ = atan2(-depthDir.x, depthDir.y)
-              const rotZ = Math.atan2(-depthDir[0], depthDir[1]);
+              // Local depth dir (outlet - inlet) is (0,-d,0). After rotZ=θ it becomes (sinθ·d, -cosθ·d, 0).
+              // So rotZ = atan2(depthDir.x, -depthDir.y)
+              const rotZ = Math.atan2(depthDir[0], -depthDir[1]);
               // For X rotation: angle of depth dir relative to XY plane
               const depthHoriz = Math.sqrt(depthDir[0]*depthDir[0] + depthDir[1]*depthDir[1]);
               const rotX = -Math.atan2(depthDir[2], depthHoriz);
