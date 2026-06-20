@@ -1316,7 +1316,7 @@ export default function WizardDesign() {
       setAirEntries(updatedAirEntries);
 
       // Also update the floors data to keep everything in sync
-      const updatedFloors = { ...floors };
+      const updatedFloors = { ...useRoomStore.getState().floors };
       if (updatedFloors[floorName]) {
         updatedFloors[floorName] = {
           ...updatedFloors[floorName],
@@ -1334,7 +1334,7 @@ export default function WizardDesign() {
     }
 
     // For other floors, create a deep copy of the floors object
-    const updatedFloors = { ...floors };
+    const updatedFloors = { ...useRoomStore.getState().floors };
 
     // Check if the floor and its air entries exist
     if (updatedFloors[floorName]?.airEntries) {
@@ -1413,7 +1413,7 @@ export default function WizardDesign() {
     }
 
     // For other floors, create a deep copy of the floors object
-    const updatedFloors = { ...floors };
+    const updatedFloors = { ...useRoomStore.getState().floors };
 
     // Check if the floor and its air entries exist (use freshStoreEntries for up-to-date properties)
     if (freshStoreEntries.length > 0 || updatedFloors[floorName]?.airEntries) {
@@ -4667,7 +4667,7 @@ export default function WizardDesign() {
                 setAirEntries(newAirEntries);
                 
                 // Also update the floors store so Canvas2D receives updated data immediately
-                const updatedFloors = { ...floors };
+                const updatedFloors = { ...useRoomStore.getState().floors };
                 if (!updatedFloors[currentFloor]) {
                   updatedFloors[currentFloor] = { airEntries: [], lines: [], measurements: [], stairPolygons: [], walls: [] };
                 }
