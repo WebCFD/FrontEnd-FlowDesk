@@ -342,6 +342,12 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
     depth: 100
   });
 
+  const [blockDimensions, setBlockDimensions] = useState({
+    width: 100,
+    height: 100,
+    depth: 100
+  });
+
   const RACK_BASE = type === 'topVentBox' 
     ? { width: 500, height: 1500, depth: 500 } 
     : type === 'sideVentBox'
@@ -468,6 +474,13 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
             width: Math.round(dialogScale.x * RACK_BASE.width),
             height: Math.round(dialogScale.z * RACK_BASE.height),
             depth: Math.round(dialogScale.y * RACK_BASE.depth),
+          });
+        }
+        if ((type === 'block' || type === 'panelVertical' || type === 'panelHorizontal') && defaults.dimensions) {
+          setBlockDimensions({
+            width: parseFloat((dialogScale.x * defaults.dimensions.width).toFixed(2)),
+            height: parseFloat((dialogScale.z * defaults.dimensions.height).toFixed(2)),
+            depth: parseFloat((dialogScale.y * defaults.dimensions.depth).toFixed(2)),
           });
         }
       } else if (type === 'rack' || type === 'topVentBox' || type === 'sideVentBox') {
@@ -818,8 +831,8 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       <Input
                         id="scale-x"
                         type="number"
-                        step="0.1"
-                        value={Math.round(elementScale.x * 100) / 100}
+                        step="any"
+                        value={parseFloat(elementScale.x.toFixed(2))}
                         onChange={(e) => {
                           const newScaleX = Number(e.target.value);
                           const newScale = { ...elementScale, x: newScaleX };
@@ -827,23 +840,21 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           if (type === 'rack' || type === 'topVentBox' || type === 'sideVentBox') {
                             setRackDimensions(prev => ({ ...prev, width: Math.round(newScaleX * RACK_BASE.width) }));
                           }
+                          if ((type === 'block' || type === 'panelVertical' || type === 'panelHorizontal') && props.initialValues?.dimensions) {
+                            setBlockDimensions(prev => ({ ...prev, width: parseFloat((newScaleX * props.initialValues!.dimensions!.width).toFixed(2)) }));
+                          }
                           if (onScaleUpdate) onScaleUpdate(newScale);
                         }}
                         className="text-sm"
                       />
-                      {(type === 'block' || type === 'panelVertical' || type === 'panelHorizontal') && props.initialValues?.dimensions && (
-                        <p className="text-[10px] text-slate-400 mt-0.5 text-center">
-                          {Math.round(props.initialValues.dimensions.width * elementScale.x)} cm W
-                        </p>
-                      )}
                     </div>
                     <div>
                       <Label htmlFor="scale-y" className="text-xs">Y</Label>
                       <Input
                         id="scale-y"
                         type="number"
-                        step="0.1"
-                        value={Math.round(elementScale.y * 100) / 100}
+                        step="any"
+                        value={parseFloat(elementScale.y.toFixed(2))}
                         onChange={(e) => {
                           const newScaleY = Number(e.target.value);
                           const newScale = { ...elementScale, y: newScaleY };
@@ -851,23 +862,21 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           if (type === 'rack' || type === 'topVentBox' || type === 'sideVentBox') {
                             setRackDimensions(prev => ({ ...prev, depth: Math.round(newScaleY * RACK_BASE.depth) }));
                           }
+                          if ((type === 'block' || type === 'panelVertical' || type === 'panelHorizontal') && props.initialValues?.dimensions) {
+                            setBlockDimensions(prev => ({ ...prev, depth: parseFloat((newScaleY * props.initialValues!.dimensions!.depth).toFixed(2)) }));
+                          }
                           if (onScaleUpdate) onScaleUpdate(newScale);
                         }}
                         className="text-sm"
                       />
-                      {(type === 'block' || type === 'panelVertical' || type === 'panelHorizontal') && props.initialValues?.dimensions && (
-                        <p className="text-[10px] text-slate-400 mt-0.5 text-center">
-                          {Math.round(props.initialValues.dimensions.depth * elementScale.y)} cm D
-                        </p>
-                      )}
                     </div>
                     <div>
                       <Label htmlFor="scale-z" className="text-xs">Z</Label>
                       <Input
                         id="scale-z"
                         type="number"
-                        step="0.1"
-                        value={Math.round(elementScale.z * 100) / 100}
+                        step="any"
+                        value={parseFloat(elementScale.z.toFixed(2))}
                         onChange={(e) => {
                           const newScaleZ = Number(e.target.value);
                           const newScale = { ...elementScale, z: newScaleZ };
@@ -875,18 +884,82 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                           if (type === 'rack' || type === 'topVentBox' || type === 'sideVentBox') {
                             setRackDimensions(prev => ({ ...prev, height: Math.round(newScaleZ * RACK_BASE.height) }));
                           }
+                          if ((type === 'block' || type === 'panelVertical' || type === 'panelHorizontal') && props.initialValues?.dimensions) {
+                            setBlockDimensions(prev => ({ ...prev, height: parseFloat((newScaleZ * props.initialValues!.dimensions!.height).toFixed(2)) }));
+                          }
                           if (onScaleUpdate) onScaleUpdate(newScale);
                         }}
                         className="text-sm"
                       />
-                      {(type === 'block' || type === 'panelVertical' || type === 'panelHorizontal') && props.initialValues?.dimensions && (
-                        <p className="text-[10px] text-slate-400 mt-0.5 text-center">
-                          {Math.round(props.initialValues.dimensions.height * elementScale.z)} cm H
-                        </p>
-                      )}
                     </div>
                   </div>
                 </div>
+
+                {/* Block/Panel Dimensions - Editable fields in cm, bidirectionally coupled with scale */}
+                {(type === 'block' || type === 'panelVertical' || type === 'panelHorizontal') && props.initialValues?.dimensions && (
+                  <div>
+                    <Label className="text-xs text-slate-600 mb-2 block">Dimensions (cm)</Label>
+                    <div className="grid grid-cols-3 gap-2">
+                      <div>
+                        <Label htmlFor="block-width" className="text-xs">Width</Label>
+                        <Input
+                          id="block-width"
+                          type="number"
+                          step="any"
+                          min="0.01"
+                          value={blockDimensions.width}
+                          onChange={(e) => {
+                            const cm = Number(e.target.value);
+                            setBlockDimensions(prev => ({ ...prev, width: cm }));
+                            const newScaleX = parseFloat((cm / props.initialValues!.dimensions!.width).toFixed(4));
+                            const newScale = { ...elementScale, x: newScaleX };
+                            setElementScale(newScale);
+                            if (onScaleUpdate) onScaleUpdate(newScale);
+                          }}
+                          className="text-sm"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="block-height" className="text-xs">Height</Label>
+                        <Input
+                          id="block-height"
+                          type="number"
+                          step="any"
+                          min="0.01"
+                          value={blockDimensions.height}
+                          onChange={(e) => {
+                            const cm = Number(e.target.value);
+                            setBlockDimensions(prev => ({ ...prev, height: cm }));
+                            const newScaleZ = parseFloat((cm / props.initialValues!.dimensions!.height).toFixed(4));
+                            const newScale = { ...elementScale, z: newScaleZ };
+                            setElementScale(newScale);
+                            if (onScaleUpdate) onScaleUpdate(newScale);
+                          }}
+                          className="text-sm"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="block-depth" className="text-xs">Depth</Label>
+                        <Input
+                          id="block-depth"
+                          type="number"
+                          step="any"
+                          min="0.01"
+                          value={blockDimensions.depth}
+                          onChange={(e) => {
+                            const cm = Number(e.target.value);
+                            setBlockDimensions(prev => ({ ...prev, depth: cm }));
+                            const newScaleY = parseFloat((cm / props.initialValues!.dimensions!.depth).toFixed(4));
+                            const newScale = { ...elementScale, y: newScaleY };
+                            setElementScale(newScale);
+                            if (onScaleUpdate) onScaleUpdate(newScale);
+                          }}
+                          className="text-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Rack/TopVentBox Dimensions - Editable fields in mm */}
                 {(type === 'rack' || type === 'topVentBox' || type === 'sideVentBox') && (
