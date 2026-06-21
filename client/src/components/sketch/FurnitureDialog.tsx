@@ -456,9 +456,9 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
       
       if (defaults.scale) {
         const dialogScale = {
-          x: truncateToTwoDecimals(defaults.scale.x),
-          y: truncateToTwoDecimals(defaults.scale.y),
-          z: truncateToTwoDecimals(defaults.scale.z)
+          x: parseFloat(defaults.scale.x.toFixed(4)),
+          y: parseFloat(defaults.scale.y.toFixed(4)),
+          z: parseFloat(defaults.scale.z.toFixed(4))
         };
         
         setElementScale(dialogScale);
@@ -898,7 +898,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                         <Input
                           id="rack-width"
                           type="number"
-                          step="10"
+                          step="any"
                           min="100"
                           value={rackDimensions.width}
                           onChange={(e) => {
@@ -917,7 +917,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                         <Input
                           id="rack-height"
                           type="number"
-                          step="10"
+                          step="any"
                           min="100"
                           value={rackDimensions.height}
                           onChange={(e) => {
@@ -936,7 +936,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                         <Input
                           id="rack-depth"
                           type="number"
-                          step="10"
+                          step="any"
                           min="100"
                           value={rackDimensions.depth}
                           onChange={(e) => {
