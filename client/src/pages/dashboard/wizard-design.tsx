@@ -4254,8 +4254,8 @@ export default function WizardDesign() {
               if (furnitureBoxType === 'rack') {
                 furnitureEntry.serverProperties = {
                   rackDensity: inletFace?.rackDensity || 'medium',
-                  thermalPower_kW: inletFace?.thermalPower_kW || 10,
-                  airFlow: inletFace?.airFlow || 2395
+                  thermalPower_kW: inletFace?.thermalPower_kW ?? 10,
+                  airFlow: inletFace?.airFlow ?? 2395
                 };
               }
               

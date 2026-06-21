@@ -803,8 +803,8 @@ export function generateSimulationData(
         
         const serverFaceProps = {
           rackDensity: serverProps.rackDensity || 'medium',
-          thermalPower_kW: serverProps.thermalPower_kW || 10,
-          airFlow: serverProps.airFlow || 2395
+          thermalPower_kW: serverProps.thermalPower_kW ?? 10,
+          airFlow: serverProps.airFlow ?? 2395
         };
         
         const wallFaceProps = {
