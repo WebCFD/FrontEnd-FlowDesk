@@ -1129,7 +1129,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                             id="thermalPower_W"
                             type="number"
                             min={0.001}
-                            step={0.1}
+                            step="any"
                             value={thermalPower_W}
                             onChange={(e) => setThermalPower_W(Number(e.target.value))}
                             className="col-span-2"
@@ -1295,7 +1295,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       id="thermalPower"
                       type="number"
                       min="0"
-                      step="0.1"
+                      step="any"
                       value={thermalPower}
                       onChange={(e) => setThermalPower(Number(e.target.value))}
                       className={`col-span-2 ${rackDensity !== 'custom' ? 'bg-gray-100 text-gray-500' : ''}`}
@@ -1311,7 +1311,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                       id="airFlow"
                       type="number"
                       min="0"
-                      step="10"
+                      step="any"
                       value={airFlow}
                       onChange={(e) => setAirFlow(Number(e.target.value))}
                       className={`col-span-2 ${rackDensity !== 'custom' ? 'bg-gray-100 text-gray-500' : ''}`}
@@ -1504,7 +1504,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                             type="number"
                             min="-45"
                             max="45"
-                            step="1"
+                            step="any"
                             value={simulationProperties.verticalAngle}
                             onChange={(e) => setSimulationProperties(prev => ({
                               ...prev, 
@@ -1529,7 +1529,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                             type="number"
                             min="-45"
                             max="45"
-                            step="1"
+                            step="any"
                             value={simulationProperties.horizontalAngle}
                             onChange={(e) => setSimulationProperties(prev => ({
                               ...prev, 
@@ -1691,7 +1691,7 @@ export default function FurnitureDialog(props: FurnitureDialogProps) {
                         <Input
                           id="custom-flow-value"
                           type="number"
-                          step="0.1"
+                          step="any"
                           value={simulationProperties.customIntensityValue}
                           onChange={(e) => setSimulationProperties(prev => ({
                             ...prev, 
