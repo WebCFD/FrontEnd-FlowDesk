@@ -2347,7 +2347,7 @@ export default function AirEntryDialog(props: PropertyDialogProps) {
                             <div className="flex items-center space-x-2 mt-2">
                               <Input
                                 type="number"
-                                step="0.1"
+                                step="any"
                                 min="0"
                                 value={customIntensity}
                                 onChange={(e) => handleCustomIntensityChange(Number(e.target.value))}
