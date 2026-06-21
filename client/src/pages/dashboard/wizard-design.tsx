@@ -4175,9 +4175,14 @@ export default function WizardDesign() {
                 : (hasInletFace ? 'rack' : 'rack');
               const defaultDims = getDefaultDimensions(furnitureBoxType);
               
-              // Find faces by role (preferred) with fallback to named keys
-              const inletFace = faceEntries.find((f: any) => f.role === 'inlet') || item.faces.front;
-              const outletFace = faceEntries.find((f: any) => f.role === 'outlet') || item.faces.back;
+              // Find faces by role (preferred) with fallback to named keys.
+              // IMPORTANT: rack export places its inlet at local y=+d (labeled 'front' in JSON, gc[2,3,7,6])
+              // and outlet at local y=-d (labeled 'back', gc[0,1,5,4]), so depthDir = outlet−inlet is −Y → atan2 = 0 ✓.
+              // sideVentBox/topVentBox export is the opposite: 'front'=vent at local y=-d, 'back'=wall at local y=+d.
+              // For the same atan2 formula to give 0, we must swap the fallback faces for non-rack types.
+              const hasRackRoles = faceEntries.some((f: any) => f.role === 'inlet');
+              const inletFace = faceEntries.find((f: any) => f.role === 'inlet') || (hasRackRoles ? item.faces.front : item.faces.back);
+              const outletFace = faceEntries.find((f: any) => f.role === 'outlet') || (hasRackRoles ? item.faces.back : item.faces.front);
               const wallFace = faceEntries.find((f: any) => f.role === 'wall') || item.faces.left;
               
               // Reconstruct local axes from inlet (front) face to recover rotation
