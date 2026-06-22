@@ -59,7 +59,7 @@ args = "npm run dev"
 waitForPort = 5000
 
 [agent]
-integrations = ["resend:1.0.0", "javascript_object_storage:1.0.0"]
+integrations = ["resend:1.0.0", "javascript_object_storage:1.0.0", "javascript_database:1.0.0"]
 
 [userenv]
 
