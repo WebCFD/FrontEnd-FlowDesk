@@ -1,0 +1,1 @@
+- [Replit production database](replit-production-database.md) — deployed app "EAI_AGAIN helium" = no prod DB; fix is Publish UI "Create production database" toggle, not a driver swap.
