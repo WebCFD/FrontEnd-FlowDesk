@@ -23,7 +23,7 @@ ignoredPaths = [
 ]
 
 [deployment]
-deploymentTarget = "vm"
+deploymentTarget = "cloudrun"
 build = ["npm", "run", "build"]
 run = ["bash", "start-production.sh"]
 
