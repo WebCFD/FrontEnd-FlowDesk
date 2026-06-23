@@ -10,3 +10,5 @@ cases/
 PYTHON_STEPS/pipeline_exceptions.py
 PYTHON_STEPS/JSON_EX/
 PYTHON_STEPS/MAINPIPELINE_USAGE.md
+__pycache__/
+PYTHON_STEPS/outputs/

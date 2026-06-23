@@ -112,9 +112,41 @@ def subtract_objects(volume_mesh: pv.PolyData, object_meshes: List[pv.PolyData])
                 transfer_face_color=True
             )
 
+    # ── TOPOLOGICAL CLEANUP (symmetric to merge_volumes_sequential) ──────────
+    # The boolean DIFFERENCE engine (libigl) leaves T-junction vertices and two
+    # near-coincident surface patches separated only by numerical epsilon when an
+    # object touches a wall / floor / another object. Without merging those
+    # duplicate vertices the STL carries zero-gap surfaces that cfMesh collapses
+    # into zero/negative-volume cells → checkMesh "zero area faces / negative
+    # volume cells" → SIGFPE in deltaCoeffs at solver start-up.
+    # merge_volumes_sequential() already does this after UNION; the SUBTRACT path
+    # was missing it. patch_id is stored as per-face colour: merge_close_vertices
+    # only moves vertices (safe); the remove_* filters delete only degenerate
+    # faces (which carry no useful patch), so unique patch_ids are preserved.
+    if len(object_meshes) > 0:
+        ms.set_current_mesh(new_curr_id=ms.mesh_number() - 1)
+        n_patches_before = len(np.unique(rgba_matrix_to_integers(
+            ms.mesh(ms.mesh_number() - 1).face_color_matrix())))
+        ms.meshing_merge_close_vertices(threshold=pyml.PercentageValue(0.001))
+        ms.meshing_remove_duplicate_faces()
+        ms.meshing_remove_null_faces()
+        ms.meshing_remove_unreferenced_vertices()
+        n_patches_after = len(np.unique(rgba_matrix_to_integers(
+            ms.mesh(ms.mesh_number() - 1).face_color_matrix())))
+        logger.info(
+            f"    * subtract_objects cleanup: merged close vertices + removed "
+            f"duplicate/null faces (patch_ids {n_patches_before} → {n_patches_after})"
+        )
+        if n_patches_after < n_patches_before:
+            logger.warning(
+                f"    ⚠ subtract_objects cleanup dropped "
+                f"{n_patches_before - n_patches_after} patch_id(s) — verify BC integrity"
+            )
+
     result_mesh = ms.mesh(ms.mesh_number() - 1)
     result = meshlab2polydata(result_mesh)
     return optimize_mesh_memory(result)
+
 
 
 def perform_boolean_operations(room_geometry_meshes: List[pv.PolyData], furniture_meshes: List[pv.PolyData]) -> pv.PolyData:

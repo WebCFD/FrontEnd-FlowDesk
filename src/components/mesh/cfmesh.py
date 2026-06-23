@@ -370,23 +370,48 @@ def generate_local_refinement_block(geo_df, base_cell_size, area_map=None):
 
 def generate_boundary_layers_block(geo_df, base_cell_size):
     """
-    Generate boundaryLayers block with adaptive first-layer thickness.
+    Generate boundaryLayers block with adaptive nLayers and thicknessRatio.
 
-    maxFirstLayerThickness is scaled with the bulk cell size to avoid triggering
-    cfMesh's automatic boundary-layer subdivision.  For large rooms, a 5mm first
-    layer next to a 0.67m bulk cell creates a 134:1 aspect-ratio prism; cfMesh
-    auto-splits those prisms, multiplying BL cell count by 2–4× and causing OOM.
+    Strategy
+    --------
+    * firstLayer = 3 mm  (fixed for all room sizes — consistent near-wall resolution)
+    * Target: last BL layer ≈ bulk / 8  (≈12% of bulk → ~8× jump to first volume cell)
+    * thicknessRatio kept in [1.2, 1.5] for cfMesh stability (avoids quality collapse)
+    * nLayers grows automatically (4–7) so the ratio never exceeds 1.5
 
-    Formula: firstLayer = max(0.005, base_cell_size / 20)
-      Small room  (bulk=0.10m): max(0.005, 0.005) = 0.005m  (original, unchanged)
-      Promart     (bulk=1.00m): max(0.005, 0.050) = 0.050m  (50mm, no auto-split)
+    Formula
+    -------
+      span      = base_cell_size / (R_TARGET × first_layer)
+      n_layers  = ceil(1 + log(span) / log(1.5)),  clamped [4, 7]
+      ratio     = span^(1/(n_layers-1)),            clamped [1.2, 1.5]
+
+    Examples
+    --------
+      bulk=0.10m  (41 m³ room) : span=4.17 → nLayers=5, ratio=1.43, total BL≈35mm
+      bulk=0.18m (500 m³ room) : span=7.50 → nLayers=6, ratio=1.50, total BL≈62mm
+      bulk=0.27m (2.5k m³ room): span=11.2 → nLayers=7, ratio=1.49, total BL≈94mm
     """
-    n_layers        = 3
-    thickness_ratio = 1.2
-    first_layer     = max(0.005, base_cell_size / 20.0)   # adaptive, floor at 5mm
+    import math
 
-    result = f"""// Boundary layers — adaptive firstLayerThickness (bulk/20, min 5mm)
-// Prevents cfMesh auto-subdivision of extreme-aspect-ratio prism cells in large rooms.
+    first_layer = 0.003          # 3 mm — fixed for all room sizes
+    R_TARGET    = 8.0            # last_layer ≈ bulk / R_TARGET
+
+    span = base_cell_size / (R_TARGET * first_layer)   # growth factor needed
+
+    # Minimum nLayers to keep individual ratio ≤ 1.5
+    n_layers = max(4, math.ceil(1 + math.log(span) / math.log(1.5)))
+    n_layers = min(n_layers, 7)  # hard cap — avoid excessive prism cell counts
+
+    # Exact ratio for the chosen nLayers, clamped for cfMesh stability
+    raw_ratio       = span ** (1.0 / (n_layers - 1))
+    thickness_ratio = round(max(1.2, min(1.5, raw_ratio)), 2)
+
+    # Recompute actual last layer for logging
+    last_layer = first_layer * (thickness_ratio ** (n_layers - 1))
+    total_bl   = first_layer * (thickness_ratio**n_layers - 1) / (thickness_ratio - 1)
+
+    result = f"""// Boundary layers — fixed 3mm first layer, adaptive nLayers + thicknessRatio
+// Target: last BL layer ≈ bulk/8 (~8× transition to volume mesh), ratio in [1.2-1.5].
 boundaryLayers
 {{
     nLayers {n_layers};
@@ -396,7 +421,9 @@ boundaryLayers
 
     logger.info(
         f"    * Boundary layers: {n_layers} layers, ratio={thickness_ratio}, "
-        f"firstLayer={first_layer*1000:.1f}mm  (bulk/20 = {base_cell_size/20:.4f}m)"
+        f"firstLayer={first_layer*1000:.1f}mm  "
+        f"lastLayer={last_layer*1000:.2f}mm  totalBL={total_bl*1000:.1f}mm  "
+        f"(last→bulk ratio = {base_cell_size/last_layer:.1f}×)"
     )
     return result
 
@@ -539,6 +566,16 @@ def export_to_fms(geo_mesh_dict, sim_path, fms_filename):
             #    contradictory normals.
             mesh = mesh.extract_surface()  # UnstructuredGrid → PolyData if needed
             mesh = mesh.clean()
+            # Skip patches with no polygon cells (e.g. faces outside the room
+            # that were removed by the boolean subtraction). They produce no
+            # triangles in the STL and compute_normals() would crash on them.
+            if mesh.n_cells == 0:
+                logger.warning(
+                    f"[STL export] Skipping empty solid '{solid_name}' "
+                    f"(0 cells after boolean operations — face is outside the room domain)"
+                )
+                f.write(f"endsolid {solid_name}\n")
+                continue
             mesh = mesh.compute_normals(
                 consistent_normals=True,
                 auto_orient_normals=True,
@@ -683,9 +720,38 @@ def prepare_cfmesh(geo_mesh, sim_path, geo_df, fms_filename="geometry.fms"):
         '    rm -rf constant/polyMesh',
         '    cp -r $MESH_LOCATION/polyMesh constant/',
         'fi',
+        # ── Fix polyMesh/boundary: change type wall → type patch for non-wall patches ──
+        # cfMesh assigns type=wall to ALL external patches by default (topology default).
+        # Non-wall patches (vents, windows, doors, inlets, outlets) must be type=patch so:
+        #   - wallDist only computes distance to physical walls (not to vents)
+        #   - yPlus post-processing only reports on actual wall patches
+        #   - 'isWall()' returns false for openings → no spurious wall-function warnings
+        # Note: 0.orig/ BCs are already correct (set by hvac.py from geo_df) — no change needed there.
+        'echo "==================== FIXING polyMesh/boundary PATCH TYPES ===================="',
+        'python3 << \'PYEOF\'\n'
+        'import re, sys\n'
+        f'non_wall_patches = {[str(pid) for pid in geo_df[geo_df["type"] != "wall"]["id"].tolist()]!r}\n'
+        'boundary_file = "constant/polyMesh/boundary"\n'
+        'with open(boundary_file, "r") as f:\n'
+        '    content = f.read()\n'
+        'fixed = 0\n'
+        'for p in non_wall_patches:\n'
+        '    pat = r"(\\b" + re.escape(p) + r"\\b\\s*\\n\\s*\\{\\s*\\n\\s*)type\\s+wall\\s*;"\n'
+        '    new_content, n = re.subn(pat, r"\\1type            patch;", content)\n'
+        '    if n > 0:\n'
+        '        content = new_content\n'
+        '        fixed += 1\n'
+        '        print(f"  \u2713 {p}: type wall \u2192 type patch")\n'
+        '    else:\n'
+        '        print(f"  - {p}: not found or already patch")\n'
+        'with open(boundary_file, "w") as f:\n'
+        '    f.write(content)\n'
+        'print(f"polyMesh/boundary: {fixed} patch(es) reclassified wall \u2192 patch")\n'
+        'PYEOF',
+        'echo "==================== PATCH TYPES FIXED ===================="',
         'touch results.foam',
     ]
-    
+
     logger.info("    * cfMesh preparation completed successfully")
     logger.info(f"    * Expected patches: {expected_patches}")
     logger.info("    * cfMesh will generate robust boundary layers automatically")

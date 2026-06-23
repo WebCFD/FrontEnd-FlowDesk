@@ -41,9 +41,13 @@ DIMENSIONS_DICT = {
     # Scalar transport (CO2)
     'CO2':      FoamFile.DimensionSet(),  # Dimensionless concentration (or kg/m³ if dimensional)
     
+    # Mean Age of Air (Sandberg 1981) - local residence time of air [s]
+    'age':      FoamFile.DimensionSet(time=1),  # [s] - time dimension
+    
     # Radiation fields (for P1/fvDOM model)
     'qr':       FoamFile.DimensionSet(mass=1, time=-3),  # Radiative heat flux [W/m²]
     'G':        FoamFile.DimensionSet(mass=1, time=-3),  # Incident radiation [W/m²]
+
 }
 
 INTERNALFIELD_DICT = {
@@ -54,22 +58,33 @@ INTERNALFIELD_DICT = {
     'T':        297.15,     # Reference temperature for Boussinesq [K] (24°C)
     'U':        np.array([0, 0, 0]),  # Initial velocity (quiescent fluid - Boussinesq handles stability)
     
-    # Turbulence fields (default values from OpenFOAM BC Guide)
-    # k ≈ 0.01 m²/s² (typical low turbulence)
-    # ω ≈ 0.5 1/s (typical for building ventilation)
-    # nut = k/ω = 0.01/0.5 = 0.02 m²/s
-    # alphat = ρ·nut/Prt = 1.2 × 0.02 / 0.85 ≈ 0.028 kg/(m·s)
-    'k':        0.01,       # Turbulent kinetic energy [m²/s²]
-    'omega':    0.5,        # Specific dissipation rate [1/s]
-    'alphat':   0.028,      # Turbulent thermal diffusivity [kg/(m·s)] (alphat = ρ·nut/Prt)
-    'nut':      0.02,       # Turbulent kinematic viscosity [m²/s] (nut = k/ω)
+    # Turbulence fields — physically consistent with quiescent/buoyant HVAC room air
+    #
+    # Starting from U=0 (quiescent room), turbulence reference velocity = buoyancy scale ~0.1 m/s:
+    #   k  ≈ 1.5 × (I × U_ref)²  with I=0.05, U_ref=0.1 m/s  →  k ≈ 3.75e-5 → 1e-4 m²/s
+    #   ω  = 0.5 1/s  (mixing length L≈0.1m, consistent with room scale)
+    #   nut = k/ω = 1e-4/0.5 = 2e-4 m²/s  (≈13ν, mild turbulence ✓)
+    #   alphat = nut/Prt = 2e-4/0.85 ≈ 2.35e-4 m²/s  (in converged HVAC range 1e-4–1e-3 ✓)
+    #
+    # Previous values (k=0.01, nut=0.02, alphat=0.028) were ~100× too large:
+    #   → 30–300× overdiffusion in first iterations
+    #   → artificially flat T field at startup
+    #   → slower convergence due to excess relajation needed
+    'k':        1e-4,       # Turbulent kinetic energy [m²/s²]  (quiescent room, U_buoyancy≈0.1 m/s)
+    'omega':    0.5,        # Specific dissipation rate [1/s]    (mixing length L≈0.1m)
+    'alphat':   2.35e-4,    # Turbulent thermal diffusivity [m²/s]  = nut/Prt = 2e-4/0.85
+    'nut':      2e-4,       # Turbulent kinematic viscosity [m²/s]  = k/omega = 1e-4/0.5
     
     # Scalar transport
     'CO2':      1.0,        # 100% CO2 initial concentration (ventilation test scenario)
     
+    # Mean Age of Air (Sandberg 1981) - starts at 0 everywhere
+    'age':      0.0,        # [s] Initial age = 0 (field grows under source term S=1)
+    
     # Radiation
     'qr':       0,          # Initial radiative flux (computed by solver)
     'G':        450,        # Initial incident radiation [W/m²] - realistic for 25-30°C environment
+
 }
 
 # Reference values for pressure calculations
@@ -292,20 +307,33 @@ def define_turbulence_bcs(variable, patch_type, patch_row):
             bc["type"] = "zeroGradient"
     
     elif variable == 'alphat':
-        # For LAMINAR simulation: alphat is always "calculated" (no wall functions)
-        # For TURBULENT: use compressible::alphatWallFunction
-        # Since we're in laminar mode, use simple "calculated" BC everywhere
-        bc["type"] = "calculated"
-        bc["value"] = 0  # alphat=0 in laminar (no turbulent thermal diffusivity)
-    
+        if patch_type == 'wall':
+            # RANS turbulence (kOmegaSST): Jayatilleke wall function for turbulent
+            # thermal diffusivity at solid walls.
+            # alphat_wall = nut_wall / Prt  (with viscous-sublayer correction).
+            # Prt = 0.85: standard value for buoyant HVAC flows.
+            #
+            bc["type"]  = "alphatJayatillekeWallFunction"
+            bc["Prt"]   = 0.85
+            bc["value"] = 0
+        else:
+            # Inlets / outlets: alphat is derived from nut algebraically;
+            # 'calculated' is correct (no wall function needed off-wall).
+            bc["type"]  = "calculated"
+            bc["value"] = 0
+
     elif variable == 'nut':
         if patch_type == 'wall':
-            # Wall function for turbulent kinematic viscosity (compressible version)
-            bc["type"] = "nutkWallFunction"
+            # Spalding composite wall function: covers y+ = 0 → ∞ continuously.
+            # Unlike nutkWallFunction (stepwise, assumes y+ > 30), nutUSpaldingWallFunction
+            # uses Spalding's law of the wall (viscous + buffer + log-law in one formula),
+            # giving correct nut from the viscous sublayer through the fully turbulent region.
+            # Critical for HVAC where y+ varies spatially across complex geometries.
+            bc["type"]  = "nutUSpaldingWallFunction"
             bc["value"] = INTERNALFIELD_DICT['nut']
         else:
             # Calculated for all other patches (inlets, outlets)
-            bc["type"] = "calculated"
+            bc["type"]  = "calculated"
             bc["value"] = INTERNALFIELD_DICT['nut']
     
     return bc
@@ -358,10 +386,10 @@ def define_radiation_bcs(variable, patch_type, patch_row=None):
 
 def define_scalar_bcs(variable, patch_type, patch_row):
     """
-    Define boundary conditions for scalar transport (CO2).
+    Define boundary conditions for scalar transport (CO2, age).
     
     Args:
-        variable: Scalar name (e.g., 'CO2')
+        variable: Scalar name ('CO2' or 'age')
         patch_type: Type of patch
         patch_row: Row from patch_df with boundary info
         
@@ -381,6 +409,25 @@ def define_scalar_bcs(variable, patch_type, patch_row):
             bc["value"] = 0.0  # Fresh air (0% CO2)
         elif patch_type == 'wall':
             # Walls: no CO2 flux (impermeable)
+            bc["type"] = "zeroGradient"
+        else:
+            bc["type"] = "zeroGradient"
+    
+    elif variable == 'age':
+        # Sandberg (1981) Mean Age of Air boundary conditions
+        if patch_type in ['velocity_inlet', 'mass_flow_inlet']:
+            # Forced inlets: air just entered → age = 0 s (always inflow)
+            bc["type"] = "fixedValue"
+            bc["value"] = 0.0  # [s] Fresh air has age = 0
+        elif patch_type in ['pressure_inlet', 'pressure_outlet']:
+            # Bidirectional openings: inletOutlet
+            # - inflow (phi<0): age = 0 (fresh air from outside)
+            # - outflow (phi>0): zeroGradient (air leaves freely)
+            bc["type"] = "inletOutlet"
+            bc["inletValue"] = 0.0  # [s] Fresh air age = 0
+            bc["value"] = 0.0
+        elif patch_type == 'wall':
+            # Walls: impermeable → no age flux
             bc["type"] = "zeroGradient"
         else:
             bc["type"] = "zeroGradient"
@@ -490,8 +537,8 @@ def define_initial_files(sim_path, patch_df):
                 # Handle radiation fields (qr, G) with dedicated function
                 elif variable in ['qr', 'G']:
                     new_bc_data = define_radiation_bcs(variable, patch_type, row)
-                # Handle scalar transport (CO2) with dedicated function
-                elif variable == 'CO2':
+                # Handle scalar transport (CO2, age) with dedicated function
+                elif variable in ['CO2', 'age']:
                     new_bc_data = define_scalar_bcs(variable, patch_type, row)
                 # Handle base fields (h, p, p_rgh, T, U) with original logic
                 elif patch_type == 'wall':
@@ -509,26 +556,24 @@ def define_initial_files(sim_path, patch_df):
                     elif(variable == 'T'):
                         thermal_bc_mode = row.get('thermalBCMode', 'fixedT')
                         if thermal_bc_mode == 'fixedQ':
-                            # Heat flux BC: atmTurbulentHeatFluxTemperature
-                            # Note: externalWallHeatFluxTemperature is for compressible solvers only
-                            # (requires kappaMethod fluidThermo / thermophysicalProperties).
-                            # buoyantBoussinesqSimpleFoam is incompressible → use atmTurbulentHeatFluxTemperature
-                            # which derives kappa from the turbulence model (compatible with Boussinesq).
+                            # ── codedMixed placeholder ─────────────────────────────────────
+                            # foamlib writes fixedValue here; post-processing step below
+                            # replaces this entire block with the full codedMixed BC that reads
+                            # qr and alphat each iteration to enforce:
+                            #   q_conv + q_rad = Q_total/Area  (no double-counting with P1).
+                            # Physics: qr < 0 for hot wall (P1 sign convention from OF source):
+                            #   qr = -gamma * snGrad(G),  snGrad(G) > 0 hot wall → qr < 0
+                            #   q_conv = q_total + qr  →  |q_conv| + |q_rad| = q_total ✓
+                            #   ∇T = q_conv / (rho * Cp * (nu/Pr + alphat))
                             thermal_power_w  = float(row.get('thermalPower_W', 0.0) or 0.0)
                             surface_area_m2  = float(row.get('surface_area_m2', 1.0) or 1.0)
                             q_w_per_m2 = thermal_power_w / surface_area_m2 if surface_area_m2 > 0 else 0.0
-                            logger.info(f"    BC {row['id']} (wall/fixedQ): Q={thermal_power_w}W A={surface_area_m2:.4f}m² q={q_w_per_m2:.2f}W/m²")
-                            # foamlib writes scalar values without 'uniform'; post-processing
-                            # in the T-file step below will insert 'uniform' before the q value.
-                            new_bc_data["type"]       = 'atmTurbulentHeatFluxTemperature'
-                            new_bc_data["heatSource"] = 'flux'
-                            new_bc_data["q"]          = q_w_per_m2   # bare float; fixed below
-                            new_bc_data["Cp0"]        = 1005         # J/(kg·K) specific heat of air
-                            new_bc_data["alphaEff"]   = "alphaEff"  # name of alphaEff field in mesh registry
-                            # T_(°C) may be None/NaN for fixedQ blocks (no temperature BC set) — use 20°C as initial guess
+                            logger.info(f"    BC {row['id']} (wall/fixedQ): Q={thermal_power_w}W A={surface_area_m2:.4f}m² q={q_w_per_m2:.2f}W/m² [codedMixed+qr placeholder]")
                             t_celsius = row.get('T_(°C)', None)
                             t_init_k = (float(t_celsius) + 273.15) if (t_celsius is not None and str(t_celsius).strip() not in ('', 'nan')) else 293.15
-                            new_bc_data["value"]       = t_init_k     # foamlib adds 'uniform'
+                            # Placeholder: post-processing replaces this with full codedMixed block.
+                            new_bc_data["type"]  = 'fixedValue'
+                            new_bc_data["value"] = t_init_k
                         else:
                             new_bc_data["type"] = 'fixedValue'
                             new_bc_data["value"] = row['T_(°C)'] + 273.15
@@ -577,20 +622,19 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["value"] = p_rgh_kinematic
                         logger.info(f"    BC {row['id']} ({row['type']}): p_rgh = {p_rgh_kinematic:.2f} m²/s² (ΔP = {row['pressure_(Pa)']:.1f} Pa)")
                     elif(variable == 'T'):
-                        # Bidirectional temperature: inletOutlet for backflow scenarios
-                        new_bc_data["type"] = 'inletOutlet'
+                        # Strictly inflow: fixedValue temperature (fresh air enters at T_exterior)
+                        new_bc_data["type"] = 'fixedValue'
                         T_exterior = row['T_(°C)'] + 273.15  # Convert °C → K
-                        new_bc_data["inletValue"] = T_exterior
                         new_bc_data["value"] = T_exterior
-                        logger.info(f"    BC {row['id']} ({row['type']}): T = {row['T_(°C)']}°C = {T_exterior}K (inletOutlet)")
+                        logger.info(f"    BC {row['id']} ({row['type']}): T = {row['T_(°C)']}°C = {T_exterior}K (fixedValue, strictly inflow)")
                     elif(variable == 'U'):
                         if (row['open']):
-                            # pressureDirectedInletOutletVelocity: pressure-driven flow with constrained inlet direction
-                            # - inflow (phi<0): direction = fluid_nx/ny/nz (from airOrientation); magnitude from solver via p_rgh
-                            # - outflow (phi>0): zeroGradient (unconstrained, follows interior solution)
-                            # Works for both normal (airOrientation=0) and oblique (airOrientation≠0) cases
-                            new_bc_data["type"] = 'pressureDirectedInletOutletVelocity'
-                            new_bc_data["inletDirection"] = np.array([row['fluid_nx'], row['fluid_ny'], row['fluid_nz']])
+                            # pressureInletVelocity: STRICTLY INFLOW.
+                            # Derives U magnitude from the pressure gradient (via p_rgh BC above).
+                            # No backflow allowed — if the solver tries to push air out through this
+                            # patch, the BC clamps U to zero. Eliminates the self-feeding loop that
+                            # pressureDirectedInletOutletVelocity caused.
+                            new_bc_data["type"] = 'pressureInletVelocity'
                             new_bc_data["value"] = INTERNALFIELD_DICT[variable]
                         else:
                             # Closed pressure_inlet behaves as wall with no-slip condition
@@ -614,7 +658,9 @@ def define_initial_files(sim_path, patch_df):
                         new_bc_data["value"] = p_rgh_kinematic
                         logger.info(f"    BC {row['id']} ({row['type']}): p_rgh = {p_rgh_kinematic:.2f} m²/s² (ΔP = {row['pressure_(Pa)']:.1f} Pa)")
                     elif(variable == 'T'):
-                        # Bidirectional temperature: inletOutlet for backflow scenarios
+                        # Outflow temperature: inletOutlet as safety net.
+                        # During normal outflow (phi>0): zeroGradient (air leaves at interior T).
+                        # During any unintended backflow (phi<0): uses T_exterior as inletValue.
                         new_bc_data["type"] = 'inletOutlet'
                         T_exterior = row['T_(°C)'] + 273.15  # Convert °C → K
                         new_bc_data["inletValue"] = T_exterior
@@ -622,16 +668,65 @@ def define_initial_files(sim_path, patch_df):
                         logger.info(f"    BC {row['id']} ({row['type']}): T = {row['T_(°C)']}°C = {T_exterior}K (inletOutlet)")
                     elif(variable == 'U'):
                         if (row['open']):
-                            # pressureDirectedInletOutletVelocity: pressure-driven flow with constrained inlet direction
-                            # - inflow (phi<0): direction = fluid_nx/ny/nz (from airOrientation); magnitude from solver via p_rgh
-                            # - outflow (phi>0): zeroGradient (unconstrained, follows interior solution)
-                            # Works for both normal (airOrientation=0) and oblique (airOrientation≠0) cases
-                            new_bc_data["type"] = 'pressureDirectedInletOutletVelocity'
-                            new_bc_data["inletDirection"] = np.array([row['fluid_nx'], row['fluid_ny'], row['fluid_nz']])
+                            # inletOutlet: STRICTLY OUTFLOW.
+                            # During outflow (phi>0): behaves as zeroGradient — air exits freely.
+                            # During backflow (phi<0): clamps U to inletValue=(0,0,0), preventing
+                            # the self-feeding loop that pressureDirectedInletOutletVelocity caused.
+                            new_bc_data["type"] = 'inletOutlet'
+                            new_bc_data["inletValue"] = np.array([0.0, 0.0, 0.0])
                             new_bc_data["value"] = INTERNALFIELD_DICT[variable]
                         else:
                             # Closed pressure_outlet behaves as wall with no-slip condition
                             new_bc_data["type"] = 'noSlip'
+                    else:
+                        raise BaseException('Unknown variable')
+                elif(row['type'] == 'velocity_outlet'):
+                    # Fixed-velocity extraction outlet: user specifies how fast air exits.
+                    # U: fixedValue in the OUTWARD direction (negative of inward normal × magnitude).
+                    # p_rgh: zeroGradient — pressure floats freely at the outlet.
+                    # T: zeroGradient — air leaves at whatever temperature the interior has.
+                    if(variable == 'p'):
+                        new_bc_data["type"] = 'zeroGradient'
+                    elif(variable == 'p_rgh'):
+                        new_bc_data["type"] = 'zeroGradient'
+                    elif(variable == 'T'):
+                        new_bc_data["type"] = 'zeroGradient'
+                    elif(variable == 'U'):
+                        if (row['open']):
+                            # Outward direction = negative of inward normal (fluid_nx/ny/nz)
+                            # fluid_nx/ny/nz point INTO the domain (written by finalise_geometry.py)
+                            # so outflow direction = -fluid_n
+                            U_mag = float(row['U_(m/s)'])
+                            new_bc_data["type"] = 'fixedValue'
+                            new_bc_data["value"] = U_mag * np.array([
+                                -row['fluid_nx'], -row['fluid_ny'], -row['fluid_nz']
+                            ])
+                            logger.info(f"    BC {row['id']} (velocity_outlet): U={U_mag:.2f} m/s (outward direction)")
+                        else:
+                            new_bc_data["type"] = 'noSlip'
+                    else:
+                        raise BaseException('Unknown variable')
+                elif(row['type'] == 'mass_flow_outlet'):
+                    # Fixed-extraction outlet: user specifies volumetric flow rate to extract.
+                    # Uses flowRateInletVelocity with NEGATIVE volumetricFlowRate (same as rack_inlet).
+                    # Negative Q = outflow from domain (extraction).
+                    # p_rgh: fixedFluxPressure — consistent with prescribed-velocity outflow.
+                    # T: zeroGradient — air leaves at interior temperature.
+                    if(variable == 'p'):
+                        new_bc_data["type"] = 'calculated'
+                        new_bc_data["value"] = INTERNALFIELD_DICT['p']
+                    elif(variable == 'p_rgh'):
+                        new_bc_data["type"] = 'fixedFluxPressure'
+                        new_bc_data["value"] = 0
+                    elif(variable == 'T'):
+                        new_bc_data["type"] = 'zeroGradient'
+                    elif(variable == 'U'):
+                        Q_m3s = row['massFlow_(m³/h)'] / 3600.0  # m³/h → m³/s
+                        # Negative volumetricFlowRate = outflow from domain (extraction)
+                        new_bc_data["type"] = 'flowRateInletVelocity'
+                        new_bc_data["volumetricFlowRate"] = -Q_m3s
+                        new_bc_data["value"] = np.array([0.0, 0.0, 0.0])
+                        logger.info(f"    BC {row['id']} (mass_flow_outlet): Q={Q_m3s*3600:.1f} m³/h → volumetricFlowRate={-Q_m3s:.4f} m³/s (extraction)")
                     else:
                         raise BaseException('Unknown variable')
                 elif(row['type'] == 'mass_flow_inlet'):
@@ -792,25 +887,84 @@ def define_initial_files(sim_path, patch_df):
             _f.write(_t_content)
         logger.info("    * Rack T boundary conditions post-processed successfully")
 
-    # ── Post-process 0.orig/T: fix 'q X;' → 'q uniform X;' for fixedQ blocks ──
-    # foamlib writes bare scalar values; OpenFOAM's atmTurbulentHeatFluxTemperature
-    # requires PatchFunction1<scalar> format: 'q uniform X;'
+    # ── Post-process 0.orig/T: replace fixedValue placeholder → codedMixed for fixedQ ──
+    # codedMixed enforces energy conservation: q_conv + q_rad = q_total each iteration.
+    # Physics (verified from OF P1 source qrBf = -gamma*snGrad(G)):
+    #   qr < 0  when wall heats fluid (hot wall emits more than it absorbs)
+    #   q_conv  = q_total + qr      →  |q_conv| + |q_rad| = q_total ✓
+    #   ∇T      = q_conv / (ρ·Cp·αEff)   where αEff = ν/Pr + alphat  [m²/s]
+    #   alphat is registered persistently; alphaEff (TEqn.H local) is NOT persistent.
     fixedq_patches = patch_df[patch_df['thermalBCMode'] == 'fixedQ'] \
         if 'thermalBCMode' in patch_df.columns else pd.DataFrame()
     if len(fixedq_patches) > 0:
         t_file = os.path.join(initial_path, 'T')
         with open(t_file, 'r', encoding='utf-8') as _f:
             _t_content = _f.read()
-        # Within any atmTurbulentHeatFluxTemperature block, replace 'q   X;' with 'q   uniform X;'
-        _t_content = _re.sub(
-            r'(type\s+atmTurbulentHeatFluxTemperature\s*;[^}]*?\bq\s+)([0-9eE+\-.]+)(\s*;)',
-            r'\1uniform \2\3',
-            _t_content,
-            flags=_re.DOTALL
-        )
+
+        for _, _row in fixedq_patches.iterrows():
+            _pid = _row['id']
+            _thermal_power_w = float(_row.get('thermalPower_W', 0.0) or 0.0)
+            _surface_area_m2 = float(_row.get('surface_area_m2', 1.0) or 1.0)
+            _q_w_per_m2 = _thermal_power_w / _surface_area_m2 if _surface_area_m2 > 0 else 0.0
+            _t_celsius = _row.get('T_(°C)', None)
+            _t_init_k = (float(_t_celsius) + 273.15) if (_t_celsius is not None and str(_t_celsius).strip() not in ('', 'nan')) else 293.15
+            _coded_name = f"fixedQRadCorr_{_pid}"
+
+            # Full codedMixed block written directly as a string (avoids foamlib serialisation issues)
+            _new_block = (
+                f'    {_pid}\n'
+                f'    {{\n'
+                f'        // codedMixed: q_conv + q_rad = {_q_w_per_m2:.4f} W/m² (no double-counting)\n'
+                f'        // qr < 0 for hot wall (P1: qr=-gamma*snGrad(G), snGrad(G)>0 hot wall)\n'
+                f'        // q_conv = q_total + qr  [W/m²]   ∇T = q_conv / (rho*Cp*alphaEff)\n'
+                f'        type            codedMixed;\n'
+                f'        refValue        uniform {_t_init_k:.4f};\n'
+                f'        refGradient     uniform 0;\n'
+                f'        valueFraction   uniform 0;\n'
+                f'        name            {_coded_name};\n'
+                f'        code\n'
+                f'        #{{\n'
+                f'            const scalar q_total = {_q_w_per_m2:.6f};  // W/m²\n'
+                f'            const scalar rho     = 1.2;     // Boussinesq ref. density [kg/m3]\n'
+                f'            const scalar Cp      = 1005.0;  // J/(kg·K)\n'
+                f'            const scalar Pr_lam  = 0.71;    // Prandtl of air\n'
+                f'            const scalar nu      = 1.5e-5;  // m2/s kinematic viscosity\n'
+                f'\n'
+                f'            // alphat is persistently registered in the mesh registry\n'
+                f'            const auto& alphatField =\n'
+                f'                this->db().lookupObject<volScalarField>("alphat");\n'
+                f'            const scalarField alphat_b =\n'
+                f'                alphatField.boundaryField()[this->patch().index()];\n'
+                f'            // alphaEff = nu/Pr + alphat  [m2/s]  (reproduces TEqn.H)\n'
+                f'            const scalarField alphaEff_b = nu/Pr_lam + alphat_b;\n'
+                f'\n'
+                f'            // qr from P1 model: negative when wall heats the fluid\n'
+                f'            const auto& qrField =\n'
+                f'                this->db().lookupObject<volScalarField>("qr");\n'
+                f'            const scalarField qr_b =\n'
+                f'                qrField.boundaryField()[this->patch().index()];\n'
+                f'\n'
+                f'            // Energy conservation: q_conv + |q_rad| = q_total\n'
+                f'            // qr < 0  →  q_conv = q_total + qr  <  q_total\n'
+                f'            this->refGrad()       = (q_total + qr_b) / (rho * Cp * alphaEff_b);\n'
+                f'            this->valueFraction() = scalarField(this->patch().size(), scalar(0));\n'
+                f'            this->refValue()      = this->patchInternalField();\n'
+                f'        #}};\n'
+                f'        value           uniform {_t_init_k:.4f};\n'
+                f'    }}'
+            )
+
+            # Replace the fixedValue placeholder block for this patch in the T file
+            _pat = r'([ \t]*)' + _re.escape(_pid) + r'[ \t]*\n[ \t]*\{[^}]*?\}'
+            _t_content = _re.sub(_pat, _new_block, _t_content, flags=_re.DOTALL)
+            logger.info(
+                f"    * fixedQ T: '{_pid}' → codedMixed "
+                f"(q={_q_w_per_m2:.2f} W/m², T_init={_t_init_k:.2f} K)"
+            )
+
         with open(t_file, 'w', encoding='utf-8') as _f:
             _f.write(_t_content)
-        logger.info(f"    * Fixed {len(fixedq_patches)} atmTurbulentHeatFluxTemperature 'q' field(s) in 0.orig/T")
+        logger.info(f"    * {len(fixedq_patches)} codedMixed fixedQ BC(s) written to 0.orig/T")
 
 
 def setup(case_path: str, simulation_type: str = 'comfortTest', transient: bool = False, n_cpu: int = 2) -> list:
@@ -903,7 +1057,7 @@ def setup(case_path: str, simulation_type: str = 'comfortTest', transient: bool 
             f.write(content)
 
         logger.info("    * Mass flow functions added to controlDict")
-    
+
     # Write decomposeParDict for scotch method with correct numberOfSubdomains
     # n_cpu_available: matches the CPU count passed explicitly from worker_submit (used in Allrun -np)
     n_cpu_available = n_cpu

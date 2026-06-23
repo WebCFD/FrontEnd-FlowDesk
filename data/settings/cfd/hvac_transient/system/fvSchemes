@@ -47,6 +47,9 @@ divSchemes
     // Scalar transport (CO2) - upwind puro para máxima estabilidad [0,1]
     div(phi,CO2)    bounded Gauss upwind;
     
+    // Mean Age of Air (τ) - upwind puro; τ no tiene cota superior → sin 'bounded'
+    div(phi,age)    Gauss upwind;
+    
     // Radiation P1 model
     div(phi,G)      bounded Gauss upwind;
 }

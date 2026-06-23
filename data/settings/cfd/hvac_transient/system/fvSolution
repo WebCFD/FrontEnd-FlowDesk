@@ -104,6 +104,17 @@ solvers
         maxIter         50;
     }
 
+    // Mean Age of Air - identical numerics to CO2 but τ can be large in dead zones
+    age
+    {
+        solver          smoothSolver;
+        smoother        symGaussSeidel;
+        tolerance       1e-7;
+        relTol          0.01;
+        minIter         1;
+        maxIter         100;
+    }
+
     "G.*"
     {
         solver          PCG;
@@ -143,6 +154,7 @@ relaxationFactors
         T               0.35;  // Extreme stability for thermal coupling
         "(k|omega)"     0.5;   // Turbulence model stability
         CO2             0.7;   // Conservadurismo scalar transport para evitar undershoots
+        age             0.5;   // Mean Age of Air - más conservador (puede crecer mucho en zonas muertas)
         G               0.3;   // Under-relaxation for radiation convergence
     }
 }

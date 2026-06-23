@@ -21,6 +21,17 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 VOLUMES_TOLERANCE = 1e-5
 DEFAULT_TEMPERATURE = 20
 
+# ── Sliver-prevention thresholds for polygon triangulation ───────────────────
+# Air entries exported by the frontend can land a fraction of a millimetre off a
+# wall/floor edge (e.g. z=0.000201648 instead of z=0). The boolean subtraction
+# then leaves a sub-millimetre strip that constrained Delaunay turns into sliver
+# triangles, which cfMesh amplifies to aspect ratios ~1e142 and negative-volume
+# cells. Snapping the polygon to a 1 mm grid collapses those strips; the area
+# filter is a safety net for any residual degenerate triangle.
+TRIANGULATION_GRID_SIZE = 1e-3   # m — snap polygon coords to 1 mm grid
+SLIVER_MIN_AREA         = 1e-9   # m² — drop triangles below this area
+
+
 # Furniture positioning constants
 FURNITURE_FLOOR_PENETRATION = -0.000  # m, negative offset to ensure floor intersection
 
@@ -98,9 +109,21 @@ def _build_vent_bc(
     Single source of truth for open-vent BC dicts.
 
     Supports flowType: velocity | massFlow | pressure.
-    Supports airDirection: inflow | outflow | equilibrium.
-    Used by both wall/floor/ceiling airEntries (get_entry_bc_dict)
-    and face-based furniture vents (create_face_based_mesh).
+    Supports airDirection: inflow | outflow.
+
+    NOTE: 'equilibrium' (bidirectional) has been removed to prevent self-feeding
+    feedback loops that produce unphysical velocities. Every BC is now strictly
+    unidirectional — what enters cannot exit through the same patch and vice versa.
+
+    Inflow BC types:
+        velocity_inlet    → fixedValue U, fixedFluxPressure p_rgh
+        mass_flow_inlet   → flowRateInletVelocity (positive Q), fixedFluxPressure p_rgh
+        pressure_inlet    → pressureInletVelocity U (strictly inflow), fixedValue p_rgh
+
+    Outflow BC types:
+        velocity_outlet   → fixedValue U (outward direction), zeroGradient p_rgh
+        mass_flow_outlet  → flowRateInletVelocity (negative Q = extraction), fixedFluxPressure p_rgh
+        pressure_outlet   → inletOutlet U clamped to 0 on backflow, fixedValue p_rgh
     """
     flow_type = _FLOW_TYPE_NORMALIZE.get(flow_type_raw, 'pressure')
     bc = {'id': patch_id.replace(' ', '_'), 'T': temperature, 'open': True}
@@ -113,24 +136,25 @@ def _build_vent_bc(
         elif flow_type == 'velocity':
             bc['type'] = 'velocity_inlet'
             bc['U']    = get_flow_value(flow_intensity, 'velocity', custom_value)
-        else:  # pressure
+        else:  # pressure → strictly inflow (pressureInletVelocity in hvac.py)
             bc['type']     = 'pressure_inlet'
             bc['pressure'] = get_flow_value(flow_intensity, 'pressure', custom_value)
             bc['U']        = np.nan
-    elif air_direction == 'equilibrium':
-        # Neutral boundary: 0 Pa gauge, allows bidirectional flow driven by internal dynamics.
-        # Equivalent to pressure_outlet at 0 Pa: pressureDirectedInletOutletVelocity handles
-        # both inflow (constrained to inletDirection) and outflow (zeroGradient) automatically.
-        bc['type']     = 'pressure_outlet'
-        bc['pressure'] = 0.0
-        bc['U']        = np.nan
-    else:  # outflow → always pressure_outlet as reference boundary
-        bc['type']     = 'pressure_outlet'
-        bc['pressure'] = (
-            -get_flow_value(flow_intensity, 'pressure', custom_value)
-            if flow_type == 'pressure' else 0.0
-        )
-        bc['U'] = np.nan
+
+    else:  # outflow — strictly unidirectional (no backflow allowed)
+        if flow_type == 'velocity':
+            # Fixed extraction velocity: hvac.py applies fixedValue U in outward direction
+            bc['type'] = 'velocity_outlet'
+            bc['U']    = get_flow_value(flow_intensity, 'velocity', custom_value)
+        elif flow_type == 'massFlow':
+            # Fixed extraction flow rate: hvac.py applies flowRateInletVelocity with -Q
+            bc['type']     = 'mass_flow_outlet'
+            bc['massFlow'] = get_flow_value(flow_intensity, 'massFlow', custom_value)
+            bc['U']        = np.nan
+        else:  # pressure → strictly outflow (inletOutlet U in hvac.py clamps backflow to 0)
+            bc['type']     = 'pressure_outlet'
+            bc['pressure'] = -get_flow_value(flow_intensity, 'pressure', custom_value)
+            bc['U']        = np.nan
 
     return bc
 
@@ -424,6 +448,26 @@ def create_face_based_mesh(patch_df: pd.DataFrame, data: Dict[str, Any]) -> Tupl
                     flow_intensity = fd.get('flowIntensity', 'low'),
                     custom_value   = fd.get('customIntensityValue', None),
                 )
+                # ── fd_x/y/z: required by finalise_geometry._compute_fluid_direction ──
+                # flowDirection is stored directly in the face data for face-based furniture
+                # (sideVentBox, topVentBox, rack with role=vent), same as airEntries in walls.
+                flow_dir = fd.get('flowDirection', None)
+                if (flow_dir
+                        and flow_dir.get('x') is not None
+                        and flow_dir.get('y') is not None
+                        and flow_dir.get('z') is not None):
+                    new_patch['fd_x'] = float(flow_dir['x'])
+                    new_patch['fd_y'] = float(flow_dir['y'])
+                    new_patch['fd_z'] = float(flow_dir['z'])
+                else:
+                    raise ValueError(
+                        f"Open vent face '{face_pid}' is missing flowDirection. "
+                        f"All open vent faces must export flowDirection {{x, y, z}} from the frontend."
+                    )
+                # fluid_nx/ny/nz: NaN placeholders — overwritten by finalise_geometry.py
+                new_patch['fluid_nx'] = np.nan
+                new_patch['fluid_ny'] = np.nan
+                new_patch['fluid_nz'] = np.nan
         else:
             logger.warning(f"Unknown face role '{role}' in {face_pid}, treating as wall")
             new_patch = get_wall_bc_dict(face_pid, temperature=temperature)
@@ -588,25 +632,32 @@ def get_entry_bc_dict(data):
     flow_intensity = simulation.get('flowIntensity', 'medium')
     custom_value = simulation.get('customValue', None)
     
-    # For windows/doors: ALWAYS use pressure BCs (no flowType in JSON)
+    # For windows/doors: ALWAYS use pressure BCs (no flowType in JSON).
+    # Only 'inflow' and 'outflow' are valid — 'equilibrium' has been removed to prevent
+    # self-feeding bidirectional BCs that produce unphysical velocities.
+    # Legacy JSON with 'equilibrium' is silently mapped to 'inflow' as a safe fallback.
     if entry_type in ['window', 'door']:
         # Get pressure differential (ΔP) based on flow intensity
         delta_p = get_flow_value(flow_intensity, 'pressure', custom_value)
-        
-        if air_direction == 'inflow':
-            # Pressure inlet: p = p_internal + ΔP (higher pressure pushes air in)
-            new_patch['type'] = 'pressure_inlet'
-            new_patch['pressure'] = delta_p  # Positive pressure differential
-        elif air_direction == 'equilibrium':
-            # Neutral boundary: 0 Pa gauge, lets internal dynamics determine flow direction.
-            # pressureDirectedInletOutletVelocity handles bidirectional flow automatically.
-            new_patch['type'] = 'pressure_outlet'
-            new_patch['pressure'] = 0.0
-        else:  # outflow
-            # Pressure outlet: p = p_internal - ΔP (lower pressure pulls air out)
+
+        if air_direction == 'outflow':
+            # Pressure outlet: strictly outflow — inletOutlet U in hvac.py clamps backflow to 0.
+            # p = p_internal - ΔP (lower pressure pulls air out)
             new_patch['type'] = 'pressure_outlet'
             new_patch['pressure'] = -delta_p  # Negative pressure differential
-        
+        else:
+            # 'inflow' (or legacy 'equilibrium' mapped to inflow as safe fallback):
+            # Pressure inlet: strictly inflow — pressureInletVelocity in hvac.py prevents backflow.
+            # p = p_internal + ΔP (higher pressure pushes air in)
+            if air_direction == 'equilibrium':
+                logger.warning(
+                    f"    BC '{patch_id}': airDirection='equilibrium' is deprecated. "
+                    f"Mapping to 'inflow' (pressure_inlet at {delta_p} Pa). "
+                    f"Update the JSON to use 'inflow' or 'outflow' explicitly."
+                )
+            new_patch['type'] = 'pressure_inlet'
+            new_patch['pressure'] = delta_p  # Positive pressure differential
+
         new_patch['U'] = np.nan  # Not used for pressure BCs
     
     # For vents: User specifies flowType (velocity, massFlow, or pressure)
@@ -963,6 +1014,45 @@ def create_polygon_from_mesh(mesh, target_z=None):
             return shapely.Polygon()
 
 
+def _sanitize_polygon_for_triangulation(polygon, label=""):
+    """
+    Snap a polygon to a millimetre grid to eliminate sub-millimetre slivers before
+    triangulation, then repair any invalidity introduced by the snap.
+
+    Air entries exported by the frontend can land a fraction of a millimetre off a
+    wall/floor edge (e.g. z=0.000201648 instead of z=0). After the boolean
+    subtraction this leaves a sub-millimetre strip that constrained Delaunay turns
+    into sliver triangles (aspect ratio ~1e142, negative-volume cells in cfMesh).
+    set_precision() with TRIANGULATION_GRID_SIZE collapses those strips by snapping
+    every vertex to the grid and removing the resulting zero-width geometry.
+
+    Returns the sanitised polygon, or the original if snapping destroys it.
+    """
+    try:
+        snapped = shapely.set_precision(polygon, TRIANGULATION_GRID_SIZE)
+    except Exception as e:
+        logger.warning(f"[sliver-fix] set_precision failed for '{label}': {e} — using original polygon")
+        return polygon
+
+    # set_precision may collapse the polygon into a Multi*/empty geometry — recover the area part
+    if snapped.is_empty or snapped.area < SLIVER_MIN_AREA:
+        logger.warning(
+            f"[sliver-fix] Polygon '{label}' collapsed to area<{SLIVER_MIN_AREA:g} m² after "
+            f"snapping to {TRIANGULATION_GRID_SIZE*1e3:.1f} mm grid — using original polygon"
+        )
+        return polygon
+
+    if not snapped.is_valid:
+        snapped = shapely.make_valid(snapped)
+
+    # make_valid can return a GeometryCollection — keep only polygonal parts
+    if snapped.geom_type == 'GeometryCollection':
+        polys = [g for g in snapped.geoms if g.geom_type in ('Polygon', 'MultiPolygon')]
+        snapped = shapely.unary_union(polys) if polys else polygon
+
+    return snapped
+
+
 def create_mesh_from_polygon(patch_df, entry_id, entry_polygon, p0, udir, vdir):
     points_2d = []
     faces = []
@@ -973,7 +1063,10 @@ def create_mesh_from_polygon(patch_df, entry_id, entry_polygon, p0, udir, vdir):
     if not entry_polygon.is_valid:
         print(f"[WARNING] Polígono {entry_id} inválido. Reparando con make_valid()...")
         entry_polygon = shapely.make_valid(entry_polygon)
-    
+
+    # ROBUST FIX 1b: Snap to mm grid to remove sub-millimetre slivers
+    entry_polygon = _sanitize_polygon_for_triangulation(entry_polygon, label=str(entry_id))
+
     # ROBUST FIX 2: Manejar polígonos vacíos o con área negligible
     if entry_polygon.is_empty or entry_polygon.area < 1e-10:
         print(f"[WARNING] Polígono {entry_id} vacío o con área negligible. Creando mesh vacío.")
@@ -987,8 +1080,13 @@ def create_mesh_from_polygon(patch_df, entry_id, entry_polygon, p0, udir, vdir):
         return mesh
     
     triangles  = shapely.constrained_delaunay_triangles(entry_polygon)
-    
+
+    n_slivers = 0
     for triangle in triangles.geoms:
+        # ROBUST FIX 3: skip degenerate sliver triangles (safety net after the snap)
+        if triangle.area < SLIVER_MIN_AREA:
+            n_slivers += 1
+            continue
         coords = list(triangle.exterior.coords)[:-1]  # omit duplicate closing point
         face = [3]  # number of points in the triangle
         for x, y in coords:
@@ -1000,6 +1098,12 @@ def create_mesh_from_polygon(patch_df, entry_id, entry_polygon, p0, udir, vdir):
             face.append(point_index[key])
         faces.extend(face)
 
+    if n_slivers:
+        logger.warning(
+            f"[sliver-fix] '{entry_id}': dropped {n_slivers} degenerate triangle(s) "
+            f"(area < {SLIVER_MIN_AREA:g} m²) during triangulation"
+        )
+
     points_2d = np.array(points_2d)
     points_3d = from_wall2d_to_3d(points_2d, p0, udir, vdir)
     faces = np.array(faces)
@@ -1009,6 +1113,7 @@ def create_mesh_from_polygon(patch_df, entry_id, entry_polygon, p0, udir, vdir):
     patch_idx = patch_df.index[patch_df['id'] == entry_id][0].astype(np.int16)
     mesh.cell_data['patch_id'] = [patch_idx] * mesh.n_cells
     return mesh
+
 
 
 def create_floor_mesh(patch_df: pd.DataFrame, level_name: str, level_data: Dict[str, Any], base_height: float = 0) -> Tuple[pd.DataFrame, pv.PolyData]:

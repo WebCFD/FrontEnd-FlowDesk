@@ -70,6 +70,20 @@ def calculate_ventilation_metrics(slice_mesh, has_co2=False):
         CO2_max = 0.0
         CO2_compliant_pct = 0.0
     
+    # Mean Age of Air statistics (direct field from solver)
+    age_field = slice_mesh.point_data.get('age', None) if slice_mesh else None
+    if age_field is not None and len(age_field) > 0:
+        # age field is in [s]; convert to [min] for display
+        age_min_arr = age_field / 60.0
+        age_mean_min = float(age_min_arr.mean())
+        age_max_min = float(age_min_arr.max())
+        # Percentage of points with age < 10 min (well-ventilated zones)
+        age_good_pct = 100.0 * (age_min_arr < 10.0).sum() / len(age_min_arr)
+    else:
+        age_mean_min = 0.0
+        age_max_min = 0.0
+        age_good_pct = 0.0
+    
     # Stagnation zones (U < 0.05 m/s)
     stagnation_mask = U_mag < 0.05
     stagnation_pct = 100.0 * stagnation_mask.sum() / len(U_mag)
@@ -98,6 +112,9 @@ def calculate_ventilation_metrics(slice_mesh, has_co2=False):
         'CO2_min': CO2_min,
         'CO2_max': CO2_max,
         'CO2_compliant_pct': CO2_compliant_pct,
+        'age_mean_min': age_mean_min,
+        'age_max_min': age_max_min,
+        'age_good_pct': age_good_pct,  # % area with age < 10 min
         'stagnation_pct': stagnation_pct,
         'ADPI_pct': ADPI_pct,
         'U_mean': float(U_mag.mean()),
@@ -170,12 +187,15 @@ def render_ventilation_png(slice_mesh, name, z_height, post_path, variable='CO2'
             except Exception as e:
                 logger.warning(f"       Failed to add CO2 contours: {e}")
     elif variable == 'age':
-        # Age of Air colormap (if available)
+        # Age of Air colormap - field is in [s], convert to [min] for display
         if 'age' in slice_mesh.point_data:
+            # Create a copy with [min] units for visualization
+            slice_display = slice_mesh.copy()
+            slice_display.point_data['age_min'] = slice_mesh.point_data['age'] / 60.0
             plotter.add_mesh(
-                slice_mesh,
-                scalars='age',
-                cmap='plasma',  # Yellow to purple
+                slice_display,
+                scalars='age_min',
+                cmap='plasma',  # Yellow (young) to purple (old)
                 show_edges=False,
                 scalar_bar_args={
                     'title': 'Age of Air [min]',
@@ -575,6 +595,31 @@ def calculate_global_ventilation_metrics(internal_mesh, sim_path, multiblock=Non
     else:
         logger.info("    * Skipping εv calculation (CO2 or multiblock not available)")
     
+    # ── Priority: use direct age field (Sandberg 1981) from solver ──────────
+    # The scalarSemiImplicitSource (S=1) in fvOptions makes the steady-state
+    # scalar field τ [s] equal to the true local mean age of air everywhere.
+    # This is more accurate than the CO2-based volumetric estimate above.
+    age_field_3d = internal_mesh.point_data.get('age', None)
+    if age_field_3d is not None:
+        valid_age = age_field_3d[age_field_3d > 0]
+        if len(valid_age) > 0:
+            mean_age_sandberg = float(valid_age.mean()) / 60.0  # [s] → [min]
+            logger.info(f"    * ✓ Mean Age of Air (Sandberg direct field): τ = {mean_age_sandberg:.1f} min")
+            mean_age = mean_age_sandberg  # override CO2-based estimate
+            # Recalculate εv from τ_nominal / τ_CFD
+            if Q_inlet > 1e-10 and V_room > 0 and mean_age_sandberg > 0:
+                tau_nominal_min = V_room / Q_inlet / 60.0  # [min]
+                ev_sandberg = tau_nominal_min / mean_age_sandberg
+                logger.info(
+                    f"    * ✓ εv (Sandberg): τ_nominal={tau_nominal_min:.1f} min / "
+                    f"τ_CFD={mean_age_sandberg:.1f} min = {ev_sandberg:.3f}"
+                )
+                ev = ev_sandberg
+        else:
+            logger.info("    * age field present but all-zero — solver may not have converged τ yet")
+    else:
+        logger.info("    * age field not found — using CO2-based mean age estimate")
+
     return {
         'ACH': float(ACH),
         'Q_inlet': float(Q_inlet),
@@ -622,13 +667,19 @@ def analyze_ventilation_planes(sim_path, post_path, internal_mesh=None, surfaces
     
     logger.info(f"    * Loaded mesh with {internal_mesh.n_cells:,} cells")
     
-    # Check if CO2 field exists
+    # Check available scalar fields
     has_co2 = 'CO2' in internal_mesh.point_data
-    
+    has_age  = 'age' in internal_mesh.point_data  # Sandberg 1981 direct field
+
     if has_co2:
         logger.info("    * CO2 field found - will analyze concentration")
     else:
         logger.warning("    * CO2 field not found - limited ventilation analysis")
+
+    if has_age:
+        logger.info("    * age field found (Sandberg 1981) - will render Age of Air maps")
+    else:
+        logger.info("    * age field not found - skipping Age of Air plane maps")
     
     # Calculate global metrics (ACH, εv, Age of Air, etc.)
     global_metrics = calculate_global_ventilation_metrics(internal_mesh, sim_path, multiblock=multiblock, has_co2=has_co2)
@@ -719,7 +770,18 @@ def analyze_ventilation_planes(sim_path, post_path, internal_mesh=None, surfaces
         # Render CO2 image if available
         if has_co2:
             render_ventilation_png(slice_mesh, name, z_height, post_path, variable='CO2')
-    
+
+        # Render Age of Air image if available (Sandberg 1981 direct solver field)
+        if has_age:
+            age_mean = metrics.get('age_mean_min', 0.0)
+            if age_mean > 0:
+                logger.info(
+                    f"       Age of Air: τ_mean={age_mean:.1f} min, "
+                    f"τ_max={metrics.get('age_max_min', 0):.1f} min, "
+                    f"well-ventilated(<10min)={metrics.get('age_good_pct', 0):.1f}%"
+                )
+            render_ventilation_png(slice_mesh, name, z_height, post_path, variable='age')
+
     # Add global metrics to results
     results['global'] = global_metrics
     

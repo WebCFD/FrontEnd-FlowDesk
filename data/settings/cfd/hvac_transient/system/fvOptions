@@ -44,5 +44,33 @@ limitU
 // Solution: Initialize G=100 (not zero) to prevent matrix singularity
 // GAMG solver + relaxation (G=0.7) provide sufficient numerical stability
 
+// ============================================================================
+// MEAN AGE OF AIR SOURCE TERM
+// ============================================================================
+// Implements the Sandberg (1981) steady-state Mean Age of Air equation:
+//   ∇·(U·τ) - ∇·(D_eff·∇τ) = 1   [s/s]
+//
+// The source term S=1 means every fluid parcel ages 1 second per second.
+// Inlets impose τ=0 (fresh air). The field τ [s] gives the local residence
+// time of air directly — no post-processing estimation needed.
+// ============================================================================
+
+ageSource
+{
+    type            scalarSemiImplicitSource;
+    active          yes;
+
+    scalarSemiImplicitSourceCoeffs
+    {
+        selectionMode   all;        // OpenFOAM 2412: must be inside coeffs subdict
+        // volumeMode specific: source = Su * volume → integrates to 1 [s/s] per m³
+        volumeMode      specific;
+        injectionRateSuSp
+        {
+            age     (1.0    0);     // Su=1 [s/s], Sp=0 (explicit, always positive)
+        }
+    }
+}
+
 
 // ************************************************************************* //

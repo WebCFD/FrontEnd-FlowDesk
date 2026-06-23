@@ -202,7 +202,16 @@ def polygon_to_mesh_2d(polygon: shapely.Polygon, z: float, patch_df: pd.DataFram
         PyVista PolyData mesh
     """
     logger.info(f"    [PHASE 1.2] Converting polygon to mesh at Z={z:.3f}m")
-    
+
+    # Snap to mm grid to remove sub-millimetre slivers before triangulation.
+    # Air entries can land a fraction of a mm off a wall/floor edge; the boolean
+    # subtraction then leaves a sliver strip that constrained Delaunay turns into
+    # degenerate triangles (aspect ratio ~1e142, negative-volume cells in cfMesh).
+    from src.components.geo.create_volumes import (
+        _sanitize_polygon_for_triangulation, SLIVER_MIN_AREA
+    )
+    polygon = _sanitize_polygon_for_triangulation(polygon, label=str(patch_id))
+
     # Triangulate polygon using constrained Delaunay
     triangles = shapely.constrained_delaunay_triangles(polygon)
     
@@ -211,7 +220,12 @@ def polygon_to_mesh_2d(polygon: shapely.Polygon, z: float, patch_df: pd.DataFram
     point_index = {}
     next_index = 0
     
+    n_slivers = 0
     for triangle in triangles.geoms:
+        # Safety net: skip degenerate sliver triangles after the snap
+        if triangle.area < SLIVER_MIN_AREA:
+            n_slivers += 1
+            continue
         coords = list(triangle.exterior.coords)[:-1]  # omit duplicate closing point
         face = [3]  # number of points in the triangle
         for x, y in coords:
@@ -222,6 +236,13 @@ def polygon_to_mesh_2d(polygon: shapely.Polygon, z: float, patch_df: pd.DataFram
                 next_index += 1
             face.append(point_index[key])
         faces.extend(face)
+
+    if n_slivers:
+        logger.warning(
+            f"      [sliver-fix] '{patch_id}': dropped {n_slivers} degenerate "
+            f"triangle(s) (area < {SLIVER_MIN_AREA:g} m²) during triangulation"
+        )
+
     
     # Convert 2D points to 3D at height Z
     points_3d = np.array([[x, y, z] for x, y in points_2d])
